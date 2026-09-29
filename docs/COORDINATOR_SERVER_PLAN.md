@@ -211,6 +211,27 @@ The coordinator validates reported candidates and interval consistency, but an
 authenticated client's claim of exhaustive no-match computation is still a trust
 assumption. mTLS identifies clients; it is not a proof that work was performed.
 
+### Request budget and adaptive lease sizing
+
+Apply the [block-sizing policy](GPU_REDESIGN_PLAN.md#concrete-sizing-and-adaptation):
+logical block IDs stay fixed, while a worker's future lease spans target about
+180 seconds of measured work. Small kernel batches/checkpoints keep pause and
+replay bounds independent of that span. Larger leases reduce claim traffic; they
+do not justify longer gaps between durable checkpoints.
+
+For illustration, 64 active device workers checkpointing every 10 seconds produce
+about 6.4 progress requests/s. Separate 15-second heartbeats add about 4.27/s, and
+180-second leases add about 0.36 claims/s, before completion requests, retries,
+status reads, or results. This arithmetic is not a SQLite capacity measurement.
+Coalesce renewals with progress where the protocol permits, jitter scheduling,
+and benchmark durable transactions on the actual server disk. Keep healthy-worker
+lease renewals and progress prioritized during status/telemetry load.
+
+Count unique accepted coverage independently of worker-reported speed. Bound each
+client's outstanding leases and newly requested span; observed committed progress
+informs future sizing. Follow the main plan's execution-provenance and invalidation
+rules when a software defect requires a range to be searched again.
+
 ## 5. Apache, HTTPS, and home-network setup
 
 Implement a reviewed deployment template under `deploy/apache/` and a service

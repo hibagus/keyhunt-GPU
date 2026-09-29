@@ -364,9 +364,12 @@ compatibility boundary; do not silently change old `-r` behavior.
 Block width is immutable for a job. Work-unit boundaries are allocated lazily
 inside blocks and recorded exactly; they can vary with machine speed. Choose
 logical width through `--block-bits` or `--block-size` and offer a calibration
-recommendation. As initial tunable defaults, target 1–5 minutes per work unit,
-0.1–1 second per kernel batch, and a durable checkpoint about every 10 seconds.
-These are scheduling targets, not measured host performance.
+recommendation. Initial defaults are a 180-second work-unit target, tunable within
+1–5 minutes, 0.1–1 second per kernel batch, and a durable checkpoint about every
+10 seconds. Select logical width once from a designated reference worker's
+calibration, targeting roughly 15–30 minutes per block on that worker. These are
+scheduling targets, not measured host performance; other workers can take longer
+or contribute portions of the same block.
 
 For direct scans, estimate work-unit span from measured candidates/s. For BSGS,
 use measured giant-step cost, target count, table parameter `m`, and tile setup
@@ -379,6 +382,69 @@ This resolves the block-size tradeoff: choose a stable block size that is useful
 to navigate, while smaller recorded leases and checkpoints bound the time lost
 on a single computer. Show estimated work-unit duration, partial-block progress,
 and journal growth so users can adjust future allocations from measurements.
+
+### Concrete sizing and adaptation
+
+For a direct scan, let `R` be the measured sustained candidates/s for the exact
+mode and complete target set, and `T` the desired lease duration:
+
+```text
+initial logical width W = next_power_of_two(ceil(R_reference * 900 seconds))
+next work-unit span S   = floor(R_worker * 180 seconds)
+estimated scan time    = assigned span / sustained rate
+```
+
+The logical width is a one-time recommendation; an explicit `--block-bits b`
+sets `W = 2^b`. Without a reference measurement, require an explicit width or
+keep the job in draft until calibration finishes. Finalize the grid before issuing
+its first lease. Use checked integer sizing, clamp allocations to the job/block's
+remaining range, and treat the final block as a shorter tail. A logical block
+may be larger than the entire job; that job then has one partial block. Lease
+spans need not be powers of two. Apply algorithm-specific alignment to work units
+and cover residual tails explicitly. GPU launch-grid size is a separate setting.
+
+The following numbers are **hypothetical direct-scan rates**, not hardware claims:
+
+| Logical width | Candidates per full block | At 100 million/s | At 1 billion/s |
+| --- | ---: | ---: | ---: |
+| `2^32` | 4,294,967,296 | 42.95 s | 4.29 s |
+| `2^36` | 68,719,476,736 | 11.45 min | 68.72 s |
+| `2^40` | 1,099,511,627,776 | 3.05 h | 18.33 min |
+
+At the hypothetical 1 billion/s rate, a 180-second lease covers 180 billion
+candidates. A `2^40` block becomes six such leases and one shorter remainder.
+At 100 million/s, a worker instead receives about 18 billion candidates per lease.
+Both contribute to the same fixed block ID; the slow machine does not need to
+finish that entire block to record durable progress. Each extra block bit doubles
+the assigned span and, at a fixed direct-scan rate, approximately doubles runtime.
+
+Calibrate with several bounded no-match batches after warm-up and table setup.
+Then use a smoothed rate from successful committed work, accounting for transfers,
+verification, and checkpoint overhead. Exclude early-match runs, pauses, network
+outages, and replayed coverage from rate updates. Bound adjustments (initial rule:
+no more than 2x growth/shrink per newly issued lease) to avoid oscillation, and
+reset the estimate after a material mode/target/table/device change. Start
+conservatively when no representative rate is available. Never resize an issued
+lease or change the job's logical block grid during adaptation.
+
+For BSGS, measure the same target group and fixed baby-table parameter `m`.
+The giant-step workload grows approximately with `ceil(S / m)` per target; table
+construction, setup, memory constraints, and verification also contribute. This
+is a sizing model to benchmark, not a conversion of giant steps into actual
+public-key evaluations. BSGS uses a supplied group element/public key; an address
+hash alone does not supply that input. Keep the public-key BSGS and address/hash
+search modes separate. [Discrete-logarithm algorithms, section 3.6.2][hac-bsgs]
+
+Keep compatible BSGS tables cached across leases so shrinking lease duration does
+not cause repeated table construction. If initialization dominates, increase the
+lease target or change batching while retaining short kernel/checkpoint boundaries.
+Avoid importing any speculative README speed as the calibration value.
+
+The mining-difficulty analogy applies to tuning how often workers return work.
+Bitcoin mining uses a hash threshold to define successful proofs; this search
+keeps its target condition fixed and adjusts the size of assigned work.
+[Bitcoin mining description][bitcoin-mining]
+A completed search interval is useful progress even when it finds nothing.
 
 ### Sparse exact coverage
 
@@ -407,15 +473,21 @@ excessive fragmentation; keep the statistical difference visible to the user.
 | Policy | Meaning |
 | --- | --- |
 | `sequential` | Select the lowest eligible block, then its first unleased uncovered interval |
-| `random` | Select randomly from eligible unfinished blocks, then an available interval inside it |
+| `random` | Select an eligible unfinished block randomly, then consume its available work units before selecting another block |
 | `random-window` | Randomize within bounded windows, improving locality and interval compaction; not globally uniform |
 | `--block <id>` | Select an exact logical block; report done/busy or lease an available part |
 
 Distinguish never-visited blocks from partial, leased, paused, and completed ones
 in status output. Allow an unvisited-only selection filter, but default automatic
 scheduling should revisit eligible partial work so it can finish the whole job.
-After a work unit completes, continue according to the selected policy. Manual
-selection can stop at that block or explicitly enable automatic continuation.
+After a work unit completes, continue according to the selected policy. Preserve
+block affinity while that block has eligible work, to limit scattered partial
+blocks and compact the journal. Affinity is only a scheduling preference: it does
+not reserve the whole block or exclude other workers. Start with one outstanding
+lease per registered device; introduce bounded prefetch only after measuring its
+benefit. If a block is done or all of its remaining work is leased, choose another
+eligible block. Manual selection can stop at that block or explicitly enable
+automatic continuation.
 
 Implement random choice by rank over exact eligible counts in the sparse index,
 with unbiased bounded sampling for wide integers. Do not repeatedly sample the
@@ -719,8 +791,43 @@ performance noise out of correctness gates and retain failures for inspection.
 Before the first HIP release, require C01–C14 and a reproducible measured baseline.
 Before distributed use, require C15 fault-injection and server access-control
 coverage. Before advertising NVIDIA support, require C18 hardware validation.
-Before enabling assembly by
-default, require C19 correctness and performance evidence on the supported stack.
+Before enabling assembly by default, require C19 correctness and performance
+evidence on the supported stack.
+
+### Operational decisions required before long searches
+
+- **Coverage validity after a software defect:** record build identity, kernel
+  variant, and algorithm/table versions with the committed coverage's execution
+  provenance. Preserve that association when coalescing intervals. If a bug could
+  have caused missed candidates, mark affected intervals suspect, exclude them
+  from trusted completion, and requeue them under a validated build. Keep the
+  original audit history. A correct new binary cannot retroactively validate old
+  work. Add invalidation/requeue tests to C13/C15.
+- **Who may report completion:** initially enroll owned/trusted workers. A found
+  candidate can be verified; a report that an entire interval contains no match
+  has no cheap proof in this design. Optional sampled recomputation can detect
+  some faults but does not prove full coverage. Keep audit rechecks separate from
+  newly credited work. Public volunteer workers or rewards would require another
+  trust/accounting design.
+- **Behavior when a match is found:** specify stop-this-target, stop-this-job, or
+  continue-all-targets in the job manifest. Flush results and notify other workers
+  through their next heartbeat/control response. Preserve incomplete intervals
+  as incomplete. A target-set change creates a new job identity; do not reuse old
+  no-match coverage against newly added targets.
+- **Progress and probability:** display unique acknowledged coverage and partial
+  progress, not just finished-block counts. Keep replay/audit work and per-target
+  operation counts separate. For a single target uniformly located inside a
+  width-`N` range, searching `C` distinct candidates gives `C/N` prior probability
+  of having encountered it, assuming correct exhaustive coverage. Random ordering
+  has the same probability at equal unique coverage under this assumption; it
+  does not create extra search power. Label full-range exhaustion estimates as
+  such, rather than promising a discovery time. Other target distributions or a
+  target outside the selected range change the interpretation.
+- **Coordinator budget and retention:** load-test request rate, transaction
+  latency, fragmented coverage, and disk growth for the selected checkpoint
+  interval and worker count. Keep durable completion/result acknowledgments ahead
+  of cosmetic telemetry. Define backup/replay retention so a restore can recover
+  receipts instead of silently forgetting acknowledged work.
 
 ## 12. Decisions to revisit with implementation evidence
 
@@ -765,3 +872,6 @@ references again when implementation versions are selected.
 [ptx]: https://docs.nvidia.com/cuda/inline-ptx-assembly/
 [sqlite-wal]: https://www.sqlite.org/wal.html
 [sqlite-sync]: https://sqlite.org/pragma.html#pragma_synchronous
+
+[hac-bsgs]: https://cacr.uwaterloo.ca/hac/about/chap3.pdf
+[bitcoin-mining]: https://developer.bitcoin.org/devguide/mining.html
