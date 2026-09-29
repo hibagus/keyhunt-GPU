@@ -103,7 +103,8 @@ the scope of counters and resources. [AMD partition profiling guide][partitions]
 
 The original planning inspection did not build or benchmark the program. C01
 now records the [CPU baseline](CPU_BASELINE.md), including measured legacy defects
-and build limitations. GPU compilation and runtime compatibility remain C07 gates.
+and build limitations. C07 now records [HIP build and launch validation](HIP_BACKEND.md);
+GPU arithmetic/search correctness remains gated by C08–C11.
 
 ## 3. Repository and build architecture
 

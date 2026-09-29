@@ -1,8 +1,8 @@
-# CPU usage
+# Usage
 
-These commands describe the implemented CPU executable. Run them from the
-repository root after following [BUILD.md](BUILD.md). New job, device,
-checkpoint and coordinator commands in the redesign plan are not implemented.
+Run these commands from the repository root after following [BUILD.md](BUILD.md).
+Search commands use the preserved CPU engine; HIP provides device discovery and
+bounded diagnostics. Job, checkpoint and coordinator commands remain planned.
 
 ## A finite address search
 
@@ -19,7 +19,8 @@ The small range finishes without an external timeout.
 
 Unaligned ranges can overshoot the end, and stride batches can overlap. Use the
 [CPU baseline](CPU_BASELINE.md#range-endpoints-and-selection) to understand these
-existing defects. The exact half-open planner is still C05 work.
+existing defects. C05 supplies a separate [exact half-open planner](EXACT_RANGES.md);
+it has not replaced the legacy CPU loop.
 
 ## A finite BSGS example
 
@@ -101,3 +102,19 @@ is not a GPU benchmark or a precise arithmetic throughput measurement.
 The [historical README](HISTORICAL_README.md) preserves the previous lengthy mode
 examples, original acknowledgments and historical speed discussions. Consult
 current validation records before relying on those older claims.
+
+## HIP discovery and launch check
+
+```sh
+./build/hip-release/keyhunt devices --backend hip
+./build/hip-release/keyhunt gpu-smoke --backend hip --device 0 --steps 257 \
+  --start 0x100000000ffffffffffffffff
+```
+
+Both commands print JSON and return 0 on success, 2 on invalid input or backend
+failure. Discovery can succeed with an empty device list; a launch requires a
+visible device. Device ordinals honor the runtime's visibility settings. The
+launch checks exact scalar indices on the GPU and verifies them on the host;
+its output explicitly reports that it provides no search coverage. No target
+file or result file is involved. CPU-only builds reject both HIP requests.
+See [the HIP contract](HIP_BACKEND.md) for bounds, timings and limitations.

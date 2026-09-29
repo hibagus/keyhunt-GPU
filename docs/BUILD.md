@@ -1,9 +1,10 @@
 # Build and test
 
-The implemented backend is the original Linux x86-64 CPU engine. Its assembly
-and hashes require SSSE3. GPU support remains planned: requesting
-`KEYHUNT_ENABLE_HIP` or `KEYHUNT_ENABLE_CUDA` currently fails configuration with
-an explicit milestone message. CPU builds never probe or download either SDK.
+The search backend is the original Linux x86-64 CPU engine. Its assembly and
+hashes require SSSE3. Optional HIP discovery and bounded diagnostics are now
+implemented; GPU searches remain planned. `KEYHUNT_ENABLE_CUDA` still fails
+configuration with an explicit C18 message. CPU builds never probe or download
+either GPU SDK.
 
 Use CMake 3.22+, GCC/G++ (11.4.0 tested), Make, and Python 3.9+ for tests. A
 production-only build can omit Python with `-DBUILD_TESTING=OFF`. No dependencies
@@ -40,6 +41,8 @@ cmake --build --preset cpu-sanitizers --parallel 4
 | `KEYHUNT_BUILD_LEGACY` | OFF | Separate GMP/OpenSSL executable |
 | `KEYHUNT_BUILD_BSGSD` | OFF | Original local BSGS daemon |
 | `BUILD_TESTING` | ON | Python/CTest regression checks |
+| `KEYHUNT_ENABLE_HIP` | OFF | AMD HIP discovery and diagnostic executor; requires ROCm AMD clang/runtime |
+| `KEYHUNT_ENABLE_CUDA` | OFF | Explicitly rejected until C18 |
 
 Changing tuning does not make the existing x86 engine portable to ARM. Release
 uses C++17, GNU extensions, SSSE3, and the original `-Ofast`/vectorization flags.
@@ -126,3 +129,26 @@ The current passing sanitizer selector is
 `ctest --preset cpu-sanitizers -E 'cpu_baseline|target_loading'` with the sanitizer
 environment shown above; the excluded whole-application checks retain known
 findings. These focused gates do not certify the entire legacy application.
+
+## HIP diagnostics
+
+The tested MI300X preset uses native CMake HIP language compilation with
+`CMAKE_HIP_ARCHITECTURES=gfx942`. CMake 3.22.1 discovers ROCm Core 10.0's AMD
+clang 23.0.0git / HIP 7.15.26333 on this host without compiler overrides.
+
+```sh
+cmake --preset hip-release
+cmake --build --preset hip-release --parallel 4
+ctest --preset hip-release
+./build/hip-release/keyhunt devices --backend hip
+./build/hip-release/keyhunt gpu-smoke --backend hip --device 0 --steps 257
+```
+
+The full HIP suite includes the preserved CPU regressions and requires an
+accessible GPU. `ctest --preset hip-release -L hardware` selects only the three
+hardware checks; missing hardware fails those gates. The backend's device code
+receives no CPU SIMD/native, fast-math or LTO flags. HIP+sanitizers is explicitly
+rejected; use the separate CPU sanitizer build for host checks. Installation
+includes the same `keyhunt` executable and uses the installed ROCm runtime.
+See [HIP_BACKEND.md](HIP_BACKEND.md) for alternate SDK paths, partition identity
+limitations, memory/ownership rules, and reproduction of the recorded evidence.

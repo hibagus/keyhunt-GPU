@@ -6,7 +6,8 @@ A staged redesign of keyhunt for AMD HIP and NVIDIA CUDA, with reproducible
 correctness checks, resumable searches, and coordinated work across machines.
 
 **Current status:** the CPU engine has been characterized and reorganized.
-GPU execution, checkpoints, and the coordinator are still planned.
+HIP discovery and bounded diagnostic launches pass on MI300X. GPU searches,
+checkpoints, and the coordinator are still planned.
 
 [Build guide](docs/BUILD.md) · [Usage](docs/USAGE.md) ·
 [Implementation status](docs/IMPLEMENTATION_STATUS.md) ·
@@ -17,7 +18,7 @@ GPU execution, checkpoints, and the coordinator are still planned.
 | Linux x86-64 CPU | Release and debug builds tested; 38 characterization checks pass |
 | CPU modes | Bitcoin address/HASH160, xpoint, BSGS, Ethereum address, vanity and minikeys; limitations documented |
 | Optional GMP legacy / bsgsd | Builds and selected compatibility checks pass; separate from the future coordinator |
-| AMD HIP / MI300X | Planned, starting at C07; hardware enumerated, no GPU search validated yet |
+| AMD HIP / MI300X | C07 discovery and bounded diagnostics validated on gfx942; GPU searches remain planned |
 | NVIDIA CUDA | Planned at C18; NVIDIA compiler/device validation remains outstanding |
 | Pause/resume and distributed blocks | Planned at C12–C15 and C20; no durable progress tracking yet |
 
@@ -62,8 +63,8 @@ HTTPS coordinator. These are design decisions, not current CLI features. See the
 - Python's standard library for the regression and benchmark harnesses.
 - GMP and OpenSSL for the optional legacy executable only.
 
-ROCm/HIP, CUDA and SQLite enter the build when their implementation milestones
-land. CPU builds do not require a GPU SDK or network access.
+ROCm/HIP is optional for [device diagnostics](docs/HIP_BACKEND.md). CUDA and SQLite
+remain planned. CPU builds do not require a GPU SDK or network access.
 
 ## Getting started
 
@@ -115,7 +116,8 @@ process exit as proof of saved search progress or exact coverage.
 - [x] C04: shared host configuration, target loaders and CPU result verification.
 - [x] C05: exact 256-bit ranges, immutable blocks and bounded work planning.
 - [x] C06: independent arithmetic/search oracle and CPU arithmetic corrections.
-- [ ] C07–C11: HIP discovery, arithmetic, xpoint and BSGS execution.
+- [x] C07: HIP device discovery and bounded asynchronous diagnostics.
+- [ ] C08–C11: GPU arithmetic, xpoint and BSGS searches.
 - [ ] C12–C15: durable coverage, local pause/resume and authenticated coordination.
 - [ ] C16–C20: measured tuning, native CUDA, validated assembly and multiple GPUs.
 - [ ] C21–C23: operations guides, offline assignments and further GPU modes.

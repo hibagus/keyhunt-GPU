@@ -129,3 +129,26 @@ resources and queued operations. Failed executors reject reuse, and a fresh
 executor verifies scalar 1 afterward. The production library contains no hook.
 These are deterministic propagation/cleanup checks, not induced physical device
 removal, actual out-of-memory exhaustion, or a claim that a hung driver recovers.
+
+## Recorded C07 acceptance
+
+[Validation results](baselines/C07_VALIDATION.json) record 14 passing HIP release
+tests, 12 CPU release tests, 12 CPU debug tests, and the focused ASan/UBSan CLI
+gate. They also retain configuration rejections, CPU/HIP dynamic dependencies,
+installed-binary execution, logical-device 1 execution, and compiler resource
+remarks (40 SGPRs, 17 VGPRs, zero scratch/spills for this diagnostic). These
+compiler estimates are not a measured search-kernel performance result.
+
+[Hardware and launch evidence](baselines/C07_HIP_DIAGNOSTICS.json) includes the
+64-agent discovery snapshot, exact HIP compilation commands, binary digest,
+seven bounded launches from scalar 1 through high-bit and order-boundary starts,
+and the maximum 1,048,576-index capacity. Reproduce it with:
+
+```sh
+python3 tools/capture_hip_baseline.py --build-dir build/hip-release \
+  --device 0 --report /tmp/keyhunt-hip-diagnostics.json
+```
+
+This harness uses separate short processes and records their event/wall times;
+it is deliberately not a steady-state benchmark. C08 must add arithmetic
+microbenchmarks, and C16 remains the durable end-to-end benchmark milestone.

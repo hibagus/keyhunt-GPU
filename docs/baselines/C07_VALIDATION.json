@@ -1,0 +1,160 @@
+{
+  "milestone": "C07 HIP discovery and execution backend",
+  "recorded_utc": "2026-09-29T21:26:35.040938+00:00",
+  "implementation_commits": [
+    "287afdd",
+    "169154f"
+  ],
+  "hardware_diagnostics": "C07_HIP_DIAGNOSTICS.json",
+  "rocm_core_version": "10.0.0",
+  "builds": {
+    "cpu-release": {
+      "command": "ctest --preset cpu-release",
+      "exit_code": 0,
+      "ctest_output": "Test project /home/bagus/keyhunt-GPU/build/cpu-release\n      Start  1: oracle_selftest\n 1/12 Test  #1: oracle_selftest ..................   Passed    0.88 sec\n      Start  2: cpu_field_oracle\n 2/12 Test  #2: cpu_field_oracle .................   Passed    0.25 sec\n      Start  3: cpu_point_oracle\n 3/12 Test  #3: cpu_point_oracle .................   Passed    0.68 sec\n      Start  4: bounded_search_oracle\n 4/12 Test  #4: bounded_search_oracle ............   Passed    1.61 sec\n      Start  5: backend_cli\n 5/12 Test  #5: backend_cli ......................   Passed    0.04 sec\n      Start  6: exact_range\n 6/12 Test  #6: exact_range ......................   Passed    0.00 sec\n      Start  7: block_grid\n 7/12 Test  #7: block_grid .......................   Passed    0.09 sec\n      Start  8: work_unit\n 8/12 Test  #8: work_unit ........................   Passed    0.04 sec\n      Start  9: range_oracle\n 9/12 Test  #9: range_oracle .....................   Passed    1.85 sec\n      Start 10: result_verifier\n10/12 Test #10: result_verifier ..................   Passed    0.03 sec\n      Start 11: cpu_baseline\n11/12 Test #11: cpu_baseline .....................   Passed   28.42 sec\n      Start 12: target_loading\n12/12 Test #12: target_loading ...................   Passed    8.53 sec\n\n100% tests passed, 0 tests failed out of 12\n\nLabel Time Summary:\nbackend     =   0.04 sec*proc (1 test)\nbaseline    =  28.42 sec*proc (1 test)\ncore        =  10.55 sec*proc (6 tests)\ncpu         =  42.38 sec*proc (11 tests)\noracle      =   3.41 sec*proc (4 tests)\nranges      =   1.98 sec*proc (4 tests)\n\nTotal Test time (real) =  42.42 sec\n"
+    },
+    "cpu-debug": {
+      "command": "ctest --preset cpu-debug",
+      "exit_code": 0,
+      "ctest_output": "Test project /home/bagus/keyhunt-GPU/build/cpu-debug\n      Start  1: oracle_selftest\n 1/12 Test  #1: oracle_selftest ..................   Passed    0.91 sec\n      Start  2: cpu_field_oracle\n 2/12 Test  #2: cpu_field_oracle .................   Passed    0.77 sec\n      Start  3: cpu_point_oracle\n 3/12 Test  #3: cpu_point_oracle .................   Passed    1.08 sec\n      Start  4: bounded_search_oracle\n 4/12 Test  #4: bounded_search_oracle ............   Passed    1.74 sec\n      Start  5: backend_cli\n 5/12 Test  #5: backend_cli ......................   Passed    0.04 sec\n      Start  6: exact_range\n 6/12 Test  #6: exact_range ......................   Passed    0.00 sec\n      Start  7: block_grid\n 7/12 Test  #7: block_grid .......................   Passed    2.18 sec\n      Start  8: work_unit\n 8/12 Test  #8: work_unit ........................   Passed    0.36 sec\n      Start  9: range_oracle\n 9/12 Test  #9: range_oracle .....................   Passed    6.30 sec\n      Start 10: result_verifier\n10/12 Test #10: result_verifier ..................   Passed    0.08 sec\n      Start 11: cpu_baseline\n11/12 Test #11: cpu_baseline .....................   Passed   30.40 sec\n      Start 12: target_loading\n12/12 Test #12: target_loading ...................   Passed    9.24 sec\n\n100% tests passed, 0 tests failed out of 12\n\nLabel Time Summary:\nbackend     =   0.04 sec*proc (1 test)\nbaseline    =  30.40 sec*proc (1 test)\ncore        =  18.17 sec*proc (6 tests)\ncpu         =  53.11 sec*proc (12 tests)\noracle      =   4.50 sec*proc (4 tests)\nranges      =   8.85 sec*proc (4 tests)\n\nTotal Test time (real) =  53.13 sec\n"
+    },
+    "hip-release": {
+      "command": "ctest --preset hip-release",
+      "exit_code": 0,
+      "ctest_output": "Test project /home/bagus/keyhunt-GPU/build/hip-release\n      Start  1: oracle_selftest\n 1/14 Test  #1: oracle_selftest ..................   Passed    0.88 sec\n      Start  2: cpu_field_oracle\n 2/14 Test  #2: cpu_field_oracle .................   Passed    0.25 sec\n      Start  3: cpu_point_oracle\n 3/14 Test  #3: cpu_point_oracle .................   Passed    0.68 sec\n      Start  4: bounded_search_oracle\n 4/14 Test  #4: bounded_search_oracle ............   Passed    1.65 sec\n      Start  5: hip_failures\n 5/14 Test  #5: hip_failures .....................   Passed    0.82 sec\n      Start  6: hip_executor\n 6/14 Test  #6: hip_executor .....................   Passed    0.78 sec\n      Start  7: backend_cli\n 7/14 Test  #7: backend_cli ......................   Passed    2.55 sec\n      Start  8: exact_range\n 8/14 Test  #8: exact_range ......................   Passed    0.00 sec\n      Start  9: block_grid\n 9/14 Test  #9: block_grid .......................   Passed    0.09 sec\n      Start 10: work_unit\n10/14 Test #10: work_unit ........................   Passed    0.04 sec\n      Start 11: range_oracle\n11/14 Test #11: range_oracle .....................   Passed    1.85 sec\n      Start 12: result_verifier\n12/14 Test #12: result_verifier ..................   Passed    0.03 sec\n      Start 13: cpu_baseline\n13/14 Test #13: cpu_baseline .....................   Passed   29.08 sec\n      Start 14: target_loading\n14/14 Test #14: target_loading ...................   Passed    8.77 sec\n\n100% tests passed, 0 tests failed out of 14\n\nLabel Time Summary:\nbackend     =   2.55 sec*proc (1 test)\nbaseline    =  29.08 sec*proc (1 test)\ncore        =  10.79 sec*proc (6 tests)\ncpu         =  43.33 sec*proc (11 tests)\nhardware    =   4.15 sec*proc (3 tests)\nhip         =   4.15 sec*proc (3 tests)\noracle      =   3.46 sec*proc (4 tests)\nranges      =   1.99 sec*proc (4 tests)\n\nTotal Test time (real) =  47.50 sec\n"
+    },
+    "cpu-sanitizers-backend-cli": {
+      "command": "ASAN_OPTIONS=detect_leaks=1 UBSAN_OPTIONS=halt_on_error=1 ctest --preset cpu-sanitizers -R backend_cli",
+      "exit_code": 0,
+      "ctest_output": "Test project /home/bagus/keyhunt-GPU/build/cpu-sanitizers\n    Start 5: backend_cli\n1/1 Test #5: backend_cli ......................   Passed    0.22 sec\n\n100% tests passed, 0 tests failed out of 1\n\nLabel Time Summary:\nbackend    =   0.22 sec*proc (1 test)\ncpu        =   0.22 sec*proc (1 test)\n\nTotal Test time (real) =   0.23 sec\n"
+    }
+  },
+  "configuration_and_dependencies": [
+    {
+      "name": "cuda",
+      "command": [
+        "cmake",
+        "-S",
+        "/home/bagus/keyhunt-GPU",
+        "-B",
+        "/tmp/keyhunt-c07-config-erfx664t/cuda",
+        "-DBUILD_TESTING=OFF",
+        "-DKEYHUNT_ENABLE_CUDA=ON"
+      ],
+      "exit_code": 1,
+      "output": "-- The C compiler identification is GNU 11.4.0\n-- The CXX compiler identification is GNU 11.4.0\n-- Detecting C compiler ABI info\n-- Detecting C compiler ABI info - done\n-- Check for working C compiler: /usr/bin/cc - skipped\n-- Detecting C compile features\n-- Detecting C compile features - done\n-- Detecting CXX compiler ABI info\n-- Detecting CXX compiler ABI info - done\n-- Check for working CXX compiler: /usr/bin/c++ - skipped\n-- Detecting CXX compile features\n-- Detecting CXX compile features - done\nCMake Error at CMakeLists.txt:31 (message):\n  CUDA is not implemented yet (C18).  Use a CPU or HIP build.\n\n\n-- Configuring incomplete, errors occurred!\nSee also \"/tmp/keyhunt-c07-config-erfx664t/cuda/CMakeFiles/CMakeOutput.log\".\n"
+    },
+    {
+      "name": "hip-sanitizers",
+      "command": [
+        "cmake",
+        "-S",
+        "/home/bagus/keyhunt-GPU",
+        "-B",
+        "/tmp/keyhunt-c07-config-erfx664t/hip-sanitizers",
+        "-DBUILD_TESTING=OFF",
+        "-DKEYHUNT_ENABLE_HIP=ON",
+        "-DKEYHUNT_ENABLE_SANITIZERS=ON"
+      ],
+      "exit_code": 1,
+      "output": "-- The C compiler identification is GNU 11.4.0\n-- The CXX compiler identification is GNU 11.4.0\n-- Detecting C compiler ABI info\n-- Detecting C compiler ABI info - done\n-- Check for working C compiler: /usr/bin/cc - skipped\n-- Detecting C compile features\n-- Detecting C compile features - done\n-- Detecting CXX compiler ABI info\n-- Detecting CXX compiler ABI info - done\n-- Check for working CXX compiler: /usr/bin/c++ - skipped\n-- Detecting CXX compile features\n-- Detecting CXX compile features - done\nCMake Error at CMakeLists.txt:35 (message):\n  Use a separate CPU sanitizer build; HIP sanitizer support is not validated.\n\n\n-- Configuring incomplete, errors occurred!\nSee also \"/tmp/keyhunt-c07-config-erfx664t/hip-sanitizers/CMakeFiles/CMakeOutput.log\".\n"
+    },
+    {
+      "name": "missing-compiler",
+      "command": [
+        "cmake",
+        "-S",
+        "/home/bagus/keyhunt-GPU",
+        "-B",
+        "/tmp/keyhunt-c07-config-erfx664t/missing-compiler",
+        "-DBUILD_TESTING=OFF",
+        "-DKEYHUNT_ENABLE_HIP=ON",
+        "-DCMAKE_HIP_COMPILER=/nonexistent/keyhunt-clang++"
+      ],
+      "exit_code": 1,
+      "output": "-- The C compiler identification is GNU 11.4.0\n-- The CXX compiler identification is GNU 11.4.0\n-- Detecting C compiler ABI info\n-- Detecting C compiler ABI info - done\n-- Check for working C compiler: /usr/bin/cc - skipped\n-- Detecting C compile features\n-- Detecting C compile features - done\n-- Detecting CXX compiler ABI info\n-- Detecting CXX compiler ABI info - done\n-- Check for working CXX compiler: /usr/bin/c++ - skipped\n-- Detecting CXX compile features\n-- Detecting CXX compile features - done\n-- The HIP compiler identification is unknown\nCMake Error at CMakeLists.txt:42 (enable_language):\n  The CMAKE_HIP_COMPILER:\n\n    /nonexistent/keyhunt-clang++\n\n  is not a full path to an existing compiler tool.\n\n  Tell CMake where to find the compiler by setting either the environment\n  variable \"HIPCXX\" or the CMake cache entry CMAKE_HIP_COMPILER to the full\n  path to the compiler, or to the compiler name if it is in the PATH.\n\n\nCMake Error at /opt/rocm/core-10.0/lib/cmake/hip-lang/hip-lang-config.cmake:124 (message):\n  hip-lang Error:No such file or directory - clangrt builtins lib could not\n  be found.\nCall Stack (most recent call first):\n  /usr/share/cmake-3.22/Modules/CMakeHIPInformation.cmake:146 (find_package)\n  CMakeLists.txt:42 (enable_language)\n\n\n-- Configuring incomplete, errors occurred!\nSee also \"/tmp/keyhunt-c07-config-erfx664t/missing-compiler/CMakeFiles/CMakeOutput.log\".\nSee also \"/tmp/keyhunt-c07-config-erfx664t/missing-compiler/CMakeFiles/CMakeError.log\".\n"
+    },
+    {
+      "name": "cpu-release-dependencies",
+      "command": [
+        "ldd",
+        "/home/bagus/keyhunt-GPU/build/cpu-release/keyhunt"
+      ],
+      "exit_code": 0,
+      "output": "\tlinux-vdso.so.1 (0x00007ffcb42f1000)\n\tlibstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007fd4e4be9000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007fd4e4b02000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007fd4e4ae2000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fd4e48b9000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007fd4e4e82000)\n"
+    },
+    {
+      "name": "hip-release-dependencies",
+      "command": [
+        "ldd",
+        "/home/bagus/keyhunt-GPU/build/hip-release/keyhunt"
+      ],
+      "exit_code": 0,
+      "output": "\tlinux-vdso.so.1 (0x00007ffcd0bf4000)\n\tlibamdhip64.so.7 => /opt/rocm/core-10.0/lib/libamdhip64.so.7 (0x00007fdcd7ef0000)\n\tlibstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007fdcd7cb8000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007fdcd7bd1000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007fdcd7bb1000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fdcd7988000)\n\tlibdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007fdcd7981000)\n\tlibrocm_kpack.so.0 => /opt/rocm/core-10.0/lib/librocm_kpack.so.0 (0x00007fdcd793d000)\n\tlibrocprofiler-register.so.0 => /opt/rocm/core-10.0/lib/librocprofiler-register.so.0 (0x00007fdcd7861000)\n\tlibrt.so.1 => /lib/x86_64-linux-gnu/librt.so.1 (0x00007fdcd785c000)\n\tlibamd_comgr.so.3 => /opt/rocm/core-10.0/lib/libamd_comgr.so.3 (0x00007fdcd6bc1000)\n\tlibhsa-runtime64.so.1 => /opt/rocm/core-10.0/lib/libhsa-runtime64.so.1 (0x00007fdcd6792000)\n\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007fdcd678d000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007fdcd9ab6000)\n\tlibrocm_sysdeps_zstd.so.1 => /opt/rocm/core-10.0/lib/rocm_sysdeps/lib/librocm_sysdeps_zstd.so.1 (0x00007fdcd66be000)\n\tlibclang-cpp.so.23.0git => /opt/rocm/core-10.0/lib/llvm/lib/libclang-cpp.so.23.0git (0x00007fdcd1ef2000)\n\tlibLLVM.so.23.0git => /opt/rocm/core-10.0/lib/llvm/lib/libLLVM.so.23.0git (0x00007fdccaf38000)\n\tlibrocm_sysdeps_z.so.1 => /opt/rocm/core-10.0/lib/rocm_sysdeps/lib/librocm_sysdeps_z.so.1 (0x00007fdccaf18000)\n\tlibrocm_sysdeps_elf.so.1 => /opt/rocm/core-10.0/lib/rocm_sysdeps/lib/librocm_sysdeps_elf.so.1 (0x00007fdccaefc000)\n\tlibrocm_sysdeps_drm.so.2 => /opt/rocm/core-10.0/lib/rocm_sysdeps/lib/librocm_sysdeps_drm.so.2 (0x00007fdccaee7000)\n\tlibrocm_sysdeps_drm_amdgpu.so.1 => /opt/rocm/core-10.0/lib/rocm_sysdeps/lib/librocm_sysdeps_drm_amdgpu.so.1 (0x00007fdccaed2000)\n\tlibrocm_sysdeps_numa.so.1 => /opt/rocm/core-10.0/lib/rocm_sysdeps/lib/librocm_sysdeps_numa.so.1 (0x00007fdccaec3000)\n\tlibrocm_sysdeps_liblzma.so.5 => /opt/rocm/core-10.0/lib/rocm_sysdeps/lib/librocm_sysdeps_liblzma.so.5 (0x00007fdccae90000)\n\tlibrocm_sysdeps_bz2.so => /opt/rocm/core-10.0/lib/rocm_sysdeps/lib/librocm_sysdeps_bz2.so (0x00007fdccae77000)\n"
+    }
+  ],
+  "installed_binary_smoke": {
+    "backend": "hip",
+    "diagnostic_only": true,
+    "search_coverage": false,
+    "device": 0,
+    "uuid": "33333033363063313639626235336130",
+    "architecture": "gfx942:sramecc+:xnack-",
+    "begin": "0x000000000000000000000000000000000000000100000000ffffffffffffffff",
+    "end_exclusive": "0x0000000000000000000000000000000000000001000000010000000000000000",
+    "device_steps": 1,
+    "launch_count": 1,
+    "device_allocation_bytes": 72,
+    "pinned_allocation_bytes": 72,
+    "download_bytes": 72,
+    "kernel_ms": 1.16585,
+    "download_ms": 0.024135,
+    "verification_ms": 0.000667,
+    "wall_ms": 2.31005
+  },
+  "second_logical_device_smoke": {
+    "backend": "hip",
+    "diagnostic_only": true,
+    "search_coverage": false,
+    "device": 1,
+    "uuid": "65356134336430306537396533623364",
+    "architecture": "gfx942:sramecc+:xnack-",
+    "begin": "0x000000000000000000000000000000000000000100000000ffffffffffffffff",
+    "end_exclusive": "0x0000000000000000000000000000000000000001000000010000000000000100",
+    "device_steps": 257,
+    "launch_count": 1,
+    "device_allocation_bytes": 8264,
+    "pinned_allocation_bytes": 8264,
+    "download_bytes": 8264,
+    "kernel_ms": 1.16994,
+    "download_ms": 0.019886,
+    "verification_ms": 0.012414,
+    "wall_ms": 2.32036
+  },
+  "compiler_resources": {
+    "command": "/opt/rocm/core-10.0/lib/llvm/bin/clang++ -O3 --offload-arch=gfx942 --offload-device-only -Rpass-analysis=kernel-resource-usage -Iinclude -Ikernels/hip -c src/backend/hip/executor.hip -o /tmp/keyhunt-c07-device.o",
+    "output": "In file included from src/backend/hip/executor.hip:3:\nkernels/hip/diagnostic.h:11:1: remark: Function Name: _ZN7keyhunt7backend18diagnostic_indicesENS0_16DiagnosticScalarEmPS1_Py [-Rpass-analysis=kernel-resource-usage]\n   11 |                                   DiagnosticScalar* output, unsigned long long* executed) {\n      | ^\nkernels/hip/diagnostic.h:11:1: remark:     TotalSGPRs: 40 [-Rpass-analysis=kernel-resource-usage]\nkernels/hip/diagnostic.h:11:1: remark:     VGPRs: 17 [-Rpass-analysis=kernel-resource-usage]\nkernels/hip/diagnostic.h:11:1: remark:     AGPRs: 0 [-Rpass-analysis=kernel-resource-usage]\nkernels/hip/diagnostic.h:11:1: remark:     ScratchSize [bytes/lane]: 0 [-Rpass-analysis=kernel-resource-usage]\nkernels/hip/diagnostic.h:11:1: remark:     Dynamic Stack: False [-Rpass-analysis=kernel-resource-usage]\nkernels/hip/diagnostic.h:11:1: remark:     Occupancy [waves/SIMD]: 8 [-Rpass-analysis=kernel-resource-usage]\nkernels/hip/diagnostic.h:11:1: remark:     SGPRs Spill: 0 [-Rpass-analysis=kernel-resource-usage]\nkernels/hip/diagnostic.h:11:1: remark:     VGPRs Spill: 0 [-Rpass-analysis=kernel-resource-usage]\nkernels/hip/diagnostic.h:11:1: remark:     LDS Size [bytes/block]: 0 [-Rpass-analysis=kernel-resource-usage]\n"
+  },
+  "limits": [
+    "No GPU curve arithmetic or search coverage; C08/C09 remain next.",
+    "Physical/partition metadata unavailable for 56 of 64 logical devices; no inferred package grouping.",
+    "Fault injection checks API failure propagation; no physical reset/removal or driver hang induced.",
+    "Single-slot execution, no overlap/multidevice performance claim.",
+    "Whole-application sanitizer issues remain outside the focused passing CLI gate."
+  ],
+  "hip_executor_test": {
+    "command": "build/hip-release/hip_executor_test",
+    "exit_code": 0,
+    "output": "HIP lifecycle passed: 9 verified launches, 3586 device indices\n"
+  },
+  "hip_failure_test": {
+    "command": "build/hip-release/hip_failure_test",
+    "exit_code": 0,
+    "output": "20 HIP failure boundaries passed; fresh executor verified\n"
+  },
+  "documentation": {
+    "scope": "tracked files plus C07 additions",
+    "exit_code": 0,
+    "unrelated_worktree_note": "Full working-tree check reported docs/GPU_AUDIT.md -> audits/C06_AUDIT.md missing in concurrently edited untracked audit work; those files are not part of C07."
+  }
+}
