@@ -62,6 +62,39 @@ def main():
     for a, b in ((0, ORDER), (1, ORDER), (ORDER-1, ORDER), (1, ORDER+1), (ORDER, ORDER), (MAX, 1)):
         add("scalar_domain_boundaries", "range", (a, b), [b-a] if 1 <= a < b <= ORDER else None)
 
+    def grid_case(category, begin, end, width, index):
+        count = (end-begin+width-1)//width if width and 1 <= begin < end <= ORDER else 0
+        expected = None
+        if index < count:
+            start = begin+index*width
+            stop = min(end, start+width)
+            expected = (count, start, stop)
+            for scalar in (start, stop-1):
+                add(category, "locate", (begin, end, width, scalar), [index])
+        add(category, "grid", (begin, end, width, index), expected)
+
+    for begin in range(1, 9):
+        for end in range(begin+1, 17):
+            for width in range(1, 20):
+                count = (end-begin+width-1)//width
+                for index in range(count+1):
+                    grid_case("exhaustive_small_grids", begin, end, width, index)
+    for _ in range(2000):
+        begin = rng.randrange(1, ORDER)
+        end = rng.randrange(begin+1, ORDER+1)
+        width = rng.randrange(1, 1 << rng.choice((1, 32, 64, 128, 192, 256)))
+        count = (end-begin+width-1)//width
+        for index in (0, count-1, rng.randrange(count), count):
+            grid_case("random_wide_grids", begin, end, width, index)
+    for begin, end, width in ((1, ORDER, 1), (1, ORDER, MAX),
+                              (ORDER-3, ORDER, 2), (1 << 200, (1 << 200)+100, 32),
+                              (1, ORDER, 0), (0, 10, 1), (1, ORDER+1, 1)):
+        count = (end-begin+width-1)//width if width else 1
+        for index in (0, max(0, count-1), count, MAX):
+            grid_case("block_grid_boundaries", begin, end, width, index)
+    for scalar in (0, ORDER, MAX):
+        add("block_grid_boundaries", "locate", (1, ORDER, 1, scalar), None)
+
     started = time.monotonic()
     result = subprocess.run([str(binary)], input="\n".join(x[1] for x in cases)+"\n",
                             text=True, capture_output=True, timeout=90)

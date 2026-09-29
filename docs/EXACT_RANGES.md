@@ -38,6 +38,22 @@ Membership tests accept the verifier's 32-byte scalar representation through
 public format and already exceed the entire valid scalar domain. A `2^256` width
 is rejected instead of wrapping; future `--block-bits` must enforce this bound.
 
+## Immutable block geometry
+
+[BlockGrid](../include/keyhunt/scheduler/block_grid.h) owns a root interval and a
+positive, immutable width. Counts and IDs remain `UInt256`. It computes the block
+count using quotient and remainder, avoiding overflow in `span + width - 1`.
+A lookup rejects `id >= count` before multiplying, computes the full checked
+product, and clips the remaining span before adding the end. A width larger than
+the root yields one shorter block. Looking up an ID takes constant storage even
+when the job contains more than `2^64` blocks. There is no block table allocation.
+
+`block_containing(scalar)` gives the inverse mapping and rejects a scalar outside
+the job, including its exclusive endpoint. For the decimal example `[1000,1100)`
+with width 32, the four blocks end at 1032, 1064, 1096 and 1100. A block lookup
+says nothing about whether it is unexplored, in progress or finished; the sparse
+journal and assignment transactions belong to C12.
+
 ## Validation
 
 `exact_range` tests parsing, byte order, all 256 single-bit/carry boundaries,
@@ -60,6 +76,12 @@ seed, categories and binary hashes. This clean result applies to the isolated
 range library; the inherited curve sanitizer findings remain open in
 [CORE_EXTRACTION.md](CORE_EXTRACTION.md).
 
-Block-grid and bounded work-unit planning are the remaining C05 changes. No
+The block-grid change passed 197,479 unit checks, including actual enumeration of
+each scalar in small jobs exactly once. The expanded oracle passed 53,261 total
+comparisons, including random 256-bit block lookups and shorter tails, in release,
+debug and the same unsuppressed sanitizer configuration. See
+[recorded grid evidence](baselines/C05_GRID_VALIDATION.json).
+
+Bounded work-unit planning is the remaining C05 change. No
 checkpoint, ownership, completion accounting or search execution is introduced
 by this integer contract.

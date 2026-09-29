@@ -11,7 +11,7 @@ change is committed separately. Analysis and validation evidence live under
 | C02: source organization and CMake | Completed | [Migration evidence](BUILD_MIGRATION.md) and [build guide](BUILD.md); CPU release/debug, isolated GMP legacy parity, daemon loopback and install checks |
 | C03: README and usage guides | Completed | [Redesign notes](README_REDESIGN.md); current commands, mode reference, preserved historical examples |
 | C04: core extraction | Completed | [Extraction notes](CORE_EXTRACTION.md); shared configuration, owned target loaders, CPU verification; release/debug regressions pass |
-| C05: exact ranges and work units | In progress | [Exact range contract](EXACT_RANGES.md); checked integers and scalar intervals pass release/debug/sanitizers; block and work planning remain |
+| C05: exact ranges and work units | In progress | [Exact range contract](EXACT_RANGES.md); checked integers, scalar intervals and immutable block grids pass release/debug/sanitizers; bounded work planning remains |
 | C06–C23 | Planned | Acceptance gates remain in the redesign plan |
 
 C01 records existing CPU boundary/stride defects rather than fixing them.

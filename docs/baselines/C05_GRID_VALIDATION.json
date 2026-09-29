@@ -1,0 +1,71 @@
+{
+  "stage": "C05 immutable block grids",
+  "unit_checks_per_build": {
+    "exact_range": 1059,
+    "block_grid": 197479
+  },
+  "command": "ctest --preset PRESET -L ranges",
+  "sanitizer_environment": {
+    "ASAN_OPTIONS": "detect_leaks=1",
+    "UBSAN_OPTIONS": "halt_on_error=1"
+  },
+  "builds": {
+    "cpu-release": {
+      "seed": 3227417287,
+      "binary": "/home/bagus/keyhunt-GPU/build/cpu-release/range_probe",
+      "binary_sha256": "5e909f95f5a52c57daecca4bd727e58e782529a5a41bbc7a2e41988305a7c4b6",
+      "cases": 53261,
+      "categories": {
+        "exhaustive_small_arithmetic": 4096,
+        "wide_arithmetic_boundaries": 9216,
+        "random_wide_arithmetic": 8000,
+        "exhaustive_small_intervals": 289,
+        "random_wide_intervals": 1000,
+        "scalar_domain_boundaries": 6,
+        "exhaustive_small_grids": 10607,
+        "random_wide_grids": 20000,
+        "block_grid_boundaries": 47
+      },
+      "wall_seconds": 0.42,
+      "failures": []
+    },
+    "cpu-debug": {
+      "seed": 3227417287,
+      "binary": "/home/bagus/keyhunt-GPU/build/cpu-debug/range_probe",
+      "binary_sha256": "6557d693fd4dcab8bb5df707670409e642bd4131eacfacd4799049b3649b10a5",
+      "cases": 53261,
+      "categories": {
+        "exhaustive_small_arithmetic": 4096,
+        "wide_arithmetic_boundaries": 9216,
+        "random_wide_arithmetic": 8000,
+        "exhaustive_small_intervals": 289,
+        "random_wide_intervals": 1000,
+        "scalar_domain_boundaries": 6,
+        "exhaustive_small_grids": 10607,
+        "random_wide_grids": 20000,
+        "block_grid_boundaries": 47
+      },
+      "wall_seconds": 2.382,
+      "failures": []
+    },
+    "cpu-sanitizers": {
+      "seed": 3227417287,
+      "binary": "/home/bagus/keyhunt-GPU/build/cpu-sanitizers/range_probe",
+      "binary_sha256": "6125ca5b5ab8b7bd14975bca7e87bb41fa168c9cecda84e024ec1bb76fa855d3",
+      "cases": 53261,
+      "categories": {
+        "exhaustive_small_arithmetic": 4096,
+        "wide_arithmetic_boundaries": 9216,
+        "random_wide_arithmetic": 8000,
+        "exhaustive_small_intervals": 289,
+        "random_wide_intervals": 1000,
+        "scalar_domain_boundaries": 6,
+        "exhaustive_small_grids": 10607,
+        "random_wide_grids": 20000,
+        "block_grid_boundaries": 47
+      },
+      "wall_seconds": 5.923,
+      "failures": []
+    }
+  }
+}
