@@ -1,0 +1,29 @@
+#pragma once
+
+#include <cstdint>
+#include <string>
+#include <vector>
+
+namespace keyhunt::backend {
+
+// Ordinals are process-local (visibility variables can renumber them). Persist
+// the reported identity instead; a logical partition is not a physical card.
+struct DeviceInfo {
+    int ordinal = 0;
+    std::string name, architecture, uuid, pci_bus_id;
+    std::string physical_id, physical_id_source;
+    std::string compute_partition, memory_partition, memory_allocation_mode;
+    int numa_node = -1;
+    int compute_units = 0, warp_size = 0;
+    uint64_t property_memory_bytes = 0, total_memory_bytes = 0, free_memory_bytes = 0;
+    std::vector<std::string> warnings;
+};
+struct DeviceInventory {
+    int runtime_version = 0, driver_version = 0;
+    std::vector<DeviceInfo> devices;
+};
+
+bool hip_available();
+DeviceInventory discover_hip(); // throws an operation-specific error on runtime failure
+
+} // namespace keyhunt::backend

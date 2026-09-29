@@ -1,35 +1,94 @@
 {
   "version": 3,
-  "cmakeMinimumRequired": {"major": 3, "minor": 22, "patch": 0},
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 22,
+    "patch": 0
+  },
   "configurePresets": [
     {
       "name": "cpu-release",
       "displayName": "CPU release",
       "generator": "Unix Makefiles",
       "binaryDir": "${sourceDir}/build/${presetName}",
-      "cacheVariables": {"CMAKE_BUILD_TYPE": "Release", "BUILD_TESTING": "ON"}
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "BUILD_TESTING": "ON"
+      }
     },
     {
       "name": "cpu-debug",
       "inherits": "cpu-release",
       "displayName": "CPU debug",
-      "cacheVariables": {"CMAKE_BUILD_TYPE": "Debug", "KEYHUNT_ENABLE_LTO": "OFF"}
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "KEYHUNT_ENABLE_LTO": "OFF"
+      }
     },
     {
       "name": "cpu-sanitizers",
       "inherits": "cpu-debug",
       "displayName": "CPU address/undefined sanitizers (legacy defects expected)",
-      "cacheVariables": {"KEYHUNT_ENABLE_SANITIZERS": "ON"}
+      "cacheVariables": {
+        "KEYHUNT_ENABLE_SANITIZERS": "ON"
+      }
+    },
+    {
+      "name": "hip-release",
+      "inherits": "cpu-release",
+      "displayName": "AMD HIP gfx942 release",
+      "cacheVariables": {
+        "KEYHUNT_ENABLE_HIP": "ON",
+        "CMAKE_HIP_ARCHITECTURES": "gfx942"
+      }
     }
   ],
   "buildPresets": [
-    {"name": "cpu-release", "configurePreset": "cpu-release"},
-    {"name": "cpu-debug", "configurePreset": "cpu-debug"},
-    {"name": "cpu-sanitizers", "configurePreset": "cpu-sanitizers"}
+    {
+      "name": "cpu-release",
+      "configurePreset": "cpu-release"
+    },
+    {
+      "name": "cpu-debug",
+      "configurePreset": "cpu-debug"
+    },
+    {
+      "name": "cpu-sanitizers",
+      "configurePreset": "cpu-sanitizers"
+    },
+    {
+      "name": "hip-release",
+      "configurePreset": "hip-release"
+    }
   ],
   "testPresets": [
-    {"name": "cpu-release", "configurePreset": "cpu-release", "output": {"outputOnFailure": true}},
-    {"name": "cpu-debug", "configurePreset": "cpu-debug", "output": {"outputOnFailure": true}},
-    {"name": "cpu-sanitizers", "configurePreset": "cpu-sanitizers", "output": {"outputOnFailure": true}}
+    {
+      "name": "cpu-release",
+      "configurePreset": "cpu-release",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "cpu-debug",
+      "configurePreset": "cpu-debug",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "cpu-sanitizers",
+      "configurePreset": "cpu-sanitizers",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "hip-release",
+      "configurePreset": "hip-release",
+      "output": {
+        "outputOnFailure": true
+      }
+    }
   ]
 }

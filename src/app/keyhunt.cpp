@@ -18,6 +18,7 @@ email: albertobsd@gmail.com
 #include "sha3/sha3.h"
 #include "keyhunt/core/util.h"
 #include "keyhunt/core/config.h"
+#include "keyhunt/backend/commands.h"
 #include "keyhunt/core/cpu_targets.h"
 #include "keyhunt/core/cpu_result_adapter.h"
 
@@ -357,6 +358,9 @@ CpuTargetTable targets(config);
 Secp256K1 *secp;
 
 int main(int argc, char **argv)	{
+	// Handle backend diagnostics before initializing the legacy CPU search.
+	const int backend_status = keyhunt::backend::dispatch_command(argc, argv);
+	if (backend_status >= 0) return backend_status;
 	char buffer[2048];
 	char rawvalue[32];
 	struct tothread *tt;	//tothread
