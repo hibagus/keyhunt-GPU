@@ -112,7 +112,8 @@ process exit as proof of saved search progress or exact coverage.
 - [x] C01: reproducible CPU behavior and environment baseline.
 - [x] C02: source/header organization, CMake and optional target validation.
 - [x] C03: README redesign and current usage guides.
-- [ ] C04–C06: core extraction, exact ranges and independent arithmetic vectors.
+- [x] C04: shared host configuration, target loaders and CPU result verification.
+- [ ] C05–C06: exact ranges and independent arithmetic vectors.
 - [ ] C07–C11: HIP discovery, arithmetic, xpoint and BSGS execution.
 - [ ] C12–C15: durable coverage, local pause/resume and authenticated coordination.
 - [ ] C16–C20: measured tuning, native CUDA, validated assembly and multiple GPUs.

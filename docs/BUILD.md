@@ -93,3 +93,10 @@ A local installation also carries the root and retained dependency notices.
 Consult [THIRD_PARTY_NOTICES.md](../THIRD_PARTY_NOTICES.md) before preparing
 redistributable packages; this target is not a claim that the executable is
 MIT-only.
+
+## Core regression checks
+
+C04 adds `result_verifier` and `target_loading` to CTest. Debug builds enable
+libstdc++ bounds assertions. See the [core extraction notes](CORE_EXTRACTION.md)
+for the test cases and the inherited arithmetic overflow that currently prevents
+a clean verifier sanitizer run. CPU release/debug builds remain the passing gates.

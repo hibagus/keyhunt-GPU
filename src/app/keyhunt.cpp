@@ -19,6 +19,7 @@ email: albertobsd@gmail.com
 #include "keyhunt/core/util.h"
 #include "keyhunt/core/config.h"
 #include "keyhunt/core/cpu_targets.h"
+#include "keyhunt/core/cpu_result_adapter.h"
 
 #include "keyhunt/crypto/secp256k1/SECP256k1.h"
 #include "keyhunt/crypto/secp256k1/Point.h"
@@ -192,8 +193,6 @@ void set_minikey(char *buffer,char *rawbuffer,int length);
 bool increment_minikey_index(char *buffer,char *rawbuffer,int index);
 void increment_minikey_N(char *rawbuffer);
 	
-void KECCAK_256(uint8_t *source, size_t size,uint8_t *dst);
-void generate_binaddress_eth(Point &publickey,unsigned char *dst_address);
 
 int THREADOUTPUT = 0;
 char *bit_range_str_min;
@@ -2335,7 +2334,7 @@ void *thread_process_minikeys(void *vargp)	{
 						r = bloom_check(&targets.filter,publickeyhashrmd160_uncompress[k],20);
 						if(r) {
 							r = searchbinary(targets.entries,publickeyhashrmd160_uncompress[k],N);
-							if(r) {
+							if(r && verifyCpuTableCandidate(*secp,key_mpz[k],false,config,targets)) {
 								/* hit */
 								hextemp = key_mpz[k].GetBase16();
 								secp->GetPublicKeyHex(false,publickey[k],public_key_uncompressed_hex);
@@ -3814,7 +3813,7 @@ pn.y.ModAdd(&GSn[i].y);
 						r = bloom_check(&bloom_bP[((unsigned char)xpoint_raw[0])],xpoint_raw,32);
 						if(r) {
 							r = bsgs_secondcheck(&base_key,((j*1024) + i),k,&keyfound);
-							if(r)	{
+							if(r && verifyCpuPublicKey(*secp,keyfound,bsgs_targets.points[k]))	{
 								hextemp = keyfound.GetBase16();
 								printf("[+] Thread Key found privkey %s   \n",hextemp);
 								point_found = secp->ComputePublicKey(&keyfound);
@@ -4063,7 +4062,7 @@ pn.y.ModAdd(&GSn[i].y);
 						r = bloom_check(&bloom_bP[((unsigned char)xpoint_raw[0])],xpoint_raw,32);
 						if(r) {
 							r = bsgs_secondcheck(&base_key,((j*1024) + i),k,&keyfound);
-							if(r)	{
+							if(r && verifyCpuPublicKey(*secp,keyfound,bsgs_targets.points[k]))	{
 								hextemp = keyfound.GetBase16();
 								printf("[+] Thread Key found privkey %s    \n",hextemp);
 								point_found = secp->ComputePublicKey(&keyfound);
@@ -4201,8 +4200,7 @@ int bsgs_thirdcheck(Int *start_range,uint32_t a,uint32_t k_index,Int *privatekey
 				privatekey->Set(&calculatedkey);
 				privatekey->Add((uint64_t)(j+1));
 				privatekey->Add(&base_key);
-				point_aux = secp->ComputePublicKey(privatekey);
-				if(point_aux.x.IsEqual(&bsgs_targets.points[k_index].x))	{
+				if(verifyCpuPublicKey(*secp,*privatekey,bsgs_targets.points[k_index]))	{
 					found = 1;
 				}
 				else	{
@@ -4210,8 +4208,7 @@ int bsgs_thirdcheck(Int *start_range,uint32_t a,uint32_t k_index,Int *privatekey
 					privatekey->Set(&calculatedkey);
 					privatekey->Sub((uint64_t)(j+1));
 					privatekey->Add(&base_key);
-					point_aux = secp->ComputePublicKey(privatekey);
-					if(point_aux.x.IsEqual(&bsgs_targets.points[k_index].x))	{
+					if(verifyCpuPublicKey(*secp,*privatekey,bsgs_targets.points[k_index]))	{
 						found = 1;
 					}
 				}
@@ -4227,7 +4224,7 @@ int bsgs_thirdcheck(Int *start_range,uint32_t a,uint32_t k_index,Int *privatekey
 				calcualteindex(i,&calculatedkey);
 				privatekey->Set(&calculatedkey);
 				privatekey->Add(&base_key);
-				found = 1;
+				found = verifyCpuPublicKey(*secp,*privatekey,bsgs_targets.points[k_index]);
 			}
 		}
 		i++;
@@ -4631,30 +4628,7 @@ void *thread_bPload_2blooms(void *vargp)	{
 	return NULL;
 }
 
-/* This function perform the KECCAK Opetation*/
-void KECCAK_256(uint8_t *source, size_t size,uint8_t *dst)	{
-	SHA3_256_CTX ctx;
-	SHA3_256_Init(&ctx);
-	SHA3_256_Update(&ctx,source,size);
-	KECCAK_256_Final(dst,&ctx);
-}
 
-/* This function takes in two parameters:
-
-publickey: a reference to a Point object representing a public key.
-dst_address: a pointer to an unsigned char array where the generated binary address will be stored.
-The function is designed to generate a binary address for Ethereum using the given public key.
-It first extracts the x and y coordinates of the public key as 32-byte arrays, and concatenates them
-to form a 64-byte array called bin_publickey. Then, it applies the KECCAK-256 hashing algorithm to
-bin_publickey to generate the binary address, which is stored in dst_address. */
-
-void generate_binaddress_eth(Point &publickey,unsigned char *dst_address)	{
-	unsigned char bin_publickey[64];
-	publickey.x.Get32Bytes(bin_publickey);
-	publickey.y.Get32Bytes(bin_publickey+32);
-	KECCAK_256(bin_publickey, 64, bin_publickey);
-	memcpy(dst_address,bin_publickey+12,20);
-}
 
 #if defined(_WIN64) && !defined(__CYGWIN__)
 DWORD WINAPI thread_process_bsgs_dance(LPVOID vargp) {
@@ -4868,7 +4842,7 @@ pn.y.ModAdd(&GSn[i].y);
 						r = bloom_check(&bloom_bP[((unsigned char)xpoint_raw[0])],xpoint_raw,32);
 						if(r) {
 							r = bsgs_secondcheck(&base_key,((j*1024) + i),k,&keyfound);
-							if(r)	{
+							if(r && verifyCpuPublicKey(*secp,keyfound,bsgs_targets.points[k]))	{
 								hextemp = keyfound.GetBase16();
 								printf("[+] Thread Key found privkey %s   \n",hextemp);
 								point_found = secp->ComputePublicKey(&keyfound);
@@ -5126,7 +5100,7 @@ pn.y.ModAdd(&GSn[i].y);
 						r = bloom_check(&bloom_bP[((unsigned char)xpoint_raw[0])],xpoint_raw,32);
 						if(r) {
 							r = bsgs_secondcheck(&base_key,((j*1024) + i),k,&keyfound);
-							if(r)	{
+							if(r && verifyCpuPublicKey(*secp,keyfound,bsgs_targets.points[k]))	{
 								hextemp = keyfound.GetBase16();
 								printf("[+] Thread Key found privkey %s   \n",hextemp);
 								point_found = secp->ComputePublicKey(&keyfound);
@@ -5410,7 +5384,7 @@ void *thread_process_bsgs_both(void *vargp)	{
 							r = bloom_check(&bloom_bP[((unsigned char)xpoint_raw[0])],xpoint_raw,32);
 							if(r) {
 								r = bsgs_secondcheck(&base_key,((j*1024) + i),k,&keyfound);
-								if(r)	{
+								if(r && verifyCpuPublicKey(*secp,keyfound,bsgs_targets.points[k]))	{
 									hextemp = keyfound.GetBase16();
 									printf("[+] Thread Key found privkey %s   \n",hextemp);
 									point_found = secp->ComputePublicKey(&keyfound);
@@ -5848,6 +5822,7 @@ int minimum_same_bytes(unsigned char* A,unsigned char* B, int length) {
 }
 
 void writekey(bool compressed,Int *key)	{
+	if(!verifyCpuTableCandidate(*secp,*key,compressed,config,targets)) return;
 	Point publickey;
 	FILE *keys;
 	char *hextemp,*hexrmd,public_key_hex[132],address[50],rmdhash[20];
@@ -5882,6 +5857,7 @@ void writekey(bool compressed,Int *key)	{
 }
 
 void writekeyeth(Int *key)	{
+	if(!verifyCpuTableCandidate(*secp,*key,false,config,targets)) return;
 	Point publickey;
 	FILE *keys;
 	char *hextemp,address[43],hash[20];

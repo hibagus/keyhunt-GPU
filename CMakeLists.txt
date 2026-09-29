@@ -67,7 +67,8 @@ keyhunt_configure_target(keyhunt_cpu_crypto)
 
 add_library(keyhunt_core STATIC
     src/core/config.cpp
-    src/core/cpu_targets.cpp)
+    src/core/cpu_targets.cpp
+    src/core/result_verifier.cpp)
 target_link_libraries(keyhunt_core PUBLIC keyhunt_cpu_crypto)
 keyhunt_configure_target(keyhunt_core)
 
@@ -104,6 +105,11 @@ endif()
 include(CTest)
 if(BUILD_TESTING)
     find_package(Python3 3.9 REQUIRED COMPONENTS Interpreter)
+    add_executable(result_verifier_test tests/unit/result_verifier.cpp)
+    target_link_libraries(result_verifier_test PRIVATE keyhunt_core)
+    keyhunt_configure_target(result_verifier_test)
+    add_test(NAME result_verifier COMMAND result_verifier_test)
+    set_tests_properties(result_verifier PROPERTIES TIMEOUT 30 LABELS "cpu;core")
     add_test(NAME cpu_baseline COMMAND "${Python3_EXECUTABLE}"
         "${CMAKE_CURRENT_SOURCE_DIR}/tests/baseline/run_cpu_baseline.py"
         --binary $<TARGET_FILE:keyhunt>

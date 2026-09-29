@@ -80,3 +80,72 @@ the process aborted with SIGABRT without emitting assertion text on this host.
 The failing reserve/index pattern was identified by source inspection and the
 passing run after resizing. This does not resolve the separate C02 alignment and
 leak sanitizer findings.
+
+## CPU result verification
+
+`result_verifier.h` provides fixed-size, big-endian scalar, X, public-key and
+hash byte arrays. `CpuResultVerifier` recomputes a candidate using the initialized
+CPU curve and checks a full 32-byte X, compressed or uncompressed public key,
+Bitcoin hash160 with an explicit encoding, or Ethereum address bytes. It rejects
+zero and scalars at or above the curve order without reducing them. Failed
+`derive` calls leave the caller's output unchanged. The public header uses only
+standard-library types and a forward declaration of the CPU curve.
+
+`cpu_result_adapter.h` connects the existing engine to this verification code.
+BSGS scalar reconstruction and all five BSGS output paths now check both X and Y;
+the infinity shortcut is also rechecked. Bitcoin/hash160, Ethereum and minikey
+output paths recompute candidates against the loaded CPU table. Ethereum address
+derivation has moved out of the application. Reverification runs only for candidate
+matches, apart from the existing Ethereum derivation in the search loop.
+
+The compatibility xpoint table still verifies its historical 20-byte prefix.
+**Full-width GPU verification must use `matches_xpoint` and retain all 32 target
+bytes.** The native CPU cache cannot supply those missing bytes. Vanity prefix
+matching/output remains in the application. Target parsing is still the historical
+CPU parser, not a canonical portable target-set format. These are explicit
+adapter limits, not guarantees of exhaustive or fully strict CPU searching.
+
+The verifier accepts arbitrarily aligned public byte buffers. Aligned temporaries
+bridge the old `Int` byte importer/exporter, and hash160 uses existing general
+SHA-256/RIPEMD-160 functions over serialized bytes rather than the search loop's
+specialized unaligned SEC1 writer. Arithmetic and hash implementations themselves
+are unchanged. Initialize the shared curve before any worker starts; verification
+uses per-call temporaries and must not race another curve initialization.
+
+A verified match establishes only a scalar-to-target relationship. C05 supplies
+exact range membership, and later execution/persistence stages must check work
+identity, deduplicate results, make them durable and decide coverage. This API
+cannot acknowledge completed work. C06 still needs an independent pinned oracle.
+
+## Final validation and reproduction
+
+[Validation summary](baselines/C04_VALIDATION.json) records binaries, commands and
+outcomes. Release and debug pass 38 CLI baseline cases, five loader cases and 55
+verifier assertions. Verifier cases include zero/order/over-order scalars, a scalar
+above 64 bits, order-minus-one, mismatched Y/encoding/X suffixes, unchanged output
+on failure, unaligned API buffers and CPU-adapter rejection of negative/over-wide
+integers. Optional legacy xpoint and daemon loopback checks pass, as do both README
+examples. The host configuration/verifier headers compile without GPU SDK headers.
+
+```sh
+cmake --build --preset cpu-release --parallel 4
+ctest --preset cpu-release
+cmake --build --preset cpu-debug --parallel 4
+ctest --preset cpu-debug
+```
+
+The focused sanitizer run **does not pass** with `UBSAN_OPTIONS=halt_on_error=1`:
+`IntMod.cpp:694` overflows signed arithmetic in `Int::SetupField` during curve
+initialization. An unsuppressed recovery run reaches all 55 verifier assertions,
+but also reports inherited signed arithmetic overflow in `SetupField` and
+`ModInv`; reaching those assertions is not a clean sanitizer result. The
+[complete diagnostic log](baselines/C04_VERIFIER_SANITIZER.log) is retained for
+C06. No sanitizer suppressions or arithmetic rewrites were added. The broader
+CPU application's previously recorded alignment and leak issues also remain.
+
+```sh
+cmake --preset cpu-sanitizers
+cmake --build --preset cpu-sanitizers --parallel 4 --target result_verifier_test
+ASAN_OPTIONS=detect_leaks=1 UBSAN_OPTIONS=halt_on_error=1 \
+  ctest --preset cpu-sanitizers -R '^result_verifier$'
+```

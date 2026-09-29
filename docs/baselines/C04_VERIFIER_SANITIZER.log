@@ -1,0 +1,136 @@
+/home/bagus/keyhunt-GPU/src/crypto/secp256k1/IntMod.cpp:694:20: runtime error: signed integer overflow: -4294968273 * -4294968273 cannot be represented in type 'long int'
+    #0 0x560fc25a0677 in Int::SetupField(Int*, Int*, Int*, Int*, Int*) /home/bagus/keyhunt-GPU/src/crypto/secp256k1/IntMod.cpp:694
+    #1 0x560fc24cb0ee in Secp256K1::Init() /home/bagus/keyhunt-GPU/src/crypto/secp256k1/SECP256K1.cpp:34
+    #2 0x560fc24a0291 in main /home/bagus/keyhunt-GPU/tests/unit/result_verifier.cpp:41
+    #3 0x7f34f2a29d8f in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #4 0x7f34f2a29e3f in __libc_start_main_impl ../csu/libc-start.c:392
+    #5 0x560fc249fd24 in _start (/home/bagus/keyhunt-GPU/build/cpu-sanitizers/result_verifier_test+0xbad24)
+
+/home/bagus/keyhunt-GPU/src/crypto/secp256k1/IntMod.cpp:694:7: runtime error: signed integer overflow: -4294968273 * -8392367050911 cannot be represented in type 'long int'
+    #0 0x560fc25a06cd in Int::SetupField(Int*, Int*, Int*, Int*, Int*) /home/bagus/keyhunt-GPU/src/crypto/secp256k1/IntMod.cpp:694
+    #1 0x560fc24cb0ee in Secp256K1::Init() /home/bagus/keyhunt-GPU/src/crypto/secp256k1/SECP256K1.cpp:34
+    #2 0x560fc24a0291 in main /home/bagus/keyhunt-GPU/tests/unit/result_verifier.cpp:41
+    #3 0x7f34f2a29d8f in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #4 0x7f34f2a29e3f in __libc_start_main_impl ../csu/libc-start.c:392
+    #5 0x560fc249fd24 in _start (/home/bagus/keyhunt-GPU/build/cpu-sanitizers/result_verifier_test+0xbad24)
+
+/home/bagus/keyhunt-GPU/src/crypto/secp256k1/IntMod.cpp:695:20: runtime error: signed integer overflow: -4294968273 * 12299004856889039 cannot be represented in type 'long int'
+    #0 0x560fc25a0708 in Int::SetupField(Int*, Int*, Int*, Int*, Int*) /home/bagus/keyhunt-GPU/src/crypto/secp256k1/IntMod.cpp:695
+    #1 0x560fc24cb0ee in Secp256K1::Init() /home/bagus/keyhunt-GPU/src/crypto/secp256k1/SECP256K1.cpp:34
+    #2 0x560fc24a0291 in main /home/bagus/keyhunt-GPU/tests/unit/result_verifier.cpp:41
+    #3 0x7f34f2a29d8f in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #4 0x7f34f2a29e3f in __libc_start_main_impl ../csu/libc-start.c:392
+    #5 0x560fc249fd24 in _start (/home/bagus/keyhunt-GPU/build/cpu-sanitizers/result_verifier_test+0xbad24)
+
+/home/bagus/keyhunt-GPU/src/crypto/secp256k1/IntMod.cpp:695:7: runtime error: signed integer overflow: 12299004856889039 * -2425246312087395327 cannot be represented in type 'long int'
+    #0 0x560fc25a075e in Int::SetupField(Int*, Int*, Int*, Int*, Int*) /home/bagus/keyhunt-GPU/src/crypto/secp256k1/IntMod.cpp:695
+    #1 0x560fc24cb0ee in Secp256K1::Init() /home/bagus/keyhunt-GPU/src/crypto/secp256k1/SECP256K1.cpp:34
+    #2 0x560fc24a0291 in main /home/bagus/keyhunt-GPU/tests/unit/result_verifier.cpp:41
+    #3 0x7f34f2a29d8f in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #4 0x7f34f2a29e3f in __libc_start_main_impl ../csu/libc-start.c:392
+    #5 0x560fc249fd24 in _start (/home/bagus/keyhunt-GPU/build/cpu-sanitizers/result_verifier_test+0xbad24)
+
+/home/bagus/keyhunt-GPU/src/crypto/secp256k1/IntMod.cpp:696:20: runtime error: signed integer overflow: -4294968273 * -3897312841498441009 cannot be represented in type 'long int'
+    #0 0x560fc25a0799 in Int::SetupField(Int*, Int*, Int*, Int*, Int*) /home/bagus/keyhunt-GPU/src/crypto/secp256k1/IntMod.cpp:696
+    #1 0x560fc24cb0ee in Secp256K1::Init() /home/bagus/keyhunt-GPU/src/crypto/secp256k1/SECP256K1.cpp:34
+    #2 0x560fc24a0291 in main /home/bagus/keyhunt-GPU/tests/unit/result_verifier.cpp:41
+    #3 0x7f34f2a29d8f in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #4 0x7f34f2a29e3f in __libc_start_main_impl ../csu/libc-start.c:392
+    #5 0x560fc249fd24 in _start (/home/bagus/keyhunt-GPU/build/cpu-sanitizers/result_verifier_test+0xbad24)
+
+/home/bagus/keyhunt-GPU/src/crypto/secp256k1/IntMod.cpp:696:7: runtime error: signed integer overflow: -3897312841498441009 * 3301417874875219969 cannot be represented in type 'long int'
+    #0 0x560fc25a07ef in Int::SetupField(Int*, Int*, Int*, Int*, Int*) /home/bagus/keyhunt-GPU/src/crypto/secp256k1/IntMod.cpp:696
+    #1 0x560fc24cb0ee in Secp256K1::Init() /home/bagus/keyhunt-GPU/src/crypto/secp256k1/SECP256K1.cpp:34
+    #2 0x560fc24a0291 in main /home/bagus/keyhunt-GPU/tests/unit/result_verifier.cpp:41
+    #3 0x7f34f2a29d8f in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #4 0x7f34f2a29e3f in __libc_start_main_impl ../csu/libc-start.c:392
+    #5 0x560fc249fd24 in _start (/home/bagus/keyhunt-GPU/build/cpu-sanitizers/result_verifier_test+0xbad24)
+
+/home/bagus/keyhunt-GPU/src/crypto/secp256k1/IntMod.cpp:697:20: runtime error: signed integer overflow: -4294968273 * 1945845182014081743 cannot be represented in type 'long int'
+    #0 0x560fc25a082a in Int::SetupField(Int*, Int*, Int*, Int*, Int*) /home/bagus/keyhunt-GPU/src/crypto/secp256k1/IntMod.cpp:697
+    #1 0x560fc24cb0ee in Secp256K1::Init() /home/bagus/keyhunt-GPU/src/crypto/secp256k1/SECP256K1.cpp:34
+    #2 0x560fc24a0291 in main /home/bagus/keyhunt-GPU/tests/unit/result_verifier.cpp:41
+    #3 0x7f34f2a29d8f in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #4 0x7f34f2a29e3f in __libc_start_main_impl ../csu/libc-start.c:392
+    #5 0x560fc249fd24 in _start (/home/bagus/keyhunt-GPU/build/cpu-sanitizers/result_verifier_test+0xbad24)
+
+/home/bagus/keyhunt-GPU/src/crypto/secp256k1/IntMod.cpp:697:7: runtime error: signed integer overflow: 1945845182014081743 * 4380279502710767617 cannot be represented in type 'long int'
+    #0 0x560fc25a0880 in Int::SetupField(Int*, Int*, Int*, Int*, Int*) /home/bagus/keyhunt-GPU/src/crypto/secp256k1/IntMod.cpp:697
+    #1 0x560fc24cb0ee in Secp256K1::Init() /home/bagus/keyhunt-GPU/src/crypto/secp256k1/SECP256K1.cpp:34
+    #2 0x560fc24a0291 in main /home/bagus/keyhunt-GPU/tests/unit/result_verifier.cpp:41
+    #3 0x7f34f2a29d8f in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #4 0x7f34f2a29e3f in __libc_start_main_impl ../csu/libc-start.c:392
+    #5 0x560fc249fd24 in _start (/home/bagus/keyhunt-GPU/build/cpu-sanitizers/result_verifier_test+0xbad24)
+
+/home/bagus/keyhunt-GPU/src/crypto/secp256k1/IntMod.cpp:698:20: runtime error: signed integer overflow: -4294968273 * 2866531139136965327 cannot be represented in type 'long int'
+    #0 0x560fc25a08bb in Int::SetupField(Int*, Int*, Int*, Int*, Int*) /home/bagus/keyhunt-GPU/src/crypto/secp256k1/IntMod.cpp:698
+    #1 0x560fc24cb0ee in Secp256K1::Init() /home/bagus/keyhunt-GPU/src/crypto/secp256k1/SECP256K1.cpp:34
+    #2 0x560fc24a0291 in main /home/bagus/keyhunt-GPU/tests/unit/result_verifier.cpp:41
+    #3 0x7f34f2a29d8f in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #4 0x7f34f2a29e3f in __libc_start_main_impl ../csu/libc-start.c:392
+    #5 0x560fc249fd24 in _start (/home/bagus/keyhunt-GPU/build/cpu-sanitizers/result_verifier_test+0xbad24)
+
+/home/bagus/keyhunt-GPU/src/crypto/secp256k1/IntMod.cpp:425:12: runtime error: left shift of negative value -1
+    #0 0x560fc259e7fb in Int::ModInv() /home/bagus/keyhunt-GPU/src/crypto/secp256k1/IntMod.cpp:425
+    #1 0x560fc25a0a30 in Int::SetupField(Int*, Int*, Int*, Int*, Int*) /home/bagus/keyhunt-GPU/src/crypto/secp256k1/IntMod.cpp:716
+    #2 0x560fc24cb0ee in Secp256K1::Init() /home/bagus/keyhunt-GPU/src/crypto/secp256k1/SECP256K1.cpp:34
+    #3 0x560fc24a0291 in main /home/bagus/keyhunt-GPU/tests/unit/result_verifier.cpp:41
+    #4 0x7f34f2a29d8f in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #5 0x7f34f2a29e3f in __libc_start_main_impl ../csu/libc-start.c:392
+    #6 0x560fc249fd24 in _start (/home/bagus/keyhunt-GPU/build/cpu-sanitizers/result_verifier_test+0xbad24)
+
+/home/bagus/keyhunt-GPU/src/crypto/secp256k1/IntMod.cpp:426:12: runtime error: left shift of negative value -3
+    #0 0x560fc259e844 in Int::ModInv() /home/bagus/keyhunt-GPU/src/crypto/secp256k1/IntMod.cpp:426
+    #1 0x560fc25a0a30 in Int::SetupField(Int*, Int*, Int*, Int*, Int*) /home/bagus/keyhunt-GPU/src/crypto/secp256k1/IntMod.cpp:716
+    #2 0x560fc24cb0ee in Secp256K1::Init() /home/bagus/keyhunt-GPU/src/crypto/secp256k1/SECP256K1.cpp:34
+    #3 0x560fc24a0291 in main /home/bagus/keyhunt-GPU/tests/unit/result_verifier.cpp:41
+    #4 0x7f34f2a29d8f in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #5 0x7f34f2a29e3f in __libc_start_main_impl ../csu/libc-start.c:392
+    #6 0x560fc249fd24 in _start (/home/bagus/keyhunt-GPU/build/cpu-sanitizers/result_verifier_test+0xbad24)
+
+/home/bagus/keyhunt-GPU/src/crypto/secp256k1/IntMod.cpp:433:17: runtime error: signed integer overflow: 8637915305931771279 + 1686139575682950837 cannot be represented in type 'long int'
+    #0 0x560fc259e8b0 in Int::ModInv() /home/bagus/keyhunt-GPU/src/crypto/secp256k1/IntMod.cpp:433
+    #1 0x560fc25a0a30 in Int::SetupField(Int*, Int*, Int*, Int*, Int*) /home/bagus/keyhunt-GPU/src/crypto/secp256k1/IntMod.cpp:716
+    #2 0x560fc24cb0ee in Secp256K1::Init() /home/bagus/keyhunt-GPU/src/crypto/secp256k1/SECP256K1.cpp:34
+    #3 0x560fc24a0291 in main /home/bagus/keyhunt-GPU/tests/unit/result_verifier.cpp:41
+    #4 0x7f34f2a29d8f in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #5 0x7f34f2a29e3f in __libc_start_main_impl ../csu/libc-start.c:392
+    #6 0x560fc249fd24 in _start (/home/bagus/keyhunt-GPU/build/cpu-sanitizers/result_verifier_test+0xbad24)
+
+/home/bagus/keyhunt-GPU/src/crypto/secp256k1/IntMod.cpp:437:9: runtime error: signed integer overflow: 1686139575682950837 + 8637915305931771279 cannot be represented in type 'long int'
+    #0 0x560fc259e9ef in Int::ModInv() /home/bagus/keyhunt-GPU/src/crypto/secp256k1/IntMod.cpp:437
+    #1 0x560fc25a0a30 in Int::SetupField(Int*, Int*, Int*, Int*, Int*) /home/bagus/keyhunt-GPU/src/crypto/secp256k1/IntMod.cpp:716
+    #2 0x560fc24cb0ee in Secp256K1::Init() /home/bagus/keyhunt-GPU/src/crypto/secp256k1/SECP256K1.cpp:34
+    #3 0x560fc24a0291 in main /home/bagus/keyhunt-GPU/tests/unit/result_verifier.cpp:41
+    #4 0x7f34f2a29d8f in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #5 0x7f34f2a29e3f in __libc_start_main_impl ../csu/libc-start.c:392
+    #6 0x560fc249fd24 in _start (/home/bagus/keyhunt-GPU/build/cpu-sanitizers/result_verifier_test+0xbad24)
+
+/home/bagus/keyhunt-GPU/src/crypto/secp256k1/IntMod.cpp:437:9: runtime error: signed integer overflow: 8637915305931771279 - -8122689192094829500 cannot be represented in type 'long int'
+    #0 0x560fc259ea29 in Int::ModInv() /home/bagus/keyhunt-GPU/src/crypto/secp256k1/IntMod.cpp:437
+    #1 0x560fc25a0a30 in Int::SetupField(Int*, Int*, Int*, Int*, Int*) /home/bagus/keyhunt-GPU/src/crypto/secp256k1/IntMod.cpp:716
+    #2 0x560fc24cb0ee in Secp256K1::Init() /home/bagus/keyhunt-GPU/src/crypto/secp256k1/SECP256K1.cpp:34
+    #3 0x560fc24a0291 in main /home/bagus/keyhunt-GPU/tests/unit/result_verifier.cpp:41
+    #4 0x7f34f2a29d8f in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #5 0x7f34f2a29e3f in __libc_start_main_impl ../csu/libc-start.c:392
+    #6 0x560fc249fd24 in _start (/home/bagus/keyhunt-GPU/build/cpu-sanitizers/result_verifier_test+0xbad24)
+
+/home/bagus/keyhunt-GPU/src/crypto/secp256k1/IntMod.cpp:441:9: runtime error: signed integer overflow: -7102303762312309723 - 6740972110399125877 cannot be represented in type 'long int'
+    #0 0x560fc259eb56 in Int::ModInv() /home/bagus/keyhunt-GPU/src/crypto/secp256k1/IntMod.cpp:441
+    #1 0x560fc25a0a5d in Int::SetupField(Int*, Int*, Int*, Int*, Int*) /home/bagus/keyhunt-GPU/src/crypto/secp256k1/IntMod.cpp:719
+    #2 0x560fc24cb0ee in Secp256K1::Init() /home/bagus/keyhunt-GPU/src/crypto/secp256k1/SECP256K1.cpp:34
+    #3 0x560fc24a0291 in main /home/bagus/keyhunt-GPU/tests/unit/result_verifier.cpp:41
+    #4 0x7f34f2a29d8f in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #5 0x7f34f2a29e3f in __libc_start_main_impl ../csu/libc-start.c:392
+    #6 0x560fc249fd24 in _start (/home/bagus/keyhunt-GPU/build/cpu-sanitizers/result_verifier_test+0xbad24)
+
+/home/bagus/keyhunt-GPU/src/crypto/secp256k1/IntMod.cpp:441:9: runtime error: signed integer overflow: 6740972110399125877 + 4603468200998116016 cannot be represented in type 'long int'
+    #0 0x560fc259eb93 in Int::ModInv() /home/bagus/keyhunt-GPU/src/crypto/secp256k1/IntMod.cpp:441
+    #1 0x560fc25a0a5d in Int::SetupField(Int*, Int*, Int*, Int*, Int*) /home/bagus/keyhunt-GPU/src/crypto/secp256k1/IntMod.cpp:719
+    #2 0x560fc24cb0ee in Secp256K1::Init() /home/bagus/keyhunt-GPU/src/crypto/secp256k1/SECP256K1.cpp:34
+    #3 0x560fc24a0291 in main /home/bagus/keyhunt-GPU/tests/unit/result_verifier.cpp:41
+    #4 0x7f34f2a29d8f in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #5 0x7f34f2a29e3f in __libc_start_main_impl ../csu/libc-start.c:392
+    #6 0x560fc249fd24 in _start (/home/bagus/keyhunt-GPU/build/cpu-sanitizers/result_verifier_test+0xbad24)
+
+PASS 55 CPU verification checks
