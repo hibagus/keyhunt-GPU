@@ -16,6 +16,13 @@ also carry the notices below; the root MIT notice does not replace them.
 | `third_party/sha3/` | `sha3/` | Taylor R. Campbell 2015; retained two-clause BSD notices embedded in source/header files |
 | `third_party/rmd160/` | `rmd160/` | References Bosselaers' RIPEMD-160 implementation and Martin Hinner's adaptation; no standalone license was present in the original directory |
 
+The test-only `third_party/secp256k1-oracle/` dependency was added in C06 from
+Bitcoin Core libsecp256k1 v0.6.0, commit `0cdc758a56360bf58a851fe91085a327ec97685a`.
+It carries the upstream [MIT notice](third_party/secp256k1-oracle/COPYING).
+[Provenance and scope](docs/ARITHMETIC_ORACLE.md) and the
+[per-file source pin](tests/oracle/secp256k1.lock.json) describe the import.
+It is not linked into the search executable.
+
 The `src/crypto/` placement identifies maintained CPU implementation, not
 original authorship. All source notices and existing dependency licenses remain
 with their files. [GPL-3.0.txt](third_party/licenses/GPL-3.0.txt) supplies the full

@@ -1,0 +1,28 @@
+# Test-only pinned dependency; never linked into keyhunt or installed.
+function(keyhunt_add_oracle)
+    set(SECP256K1_DISABLE_SHARED ON)
+    set(SECP256K1_INSTALL OFF)
+    set(SECP256K1_ASM OFF)
+    set(SECP256K1_VALGRIND OFF)
+    foreach(feature ECDH RECOVERY EXTRAKEYS SCHNORRSIG MUSIG ELLSWIFT)
+        set(SECP256K1_ENABLE_MODULE_${feature} OFF)
+    endforeach()
+    foreach(feature BENCHMARK TESTS EXHAUSTIVE_TESTS CTIME_TESTS EXAMPLES)
+        set(SECP256K1_BUILD_${feature} OFF)
+    endforeach()
+    add_subdirectory(third_party/secp256k1-oracle EXCLUDE_FROM_ALL)
+    if(KEYHUNT_ENABLE_SANITIZERS)
+        foreach(target secp256k1 secp256k1_precomputed)
+            target_compile_options(${target} PRIVATE -fsanitize=address,undefined -fno-omit-frame-pointer)
+        endforeach()
+    endif()
+endfunction()
+keyhunt_add_oracle()
+add_executable(secp256k1_oracle tests/oracle/secp256k1_probe.cpp)
+target_link_libraries(secp256k1_oracle PRIVATE secp256k1)
+keyhunt_configure_target(secp256k1_oracle)
+add_test(NAME oracle_selftest COMMAND "${Python3_EXECUTABLE}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests/oracle/oracle_selftest.py"
+    --binary $<TARGET_FILE:secp256k1_oracle>
+    --report "${CMAKE_CURRENT_BINARY_DIR}/oracle-selftest-results.json")
+set_tests_properties(oracle_selftest PROPERTIES TIMEOUT 120 LABELS "cpu;oracle")
