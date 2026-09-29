@@ -39,4 +39,26 @@ else:
     env = dict(os.environ, HIP_VISIBLE_DEVICES='-1', ROCR_VISIBLE_DEVICES='-1')
     r = run(['devices', '--backend', 'hip'], env)
     assert r.returncode == 0 and json.loads(r.stdout)['devices'] == [], r
-print('Backend discovery CLI checks passed')
+for args in [[], ['--backend', 'cuda'], ['--backend', 'hip', '--steps', '0'],
+             ['--backend', 'hip', '--steps', '1048577'], ['--backend', 'hip', '--steps', '-1'],
+             ['--backend', 'hip', '--device', '2147483648'],
+             ['--backend', 'hip', '--steps', '2junk'], ['--backend', 'hip', '--unknown', '1'],
+             ['--backend', 'hip', '--device', '0', '--device', '0']]:
+    r = run(['gpu-smoke', *args])
+    assert r.returncode == 2 and not r.stdout, r
+r = run(['gpu-smoke', '--backend', 'hip', '--steps', '257'])
+if a.hip:
+    assert r.returncode == 0, r
+    result = json.loads(r.stdout)
+    assert result['diagnostic_only'] and result['search_coverage'] is False
+    assert result['device_steps'] == 257 and result['launch_count'] == 1
+    assert int(result['end_exclusive'], 16) - int(result['begin'], 16) == 257
+    for args in [['--device', '2147483647'], ['--start', '0'], ['--start', 'xyz'],
+                 ['--start', 'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff']]:
+        r = run(['gpu-smoke', '--backend', 'hip', *args])
+        assert r.returncode == 2 and not r.stdout, r
+    r = run(['gpu-smoke', '--backend', 'hip'], dict(os.environ, HIP_VISIBLE_DEVICES='-1', ROCR_VISIBLE_DEVICES='-1'))
+    assert r.returncode == 2 and 'not visible' in r.stderr and not r.stdout, r
+else:
+    assert r.returncode == 2 and 'not built' in r.stderr and not r.stdout, r
+print('Backend discovery and diagnostic CLI checks passed')
