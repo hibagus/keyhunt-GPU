@@ -1,0 +1,35 @@
+{
+  "binary_sha256": "532bf23377a83b58112f81d52165929fb16c185b23c6500e0b82a47c6d0874ea",
+  "description": "First failing CLI case with -D_GLIBCXX_ASSERTIONS; existing generator-vector defect, separate from target loading.",
+  "case": {
+    "name": "missing_input",
+    "known_defect": false,
+    "passed": false,
+    "failures": [
+      "expected exit=1 timeout=False, got exit=-6 timeout=False",
+      "missing output: 'Error opening the file'"
+    ],
+    "argv": [
+      "-m",
+      "xpoint",
+      "-f",
+      "targets.txt",
+      "-r",
+      "1000:1400",
+      "-n",
+      "1024",
+      "-t",
+      "1",
+      "-q",
+      "-s",
+      "0",
+      "-f",
+      "missing.txt"
+    ],
+    "exit_code": -6,
+    "timed_out": false,
+    "wall_seconds": 0.15336948400363326,
+    "output": "",
+    "results": {}
+  }
+}

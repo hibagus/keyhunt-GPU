@@ -65,7 +65,9 @@ add_library(keyhunt_cpu_crypto STATIC
 target_link_libraries(keyhunt_cpu_crypto PUBLIC keyhunt_common)
 keyhunt_configure_target(keyhunt_cpu_crypto)
 
-add_library(keyhunt_core STATIC src/core/config.cpp)
+add_library(keyhunt_core STATIC
+    src/core/config.cpp
+    src/core/cpu_targets.cpp)
 target_link_libraries(keyhunt_core PUBLIC keyhunt_cpu_crypto)
 keyhunt_configure_target(keyhunt_core)
 
@@ -107,6 +109,11 @@ if(BUILD_TESTING)
         --binary $<TARGET_FILE:keyhunt>
         --report "${CMAKE_CURRENT_BINARY_DIR}/cpu-baseline-results.json")
     set_tests_properties(cpu_baseline PROPERTIES TIMEOUT 180 LABELS "cpu;baseline")
+    add_test(NAME target_loading COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/target_loading.py"
+        --binary $<TARGET_FILE:keyhunt>
+        --report "${CMAKE_CURRENT_BINARY_DIR}/target-loading-results.json")
+    set_tests_properties(target_loading PROPERTIES TIMEOUT 90 LABELS "cpu;core")
     if(KEYHUNT_BUILD_LEGACY)
         add_test(NAME legacy_xpoint_baseline COMMAND "${Python3_EXECUTABLE}"
             "${CMAKE_CURRENT_SOURCE_DIR}/tests/baseline/run_cpu_baseline.py"

@@ -37,3 +37,31 @@ CPU compatibility artifacts, not portable or authenticated target-set formats.
 The new verifier must recompute candidates on the CPU, reject invalid scalars,
 and support full 32-byte X and both public-key coordinates. The existing CPU
 arithmetic remains a regression dependency; C06 supplies the independent oracle.
+
+## Target loading
+
+`CpuTargetTable` now owns the CPU text/native-cache table and its Bloom allocation.
+Its configuration is an explicit reference, and its count/cache status are
+separate from BSGS state. Bitcoin/hash160, Ethereum, xpoint, BSGS and vanity file
+reading live in `src/core/cpu_targets.cpp`. Vanity prefix compilation remains in
+the application, passed to the file reader as a callback. BSGS target points and
+encoding flags have their own owned container. The loaders no longer depend on
+application globals or GPU headers.
+
+The BSGS target vector is sized before indexed parsing; its old `reserve` call
+allocated storage without constructing elements. Temporary BSGS line storage and
+Bitcoin input descriptors are now released. Native-cache pointer bytes are
+cleared immediately after reading the header, so a partial read cannot leave the
+owning object holding a pointer from disk. The format and checksums are unchanged;
+this is not a hardened importer for untrusted cache files.
+
+Release validation: all 38 baseline cases and five new integration cases pass.
+The latter check xpoint/Bitcoin/hash160/Ethereum cache creation and reuse, reject a
+corrupted checksum without emitting results, and load mixed valid/invalid BSGS
+points with both encodings. See [loader evidence](baselines/C04_TARGET_LOADING.json).
+
+An additional debug build with `-D_GLIBCXX_ASSERTIONS` found an existing startup
+failure before target loading: `init_generator` indexes `Gn` after `reserve`, like
+the old BSGS loader. Inspection found the same pattern in `GSn`, `BSGS_AMP2` and
+`BSGS_AMP3`. [The first assertion](baselines/C04_DEBUG_ASSERTION.json) is saved for a
+separate correctness fix; this diagnostic run is not a passing debug gate.

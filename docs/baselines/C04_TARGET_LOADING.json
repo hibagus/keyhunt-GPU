@@ -1,0 +1,60 @@
+{
+  "binary": "/home/bagus/keyhunt-GPU/build/cpu-release/keyhunt",
+  "sha256": "a288d1a554acf23fb7ef2ed273665e1b6f56a5a783a87addb0304b5d2faf8fb2",
+  "cases": [
+    {
+      "name": "xpoint_cache_roundtrip",
+      "passed": true,
+      "first_keys": [
+        "1",
+        "2"
+      ],
+      "cached_keys": [
+        "1",
+        "2"
+      ]
+    },
+    {
+      "name": "address_cache_roundtrip",
+      "passed": true,
+      "first_keys": [
+        "1",
+        "2"
+      ],
+      "cached_keys": [
+        "1",
+        "2"
+      ]
+    },
+    {
+      "name": "rmd160_cache_roundtrip",
+      "passed": true,
+      "first_keys": [
+        "1",
+        "2"
+      ],
+      "cached_keys": [
+        "1",
+        "2"
+      ]
+    },
+    {
+      "name": "address_eth_cache_roundtrip",
+      "passed": true,
+      "first_keys": [
+        "1"
+      ],
+      "cached_keys": [
+        "1"
+      ]
+    },
+    {
+      "name": "bsgs_mixed_valid_invalid_encodings",
+      "passed": true,
+      "keys": [
+        "100001",
+        "100002"
+      ]
+    }
+  ]
+}
