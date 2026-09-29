@@ -65,11 +65,16 @@ add_library(keyhunt_cpu_crypto STATIC
 target_link_libraries(keyhunt_cpu_crypto PUBLIC keyhunt_common)
 keyhunt_configure_target(keyhunt_cpu_crypto)
 
+# Exact scheduling arithmetic is independent of the legacy curve engine.
+add_library(keyhunt_ranges STATIC src/core/exact_range.cpp)
+target_include_directories(keyhunt_ranges PUBLIC include)
+keyhunt_configure_target(keyhunt_ranges)
+
 add_library(keyhunt_core STATIC
     src/core/config.cpp
     src/core/cpu_targets.cpp
     src/core/result_verifier.cpp)
-target_link_libraries(keyhunt_core PUBLIC keyhunt_cpu_crypto)
+target_link_libraries(keyhunt_core PUBLIC keyhunt_cpu_crypto keyhunt_ranges)
 keyhunt_configure_target(keyhunt_core)
 
 add_executable(keyhunt src/app/keyhunt.cpp)
@@ -105,6 +110,19 @@ endif()
 include(CTest)
 if(BUILD_TESTING)
     find_package(Python3 3.9 REQUIRED COMPONENTS Interpreter)
+    add_executable(exact_range_test tests/unit/exact_range.cpp)
+    target_link_libraries(exact_range_test PRIVATE keyhunt_ranges)
+    keyhunt_configure_target(exact_range_test)
+    add_test(NAME exact_range COMMAND exact_range_test)
+    set_tests_properties(exact_range PROPERTIES TIMEOUT 30 LABELS "cpu;core;ranges")
+    add_executable(range_probe tests/unit/range_probe.cpp)
+    target_link_libraries(range_probe PRIVATE keyhunt_ranges)
+    keyhunt_configure_target(range_probe)
+    add_test(NAME range_oracle COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/range_oracle.py"
+        --binary $<TARGET_FILE:range_probe>
+        --report "${CMAKE_CURRENT_BINARY_DIR}/range-oracle-results.json")
+    set_tests_properties(range_oracle PROPERTIES TIMEOUT 120 LABELS "cpu;core;ranges")
     add_executable(result_verifier_test tests/unit/result_verifier.cpp)
     target_link_libraries(result_verifier_test PRIVATE keyhunt_core)
     keyhunt_configure_target(result_verifier_test)

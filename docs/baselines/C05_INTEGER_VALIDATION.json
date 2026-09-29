@@ -1,0 +1,59 @@
+{
+  "stage": "C05 checked integers and scalar intervals",
+  "unit_checks_per_build": 1059,
+  "command": "ctest --preset PRESET -L ranges",
+  "sanitizer_environment": {
+    "ASAN_OPTIONS": "detect_leaks=1",
+    "UBSAN_OPTIONS": "halt_on_error=1"
+  },
+  "builds": {
+    "cpu-release": {
+      "seed": 3227417287,
+      "binary": "/home/bagus/keyhunt-GPU/build/cpu-release/range_probe",
+      "binary_sha256": "d43b4150664bb3f5ace13c0474f36267f8a61ab152d725149df55627d9d799ba",
+      "cases": 22607,
+      "categories": {
+        "exhaustive_small_arithmetic": 4096,
+        "wide_arithmetic_boundaries": 9216,
+        "random_wide_arithmetic": 8000,
+        "exhaustive_small_intervals": 289,
+        "random_wide_intervals": 1000,
+        "scalar_domain_boundaries": 6
+      },
+      "wall_seconds": 0.113,
+      "failures": []
+    },
+    "cpu-debug": {
+      "seed": 3227417287,
+      "binary": "/home/bagus/keyhunt-GPU/build/cpu-debug/range_probe",
+      "binary_sha256": "63cb90c3b484adda37ce397ca2e75cd935d9ff8bcb74378feeb93e4413f1522d",
+      "cases": 22607,
+      "categories": {
+        "exhaustive_small_arithmetic": 4096,
+        "wide_arithmetic_boundaries": 9216,
+        "random_wide_arithmetic": 8000,
+        "exhaustive_small_intervals": 289,
+        "random_wide_intervals": 1000,
+        "scalar_domain_boundaries": 6
+      },
+      "wall_seconds": 0.372,
+      "failures": []
+    },
+    "cpu-sanitizers": {
+      "seed": 3227417287,
+      "binary": "/home/bagus/keyhunt-GPU/build/cpu-sanitizers/range_probe",
+      "binary_sha256": "f30868611a2e6aa939933c80e8df7dbf82ea189979852ec9c48dd2c8aeaf69c3",
+      "cases": 22607,
+      "categories": {
+        "exhaustive_small_arithmetic": 4096,
+        "wide_arithmetic_boundaries": 9216,
+        "random_wide_arithmetic": 8000,
+        "exhaustive_small_intervals": 289,
+        "random_wide_intervals": 1000,
+        "scalar_domain_boundaries": 6
+      },
+      "wall_seconds": 0.809,
+      "failures": []
+    }
+  }
+}
