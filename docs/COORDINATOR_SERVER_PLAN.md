@@ -4,6 +4,11 @@ Status: proposed design; no server, DNS, firewall, or certificates have been
 configured. This document refines sections 7–8 and C12/C15 of the
 [GPU redesign plan](GPU_REDESIGN_PLAN.md).
 
+Current scheduling defaults: one distinct active block per GPU, about twelve hours
+of computation per block on a calibrated reference GPU, local checkpoints every
+ten seconds, a combined machine sync every two hours, and thirty-day renewable
+assignments. Paused and disconnected blocks stay in-progress while owned.
+
 ## 1. Recommended deployment
 
 Run a dedicated coordinator service on the home server. Apache accepts HTTPS
@@ -122,7 +127,7 @@ remote API's identity headers as an administrative credential.
 ## 3. Projects and access control
 
 Start with **one SQLite database containing project-scoped records**. This is the
-simplest initial model: one migration/backup stream, and permissions, leases,
+simplest initial model: one migration/backup stream, and permissions, assignments,
 results, and progress can be checked and committed in the same transaction.
 There is no need to choose database filenames from untrusted URL input.
 
@@ -137,8 +142,8 @@ ranges/targets. Identical job digests in different projects remain isolated.
 | `projects` | Server-generated `project_id`, display name, active/archive state |
 | `project_memberships` | Unique `(project_id, client_id)` and assigned role |
 | `jobs` | Composite identity `(project_id, job_id)`; manifest digest stored within that scope |
-| `leases`, `coverage`, `results`, `exports` | Carry `project_id` and `job_id`; composite foreign keys prevent references into a different project |
-| `idempotency_records` | Scoped by project, authenticated client, operation, and request key; retain request digest and committed response |
+| `assignments`, `coverage`, `results`, `exports` | Carry project/job/block identity; assignments record machine owner, generation and server-issued expiry; composite foreign keys prevent cross-project references |
+| `idempotency_records` | Authenticated client, machine instance, operation, and request key; retain the authorized project/job scopes, immutable request digest, committed response, and original grant/renewal deadlines |
 | `events` | Project scope, actor/credential identity, operation, transaction sequence, and affected work |
 
 Every query and mutation filters by the authorized project. Use composite
@@ -150,11 +155,11 @@ access. A guessed UUID or job digest never grants permission.
 | Role | Allowed operations |
 | --- | --- |
 | Reader | Read that project's job metadata, unfinished-block previews, and progress |
-| Worker | Reader access plus claim work, heartbeat, submit results/progress, complete or release its own valid leases |
+| Worker | Reader access plus batched claims, renewals, results/progress, and completion for its own valid block assignments; returning unstarted spares is explicit |
 | Project owner | Create/manage jobs, pause a project/job, manage memberships, inspect results, and control offline assignments within that project |
 | Service administrator | Local administration of projects, credentials, recovery, and backups |
 
-Workers cannot overwrite arbitrary coverage, complete another client's lease,
+Workers cannot overwrite arbitrary coverage, complete another client's assignment,
 modify job identity, grant access, or delete progress. Result data access is
 separately restricted; reading progress need not grant access to every discovered
 result. An unauthorized project is not listed and returns the same not-found
@@ -162,7 +167,7 @@ response as an unknown project. Rate limits and request-size limits apply per
 registered client and project.
 
 Use one serialized write queue or short `BEGIN IMMEDIATE` transactions. Check
-current credential/membership status and lease generation inside the same
+current credential/membership status and assignment generation inside the same
 transaction as each write. A revocation committed first blocks subsequent writes;
 an already committed operation remains in the audit history. Reads also verify
 current authorization rather than using an indefinitely cached grant.
@@ -172,65 +177,148 @@ write contention later justifies them. That change requires an explicit catalog,
 authorization consistency, migration, and backup design. It is not needed to
 organize or isolate the initial projects.
 
-## 4. API and reliable progress updates
+## 4. API, block states, and batched synchronization
 
-Use versioned JSON endpoints under `/api/v1/projects/{project_id}/jobs/{job_id}`.
-Absolute scalar values and large block IDs remain canonical hex strings, as
-specified in the main plan. Resolve client identity from authentication; request
-bodies cannot override the lease owner.
+Use job-scoped reads under `/api/v1/projects/{project_id}/jobs/{job_id}` and a
+machine-scoped `POST /api/v1/sync` that can aggregate all its GPUs/jobs in one
+session. Verify authorization separately for every included project/job; one
+project grant must not authorize another. Absolute scalar values and large block
+IDs remain canonical hex strings. Resolve client identity from its certificate;
+a body-supplied owner cannot override authentication.
 
-| Method and relative path | Action |
+### Three-state ownership model
+
+| State | Meaning | General random/sequential claims |
+| --- | --- | --- |
+| `unexplored` | Available with no current assignment and no retained completed coverage | Allowed |
+| `in_progress` | Assigned or partly completed, including queued, running, paused, stale, expired-needing-recovery, or locally complete awaiting upload | Denied |
+| `finished` | Server accepted all required coverage and associated results | Denied |
+
+Claiming unexplored blocks moves them to in-progress in the allocation transaction,
+with machine identity, generation, and expiry. The client durably saves that grant
+before executing it. Track GPU/device identity, activity, cursor, and last contact
+as metadata. The server assigns to the machine; its supervisor ensures different
+GPUs never concurrently execute the same block. A paused block is not unexplored.
+
+Completed local checkpoints may be uploaded as partial progress, but never set
+finished. Set finished only after verifying exact full coverage and accepting its
+results. Until this acknowledgment, a locally completed block remains protected
+in-progress on the server. Stop-on-match may leave a partial block; job success is
+separate from exhaustive block completion.
+
+### Proposed endpoints
+
+| Method and path | Action |
 | --- | --- |
-| `GET /status` | Read exact completed, leased, partial, and available coverage totals |
-| `GET /blocks?state=unfinished&cursor=...&limit=...` | Bounded preview of unfinished ranges; does not reserve work |
-| `POST /leases` | Atomically select and claim sequential, random, or explicitly chosen block work |
-| `POST /leases/{lease_id}/heartbeat` | Renew the caller's current lease |
-| `POST /leases/{lease_id}/progress` | Submit verified results and contiguous progress together |
-| `POST /leases/{lease_id}/complete` | Finish only a fully processed and durably committed lease |
-| `POST /leases/{lease_id}/release` | Preserve acknowledged coverage and release remaining work |
+| `GET .../status` | Authorized progress, ownership, expiry, last-sync age, and three-state totals |
+| `GET .../blocks?state=unexplored&cursor=...&limit=...` | Bounded preview of claimable blocks; no allocation |
+| `POST /api/v1/sync` | Batched progress/results/completions, thirty-day renewals, returned unstarted spares, new block requests, and control responses |
+| `POST .../blocks/{block_id}/recover` | Owner/operator-authorized recovery of expired or abandoned work, preserving partial coverage and fencing the previous assignment |
+| `POST .../blocks/{block_id}/reset` | Explicit audited full re-search; requires ownership fencing and invalidates old credited coverage |
 
-Membership and job administration have separate owner-authorized endpoints. Do
-not expose SQL execution, generic table writes, SQLite downloads, or web-based
-database administration. Status responses use `Cache-Control: no-store` and are
-not served through a shared response cache.
+Membership/job administration remains separately authorized. The normal allocator
+uses only unexplored blocks. Recovery of a partially completed block directly
+transfers its in-progress ownership or renews it for the same worker; arbitrary
+workers cannot take it by selecting random/sequential mode. Return a provably
+unstarted spare, or an expired block with no retained coverage, to unexplored only
+through an explicit recorded action. Never label partial progress unexplored while
+silently dropping it.
 
-An unfinished-block read is only a preview; work begins after a successful atomic
-claim. Every mutation carries an idempotency key. Reusing a key with a different
-payload is rejected; a retry with the same payload returns its original committed
-response. Each lease operation checks project/job identity, owner, server epoch,
-generation, expiry, and exact bounds before advancing coverage.
+Do not expose SQL execution, generic table writes, database downloads, or web-based
+database administration. Responses use `Cache-Control: no-store`. Status endpoints
+are for explicit inspection; workers do not poll them between scheduled syncs.
 
-Use the durable result-before-coverage ordering and fencing rules from the main
-plan. A successful acknowledgment is sent only after the SQLite transaction has
-committed. Requests perform short metadata work, never the GPU search itself.
-On a busy database or unavailable service, return an explicit retryable response;
-clients back off with jitter and reuse the original idempotency key.
+### A sync transaction
 
-Keep exact scalar/coverage records separate from untrusted performance telemetry.
-The coordinator validates reported candidates and interval consistency, but an
-authenticated client's claim of exhaustive no-match computation is still a trust
-assumption. mTLS identifies clients; it is not a proof that work was performed.
+The supervisor creates an immutable local snapshot of pending updates and a
+request ID, then uploads that snapshot for every selected GPU. New local progress
+may continue accumulating for the next snapshot while this request is in flight.
+The authenticated envelope includes scoped block IDs, assignment generations,
+per-block acknowledged cursors, results, complete flags, any returned unstarted
+work, device capability metadata, and desired new-block selection/counts.
 
-### Request budget and adaptive lease sizing
+Validate credentials, membership, ownership, expiry, generation, ranges, full
+completion conditions, payload bounds, and supported versions. Persist accepted
+progress/results, completed states, renewed deadlines, new assignments, and the
+idempotent response in a transaction. Acknowledge only after commit. Bind expensive
+candidate verification to the immutable request/manifest and keep database write
+transactions short. Requests never perform the GPU search itself.
 
-Apply the [block-sizing policy](GPU_REDESIGN_PLAN.md#concrete-sizing-and-adaptation):
-logical block IDs stay fixed, while a worker's future lease spans target about
-180 seconds of measured work. Small kernel batches/checkpoints keep pause and
-replay bounds independent of that span. Larger leases reduce claim traffic; they
-do not justify longer gaps between durable checkpoints.
+If the response is lost, retry exactly that snapshot/request ID. It returns the
+original acknowledgment/grants, not additional blocks or a freshly extended
+lifetime. Reusing a key with a changed payload is rejected. Before using new work,
+the supervisor saves the response durably. It deletes pending outbox entries only
+when they are acknowledged, retaining recovery receipts per the backup policy.
+Reject an unauthorized mixed-project envelope without allocating any work. Define
+and test other validation-error atomicity before shipping; never leave the client
+uncertain about which blocks were granted.
 
-For illustration, 64 active device workers checkpointing every 10 seconds produce
-about 6.4 progress requests/s. Separate 15-second heartbeats add about 4.27/s, and
-180-second leases add about 0.36 claims/s, before completion requests, retries,
-status reads, or results. This arithmetic is not a SQLite capacity measurement.
-Coalesce renewals with progress where the protocol permits, jitter scheduling,
-and benchmark durable transactions on the actual server disk. Keep healthy-worker
-lease renewals and progress prioritized during status/telemetry load.
+Most syncs fit one HTTPS request/response. Large result backlogs require bounded
+pages with per-page idempotency and explicit acknowledged cursors, potentially
+several requests in the same contact session. Keep retries bounded within that
+session; do not turn a server outage into an unnoticed high-frequency retry loop.
 
-Count unique accepted coverage independently of worker-reported speed. Bound each
-client's outstanding leases and newly requested span; observed committed progress
-informs future sizing. Follow the main plan's execution-provenance and invalidation
-rules when a software defect requires a range to be searched again.
+Authentication and accepted progress remain distinct: mTLS identifies a worker
+but does not prove exhaustive no-match computation. Start with trusted workers.
+
+### Assignment lifetime and recovery
+
+Default expiry is **30 days after the server's grant or accepted renewal**,
+measured as a duration rather than a calendar month. This is independent of the
+**12-hour active computation target**. The scheduled two-hour sync renews retained
+assignments in the same exchange; there is no separate renewal heartbeat. Client
+clock changes or local checkpoints cannot extend the server-issued deadline.
+
+Pauses and a few missed syncs leave the block in-progress under the same owner.
+The client may resume locally within validity using a trustworthy saved deadline
+and exclusive journal/executor ownership. After reboot or loss of a reliable time
+reference, check with the server before execution. Drain before expiry; after
+expiry a worker must obtain server revalidation even if its checkpoint is intact.
+
+An expired assignment changes activity metadata to recovery-needed, not finished
+or unexplored. An owner/operator can renew untransferred work, transfer its remaining
+coverage with a new generation, or explicitly reset it for full re-search. These
+recovery operations can be batched during sync for authorized callers. An ordinary
+worker may request recovery only of its own untransferred assignment; transfers
+and full resets require a project owner or service administrator. Preserve accepted
+coverage and the audit trail. A renewed valid assignment keeps its current
+generation unless ownership/recovery semantics require a new one.
+
+Revoking credentials blocks API access immediately but cannot instantly stop an
+offline GPU. Before transferring an assignment that is still valid, confirm its
+executor stopped; an explicit override acknowledges possible duplicate computation.
+Old-generation progress never updates a new owner's work. Expiry is enforceable
+by conforming clients under the saved-deadline contract, not by assuming an absent
+network heartbeat proves the GPU has stopped.
+
+### Communication and queue policy
+
+One machine supervisor aggregates all GPUs. Initially request one distinct block
+per GPU. Target approximately twelve hours per block on a selected reference GPU;
+heterogeneous GPUs may take different times for those immutable bounds. Checkpoint
+locally about every ten seconds. Persist found results locally immediately.
+
+Routine sync is every two hours, configurable, with no per-GPU network heartbeats
+or per-work-unit requests. For eight GPUs running twelve-hour blocks, that means
+roughly six routine machine exchanges over twelve hours, not six per GPU. Sixty-four
+selected logical devices still use one supervisor schedule; payload size grows
+with the number of devices and reported results. This is a request-frequency
+estimate, not a database capacity benchmark.
+
+As active blocks near completion, a scheduled sync may prefetch at most one spare
+per GPU, subject to job quotas. Spares are already in-progress/owned with queued
+activity. GPUs take distinct ready blocks locally after finishing current ones.
+If inventory empties, wait for the next scheduled/manual contact unless early refill
+is explicitly enabled. Manual sync and optional immediate match/error upload are
+separate controls. Completion-driven mode coalesces GPU completions but may contact
+the server more often on a large heterogeneous machine; strict scheduled mode
+provides the predictable low-contact behavior.
+
+Only completed blocks are submitted as finished. Partial status uploads stay
+in-progress. Server progress/control changes can lag by the sync interval, longer
+during outages. Local checkpoint durability protects local pause/resume; it does
+not protect unsynced results from total loss of the worker's disk. Bound journal
+and outbox growth and pause rather than drop work when storage fills.
 
 ## 5. Apache, HTTPS, and home-network setup
 
@@ -282,23 +370,28 @@ workers access HTTPS only; SQLite's WAL sharing remains local to one host.
 [SQLite WAL documentation][sqlite-wal]
 
 Run one authoritative coordinator with supervised restart. Monitor free disk,
-commit latency, WAL growth, certificate expiry, overdue leases, outbox backlog,
-and backup age. A failed durable write returns an error and never reports a block
-finished. Follow the existing bounded-checkpoint and lease-renewal behavior during
-home internet or power outages: no new global allocation while disconnected;
-unacknowledged progress remains in the worker's durable outbox.
+commit latency, WAL growth, certificate/assignment expiry, stale in-progress
+blocks, outbox backlog, and backup age. A failed durable write returns an error and never reports a block
+finished. During home internet or power outages, local checkpointing continues
+for already-assigned work until completion, ownership expiry, or storage exhaustion.
+No new global allocation is allowed while disconnected. Unacknowledged progress
+remains in the machine's durable outbox, without extra per-GPU server traffic.
 
 Back up through SQLite's online backup API, including all project data and
 credential/membership state in the consistent snapshot. Protect a separate copy
 off the server and rehearse restores; copying only a live `.sqlite` file can miss
 WAL contents. [SQLite backup documentation][sqlite-backup]
 
-Restoring an older backup can lose already acknowledged progress. Choose and
-publish a recovery-point target, reconcile retained worker receipts/outboxes, and
-otherwise replay missing work. Generate a new unpredictable coordinator epoch
-after restore so stale pre-restore leases cannot become valid again. Reconcile
-credential revocations against retained operator audit records before reopening
-public access: an old backup must not silently re-enable a revoked client.
+Restoring an older backup can lose both acknowledged progress and assignment
+records held by offline machines. Reconcile worker receipts/manifests and access
+revocations before reopening allocation. A new coordinator epoch fences writes
+but does not stop disconnected computation. Quarantine affected jobs until all
+outstanding grants are reconciled, previous executors are confirmed stopped, or
+the previously permitted maximum assignment lifetime plus safety margin has elapsed
+since the old authority could last issue/renew work. Keep that maximum in recovery
+metadata; the default is thirty days. Never assume free space in an old snapshot
+is unexplored while offline owners may still hold it. An override must explicitly
+accept possible duplicate computation. Prefer reconciliation to a month-long wait.
 
 The initial availability model is one server with recoverable downtime. Do not
 run two independent writable copies behind a load balancer. A UPS and external
@@ -309,18 +402,16 @@ and coordination design.
 
 Ship a coordinator-only build for the home server, with no GPU SDK dependency or
 resident worker BSGS tables. Require protocol/capability negotiation before issuing
-leases and test incompatible versions explicitly. Follow the
+assignments and test incompatible versions explicitly. Follow the
 [implementation boundary decisions](GPU_REDESIGN_PLAN.md#boundaries-to-settle-during-implementation)
 for supervised workers, self-tests, and migration handling.
 
-The default online policy allows only the remaining renewable lease lifetime
-during a disconnection, with a margin for draining in-flight work. A three-minute
-work assignment does not guarantee three minutes of disconnected ownership:
-its proposed 90-second lease must be renewed. Longer outages use deliberately
-reserved offline assignments. Worker outboxes have a configured capacity; disk
-exhaustion pauses submission instead of dropping results or claiming completion.
-Expose lease time remaining, last durable acknowledgment, outbox usage, and the
-reason a worker is paused in operator status.
+The default assignment lasts thirty days and is renewed through each scheduled
+machine sync. A twelve-hour computation estimate does not expire the block. Routine
+local pause/resume can work offline while the saved ownership/deadline remains
+valid; after expiry or uncertain deadline state, revalidate before launching work.
+Expose last acknowledged sync, local/server progress separately, assignment expiry,
+queued/paused/stale activity, outbox usage, and pause reason in status.
 
 ## 7. Implementation slices and acceptance gates
 
@@ -332,14 +423,19 @@ commit (split further when necessary); documentation and tests travel with it.
 | S01 / C12 | External state-directory defaults and project-scoped schema/migrations | No runtime state in checkout; project foreign keys, scoping, and backup/restore tested |
 | S02 / C15 | Local admin enrollment, credential registry, project memberships | Explicit bootstrap; unknown/revoked/expired credentials and wrong-project access denied |
 | S03 / C15 | Apache mTLS boundary and private socket integration | Required certificates; forged/duplicate headers, wrong CA, Host/SNI mismatch, and socket bypass tests fail closed |
-| S04 / C15 | Authorized lease/progress API and HTTPS worker client | Transactional claims; replay-safe retries; ownership/generation checks; revocation on existing connections |
-| S05 / C15 | Service packaging, renewal, backups, and recovery guide | Restart/power/network/disk-full tests; restore invalidates old leases and preserves access-control policy |
+| S04 / C15 | Batched machine sync and HTTPS worker supervisor | Atomic unexplored claims, three-state transitions, replay-safe retries, 30-day renewals, ownership/generation checks, one schedule for all GPUs |
+| S05 / C15 | Service packaging, backups, and assignment recovery | Multi-day pause, expiry before resume, lost renewal response, safe transfer, disk-full, and old-backup quarantine tested |
 | S06 / C15 | Two-host and public-ingress validation | Registered clients can read/claim/update only permitted projects; unauthenticated requests read/write nothing; TCP 443 and renewal verified |
 
 The acceptance suite must include two projects with identical job manifests, two
-clients with different roles, concurrent claims for the same block, and all API
-routes exercised across both projects. Test an acknowledged commit whose response
-is lost, and a credential revoked between two requests on the same connection.
+clients with different roles, concurrent batch claims for the same blocks, and
+all API routes exercised across both projects. With controllable clocks, test a
+GPU paused for twenty days, a resume after thirty-day expiry, renewal with a lost
+response, an expired partially completed block, and recovery transfer. Assert no
+normal selection of in-progress/finished blocks and no routine network calls
+between scheduled machine syncs. Verify two mock GPUs execute different blocks,
+local completion awaits server acknowledgment, and a restored old backup cannot
+reissue offline-owned work. Check revoked credentials on existing connections.
 
 Deployment-specific details to confirm during implementation: home server OS and
 Apache/OpenSSL versions, direct public IPv4/IPv6 reachability, DNS automation,
