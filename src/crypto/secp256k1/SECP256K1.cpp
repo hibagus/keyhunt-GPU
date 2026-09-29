@@ -17,11 +17,11 @@
 
 #include <cstdio>
 #include <cstring>
-#include "SECP256k1.h"
-#include "Point.h"
-#include "../util.h"
-#include "../hash/sha256.h"
-#include "../hash/ripemd160.h"
+#include "keyhunt/crypto/secp256k1/SECP256k1.h"
+#include "keyhunt/crypto/secp256k1/Point.h"
+#include "keyhunt/core/util.h"
+#include "keyhunt/crypto/hash/sha256.h"
+#include "keyhunt/crypto/hash/ripemd160.h"
 
 Secp256K1::Secp256K1() {
 }

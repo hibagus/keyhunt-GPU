@@ -15,7 +15,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "Point.h"
+#include "keyhunt/crypto/secp256k1/Point.h"
 
 Point::Point() {
 }

@@ -4,6 +4,9 @@ Recorded 2026-09-29 against `b1066ab`; production sources are unchanged from
 `2134a20`. C01 adds a characterization harness, public synthetic fixtures,
 environment capture, and a finite benchmark. It changes no search algorithms.
 Implementation status is tracked in [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md).
+C02 subsequently resolved the legacy build gate with isolated GMP development
+files; see [BUILD_MIGRATION.md](BUILD_MIGRATION.md). C01 records below retain
+the original observation before that dependency was supplied.
 
 ## Reproduce
 

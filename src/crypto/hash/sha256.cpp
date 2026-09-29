@@ -21,7 +21,7 @@
 #include <inttypes.h>
 #include <string>
 
-#include "sha256.h"
+#include "keyhunt/crypto/hash/sha256.h"
 
 #define BSWAP
 

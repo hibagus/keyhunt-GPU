@@ -14,7 +14,7 @@ email: albertobsd@gmail.com
 #include "base58/libbase58.h"
 #include "oldbloom/oldbloom.h"
 #include "bloom/bloom.h"
-#include "util.h"
+#include "keyhunt/core/util.h"
 #include "hashing.h"
 
 #include "gmp256k1/GMP256K1.h"

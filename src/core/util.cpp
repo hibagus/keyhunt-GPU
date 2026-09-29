@@ -2,7 +2,7 @@
 #include <cstdio>
 #include <cstdlib>
 
-#include "util.h"
+#include "keyhunt/core/util.h"
 
 
 char *ltrim(char *str, const char *seps)	{

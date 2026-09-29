@@ -4,7 +4,7 @@
 #include <cstring>
 #include "GMP256K1.h"
 #include "Point.h"
-#include "../util.h"
+#include "keyhunt/core/util.h"
 #include "../hashing.h"
 
 Secp256K1::Secp256K1() {

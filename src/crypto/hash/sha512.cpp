@@ -16,7 +16,7 @@
 */
 
 #include <string.h>
-#include "sha512.h"
+#include "keyhunt/crypto/hash/sha512.h"
 
 #define BSWAP
 #define SHA512_BLOCK_SIZE	128

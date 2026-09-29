@@ -15,7 +15,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "IntGroup.h"
+#include "keyhunt/crypto/secp256k1/IntGroup.h"
 
 using namespace std;
 

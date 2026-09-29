@@ -8,11 +8,13 @@ change is committed separately. Analysis and validation evidence live under
 | Milestone | Status | Evidence / remaining gate |
 | --- | --- | --- |
 | C01: CPU and environment baseline | Completed | [Analysis and reproduction](CPU_BASELINE.md); 38 characterization checks, raw build/hardware/timing artifacts |
-| C02: source organization and CMake | Next | Preserve C01 behavior; legacy build needs GMP development headers on this host |
-| C03–C23 | Planned | Acceptance gates remain in the redesign plan |
+| C02: source organization and CMake | Completed | [Migration evidence](BUILD_MIGRATION.md) and [build guide](BUILD.md); CPU release/debug, isolated GMP legacy parity, daemon loopback and install checks |
+| C03: README and usage guides | Next | Describe implemented CPU capabilities and planned GPU work accurately |
+| C04–C23 | Planned | Acceptance gates remain in the redesign plan |
 
 C01 records existing CPU boundary/stride defects rather than fixing them.
 The new exact-range engine must not reuse those loops as proof of exhaustive
-coverage. The optional legacy target could not be built because `gmp.h` is absent;
-this limitation remains visible for C02 validation. No GPU search, checkpoint,
+coverage. C02 validated the optional legacy target with GMP development files extracted
+under `/tmp`; no system package was installed. Sanitizer diagnostics and known
+legacy defects remain documented follow-up work. No GPU search, checkpoint,
 coordinator, or deployment has been implemented yet.

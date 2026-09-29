@@ -15,7 +15,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "Int.h"
+#include "keyhunt/crypto/secp256k1/Int.h"
 #include <emmintrin.h>
 #include <string.h>
 

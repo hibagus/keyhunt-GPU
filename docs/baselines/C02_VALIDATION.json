@@ -1,0 +1,852 @@
+{
+  "release": {
+    "schema_version": 1,
+    "captured_at": "2026-09-29T15:46:50.770946+00:00",
+    "binary_sha256": "826fa69465becacb33c9d1bcdf6a1de61e1dc190d0425e10c97e1f331f938f0f",
+    "fixture_sha256": "fec2e6c0ea3f9a21c9d8a41e1bd49723e26fc13f94314c79edf68cb25063d885",
+    "cases": [
+      {
+        "name": "help_existing_exit_status",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 1,
+        "wall_seconds": 0.03107290412299335
+      },
+      {
+        "name": "invalid_mode",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 1,
+        "wall_seconds": 0.031050018034875393
+      },
+      {
+        "name": "invalid_crypto",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 1,
+        "wall_seconds": 0.031030951999127865
+      },
+      {
+        "name": "unknown_option",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 1,
+        "wall_seconds": 0.031035657972097397
+      },
+      {
+        "name": "pub2rmd_removed",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 0.03082934394478798
+      },
+      {
+        "name": "missing_input",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 1,
+        "wall_seconds": 0.03274693083949387
+      },
+      {
+        "name": "empty_input_accepted_existing_defect",
+        "known_defect": true,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.0329559321980923
+      },
+      {
+        "name": "malformed_xpoint_ignored_existing_defect",
+        "known_defect": true,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.0331119229085743
+      },
+      {
+        "name": "xpoint_aligned_boundary",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.0331565428059548
+      },
+      {
+        "name": "xpoint_tail_overrun_existing_defect",
+        "known_defect": true,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.0331094439607114
+      },
+      {
+        "name": "xpoint_tiny_range_overrun_existing_defect",
+        "known_defect": true,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.0330877031665295
+      },
+      {
+        "name": "xpoint_no_match",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.0329313490074128
+      },
+      {
+        "name": "xpoint_swapped_range",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.0329810599796474
+      },
+      {
+        "name": "zero_start_becomes_one",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.033090162789449
+      },
+      {
+        "name": "xpoint_above_64_bits",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.0329038458876312
+      },
+      {
+        "name": "stride_overlapping_batches_existing_defect",
+        "known_defect": true,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.0329485409893095
+      },
+      {
+        "name": "address_compressed",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.033028467092663
+      },
+      {
+        "name": "address_uncompressed",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.033117484068498
+      },
+      {
+        "name": "address_both",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.0329703949391842
+      },
+      {
+        "name": "address_no_match",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.0329083111137152
+      },
+      {
+        "name": "rmd160_compressed",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.0330444949213415
+      },
+      {
+        "name": "rmd160_uncompressed",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.0331435529515147
+      },
+      {
+        "name": "rmd160_both",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.0330662610940635
+      },
+      {
+        "name": "rmd160_no_match",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.03330825897865
+      },
+      {
+        "name": "ethereum_address",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.0330155610572547
+      },
+      {
+        "name": "vanity_prefix",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.0329798171296716
+      },
+      {
+        "name": "vanity_no_match",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.033034429885447
+      },
+      {
+        "name": "minikey_deterministic_start",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": null,
+        "wall_seconds": 2.0024136370047927
+      },
+      {
+        "name": "minikey_invalid_length",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 1,
+        "wall_seconds": 0.03086920501664281
+      },
+      {
+        "name": "random_mode_does_not_exhaust",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": null,
+        "wall_seconds": 2.0021088891662657
+      },
+      {
+        "name": "equal_endpoints_fallback_existing_defect",
+        "known_defect": true,
+        "passed": true,
+        "failures": [],
+        "exit_code": 1,
+        "wall_seconds": 0.03308045701123774
+      },
+      {
+        "name": "bsgs_known_match_compressed",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 1,
+        "wall_seconds": 0.05217525199986994
+      },
+      {
+        "name": "bsgs_known_match_uncompressed",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 1,
+        "wall_seconds": 0.05202458705753088
+      },
+      {
+        "name": "bsgs_no_match",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.0519149180036038
+      },
+      {
+        "name": "bsgs_start_missed_existing_defect",
+        "known_defect": true,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.0515044189523906
+      },
+      {
+        "name": "bsgs_tail_overrun_existing_defect",
+        "known_defect": true,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.0520036700181663
+      },
+      {
+        "name": "bsgs_invalid_n",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 1,
+        "wall_seconds": 0.033066588919609785
+      },
+      {
+        "name": "bsgs_range_too_small",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 1,
+        "wall_seconds": 0.03309204103425145
+      }
+    ]
+  },
+  "debug": {
+    "schema_version": 1,
+    "captured_at": "2026-09-29T15:43:05.013983+00:00",
+    "binary_sha256": "156006a2b7783781e4d714d49d66a64bd5b015f3fe8d3b6cb26a5da8730e5553",
+    "fixture_sha256": "fec2e6c0ea3f9a21c9d8a41e1bd49723e26fc13f94314c79edf68cb25063d885",
+    "cases": [
+      {
+        "name": "help_existing_exit_status",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 1,
+        "wall_seconds": 0.07785353297367692
+      },
+      {
+        "name": "invalid_mode",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 1,
+        "wall_seconds": 0.07740537985228002
+      },
+      {
+        "name": "invalid_crypto",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 1,
+        "wall_seconds": 0.07638456602580845
+      },
+      {
+        "name": "unknown_option",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 1,
+        "wall_seconds": 0.07616541907191277
+      },
+      {
+        "name": "pub2rmd_removed",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 0.07691422896459699
+      },
+      {
+        "name": "missing_input",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 1,
+        "wall_seconds": 0.08177900011651218
+      },
+      {
+        "name": "empty_input_accepted_existing_defect",
+        "known_defect": true,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.0793986460193992
+      },
+      {
+        "name": "malformed_xpoint_ignored_existing_defect",
+        "known_defect": true,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.0843189659062773
+      },
+      {
+        "name": "xpoint_aligned_boundary",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.0802472550421953
+      },
+      {
+        "name": "xpoint_tail_overrun_existing_defect",
+        "known_defect": true,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.0817429691087455
+      },
+      {
+        "name": "xpoint_tiny_range_overrun_existing_defect",
+        "known_defect": true,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.0821054598782212
+      },
+      {
+        "name": "xpoint_no_match",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.0817598279099911
+      },
+      {
+        "name": "xpoint_swapped_range",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.0801390721462667
+      },
+      {
+        "name": "zero_start_becomes_one",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.0836169789545238
+      },
+      {
+        "name": "xpoint_above_64_bits",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.0800511648412794
+      },
+      {
+        "name": "stride_overlapping_batches_existing_defect",
+        "known_defect": true,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.0822297029662877
+      },
+      {
+        "name": "address_compressed",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.0805056190583855
+      },
+      {
+        "name": "address_uncompressed",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.0802123278845102
+      },
+      {
+        "name": "address_both",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.0810736089479178
+      },
+      {
+        "name": "address_no_match",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.082226982107386
+      },
+      {
+        "name": "rmd160_compressed",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.0781796670053154
+      },
+      {
+        "name": "rmd160_uncompressed",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.0822827299125493
+      },
+      {
+        "name": "rmd160_both",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.0782237551175058
+      },
+      {
+        "name": "rmd160_no_match",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.0805653729476035
+      },
+      {
+        "name": "ethereum_address",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.0798936751671135
+      },
+      {
+        "name": "vanity_prefix",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.0841773888096213
+      },
+      {
+        "name": "vanity_no_match",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.0841715158894658
+      },
+      {
+        "name": "minikey_deterministic_start",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": null,
+        "wall_seconds": 2.0024013300426304
+      },
+      {
+        "name": "minikey_invalid_length",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 1,
+        "wall_seconds": 0.07811073097400367
+      },
+      {
+        "name": "random_mode_does_not_exhaust",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": null,
+        "wall_seconds": 2.0013017819728702
+      },
+      {
+        "name": "equal_endpoints_fallback_existing_defect",
+        "known_defect": true,
+        "passed": true,
+        "failures": [],
+        "exit_code": 1,
+        "wall_seconds": 0.08219599397853017
+      },
+      {
+        "name": "bsgs_known_match_compressed",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 1,
+        "wall_seconds": 0.14485089504159987
+      },
+      {
+        "name": "bsgs_known_match_uncompressed",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 1,
+        "wall_seconds": 0.1429635239765048
+      },
+      {
+        "name": "bsgs_no_match",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.14377930900082
+      },
+      {
+        "name": "bsgs_start_missed_existing_defect",
+        "known_defect": true,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.1448264040518552
+      },
+      {
+        "name": "bsgs_tail_overrun_existing_defect",
+        "known_defect": true,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.147668533027172
+      },
+      {
+        "name": "bsgs_invalid_n",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 1,
+        "wall_seconds": 0.08202473004348576
+      },
+      {
+        "name": "bsgs_range_too_small",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 1,
+        "wall_seconds": 0.08315384294837713
+      }
+    ]
+  },
+  "legacy_xpoint": {
+    "schema_version": 1,
+    "captured_at": "2026-09-29T15:49:26.949130+00:00",
+    "binary_sha256": "0c9d49d1aaf68ab6721cb998c642d919dea1b3f562483ca02816e33157b79e3c",
+    "fixture_sha256": "fec2e6c0ea3f9a21c9d8a41e1bd49723e26fc13f94314c79edf68cb25063d885",
+    "cases": [
+      {
+        "name": "malformed_xpoint_ignored_existing_defect",
+        "known_defect": true,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.0257992639672011
+      },
+      {
+        "name": "xpoint_aligned_boundary",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.0258261130657047
+      },
+      {
+        "name": "xpoint_tail_overrun_existing_defect",
+        "known_defect": true,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.0256328710820526
+      },
+      {
+        "name": "xpoint_tiny_range_overrun_existing_defect",
+        "known_defect": true,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.0258611750323325
+      },
+      {
+        "name": "xpoint_no_match",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.0257552219554782
+      },
+      {
+        "name": "xpoint_swapped_range",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.025624382076785
+      },
+      {
+        "name": "xpoint_above_64_bits",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "exit_code": 0,
+        "wall_seconds": 1.0254996689036489
+      }
+    ]
+  },
+  "legacy_parity": {
+    "before_sha256": "06886243c04eb9810a219810bef5c2855856ee21a565b5bd2b67d473f0404cea",
+    "after_sha256": "0c9d49d1aaf68ab6721cb998c642d919dea1b3f562483ca02816e33157b79e3c",
+    "cases": [
+      {
+        "name": "xpoint_aligned_boundary",
+        "passed": true
+      },
+      {
+        "name": "xpoint_no_match",
+        "passed": true
+      },
+      {
+        "name": "xpoint_above_64_bits",
+        "passed": true
+      },
+      {
+        "name": "address_compressed",
+        "passed": true
+      },
+      {
+        "name": "address_uncompressed",
+        "passed": true
+      },
+      {
+        "name": "rmd160_compressed",
+        "passed": true
+      },
+      {
+        "name": "rmd160_uncompressed",
+        "passed": true
+      },
+      {
+        "name": "ethereum_address",
+        "passed": true
+      },
+      {
+        "name": "vanity_prefix",
+        "passed": true
+      },
+      {
+        "name": "minikey_invalid_length",
+        "passed": true
+      },
+      {
+        "name": "bsgs_known_match_compressed",
+        "passed": true
+      },
+      {
+        "name": "bsgs_known_match_uncompressed",
+        "passed": true
+      },
+      {
+        "name": "bsgs_no_match",
+        "passed": true
+      }
+    ]
+  },
+  "bsgsd_before": [
+    {
+      "name": "known_match",
+      "response": "100001",
+      "expected": "100001",
+      "passed": true
+    },
+    {
+      "name": "no_match",
+      "response": "404 Not Found",
+      "expected": "404 Not Found",
+      "passed": true
+    },
+    {
+      "name": "invalid_request",
+      "response": "400 Bad Request",
+      "expected": "400 Bad Request",
+      "passed": true
+    }
+  ],
+  "bsgsd_after": [
+    {
+      "name": "known_match",
+      "response": "100001",
+      "expected": "100001",
+      "passed": true
+    },
+    {
+      "name": "no_match",
+      "response": "404 Not Found",
+      "expected": "404 Not Found",
+      "passed": true
+    },
+    {
+      "name": "invalid_request",
+      "response": "400 Bad Request",
+      "expected": "400 Bad Request",
+      "passed": true
+    }
+  ],
+  "configuration_errors": [
+    {
+      "name": "hip_unimplemented",
+      "passed": true,
+      "exit_code": 1,
+      "output": "-- The C compiler identification is GNU 11.4.0\n-- The CXX compiler identification is GNU 11.4.0\n-- Detecting C compiler ABI info\n-- Detecting C compiler ABI info - done\n-- Check for working C compiler: /usr/bin/cc - skipped\n-- Detecting C compile features\n-- Detecting C compile features - done\n-- Detecting CXX compiler ABI info\n-- Detecting CXX compiler ABI info - done\n-- Check for working CXX compiler: /usr/bin/c++ - skipped\n-- Detecting CXX compile features\n-- Detecting CXX compile features - done\n-- Configuring incomplete, errors occurred!\nSee also \"/tmp/keyhunt-config-check-qio9ca7z/CMakeFiles/CMakeOutput.log\".\nCMake Error at CMakeLists.txt:31 (message):\n  GPU backends are not implemented yet: HIP is milestone C07 and CUDA is C18.\n  Configure a CPU build with both options OFF.\n\n\n"
+    },
+    {
+      "name": "cuda_unimplemented",
+      "passed": true,
+      "exit_code": 1,
+      "output": "-- The C compiler identification is GNU 11.4.0\n-- The CXX compiler identification is GNU 11.4.0\n-- Detecting C compiler ABI info\n-- Detecting C compiler ABI info - done\n-- Check for working C compiler: /usr/bin/cc - skipped\n-- Detecting C compile features\n-- Detecting C compile features - done\n-- Detecting CXX compiler ABI info\n-- Detecting CXX compiler ABI info - done\n-- Check for working CXX compiler: /usr/bin/c++ - skipped\n-- Detecting CXX compile features\n-- Detecting CXX compile features - done\n-- Configuring incomplete, errors occurred!\nSee also \"/tmp/keyhunt-config-check-l9l87fok/CMakeFiles/CMakeOutput.log\".\nCMake Error at CMakeLists.txt:31 (message):\n  GPU backends are not implemented yet: HIP is milestone C07 and CUDA is C18.\n  Configure a CPU build with both options OFF.\n\n\n"
+    },
+    {
+      "name": "legacy_missing_gmp",
+      "passed": true,
+      "exit_code": 1,
+      "output": "-- The C compiler identification is GNU 11.4.0\n-- The CXX compiler identification is GNU 11.4.0\n-- Detecting C compiler ABI info\n-- Detecting C compiler ABI info - done\n-- Check for working C compiler: /usr/bin/cc - skipped\n-- Detecting C compile features\n-- Detecting C compile features - done\n-- Detecting CXX compiler ABI info\n-- Detecting CXX compiler ABI info - done\n-- Check for working CXX compiler: /usr/bin/c++ - skipped\n-- Detecting CXX compile features\n-- Detecting CXX compile features - done\n-- Looking for pthread.h\n-- Looking for pthread.h - found\n-- Performing Test CMAKE_HAVE_LIBC_PTHREAD\n-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success\n-- Found Threads: TRUE  \n-- Configuring incomplete, errors occurred!\nSee also \"/tmp/keyhunt-config-check-j3mwu0sy/CMakeFiles/CMakeOutput.log\".\nCMake Error at /usr/share/cmake-3.22/Modules/FindPackageHandleStandardArgs.cmake:230 (message):\n  Could NOT find GMP (missing: GMP_INCLUDE_DIR GMP_LIBRARY)\n\n      Reason given by package: The optional legacy target needs GMP development files (libgmp-dev on Debian/Ubuntu). Install them, provide GMP_INCLUDE_DIR and GMP_LIBRARY, or set KEYHUNT_BUILD_LEGACY=OFF.\n\nCall Stack (most recent call first):\n  /usr/share/cmake-3.22/Modules/FindPackageHandleStandardArgs.cmake:594 (_FPHSA_FAILURE_MESSAGE)\n  cmake/FindGMP.cmake:4 (find_package_handle_standard_args)\n  CMakeLists.txt:80 (find_package)\n\n\n"
+    }
+  ],
+  "installed_binary_probe": {
+    "schema_version": 1,
+    "captured_at": "2026-09-29T15:51:15.680651+00:00",
+    "binary_sha256": "826fa69465becacb33c9d1bcdf6a1de61e1dc190d0425e10c97e1f331f938f0f",
+    "fixture_sha256": "fec2e6c0ea3f9a21c9d8a41e1bd49723e26fc13f94314c79edf68cb25063d885",
+    "cases": [
+      {
+        "name": "xpoint_aligned_boundary",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "argv": [
+          "-m",
+          "xpoint",
+          "-f",
+          "targets.txt",
+          "-r",
+          "1000:1400",
+          "-n",
+          "1024",
+          "-t",
+          "1",
+          "-q",
+          "-s",
+          "0"
+        ],
+        "exit_code": 0,
+        "timed_out": false,
+        "wall_seconds": 1.096375540131703,
+        "output": "[+] Version 0.2.230519 Satoshi Quest, developed by AlbertoBSD\n[+] Mode xpoint\n[+] Thread : 1\n[+] Quiet thread output\n[+] Turn off stats output\n[+] N = 0x400\n[+] Range \n[+] -- from : 0x1000\n[+] -- to   : 0x1400\n[+] Allocating memory for 8 elements: 0.00 MB\n[+] Bloom filter for 8 elements.\n[+] Loading data to the bloomfilter total: 0.03 MB\n[+] Sorting data ... done! 8 values were loaded and sorted\n\nHit! Private Key: 1000\npubkey: 04175e159f728b865a72f99cc6c6fc846de0b93833fd2222ed73fce5b551e5b739d3506e0d9e3c79eba4ef97a51ff71f5eacb5955add24345c6efa6ffee9fed695\nAddress 1KDVJ2VBScChGU5yrwc8DPFaMM1GqoVGfx\nrmd160 c7cedfb8aac901af55df83e4cf02e63ed901cc37\n\nHit! Private Key: 1001\npubkey: 0422ca50390e660f601036dd7502bb973bdcd104b5dcb8f2e74de8edc6c292b03a86fd44711ef6b81e4416449a708fa0c9cb6731bac403e58eda5e915f646b11e8\nAddress 19h7yLWRC8KzbLE8HJ88cQSqjkEETuZXCt\nrmd160 5f5776cf7a781d431918b1578a2b12b7baf9850c\n\nHit! Private Key: 13ff\npubkey: 04e1fe9b321b91d3622b618cd89ae8203dbde185e0bab2fae8ff7e96f074358e42c590fe901797132ea25eff10f2bf2a76cef4f064acaba1d5f8537b4addf3e1c4\nAddress 1PHsaxPfrdMy1UwczTYJBWZkgWpBabhQ7g\nrmd160 f483a6337ee1501e77c222bc394afdc0a11f127d\n\nEnd\n",
+        "results": {
+          "KEYFOUNDKEYFOUND.txt": "Private Key: 1000\npubkey: 04175e159f728b865a72f99cc6c6fc846de0b93833fd2222ed73fce5b551e5b739d3506e0d9e3c79eba4ef97a51ff71f5eacb5955add24345c6efa6ffee9fed695\nAddress 1KDVJ2VBScChGU5yrwc8DPFaMM1GqoVGfx\nrmd160 c7cedfb8aac901af55df83e4cf02e63ed901cc37\nPrivate Key: 1001\npubkey: 0422ca50390e660f601036dd7502bb973bdcd104b5dcb8f2e74de8edc6c292b03a86fd44711ef6b81e4416449a708fa0c9cb6731bac403e58eda5e915f646b11e8\nAddress 19h7yLWRC8KzbLE8HJ88cQSqjkEETuZXCt\nrmd160 5f5776cf7a781d431918b1578a2b12b7baf9850c\nPrivate Key: 13ff\npubkey: 04e1fe9b321b91d3622b618cd89ae8203dbde185e0bab2fae8ff7e96f074358e42c590fe901797132ea25eff10f2bf2a76cef4f064acaba1d5f8537b4addf3e1c4\nAddress 1PHsaxPfrdMy1UwczTYJBWZkgWpBabhQ7g\nrmd160 f483a6337ee1501e77c222bc394afdc0a11f127d\n"
+        }
+      }
+    ]
+  },
+  "binaries": {
+    "build/cpu-release/keyhunt": "826fa69465becacb33c9d1bcdf6a1de61e1dc190d0425e10c97e1f331f938f0f",
+    "build/cpu-debug/keyhunt": "156006a2b7783781e4d714d49d66a64bd5b015f3fe8d3b6cb26a5da8730e5553",
+    "build/compatibility/keyhunt-legacy": "0c9d49d1aaf68ab6721cb998c642d919dea1b3f562483ca02816e33157b79e3c",
+    "build/compatibility/bsgsd": "3543c8c62e14f3da69303566b126091de2f51b05b0a08733b226555729ec9082"
+  },
+  "compiler_options_note": "Original selective source LTO retained; whole-target IPO was rejected after a startup timeout.",
+  "sanitizer_probe_passed": false
+}

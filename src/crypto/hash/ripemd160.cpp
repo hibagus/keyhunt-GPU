@@ -15,59 +15,44 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ripemd160.h"
+#include "keyhunt/crypto/hash/ripemd160.h"
+#include <stdint.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <inttypes.h>
 #include <string.h>
-#include <immintrin.h>
+#include <string>
 
-// Internal SSE RIPEMD-160 implementation.
-namespace ripemd160sse {
+/// Internal RIPEMD-160 implementation.
+namespace _ripemd160 {
 
-#ifdef WIN64
-  static const __declspec(align(16)) uint32_t _init[] = {
-#else
-  static const uint32_t _init[] __attribute__ ((aligned (16))) = {
-#endif
-      0x67452301ul,0x67452301ul,0x67452301ul,0x67452301ul,
-      0xEFCDAB89ul,0xEFCDAB89ul,0xEFCDAB89ul,0xEFCDAB89ul,
-      0x98BADCFEul,0x98BADCFEul,0x98BADCFEul,0x98BADCFEul,
-      0x10325476ul,0x10325476ul,0x10325476ul,0x10325476ul,
-      0xC3D2E1F0ul,0xC3D2E1F0ul,0xC3D2E1F0ul,0xC3D2E1F0ul
-  };
+/** Initialize RIPEMD-160 state. */
+void inline Initialize(uint32_t* s)
+{
+    s[0] = 0x67452301ul;
+    s[1] = 0xEFCDAB89ul;
+    s[2] = 0x98BADCFEul;
+    s[3] = 0x10325476ul;
+    s[4] = 0xC3D2E1F0ul;
+}
 
-//#define f1(x, y, z) (x ^ y ^ z)
-//#define f2(x, y, z) ((x & y) | (~x & z))
-//#define f3(x, y, z) ((x | ~y) ^ z)
-//#define f4(x, y, z) ((x & z) | (~z & y))
-//#define f5(x, y, z) (x ^ (y | ~z))
-
-#define ROL(x,n) _mm_or_si128( _mm_slli_epi32(x, n) , _mm_srli_epi32(x, 32 - n) )
-
-#ifdef WIN64
-
-#define not(x) _mm_andnot_si128(x, _mm_cmpeq_epi32(_mm_setzero_si128(), _mm_setzero_si128()))
-#define f1(x,y,z) _mm_xor_si128(x, _mm_xor_si128(y, z))
-#define f2(x,y,z) _mm_or_si128(_mm_and_si128(x,y),_mm_andnot_si128(x,z))
-#define f3(x,y,z) _mm_xor_si128(_mm_or_si128(x,not(y)),z)
-#define f4(x,y,z) _mm_or_si128(_mm_and_si128(x,z),_mm_andnot_si128(z,y))
-#define f5(x,y,z) _mm_xor_si128(x,_mm_or_si128(y,not(z)))
-
-#else
-
-#define f1(x,y,z) _mm_xor_si128(x, _mm_xor_si128(y, z))
-#define f2(x,y,z) _mm_or_si128(_mm_and_si128(x,y),_mm_andnot_si128(x,z))
-#define f3(x,y,z) _mm_xor_si128(_mm_or_si128(x,~(y)),z)
-#define f4(x,y,z) _mm_or_si128(_mm_and_si128(x,z),_mm_andnot_si128(z,y))
-#define f5(x,y,z) _mm_xor_si128(x,_mm_or_si128(y,~(z)))
-
+#ifndef WIN64
+inline uint32_t _rotl(uint32_t x, uint8_t r) {
+  asm("roll %1,%0" : "+r" (x) : "c" (r));
+  return x;
+}
 #endif
 
+#define ROL(x,n) _rotl(x,n)
 
-#define add3(x0, x1, x2 ) _mm_add_epi32(_mm_add_epi32(x0, x1), x2)
-#define add4(x0, x1, x2, x3) _mm_add_epi32(_mm_add_epi32(x0, x1), _mm_add_epi32(x2, x3))
+#define f1(x, y, z) (x ^ y ^ z)
+#define f2(x, y, z) ((x & y) | (~x & z))
+#define f3(x, y, z) ((x | ~y) ^ z)
+#define f4(x, y, z) ((x & z) | (~z & y))
+#define f5(x, y, z) (x ^ (y | ~z))
 
 #define Round(a,b,c,d,e,f,x,k,r) \
-  u = add4(a,f,x,_mm_set1_epi32(k)); \
-  a = _mm_add_epi32(ROL(u, r),e); \
+  a = ROL(a + f + x + k, r) + e; \
   c = ROL(c, 10);
 
 #define R11(a,b,c,d,e,x,r) Round(a, b, c, d, e, f1(b, c, d), x, 0, r)
@@ -81,46 +66,13 @@ namespace ripemd160sse {
 #define R42(a,b,c,d,e,x,r) Round(a, b, c, d, e, f2(b, c, d), x, 0x7A6D76E9ul, r)
 #define R52(a,b,c,d,e,x,r) Round(a, b, c, d, e, f1(b, c, d), x, 0, r)
 
-#define LOADW(i) _mm_set_epi32(*((uint32_t *)blk[0]+i),*((uint32_t *)blk[1]+i),*((uint32_t *)blk[2]+i),*((uint32_t *)blk[3]+i))
-
-  // Initialize RIPEMD-160 state
-  void Initialize(__m128i *s) {
-    memcpy(s, _init, sizeof(_init));
-  }
-
-  // Perform 4 RIPE in parallel using SSE2
-  void Transform(__m128i *s, uint8_t *blk[4]) {
-
-    __m128i a1 = _mm_load_si128(s + 0);
-    __m128i b1 = _mm_load_si128(s + 1);
-    __m128i c1 = _mm_load_si128(s + 2);
-    __m128i d1 = _mm_load_si128(s + 3);
-    __m128i e1 = _mm_load_si128(s + 4);
-    __m128i a2 = a1;
-    __m128i b2 = b1;
-    __m128i c2 = c1;
-    __m128i d2 = d1;
-    __m128i e2 = e1;
-    __m128i u;
-    __m128i w[16];
-
-
-    w[0] = LOADW(0);
-    w[1] = LOADW(1);
-    w[2] = LOADW(2);
-    w[3] = LOADW(3);
-    w[4] = LOADW(4);
-    w[5] = LOADW(5);
-    w[6] = LOADW(6);
-    w[7] = LOADW(7);
-    w[8] = LOADW(8);
-    w[9] = LOADW(9);
-    w[10] = LOADW(10);
-    w[11] = LOADW(11);
-    w[12] = LOADW(12);
-    w[13] = LOADW(13);
-    w[14] = LOADW(14);
-    w[15] = LOADW(15);
+/** Perform a RIPEMD-160 transformation, processing a 64-byte chunk. */
+void Transform(uint32_t* s, const unsigned char* chunk)
+{
+    uint32_t a1 = s[0], b1 = s[1], c1 = s[2], d1 = s[3], e1 = s[4];
+    uint32_t a2 = a1, b2 = b1, c2 = c1, d2 = d1, e2 = e1;
+    uint32_t w[16];
+    memcpy(w,chunk,16*sizeof(uint32_t));
 
     R11(a1, b1, c1, d1, e1, w[0], 11);
     R12(a2, b2, c2, d2, e2, w[5], 8);
@@ -287,123 +239,83 @@ namespace ripemd160sse {
     R51(b1, c1, d1, e1, a1, w[13], 6);
     R52(b2, c2, d2, e2, a2, w[11], 11);
 
-    __m128i t = s[0];
-    s[0] = add3(s[1],c1,d2);
-    s[1] = add3(s[2],d1,e2);
-    s[2] = add3(s[3],e1,a2);
-    s[3] = add3(s[4],a1,b2);
-    s[4] = add3(t,b1,c2);
-  }
+    uint32_t t = s[0];
+    s[0] = s[1] + c1 + d2;
+    s[1] = s[2] + d1 + e2;
+    s[2] = s[3] + e1 + a2;
+    s[3] = s[4] + a1 + b2;
+    s[4] = t + b1 + c2;
+}
 
-} // namespace ripemd160sse
+} // namespace ripemd160
 
-#ifdef WIN64
+CRIPEMD160::CRIPEMD160() : bytes(0)
+{
+  _ripemd160::Initialize(s);
+}
 
-#define DEPACK(d,i) \
-((uint32_t *)d)[0] = s[0].m128i_u32[i]; \
-((uint32_t *)d)[1] = s[1].m128i_u32[i]; \
-((uint32_t *)d)[2] = s[2].m128i_u32[i]; \
-((uint32_t *)d)[3] = s[3].m128i_u32[i]; \
-((uint32_t *)d)[4] = s[4].m128i_u32[i];
+void CRIPEMD160::Write(const unsigned char* data, size_t len)
+{
+    const unsigned char* end = data + len;
+    size_t bufsize = bytes % 64;
+    if (bufsize && bufsize + len >= 64) {
+        // Fill the buffer, and process it.
+        memcpy(buf + bufsize, data, 64 - bufsize);
+        bytes += 64 - bufsize;
+        data += 64 - bufsize;
+        _ripemd160::Transform(s, buf);
+        bufsize = 0;
+    }
+    while (end >= data + 64) {
+        // Process full chunks directly from the source.
+        _ripemd160::Transform(s, data);
+        bytes += 64;
+        data += 64;
+    }
+    if (end > data) {
+        // Fill the buffer with what remains.
+        memcpy(buf + bufsize, data, end - data);
+        bytes += end - data;
+    }
+}
 
-#else
-
-#define DEPACK(d,i) \
-((uint32_t *)d)[0] = s0[i]; \
-((uint32_t *)d)[1] = s1[i]; \
-((uint32_t *)d)[2] = s2[i]; \
-((uint32_t *)d)[3] = s3[i]; \
-((uint32_t *)d)[4] = s4[i];
-
-#endif
+void CRIPEMD160::Finalize(unsigned char hash[20])
+{
+    static const unsigned char pad[64] = {0x80};
+    unsigned char sizedesc[8];
+    *(uint64_t *)sizedesc = bytes << 3;
+    Write(pad, 1 + ((119 - (bytes % 64)) % 64));
+    Write(sizedesc, 8);
+    memcpy(hash,s,20);
+}
 
 static const uint64_t sizedesc_32 = 32 << 3;
 static const unsigned char pad[64] = { 0x80 };
 
-void ripemd160sse_32(
-  unsigned char *i0,
-  unsigned char *i1,
-  unsigned char *i2,
-  unsigned char *i3,
-  unsigned char *d0,
-  unsigned char *d1,
-  unsigned char *d2,
-  unsigned char *d3) {
+void ripemd160_32(unsigned char *input, unsigned char *digest) {
 
-  __m128i s[5];
-  uint8_t *bs[] = { i0,i1,i2,i3 };
-
-  ripemd160sse::Initialize(s);
-  memcpy(i0 + 32, pad, 24);
-  memcpy(i0 + 56, &sizedesc_32, 8);
-  memcpy(i1 + 32, pad, 24);
-  memcpy(i1 + 56, &sizedesc_32, 8);
-  memcpy(i2 + 32, pad, 24);
-  memcpy(i2 + 56, &sizedesc_32, 8);
-  memcpy(i3 + 32, pad, 24);
-  memcpy(i3 + 56, &sizedesc_32, 8);
-
-  ripemd160sse::Transform(s, bs);
-
-#ifndef WIN64
-  uint32_t *s0 = (uint32_t *)&s[0];
-  uint32_t *s1 = (uint32_t *)&s[1];
-  uint32_t *s2 = (uint32_t *)&s[2];
-  uint32_t *s3 = (uint32_t *)&s[3];
-  uint32_t *s4 = (uint32_t *)&s[4];
-#endif
-
-  DEPACK(d0,3);
-  DEPACK(d1,2);
-  DEPACK(d2,1);
-  DEPACK(d3,0);
+  uint32_t *s = (uint32_t *)digest;
+  _ripemd160::Initialize(s);
+  memcpy(input+32,pad,24);
+  memcpy(input+56,&sizedesc_32,8);
+  _ripemd160::Transform(s, input);
 
 }
 
-void ripemd160sse_test() {
+void ripemd160(unsigned char *input,int length,unsigned char *digest) {
 
-  unsigned char h0[20];
-  unsigned char h1[20];
-  unsigned char h2[20];
-  unsigned char h3[20];
-  unsigned char ch0[20];
-  unsigned char ch1[20];
-  unsigned char ch2[20];
-  unsigned char ch3[20];
-  unsigned char m0[64];
-  unsigned char m1[64];
-  unsigned char m2[64];
-  unsigned char m3[64];
+	CRIPEMD160 cripe;
+	cripe.Write(input,length);
+	cripe.Finalize(digest);
 
-  strcpy((char *)m0, "This is a test message to test01");
-  strcpy((char *)m1, "This is a test message to test02");
-  strcpy((char *)m2, "This is a test message to test03");
-  strcpy((char *)m3, "This is a test message to test04");
+}
 
-  ripemd160_32(m0, ch0);
-  ripemd160_32(m1, ch1);
-  ripemd160_32(m2, ch2);
-  ripemd160_32(m3, ch3);
+std::string ripemd160_hex(unsigned char *digest) {
 
-  ripemd160sse_32(m0, m1, m2, m3, h0, h1, h2, h3);
-
-  if ((ripemd160_hex(h0) != ripemd160_hex(ch0)) ||
-    (ripemd160_hex(h1) != ripemd160_hex(ch1)) ||
-    (ripemd160_hex(h2) != ripemd160_hex(ch2)) ||
-    (ripemd160_hex(h3) != ripemd160_hex(ch3))) {
-
-    printf("RIPEMD160() Results Wrong !\n");
-    printf("RIP: %s\n", ripemd160_hex(ch0).c_str());
-    printf("RIP: %s\n", ripemd160_hex(ch1).c_str());
-    printf("RIP: %s\n", ripemd160_hex(ch2).c_str());
-    printf("RIP: %s\n\n", ripemd160_hex(ch3).c_str());
-    printf("SSE: %s\n", ripemd160_hex(h0).c_str());
-    printf("SSE: %s\n", ripemd160_hex(h1).c_str());
-    printf("SSE: %s\n", ripemd160_hex(h2).c_str());
-    printf("SSE: %s\n\n", ripemd160_hex(h3).c_str());
-
-  }
-
-  printf("RIPE() Results OK !\n");
+  char buf[2 * 20 + 1];
+  buf[2 * 20] = 0;
+  for (int i = 0; i < 20; i++)
+    sprintf(buf + i * 2, "%02x", (int)digest[i]);
+  return std::string(buf);
 
 }

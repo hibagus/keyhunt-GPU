@@ -15,7 +15,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "sha256.h"
+#include "keyhunt/crypto/hash/sha256.h"
 #include <immintrin.h>
 #include <string.h>
 #include <stdint.h>

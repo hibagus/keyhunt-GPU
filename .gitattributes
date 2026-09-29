@@ -1,0 +1,4 @@
+# Preserve the inherited mixed line endings; recognize CRLF in whitespace checks.
+*.cpp whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+*.c whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+*.h whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

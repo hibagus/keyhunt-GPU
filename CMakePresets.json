@@ -1,0 +1,35 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {"major": 3, "minor": 22, "patch": 0},
+  "configurePresets": [
+    {
+      "name": "cpu-release",
+      "displayName": "CPU release",
+      "generator": "Unix Makefiles",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {"CMAKE_BUILD_TYPE": "Release", "BUILD_TESTING": "ON"}
+    },
+    {
+      "name": "cpu-debug",
+      "inherits": "cpu-release",
+      "displayName": "CPU debug",
+      "cacheVariables": {"CMAKE_BUILD_TYPE": "Debug", "KEYHUNT_ENABLE_LTO": "OFF"}
+    },
+    {
+      "name": "cpu-sanitizers",
+      "inherits": "cpu-debug",
+      "displayName": "CPU address/undefined sanitizers (legacy defects expected)",
+      "cacheVariables": {"KEYHUNT_ENABLE_SANITIZERS": "ON"}
+    }
+  ],
+  "buildPresets": [
+    {"name": "cpu-release", "configurePreset": "cpu-release"},
+    {"name": "cpu-debug", "configurePreset": "cpu-debug"},
+    {"name": "cpu-sanitizers", "configurePreset": "cpu-sanitizers"}
+  ],
+  "testPresets": [
+    {"name": "cpu-release", "configurePreset": "cpu-release", "output": {"outputOnFailure": true}},
+    {"name": "cpu-debug", "configurePreset": "cpu-debug", "output": {"outputOnFailure": true}},
+    {"name": "cpu-sanitizers", "configurePreset": "cpu-sanitizers", "output": {"outputOnFailure": true}}
+  ]
+}

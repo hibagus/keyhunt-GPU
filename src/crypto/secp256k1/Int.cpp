@@ -15,8 +15,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "Int.h"
-#include "IntGroup.h"
+#include "keyhunt/crypto/secp256k1/Int.h"
+#include "keyhunt/crypto/secp256k1/IntGroup.h"
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>

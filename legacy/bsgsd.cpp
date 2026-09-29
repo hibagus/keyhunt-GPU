@@ -16,16 +16,16 @@ email: albertobsd@gmail.com
 #include "oldbloom/oldbloom.h"
 #include "bloom/bloom.h"
 #include "sha3/sha3.h"
-#include "util.h"
+#include "keyhunt/core/util.h"
 
-#include "secp256k1/SECP256k1.h"
-#include "secp256k1/Point.h"
-#include "secp256k1/Int.h"
-#include "secp256k1/IntGroup.h"
-#include "secp256k1/Random.h"
+#include "keyhunt/crypto/secp256k1/SECP256k1.h"
+#include "keyhunt/crypto/secp256k1/Point.h"
+#include "keyhunt/crypto/secp256k1/Int.h"
+#include "keyhunt/crypto/secp256k1/IntGroup.h"
+#include "keyhunt/crypto/secp256k1/Random.h"
 
-#include "hash/sha256.h"
-#include "hash/ripemd160.h"
+#include "keyhunt/crypto/hash/sha256.h"
+#include "keyhunt/crypto/hash/ripemd160.h"
 
 #include <unistd.h>
 #include <pthread.h>

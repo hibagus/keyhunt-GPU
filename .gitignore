@@ -1,8 +1,8 @@
 bPfile
 hexcharstoraw
 *.bin
-keyhunt
-bsgsd
+/keyhunt
+/bsgsd
 KEYFOUNDKEYFOUND.txt
 VANITYKEYFOUND.txt
 *.dat
@@ -65,3 +65,7 @@ dkms.conf
 # Python baseline tools
 __pycache__/
 *.py[cod]
+
+# Out-of-source builds and local CMake settings
+/build/
+CMakeUserPresets.json

@@ -16,7 +16,7 @@
 */
 
 
-#include "Random.h"
+#include "keyhunt/crypto/secp256k1/Random.h"
 
 #if defined(_WIN64) && !defined(__CYGWIN__)
 #else
