@@ -98,8 +98,9 @@ MIT-only.
 
 C04 adds `result_verifier` and `target_loading` to CTest. Debug builds enable
 libstdc++ bounds assertions. See the [core extraction notes](CORE_EXTRACTION.md)
-for the test cases and the inherited arithmetic overflow that currently prevents
-a clean verifier sanitizer run. CPU release/debug builds remain the passing gates.
+for the original test cases. C06 corrected the inherited inversion overflow; the
+focused verifier sanitizer test now passes. Whole-application sanitizer findings
+remain open. See [oracle validation](ARITHMETIC_ORACLE.md).
 
 C05 adds `exact_range`, `block_grid`, `work_unit` and `range_oracle`. The
 [exact range notes](EXACT_RANGES.md) describe their exhaustive and wide-integer

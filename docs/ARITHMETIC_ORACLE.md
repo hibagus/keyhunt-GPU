@@ -47,7 +47,7 @@ python3 tests/oracle/oracle_selftest.py --binary build/cpu-release/secp256k1_ora
   --report /tmp/keyhunt-oracle-regeneration.json --write-vectors
 ```
 
-## CPU issues to resolve in subsequent C06 changes
+## CPU field arithmetic corrections
 
 The C04 sanitizer log identifies signed overflow in Montgomery setup and the
 low-word loop of delayed-shift inversion, plus shifts of negative coefficients.
@@ -58,5 +58,32 @@ checks must establish these behaviors before fixes; CPU agreement alone is not
 proof that arithmetic is correct. Existing CPU byte-alignment and application
 leak findings remain separate unless explicitly covered by subsequent evidence.
 
-C06 is in progress. No GPU arithmetic or search has been implemented by adding
-this oracle. Bounded search and CPU primitive checks follow in separate commits.
+The first CPU field run reproduced 33 failures in 12,552 cases, recorded in
+[C06_FIELD_BEFORE.json](baselines/C06_FIELD_BEFORE.json) (first 20 diagnostics
+retained). For example `2 * (2^255-1)` was returned unreduced. All three specialized
+multiply/square variants now retain the 257th carry bit and subtract `p` when
+needed. Their twice-folded intermediate is below `2*p`, so one subtraction
+suffices, including full 256-bit operands. `ModNeg(0)` now remains zero.
+
+Montgomery Newton inversion now uses unsigned arithmetic modulo `2^64`. The
+DRS62 inversion's low words also use explicit unsigned wraparound and arithmetic
+right shift; its bounded signed matrix coefficients use multiplication by two
+instead of undefined left shifts of negatives. This preserves the intended
+bit operations without compiler overflow flags or sanitizer suppressions.
+
+`cpu_field_oracle` now passes 13,252 cases: canonical field add/subtract,
+specialized multiply/square (including inputs at/above `p`), inverse, negation,
+and scalar add/multiply modulo `n`. Binary tests cover distinct output, output
+aliasing either operand, and in-place forms; self-multiplication tests alias all
+operands. Nonzero inverse results use Python `pow(a,-1,p)`; the legacy zero-input
+inverse sentinel is checked as zero, not treated as an actual inverse.
+
+Release's complete nine-suite run passes, including all 38 CPU and five loader
+cases. Debug and ASan/UBSan pass the oracle, field and 55-check verifier suites.
+In particular, the previously failing C04 verifier now passes with
+`ASAN_OPTIONS=detect_leaks=1 UBSAN_OPTIONS=halt_on_error=1`. See
+[field validation](baselines/C06_FIELD_VALIDATION.json). This does not clear the
+application's unrelated alignment/leak findings and makes no performance claim.
+
+C06 remains in progress; exceptional point and bounded search tests follow.
+No GPU arithmetic or search has been implemented.

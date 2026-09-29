@@ -1,0 +1,138 @@
+{
+  "seed": 3228507677,
+  "cases": 12552,
+  "categories": {
+    "fadd": 3209,
+    "fsub": 3209,
+    "fmul": 3230,
+    "fsquare": 562,
+    "finv": 559,
+    "fneg": 559,
+    "sadd": 612,
+    "smul": 612
+  },
+  "binary_sha256": "f4ad49a53a2c7dfe1e19ba06fb845d96358aec8793c3a23cde123ea509ea3f30",
+  "failure_count": 33,
+  "failures": [
+    {
+      "operation": "fmul",
+      "command": "fmul 0000000000000000000000000000000000000000000000000000000000000002 7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "expected": "00000000000000000000000000000000000000000000000000000001000003cf 00000000000000000000000000000000000000000000000000000001000003cf 00000000000000000000000000000000000000000000000000000001000003cf 00000000000000000000000000000000000000000000000000000001000003cf",
+      "actual": "fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe"
+    },
+    {
+      "operation": "fmul",
+      "command": "fmul 0000000000000000000000000000000000000000000000000000000100000000 00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "expected": "00000000000000000000000000000000000000000000000000000000000003d1 00000000000000000000000000000000000000000000000000000000000003d1 00000000000000000000000000000000000000000000000000000000000003d1 00000000000000000000000000000000000000000000000000000000000003d1",
+      "actual": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffff00000000 ffffffffffffffffffffffffffffffffffffffffffffffffffffffff00000000 ffffffffffffffffffffffffffffffffffffffffffffffffffffffff00000000 ffffffffffffffffffffffffffffffffffffffffffffffffffffffff00000000"
+    },
+    {
+      "operation": "fmul",
+      "command": "fmul 0000000000000000000000000000000000000000000000000000000200000000 00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "expected": "00000000000000000000000000000000000000000000000000000000000007a2 00000000000000000000000000000000000000000000000000000000000007a2 00000000000000000000000000000000000000000000000000000000000007a2 00000000000000000000000000000000000000000000000000000000000007a2",
+      "actual": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffff000003d1 ffffffffffffffffffffffffffffffffffffffffffffffffffffffff000003d1 ffffffffffffffffffffffffffffffffffffffffffffffffffffffff000003d1 ffffffffffffffffffffffffffffffffffffffffffffffffffffffff000003d1"
+    },
+    {
+      "operation": "fmul",
+      "command": "fmul 00000000000000000000000000000000ffffffffffffffffffffffffffffffff 0000000000000000000000000000000100000000000000000000000000000001",
+      "expected": "00000000000000000000000000000000000000000000000000000001000003d0 00000000000000000000000000000000000000000000000000000001000003d0 00000000000000000000000000000000000000000000000000000001000003d0 00000000000000000000000000000000000000000000000000000001000003d0",
+      "actual": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "operation": "fmul",
+      "command": "fmul 0000000000000000000000000000000100000000000000000000000000000001 00000000000000000000000000000000ffffffffffffffffffffffffffffffff",
+      "expected": "00000000000000000000000000000000000000000000000000000001000003d0 00000000000000000000000000000000000000000000000000000001000003d0 00000000000000000000000000000000000000000000000000000001000003d0 00000000000000000000000000000000000000000000000000000001000003d0",
+      "actual": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "operation": "fmul",
+      "command": "fmul 00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff 0000000000000000000000000000000000000000000000000000000100000000",
+      "expected": "00000000000000000000000000000000000000000000000000000000000003d1 00000000000000000000000000000000000000000000000000000000000003d1 00000000000000000000000000000000000000000000000000000000000003d1 00000000000000000000000000000000000000000000000000000000000003d1",
+      "actual": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffff00000000 ffffffffffffffffffffffffffffffffffffffffffffffffffffffff00000000 ffffffffffffffffffffffffffffffffffffffffffffffffffffffff00000000 ffffffffffffffffffffffffffffffffffffffffffffffffffffffff00000000"
+    },
+    {
+      "operation": "fmul",
+      "command": "fmul 00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff 0000000000000000000000000000000000000000000000000000000200000000",
+      "expected": "00000000000000000000000000000000000000000000000000000000000007a2 00000000000000000000000000000000000000000000000000000000000007a2 00000000000000000000000000000000000000000000000000000000000007a2 00000000000000000000000000000000000000000000000000000000000007a2",
+      "actual": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffff000003d1 ffffffffffffffffffffffffffffffffffffffffffffffffffffffff000003d1 ffffffffffffffffffffffffffffffffffffffffffffffffffffffff000003d1 ffffffffffffffffffffffffffffffffffffffffffffffffffffffff000003d1"
+    },
+    {
+      "operation": "fmul",
+      "command": "fmul 7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff 0000000000000000000000000000000000000000000000000000000000000002",
+      "expected": "00000000000000000000000000000000000000000000000000000001000003cf 00000000000000000000000000000000000000000000000000000001000003cf 00000000000000000000000000000000000000000000000000000001000003cf 00000000000000000000000000000000000000000000000000000001000003cf",
+      "actual": "fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe"
+    },
+    {
+      "operation": "fmul",
+      "command": "fmul fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2d fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2d",
+      "expected": "0000000000000000000000000000000000000000000000000000000000000004 0000000000000000000000000000000000000000000000000000000000000004 0000000000000000000000000000000000000000000000000000000000000004 0000000000000000000000000000000000000000000000000000000000000004",
+      "actual": "fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc33 fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc33 fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc33 fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc33"
+    },
+    {
+      "operation": "fmul",
+      "command": "fmul fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2d fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2e",
+      "expected": "0000000000000000000000000000000000000000000000000000000000000002 0000000000000000000000000000000000000000000000000000000000000002 0000000000000000000000000000000000000000000000000000000000000002 0000000000000000000000000000000000000000000000000000000000000002",
+      "actual": "fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc31 fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc31 fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc31 fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc31"
+    },
+    {
+      "operation": "fmul",
+      "command": "fmul fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2e fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2d",
+      "expected": "0000000000000000000000000000000000000000000000000000000000000002 0000000000000000000000000000000000000000000000000000000000000002 0000000000000000000000000000000000000000000000000000000000000002 0000000000000000000000000000000000000000000000000000000000000002",
+      "actual": "fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc31 fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc31 fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc31 fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc31"
+    },
+    {
+      "operation": "fmul",
+      "command": "fmul fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2e fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2e",
+      "expected": "0000000000000000000000000000000000000000000000000000000000000001 0000000000000000000000000000000000000000000000000000000000000001 0000000000000000000000000000000000000000000000000000000000000001 0000000000000000000000000000000000000000000000000000000000000001",
+      "actual": "fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc30 fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc30 fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc30 fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc30"
+    },
+    {
+      "operation": "fneg",
+      "command": "fneg 0000000000000000000000000000000000000000000000000000000000000000",
+      "expected": "0000000000000000000000000000000000000000000000000000000000000000",
+      "actual": "fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f"
+    },
+    {
+      "operation": "fsquare",
+      "command": "fsquare fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2d",
+      "expected": "0000000000000000000000000000000000000000000000000000000000000004 0000000000000000000000000000000000000000000000000000000000000004",
+      "actual": "fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc33 fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc33"
+    },
+    {
+      "operation": "fsquare",
+      "command": "fsquare fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2e",
+      "expected": "0000000000000000000000000000000000000000000000000000000000000001 0000000000000000000000000000000000000000000000000000000000000001",
+      "actual": "fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc30 fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc30"
+    },
+    {
+      "operation": "fsquare",
+      "command": "fsquare fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f",
+      "expected": "0000000000000000000000000000000000000000000000000000000000000000 0000000000000000000000000000000000000000000000000000000000000000",
+      "actual": "fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f"
+    },
+    {
+      "operation": "fmul",
+      "command": "fmul fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f 0000000000000000000000000000000000000000000000000000000000000001",
+      "expected": "0000000000000000000000000000000000000000000000000000000000000000 0000000000000000000000000000000000000000000000000000000000000000 0000000000000000000000000000000000000000000000000000000000000000 0000000000000000000000000000000000000000000000000000000000000000",
+      "actual": "fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f"
+    },
+    {
+      "operation": "fmul",
+      "command": "fmul fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f 0000000000000000000000000000000000000000000000000000000000000002",
+      "expected": "0000000000000000000000000000000000000000000000000000000000000000 0000000000000000000000000000000000000000000000000000000000000000 0000000000000000000000000000000000000000000000000000000000000000 0000000000000000000000000000000000000000000000000000000000000000",
+      "actual": "fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f"
+    },
+    {
+      "operation": "fmul",
+      "command": "fmul fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2e",
+      "expected": "0000000000000000000000000000000000000000000000000000000000000000 0000000000000000000000000000000000000000000000000000000000000000 0000000000000000000000000000000000000000000000000000000000000000 0000000000000000000000000000000000000000000000000000000000000000",
+      "actual": "fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f"
+    },
+    {
+      "operation": "fmul",
+      "command": "fmul fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f",
+      "expected": "0000000000000000000000000000000000000000000000000000000000000000 0000000000000000000000000000000000000000000000000000000000000000 0000000000000000000000000000000000000000000000000000000000000000 0000000000000000000000000000000000000000000000000000000000000000",
+      "actual": "fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f"
+    }
+  ]
+}

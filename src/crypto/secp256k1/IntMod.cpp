@@ -101,6 +101,7 @@ void Int::ModSub(Int *a,Int *b) {
 // ------------------------------------------------
 
 void Int::ModNeg() {
+  if (IsZero()) return; // Keep the canonical representative of zero.
   Neg();
   Add(&_P);
 }
@@ -398,7 +399,7 @@ void Int::ModInv() {
 
   int64_t bitCount;
   int64_t uu, uv, vu, vv;
-  int64_t v0, u0;
+  uint64_t v0, u0; // Low words deliberately wrap modulo 2^64.
   int64_t nb0;
 
   while (!u.IsZero()) {
@@ -410,8 +411,8 @@ void Int::ModInv() {
     uu = 1; uv = 0;
     vu = 0; vv = 1;
 
-    u0 = (int64_t)u.bits64[0];
-    v0 = (int64_t)v.bits64[0];
+    u0 = u.bits64[0];
+    v0 = v.bits64[0];
     bitCount = 0;
 
     // Slightly optimized Binary XCD loop on native signed integers
@@ -421,9 +422,12 @@ void Int::ModInv() {
       while (IS_EVEN(u0) && bitCount<62) {
 
         bitCount++;
-        u0 >>= 1;
-        vu <<= 1;
-        vv <<= 1;
+        // Explicit arithmetic right shift of the two's-complement low word.
+        u0 = (u0 >> 1) | (u0 & (uint64_t(1) << 63));
+        // Matrix coefficients stay within +/-2^62; signed multiplication is
+        // defined here, unlike left shifting a negative signed coefficient.
+        vu *= 2;
+        vv *= 2;
 
       }
 
@@ -689,14 +693,14 @@ void Int::SetupField(Int *n, Int *R, Int *R2, Int *R3, Int *R4) {
 
   // Last digit inversions (Newton's iteration)
   {
-    int64_t x, t;
-    x = t = (int64_t)n->bits64[0];
+    uint64_t x, t; // Newton inversion is arithmetic modulo 2^64.
+    x = t = n->bits64[0];
     x = x * (2 - t * x);
     x = x * (2 - t * x);
     x = x * (2 - t * x);
     x = x * (2 - t * x);
     x = x * (2 - t * x);
-    MM64 = (uint64_t)(-x);
+    MM64 = uint64_t(0) - x;
     MM32 = (uint32_t)MM64;
   }
   _P.Set(n);
@@ -907,8 +911,10 @@ void Int::ModMulK1(Int *a, Int *b) {
   c = _addcarry_u64(c, r512[2], 0ULL, bits64 + 2);
   c = _addcarry_u64(c, r512[3], 0ULL, bits64 + 3);
 
-  // Probability of carry here or that this>P is very very unlikely
-  bits64[4] = 0; 
+  // Retain the 257th bit and perform the final reduction. The folded value
+  // is below 2*P, including for full-width 256-bit operands.
+  bits64[4] = c;
+  if (IsGreaterOrEqual(&_P)) Sub(&_P);
 
 }
 
@@ -967,8 +973,10 @@ void Int::ModMulK1(Int *a) {
   c = _addcarry_u64(c, r512[1], ah, bits64 + 1);
   c = _addcarry_u64(c, r512[2], 0, bits64 + 2);
   c = _addcarry_u64(c, r512[3], 0, bits64 + 3);
-  // Probability of carry here or that this>P is very very unlikely
-  bits64[4] = 0;
+  // Retain the 257th bit and perform the final reduction. The folded value
+  // is below 2*P, including for full-width 256-bit operands.
+  bits64[4] = c;
+  if (IsGreaterOrEqual(&_P)) Sub(&_P);
 
 }
 
@@ -1085,8 +1093,10 @@ void Int::ModSquareK1(Int *a) {
   c = _addcarry_u64(c, r512[1], u11, bits64 + 1);
   c = _addcarry_u64(c, r512[2], 0, bits64 + 2);
   c = _addcarry_u64(c, r512[3], 0, bits64 + 3);
-  // Probability of carry here or that this>P is very very unlikely
-  bits64[4] = 0;
+  // Retain the 257th bit and perform the final reduction. The folded value
+  // is below 2*P, including for full-width 256-bit operands.
+  bits64[4] = c;
+  if (IsGreaterOrEqual(&_P)) Sub(&_P);
 
 }
 

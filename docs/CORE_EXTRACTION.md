@@ -149,3 +149,8 @@ cmake --build --preset cpu-sanitizers --parallel 4 --target result_verifier_test
 ASAN_OPTIONS=detect_leaks=1 UBSAN_OPTIONS=halt_on_error=1 \
   ctest --preset cpu-sanitizers -R '^result_verifier$'
 ```
+
+C06 follow-up: [independent field checks](ARITHMETIC_ORACLE.md#cpu-field-arithmetic-corrections)
+reproduced and corrected modular reduction and inversion issues. The focused
+verifier sanitizer gate above now passes; this section's C04 failure log remains
+historical evidence. Application alignment/leak findings are still separate.

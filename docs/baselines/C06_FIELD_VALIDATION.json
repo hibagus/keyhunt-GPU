@@ -1,0 +1,79 @@
+{
+  "stage": "C06 field arithmetic fixes",
+  "before_cases": 12552,
+  "before_failures": 33,
+  "after_cases": 13252,
+  "note": "700 additional full self-alias cases were added after the initial failure capture.",
+  "sanitizer_environment": {
+    "ASAN_OPTIONS": "detect_leaks=1",
+    "UBSAN_OPTIONS": "halt_on_error=1"
+  },
+  "builds": {
+    "cpu-release": {
+      "field": {
+        "seed": 3228507677,
+        "cases": 13252,
+        "categories": {
+          "fadd": 3209,
+          "fsub": 3209,
+          "fmul": 3230,
+          "fsquare": 562,
+          "fmulself": 562,
+          "finv": 559,
+          "fneg": 559,
+          "smulself": 138,
+          "sadd": 612,
+          "smul": 612
+        },
+        "binary_sha256": "6a459244a35264adc98fa6e0ef6fcfb93345fa7099533cb67e746ce2caf2f853",
+        "failure_count": 0,
+        "failures": []
+      },
+      "ctest_output": "Test project /home/bagus/keyhunt-GPU/build/cpu-release\n    Start 1: oracle_selftest\n1/9 Test #1: oracle_selftest ..................   Passed    0.85 sec\n    Start 2: cpu_field_oracle\n2/9 Test #2: cpu_field_oracle .................   Passed    0.24 sec\n    Start 3: exact_range\n3/9 Test #3: exact_range ......................   Passed    0.00 sec\n    Start 4: block_grid\n4/9 Test #4: block_grid .......................   Passed    0.09 sec\n    Start 5: work_unit\n5/9 Test #5: work_unit ........................   Passed    0.04 sec\n    Start 6: range_oracle\n6/9 Test #6: range_oracle .....................   Passed    1.86 sec\n    Start 7: result_verifier\n7/9 Test #7: result_verifier ..................   Passed    0.03 sec\n    Start 8: cpu_baseline\n8/9 Test #8: cpu_baseline .....................   Passed   29.37 sec\n    Start 9: target_loading\n9/9 Test #9: target_loading ...................   Passed    8.52 sec\n\n100% tests passed, 0 tests failed out of 9\n\nLabel Time Summary:\nbaseline    =  29.37 sec*proc (1 test)\ncore        =  10.54 sec*proc (6 tests)\ncpu         =  41.01 sec*proc (9 tests)\noracle      =   1.10 sec*proc (2 tests)\nranges      =   1.99 sec*proc (4 tests)\n\nTotal Test time (real) =  41.01 sec\n"
+    },
+    "cpu-debug": {
+      "field": {
+        "seed": 3228507677,
+        "cases": 13252,
+        "categories": {
+          "fadd": 3209,
+          "fsub": 3209,
+          "fmul": 3230,
+          "fsquare": 562,
+          "fmulself": 562,
+          "finv": 559,
+          "fneg": 559,
+          "smulself": 138,
+          "sadd": 612,
+          "smul": 612
+        },
+        "binary_sha256": "43f90f1fc12a91bc0ffaaee7dd28a69acc755cc624dab59a39120290a2989550",
+        "failure_count": 0,
+        "failures": []
+      },
+      "ctest_output": "Test project /home/bagus/keyhunt-GPU/build/cpu-debug\n    Start 1: oracle_selftest\n1/3 Test #1: oracle_selftest ..................   Passed    0.89 sec\n    Start 2: cpu_field_oracle\n2/3 Test #2: cpu_field_oracle .................   Passed    0.75 sec\n    Start 7: result_verifier\n3/3 Test #7: result_verifier ..................   Passed    0.08 sec\n\n100% tests passed, 0 tests failed out of 3\n\nLabel Time Summary:\ncore      =   0.08 sec*proc (1 test)\ncpu       =   1.71 sec*proc (3 tests)\noracle    =   1.64 sec*proc (2 tests)\n\nTotal Test time (real) =   1.73 sec\n"
+    },
+    "cpu-sanitizers": {
+      "field": {
+        "seed": 3228507677,
+        "cases": 13252,
+        "categories": {
+          "fadd": 3209,
+          "fsub": 3209,
+          "fmul": 3230,
+          "fsquare": 562,
+          "fmulself": 562,
+          "finv": 559,
+          "fneg": 559,
+          "smulself": 138,
+          "sadd": 612,
+          "smul": 612
+        },
+        "binary_sha256": "b3e03e318b7ec37d1a9a2e50ae208e39deb08907a492c875ff9c81bdfa41d62d",
+        "failure_count": 0,
+        "failures": []
+      },
+      "ctest_output": "Test project /home/bagus/keyhunt-GPU/build/cpu-sanitizers\n    Start 1: oracle_selftest\n1/3 Test #1: oracle_selftest ..................   Passed    0.95 sec\n    Start 2: cpu_field_oracle\n2/3 Test #2: cpu_field_oracle .................   Passed    1.26 sec\n    Start 7: result_verifier\n3/3 Test #7: result_verifier ..................   Passed    0.14 sec\n\n100% tests passed, 0 tests failed out of 3\n\nLabel Time Summary:\ncore      =   0.14 sec*proc (1 test)\ncpu       =   2.35 sec*proc (3 tests)\noracle    =   2.21 sec*proc (2 tests)\n\nTotal Test time (real) =   2.36 sec\n"
+    }
+  }
+}

@@ -26,3 +26,11 @@ add_test(NAME oracle_selftest COMMAND "${Python3_EXECUTABLE}"
     --binary $<TARGET_FILE:secp256k1_oracle>
     --report "${CMAKE_CURRENT_BINARY_DIR}/oracle-selftest-results.json")
 set_tests_properties(oracle_selftest PROPERTIES TIMEOUT 120 LABELS "cpu;oracle")
+add_executable(cpu_arithmetic_probe tests/oracle/cpu_arithmetic_probe.cpp)
+target_link_libraries(cpu_arithmetic_probe PRIVATE keyhunt_core)
+keyhunt_configure_target(cpu_arithmetic_probe)
+add_test(NAME cpu_field_oracle COMMAND "${Python3_EXECUTABLE}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests/oracle/field_oracle.py"
+    --binary $<TARGET_FILE:cpu_arithmetic_probe>
+    --report "${CMAKE_CURRENT_BINARY_DIR}/cpu-field-oracle-results.json")
+set_tests_properties(cpu_field_oracle PROPERTIES TIMEOUT 120 LABELS "cpu;oracle")
