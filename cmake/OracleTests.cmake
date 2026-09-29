@@ -34,3 +34,9 @@ add_test(NAME cpu_field_oracle COMMAND "${Python3_EXECUTABLE}"
     --binary $<TARGET_FILE:cpu_arithmetic_probe>
     --report "${CMAKE_CURRENT_BINARY_DIR}/cpu-field-oracle-results.json")
 set_tests_properties(cpu_field_oracle PROPERTIES TIMEOUT 120 LABELS "cpu;oracle")
+add_test(NAME cpu_point_oracle COMMAND "${Python3_EXECUTABLE}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests/oracle/point_oracle.py"
+    --binary $<TARGET_FILE:cpu_arithmetic_probe>
+    --oracle $<TARGET_FILE:secp256k1_oracle>
+    --report "${CMAKE_CURRENT_BINARY_DIR}/cpu-point-oracle-results.json")
+set_tests_properties(cpu_point_oracle PROPERTIES TIMEOUT 120 LABELS "cpu;oracle")

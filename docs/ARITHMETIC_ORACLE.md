@@ -85,5 +85,33 @@ In particular, the previously failing C04 verifier now passes with
 [field validation](baselines/C06_FIELD_VALIDATION.json). This does not clear the
 application's unrelated alignment/leak findings and makes no performance claim.
 
-C06 remains in progress; exceptional point and bounded search tests follow.
-No GPU arithmetic or search has been implemented.
+## Complete point edge handling
+
+The point harness reproduced 1,206 failures across 2,448 cases before the change;
+[the captured report](baselines/C06_POINT_BEFORE.json) separates failure categories.
+Some direct/mixed-coordinate cases deliberately extended previously restricted
+preconditions. The new fast paths fall back to general addition/doubling when
+passed projective inputs. Valid canonical points are still a caller precondition;
+these arithmetic methods are not untrusted point parsers.
+
+Infinity is now consistently `Z == 0` in homogeneous coordinates `(X/Z,Y/Z)`.
+Reduction preserves it, addition handles either identity operand and equal or
+opposite points, and doubling handles infinity/zero Y. Negation preserves the
+projective scale. General scalar multiplication starts from infinity instead of
+the off-curve `(0,0,1)`. Generator-table lookup returns infinity for an invalid
+private scalar (`k <= 0` or `k >= n`), while the C04 public verifier continues to
+reject these inputs before lookup; it never silently reduces them modulo `n`.
+
+All 2,448 point cases now pass release, debug and unsuppressed ASan/UBSan. They
+include independent public keys, general multiplication (including zero/order),
+projective rescaling, `P+P`, `P+(-P)`, infinity, repeated reduction, and assignment
+of returned results over either input. Device output-pointer aliasing must still
+be tested separately in C08. See [point evidence](baselines/C06_POINT_VALIDATION.json).
+
+This intentionally fixes one legacy CLI observation: BSGS now finds a target at
+its exact start scalar. Two C01 baseline expectations were updated with
+[before/after evidence](baselines/C06_POINT_BASELINE_CHANGE.json), and all seven
+BSGS cases pass afterward. The other 36 cases passed without expectation changes
+in the full release run. Tail overrun and stride defects remain; this is not a
+claim of exact legacy search coverage. Bounded search corpus validation follows
+as the final C06 change. No GPU arithmetic or search has been implemented.

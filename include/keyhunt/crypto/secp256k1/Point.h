@@ -20,6 +20,7 @@
 
 #include "Int.h"
 
+// Homogeneous coordinates (X/Z, Y/Z); Z == 0 denotes infinity.
 class Point {
 
 public:

@@ -183,3 +183,16 @@ work. Measure setup, arithmetic, lookup, verification, I/O and shutdown separate
 once C04 exposes those boundaries. GPU timing must additionally include device
 identity, partitions, synchronization and transfer costs under C16. Correctness
 and complete coverage remain independent gates from timing.
+
+## C06 behavior correction
+
+The C01 artifacts above preserve the original implementation's observations.
+C06's [independent point checks](ARITHMETIC_ORACLE.md) fixed infinity, equal-point
+addition and zero-scalar handling. The current CPU BSGS test now finds scalar
+`0x100000` at the beginning of `[0x100000,0x300000)`, returning the established
+all-found status 1. Its regression case is now `bsgs_start_boundary`.
+The tail-overrun case also finds `0x100000` in addition to its previous results;
+it still reports out-of-range tail candidates and remains a known-defect test.
+[The original expectation failures](baselines/C06_POINT_BASELINE_CHANGE.json)
+record this intentional change. All other 36 cases retain their expectations.
+These corrections do not certify the legacy search loops as exact coverage.

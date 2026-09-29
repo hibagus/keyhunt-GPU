@@ -63,6 +63,9 @@ Point Secp256K1::ComputePublicKey(Int *privKey) {
   uint8_t b;
   Point Q;
   Q.Clear();
+  // Generator lookup accepts only the private-scalar domain. Infinity is the
+  // sentinel for invalid input; the public verifier rejects it before lookup.
+  if (!privKey->IsStrictPositive() || privKey->IsGreaterOrEqual(&order)) return Q;
   // Search first significant byte
   for (i = 0; i < 32; i++) {
     b = privKey->GetByte(i);
@@ -101,12 +104,9 @@ uint8_t Secp256K1::GetByte(char *str, int idx) {
 }
 
 Point Secp256K1::Negation(Point &p) {
-  Point Q;
-  Q.Clear();
-  Q.x.Set(&p.x);
-  Q.y.Set(&this->P);
-  Q.y.Sub(&p.y);
-  Q.z.SetInt32(1);
+  Point Q(p);
+  if (p.z.IsZero()) { Q.Clear(); return Q; }
+  Q.y.ModNeg();
   return Q;
 }
 
@@ -240,6 +240,16 @@ void Secp256K1::GetPublicKeyRaw(bool compressed, Point &pubKey,char *dst) {
 }
 
 Point Secp256K1::AddDirect(Point &p1,Point &p2) {
+  // Affine fast path, with complete group-law handling at its boundaries.
+  if (!p1.z.IsOne() || !p2.z.IsOne()) {
+    Point result = Add(p1, p2);
+    result.Reduce();
+    return result;
+  }
+  if (p1.x.IsEqual(&p2.x)) {
+    if (p1.y.IsEqual(&p2.y)) return DoubleDirect(p1);
+    Point infinity; infinity.Clear(); return infinity;
+  }
   Int _s;
   Int _p;
   Int dy;
@@ -266,7 +276,9 @@ Point Secp256K1::AddDirect(Point &p1,Point &p2) {
 
 
 Point Secp256K1::Add2(Point &p1, Point &p2) {
-  // P2.z = 1
+  // Mixed-coordinate fast path; use the complete path for a non-affine P2.
+  if (!p2.z.IsOne()) return Add(p1, p2);
+  if (p1.z.IsZero()) return p2;
   Int u;
   Int v;
   Int u1;
@@ -282,6 +294,10 @@ Point Secp256K1::Add2(Point &p1, Point &p2) {
   Point r;
   u1.ModMulK1(&p2.y, &p1.z);
   v1.ModMulK1(&p2.x, &p1.z);
+  if (v1.IsEqual(&p1.x)) {
+    if (u1.IsEqual(&p1.y)) return Double(p1);
+    r.Clear(); return r;
+  }
   u.ModSub(&u1, &p1.y);
   v.ModSub(&v1, &p1.x);
   us2.ModSquareK1(&u);
@@ -306,6 +322,8 @@ Point Secp256K1::Add2(Point &p1, Point &p2) {
 }
 
 Point Secp256K1::Add(Point &p1,Point &p2) {
+  if (p1.z.IsZero()) return p2;
+  if (p2.z.IsZero()) return p1;
   Int u;
   Int v;
   Int u1;
@@ -349,6 +367,10 @@ Point Secp256K1::Add(Point &p1,Point &p2) {
   u2.ModMulK1(&p1.y,&p2.z);
   v1.ModMulK1(&p2.x,&p1.z);
   v2.ModMulK1(&p1.x,&p2.z);
+  if (v1.IsEqual(&v2)) {
+    if (u1.IsEqual(&u2)) return Double(p1);
+    r.Clear(); return r;
+  }
   u.ModSub(&u1,&u2);
   v.ModSub(&v1,&v2);
   w.ModMulK1(&p1.z,&p2.z);
@@ -374,6 +396,12 @@ Point Secp256K1::Add(Point &p1,Point &p2) {
 }
 
 Point Secp256K1::DoubleDirect(Point &p) {
+  if (p.z.IsZero() || p.y.IsZero()) {
+    Point infinity; infinity.Clear(); return infinity;
+  }
+  if (!p.z.IsOne()) {
+    Point result = Double(p); result.Reduce(); return result;
+  }
   Int _s;
   Int _p;
   Int a;
@@ -401,6 +429,9 @@ Point Secp256K1::DoubleDirect(Point &p) {
 }
 
 Point Secp256K1::Double(Point &p) {
+  if (p.z.IsZero() || p.y.IsZero()) {
+    Point infinity; infinity.Clear(); return infinity;
+  }
   /*
   if (Y == 0)
     return POINT_AT_INFINITY
@@ -491,7 +522,7 @@ Point Secp256K1::ScalarMultiplication(Point &P,Int *scalar)	{
 	int  no_of_bits, loop;
 	no_of_bits = scalar->GetBitLength();
 	R.Clear();
-	R.z.SetInt32(1);
+	if (scalar->IsNegative()) return R;
 	if(!scalar->IsZero())	{
 		Q.Set(P);
 		if(scalar->GetBit(0) == 1)	{

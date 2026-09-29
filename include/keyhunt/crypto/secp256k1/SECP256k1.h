@@ -34,6 +34,7 @@ public:
   Secp256K1();
   ~Secp256K1();
   void  Init();
+  // Valid private scalars are 1 <= k < order; other inputs return infinity.
   Point ComputePublicKey(Int *privKey);
   Point NextKey(Point &key);
   bool  EC(Point &p);

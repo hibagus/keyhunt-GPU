@@ -59,11 +59,12 @@ void Point::Set(Point &p) {
 }
 
 bool Point::isZero() {
-  return x.IsZero() && y.IsZero();
+  return z.IsZero();
 }
 
 void Point::Reduce() {
 
+  if (z.IsZero()) { Clear(); return; }
   Int i(&z);
   i.ModInv();
   x.ModMul(&x,&i);

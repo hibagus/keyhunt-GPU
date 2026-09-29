@@ -1,0 +1,275 @@
+{
+  "stage": "C06 complete point operations",
+  "before_failures": 1206,
+  "cases": 2448,
+  "builds": {
+    "cpu-release": {
+      "point": {
+        "seed": 201719831,
+        "cases": 2448,
+        "categories": {
+          "pub": 120,
+          "rawpub": 120,
+          "preduce": 57,
+          "pneg": 57,
+          "pdouble": 57,
+          "pdouble_direct": 57,
+          "pmul": 171,
+          "padd": 603,
+          "padd2": 603,
+          "padd_direct": 603
+        },
+        "binary_sha256": "3dd0a85dc4af759ebd35c8a21604cb768fe7f9ace5dc52a18220991e16e53665",
+        "failure_count": 0,
+        "failure_categories": {},
+        "failures": []
+      },
+      "ctest_output": "Test project /home/bagus/keyhunt-GPU/build/cpu-release\n      Start  1: oracle_selftest\n 1/10 Test  #1: oracle_selftest ..................   Passed    0.85 sec\n      Start  2: cpu_field_oracle\n 2/10 Test  #2: cpu_field_oracle .................   Passed    0.24 sec\n      Start  3: cpu_point_oracle\n 3/10 Test  #3: cpu_point_oracle .................   Passed    0.68 sec\n      Start  4: exact_range\n 4/10 Test  #4: exact_range ......................   Passed    0.00 sec\n      Start  5: block_grid\n 5/10 Test  #5: block_grid .......................   Passed    0.09 sec\n      Start  6: work_unit\n 6/10 Test  #6: work_unit ........................   Passed    0.04 sec\n      Start  7: range_oracle\n 7/10 Test  #7: range_oracle .....................   Passed    1.86 sec\n      Start  8: result_verifier\n 8/10 Test  #8: result_verifier ..................   Passed    0.03 sec\n      Start  9: cpu_baseline\n 9/10 Test  #9: cpu_baseline .....................***Failed   28.42 sec\nPASS help_existing_exit_status\nPASS invalid_mode\nPASS invalid_crypto\nPASS unknown_option\nPASS pub2rmd_removed\nPASS missing_input\nPASS empty_input_accepted_existing_defect\nPASS malformed_xpoint_ignored_existing_defect\nPASS xpoint_aligned_boundary\nPASS xpoint_tail_overrun_existing_defect\nPASS xpoint_tiny_range_overrun_existing_defect\nPASS xpoint_no_match\nPASS xpoint_swapped_range\nPASS zero_start_becomes_one\nPASS xpoint_above_64_bits\nPASS stride_overlapping_batches_existing_defect\nPASS address_compressed\nPASS address_uncompressed\nPASS address_both\nPASS address_no_match\nPASS rmd160_compressed\nPASS rmd160_uncompressed\nPASS rmd160_both\nPASS rmd160_no_match\nPASS ethereum_address\nPASS vanity_prefix\nPASS vanity_no_match\nPASS minikey_deterministic_start\nPASS minikey_invalid_length\nPASS random_mode_does_not_exhaust\nPASS equal_endpoints_fallback_existing_defect\nPASS bsgs_known_match_compressed\nPASS bsgs_known_match_uncompressed\nPASS bsgs_no_match\nFAIL bsgs_start_missed_existing_defect\nexpected exit=0 timeout=False, got exit=1 timeout=False\nexpected result keys [], got ['100000']\nstdout keys differ: ['100000']\nmissing output: 'End'\n[+] Version 0.2.230519 Satoshi Quest, developed by AlbertoBSD\n[+] Thread : 1\n[+] Quiet thread output\n[+] Turn off stats output\n[+] Mode BSGS sequential\n[+] Opening file targets.txt\n[+] Added 1 points from file\n[+] Range \n[+] -- from : 0x100000\n[+] -- to   : 0x300000\n[+] N = 0x100000\n[+] Bloom filter for 1024 elements : 0.88 MB\n[+] Bloom filter for 32 elements : 0.88 MB\n[+] Bloom filter for 1 elements : 0.88 MB\n[+] Allocating 0.00 MB for 1 bP Points\n\n[+] processing 0/1024 bP points : 0%\n\n[+] processing 0/1024 bP points : 0%\n\n[+] processing 1024/1024 bP points : 100%     \n[+] Making checkums .. ... done\n[+] Sorting 1 elements... Done!\n[+] Thread Key found privkey 100000   \n[+] Publickey 028b4b5f165df3c2be8c6244b5b745638843e4a781a15bcd1b69f79a55dffdf80c\nAll points were found\n\nFAIL bsgs_tail_overrun_existing_defect\nexpected result keys ['100001', '100002', '200000', '200001', '200002', '300000'], got ['100000', '100001', '100002', '200000', '200001', '200002', '300000']\nstdout keys differ: ['100000', '100001', '100002', '200000', '200001', '200002', '300000']\n[+] Version 0.2.230519 Satoshi Quest, developed by AlbertoBSD\n[+] Thread : 1\n[+] Quiet thread output\n[+] Turn off stats output\n[+] Mode BSGS sequential\n[+] Opening file targets.txt\n[+] Added 8 points from file\n[+] Range \n[+] -- from : 0x100000\n[+] -- to   : 0x200001\n[+] N = 0x100000\n[+] Bloom filter for 1024 elements : 0.88 MB\n[+] Bloom filter for 32 elements : 0.88 MB\n[+] Bloom filter for 1 elements : 0.88 MB\n[+] Allocating 0.00 MB for 1 bP Points\n\n[+] processing 0/1024 bP points : 0%\n\n[+] processing 0/1024 bP points : 0%\n\n[+] processing 1024/1024 bP points : 100%     \n[+] Making checkums .. ... done\n[+] Sorting 1 elements... Done!\n[+] Thread Key found privkey 100000   \n[+] Publickey 028b4b5f165df3c2be8c6244b5b745638843e4a781a15bcd1b69f79a55dffdf80c\n[+] Thread Key found privkey 100001   \n[+] Publickey 039fb8987e3cb30a1174b7d64de26347166841051854696930396502714f6bcf4b\n[+] Thread Key found privkey 100002   \n[+] Publickey 037e24e7f1f7294eede3a19ba5c7d7e5f1a5b48d81a1f8dd3363f9306a4b526806\n[+] Thread Key found privkey 200000   \n[+] Publickey 03ed0c5ce4e13291718ce17c7ec83c611071af64ee417c997abb3f26714755e4be\n[+] Thread Key found privkey 200001   \n[+] Publickey 02e74949367e030f9fdd2f72f985d279aa6a04635e5e91a8599e67c2eccdec8bde\n[+] Thread Key found privkey 200002   \n[+] Publickey 0238df164b2d29958db3e4b251e25ae1d37a4e972e27bae4de75ad4670a16d315a\n[+] Thread Key found privkey 300000   \n[+] Publickey 037029bd7a92ff352f0b6abed6c058f78e3d446723552d30e2a0a2a582f55812dd\n\nEnd\n\nPASS bsgs_invalid_n\nPASS bsgs_range_too_small\n36/38 baseline cases passed\n\n      Start 10: target_loading\n10/10 Test #10: target_loading ...................   Passed    8.54 sec\n\n90% tests passed, 1 tests failed out of 10\n\nLabel Time Summary:\nbaseline    =  28.42 sec*proc (1 test)\ncore        =  10.56 sec*proc (6 tests)\ncpu         =  40.76 sec*proc (10 tests)\noracle      =   1.77 sec*proc (3 tests)\nranges      =   1.99 sec*proc (4 tests)\n\nTotal Test time (real) =  40.77 sec\n\nThe following tests FAILED:\n\t  9 - cpu_baseline (Failed)\nErrors while running CTest\n"
+    },
+    "cpu-debug": {
+      "point": {
+        "seed": 201719831,
+        "cases": 2448,
+        "categories": {
+          "pub": 120,
+          "rawpub": 120,
+          "preduce": 57,
+          "pneg": 57,
+          "pdouble": 57,
+          "pdouble_direct": 57,
+          "pmul": 171,
+          "padd": 603,
+          "padd2": 603,
+          "padd_direct": 603
+        },
+        "binary_sha256": "ffae91616d1442082173c8bc529625cc9ee14ef478b96c76b89b548e88f67bf9",
+        "failure_count": 0,
+        "failure_categories": {},
+        "failures": []
+      },
+      "ctest_output": "Test project /home/bagus/keyhunt-GPU/build/cpu-debug\n    Start 2: cpu_field_oracle\n1/3 Test #2: cpu_field_oracle .................   Passed    0.75 sec\n    Start 3: cpu_point_oracle\n2/3 Test #3: cpu_point_oracle .................   Passed    1.09 sec\n    Start 8: result_verifier\n3/3 Test #8: result_verifier ..................   Passed    0.08 sec\n\n100% tests passed, 0 tests failed out of 3\n\nLabel Time Summary:\ncore      =   0.08 sec*proc (1 test)\ncpu       =   1.92 sec*proc (3 tests)\noracle    =   1.84 sec*proc (2 tests)\n\nTotal Test time (real) =   1.93 sec\n"
+    },
+    "cpu-sanitizers": {
+      "point": {
+        "seed": 201719831,
+        "cases": 2448,
+        "categories": {
+          "pub": 120,
+          "rawpub": 120,
+          "preduce": 57,
+          "pneg": 57,
+          "pdouble": 57,
+          "pdouble_direct": 57,
+          "pmul": 171,
+          "padd": 603,
+          "padd2": 603,
+          "padd_direct": 603
+        },
+        "binary_sha256": "68ced3bb7d8997dd1c5a31d2c5089327bdf59d29ffb62e18c3afa0fb4f2d490f",
+        "failure_count": 0,
+        "failure_categories": {},
+        "failures": []
+      },
+      "ctest_output": "Test project /home/bagus/keyhunt-GPU/build/cpu-sanitizers\n    Start 2: cpu_field_oracle\n1/3 Test #2: cpu_field_oracle .................   Passed    1.26 sec\n    Start 3: cpu_point_oracle\n2/3 Test #3: cpu_point_oracle .................   Passed    1.65 sec\n    Start 8: result_verifier\n3/3 Test #8: result_verifier ..................   Passed    0.14 sec\n\n100% tests passed, 0 tests failed out of 3\n\nLabel Time Summary:\ncore      =   0.14 sec*proc (1 test)\ncpu       =   3.05 sec*proc (3 tests)\noracle    =   2.91 sec*proc (2 tests)\n\nTotal Test time (real) =   3.06 sec\n"
+    }
+  },
+  "updated_bsgs_cases": {
+    "schema_version": 1,
+    "captured_at": "2026-09-29T17:30:04.309121+00:00",
+    "binary_sha256": "76cec597a32d705d15ce4c2b76cc81466114498055275d003b40b28e6cde9c43",
+    "fixture_sha256": "fec2e6c0ea3f9a21c9d8a41e1bd49723e26fc13f94314c79edf68cb25063d885",
+    "cases": [
+      {
+        "name": "bsgs_known_match_compressed",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "argv": [
+          "-m",
+          "bsgs",
+          "-f",
+          "targets.txt",
+          "-r",
+          "100000:300000",
+          "-n",
+          "1048576",
+          "-t",
+          "1",
+          "-q",
+          "-s",
+          "0"
+        ],
+        "exit_code": 1,
+        "timed_out": false,
+        "wall_seconds": 0.05526964785531163,
+        "output": "[+] Version 0.2.230519 Satoshi Quest, developed by AlbertoBSD\n[+] Thread : 1\n[+] Quiet thread output\n[+] Turn off stats output\n[+] Mode BSGS sequential\n[+] Opening file targets.txt\n[+] Added 1 points from file\n[+] Range \n[+] -- from : 0x100000\n[+] -- to   : 0x300000\n[+] N = 0x100000\n[+] Bloom filter for 1024 elements : 0.88 MB\n[+] Bloom filter for 32 elements : 0.88 MB\n[+] Bloom filter for 1 elements : 0.88 MB\n[+] Allocating 0.00 MB for 1 bP Points\n\r[+] processing 0/1024 bP points : 0%\r\r[+] processing 0/1024 bP points : 0%\r\r[+] processing 1024/1024 bP points : 100%     \n[+] Making checkums .. ... done\n[+] Sorting 1 elements... Done!\n[+] Thread Key found privkey 100001   \n[+] Publickey 039fb8987e3cb30a1174b7d64de26347166841051854696930396502714f6bcf4b\nAll points were found\n",
+        "results": {
+          "KEYFOUNDKEYFOUND.txt": "Key found privkey 100001\nPublickey 039fb8987e3cb30a1174b7d64de26347166841051854696930396502714f6bcf4b\n"
+        }
+      },
+      {
+        "name": "bsgs_known_match_uncompressed",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "argv": [
+          "-m",
+          "bsgs",
+          "-f",
+          "targets.txt",
+          "-r",
+          "100000:300000",
+          "-n",
+          "1048576",
+          "-t",
+          "1",
+          "-q",
+          "-s",
+          "0"
+        ],
+        "exit_code": 1,
+        "timed_out": false,
+        "wall_seconds": 0.05388849205337465,
+        "output": "[+] Version 0.2.230519 Satoshi Quest, developed by AlbertoBSD\n[+] Thread : 1\n[+] Quiet thread output\n[+] Turn off stats output\n[+] Mode BSGS sequential\n[+] Opening file targets.txt\n[+] Added 1 points from file\n[+] Range \n[+] -- from : 0x100000\n[+] -- to   : 0x300000\n[+] N = 0x100000\n[+] Bloom filter for 1024 elements : 0.88 MB\n[+] Bloom filter for 32 elements : 0.88 MB\n[+] Bloom filter for 1 elements : 0.88 MB\n[+] Allocating 0.00 MB for 1 bP Points\n\r[+] processing 0/1024 bP points : 0%\r\r[+] processing 0/1024 bP points : 0%\r\r[+] processing 1024/1024 bP points : 100%     \n[+] Making checkums .. ... done\n[+] Sorting 1 elements... Done!\n[+] Thread Key found privkey 100001   \n[+] Publickey 049fb8987e3cb30a1174b7d64de26347166841051854696930396502714f6bcf4b3ff105599a722e18607f2791c5ad8adfa429640898821df1a4b479674a67db73\nAll points were found\n",
+        "results": {
+          "KEYFOUNDKEYFOUND.txt": "Key found privkey 100001\nPublickey 049fb8987e3cb30a1174b7d64de26347166841051854696930396502714f6bcf4b3ff105599a722e18607f2791c5ad8adfa429640898821df1a4b479674a67db73\n"
+        }
+      },
+      {
+        "name": "bsgs_no_match",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "argv": [
+          "-m",
+          "bsgs",
+          "-f",
+          "targets.txt",
+          "-r",
+          "100000:300000",
+          "-n",
+          "1048576",
+          "-t",
+          "1",
+          "-q",
+          "-s",
+          "0"
+        ],
+        "exit_code": 0,
+        "timed_out": false,
+        "wall_seconds": 1.0535818529315293,
+        "output": "[+] Version 0.2.230519 Satoshi Quest, developed by AlbertoBSD\n[+] Thread : 1\n[+] Quiet thread output\n[+] Turn off stats output\n[+] Mode BSGS sequential\n[+] Opening file targets.txt\n[+] Added 1 points from file\n[+] Range \n[+] -- from : 0x100000\n[+] -- to   : 0x300000\n[+] N = 0x100000\n[+] Bloom filter for 1024 elements : 0.88 MB\n[+] Bloom filter for 32 elements : 0.88 MB\n[+] Bloom filter for 1 elements : 0.88 MB\n[+] Allocating 0.00 MB for 1 bP Points\n\r[+] processing 0/1024 bP points : 0%\r\r[+] processing 0/1024 bP points : 0%\r\r[+] processing 1024/1024 bP points : 100%     \n[+] Making checkums .. ... done\n[+] Sorting 1 elements... Done!\n\nEnd\n",
+        "results": {}
+      },
+      {
+        "name": "bsgs_start_boundary",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "argv": [
+          "-m",
+          "bsgs",
+          "-f",
+          "targets.txt",
+          "-r",
+          "100000:300000",
+          "-n",
+          "1048576",
+          "-t",
+          "1",
+          "-q",
+          "-s",
+          "0"
+        ],
+        "exit_code": 1,
+        "timed_out": false,
+        "wall_seconds": 0.054055267944931984,
+        "output": "[+] Version 0.2.230519 Satoshi Quest, developed by AlbertoBSD\n[+] Thread : 1\n[+] Quiet thread output\n[+] Turn off stats output\n[+] Mode BSGS sequential\n[+] Opening file targets.txt\n[+] Added 1 points from file\n[+] Range \n[+] -- from : 0x100000\n[+] -- to   : 0x300000\n[+] N = 0x100000\n[+] Bloom filter for 1024 elements : 0.88 MB\n[+] Bloom filter for 32 elements : 0.88 MB\n[+] Bloom filter for 1 elements : 0.88 MB\n[+] Allocating 0.00 MB for 1 bP Points\n\r[+] processing 0/1024 bP points : 0%\r\r[+] processing 0/1024 bP points : 0%\r\r[+] processing 1024/1024 bP points : 100%     \n[+] Making checkums .. ... done\n[+] Sorting 1 elements... Done!\n[+] Thread Key found privkey 100000   \n[+] Publickey 028b4b5f165df3c2be8c6244b5b745638843e4a781a15bcd1b69f79a55dffdf80c\nAll points were found\n",
+        "results": {
+          "KEYFOUNDKEYFOUND.txt": "Key found privkey 100000\nPublickey 028b4b5f165df3c2be8c6244b5b745638843e4a781a15bcd1b69f79a55dffdf80c\n"
+        }
+      },
+      {
+        "name": "bsgs_tail_overrun_existing_defect",
+        "known_defect": true,
+        "passed": true,
+        "failures": [],
+        "argv": [
+          "-m",
+          "bsgs",
+          "-f",
+          "targets.txt",
+          "-r",
+          "100000:200001",
+          "-n",
+          "1048576",
+          "-t",
+          "1",
+          "-q",
+          "-s",
+          "0"
+        ],
+        "exit_code": 0,
+        "timed_out": false,
+        "wall_seconds": 1.054330670973286,
+        "output": "[+] Version 0.2.230519 Satoshi Quest, developed by AlbertoBSD\n[+] Thread : 1\n[+] Quiet thread output\n[+] Turn off stats output\n[+] Mode BSGS sequential\n[+] Opening file targets.txt\n[+] Added 8 points from file\n[+] Range \n[+] -- from : 0x100000\n[+] -- to   : 0x200001\n[+] N = 0x100000\n[+] Bloom filter for 1024 elements : 0.88 MB\n[+] Bloom filter for 32 elements : 0.88 MB\n[+] Bloom filter for 1 elements : 0.88 MB\n[+] Allocating 0.00 MB for 1 bP Points\n\r[+] processing 0/1024 bP points : 0%\r\r[+] processing 0/1024 bP points : 0%\r\r[+] processing 1024/1024 bP points : 100%     \n[+] Making checkums .. ... done\n[+] Sorting 1 elements... Done!\n[+] Thread Key found privkey 100000   \n[+] Publickey 028b4b5f165df3c2be8c6244b5b745638843e4a781a15bcd1b69f79a55dffdf80c\n[+] Thread Key found privkey 100001   \n[+] Publickey 039fb8987e3cb30a1174b7d64de26347166841051854696930396502714f6bcf4b\n[+] Thread Key found privkey 100002   \n[+] Publickey 037e24e7f1f7294eede3a19ba5c7d7e5f1a5b48d81a1f8dd3363f9306a4b526806\n[+] Thread Key found privkey 200000   \n[+] Publickey 03ed0c5ce4e13291718ce17c7ec83c611071af64ee417c997abb3f26714755e4be\n[+] Thread Key found privkey 200001   \n[+] Publickey 02e74949367e030f9fdd2f72f985d279aa6a04635e5e91a8599e67c2eccdec8bde\n[+] Thread Key found privkey 200002   \n[+] Publickey 0238df164b2d29958db3e4b251e25ae1d37a4e972e27bae4de75ad4670a16d315a\n[+] Thread Key found privkey 300000   \n[+] Publickey 037029bd7a92ff352f0b6abed6c058f78e3d446723552d30e2a0a2a582f55812dd\n\nEnd\n",
+        "results": {
+          "KEYFOUNDKEYFOUND.txt": "Key found privkey 100000\nPublickey 028b4b5f165df3c2be8c6244b5b745638843e4a781a15bcd1b69f79a55dffdf80c\nKey found privkey 100001\nPublickey 039fb8987e3cb30a1174b7d64de26347166841051854696930396502714f6bcf4b\nKey found privkey 100002\nPublickey 037e24e7f1f7294eede3a19ba5c7d7e5f1a5b48d81a1f8dd3363f9306a4b526806\nKey found privkey 200000\nPublickey 03ed0c5ce4e13291718ce17c7ec83c611071af64ee417c997abb3f26714755e4be\nKey found privkey 200001\nPublickey 02e74949367e030f9fdd2f72f985d279aa6a04635e5e91a8599e67c2eccdec8bde\nKey found privkey 200002\nPublickey 0238df164b2d29958db3e4b251e25ae1d37a4e972e27bae4de75ad4670a16d315a\nKey found privkey 300000\nPublickey 037029bd7a92ff352f0b6abed6c058f78e3d446723552d30e2a0a2a582f55812dd\n"
+        }
+      },
+      {
+        "name": "bsgs_invalid_n",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "argv": [
+          "-m",
+          "bsgs",
+          "-f",
+          "targets.txt",
+          "-r",
+          "1000:1400",
+          "-n",
+          "1025",
+          "-t",
+          "1",
+          "-q",
+          "-s",
+          "0"
+        ],
+        "exit_code": 1,
+        "timed_out": false,
+        "wall_seconds": 0.03510806686244905,
+        "output": "[E] -n param doesn't have exact square root\n[+] Version 0.2.230519 Satoshi Quest, developed by AlbertoBSD\n[+] Thread : 1\n[+] Quiet thread output\n[+] Turn off stats output\n[+] Mode BSGS sequential\n[+] Opening file targets.txt\n[+] Added 1 points from file\n",
+        "results": {}
+      },
+      {
+        "name": "bsgs_range_too_small",
+        "known_defect": false,
+        "passed": true,
+        "failures": [],
+        "argv": [
+          "-m",
+          "bsgs",
+          "-f",
+          "targets.txt",
+          "-r",
+          "1000:1400",
+          "-n",
+          "1048576",
+          "-t",
+          "1",
+          "-q",
+          "-s",
+          "0"
+        ],
+        "exit_code": 1,
+        "timed_out": false,
+        "wall_seconds": 0.035536546958610415,
+        "output": "[E] the given range is small\n[+] Version 0.2.230519 Satoshi Quest, developed by AlbertoBSD\n[+] Thread : 1\n[+] Quiet thread output\n[+] Turn off stats output\n[+] Mode BSGS sequential\n[+] Opening file targets.txt\n[+] Added 1 points from file\n[+] Range \n[+] -- from : 0x1000\n[+] -- to   : 0x1400\n",
+        "results": {}
+      }
+    ]
+  },
+  "note": "Initial full release run failed only the two intentionally corrected baseline expectations; all seven BSGS cases passed after updating those expectations. Full final C06 runs follow."
+}

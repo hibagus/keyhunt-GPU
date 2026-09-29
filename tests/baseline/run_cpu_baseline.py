@@ -132,11 +132,11 @@ def cases():
         targets(['100001'], 'public_key', 'uncompressed'), keys=['100001'], code=1,
         contains=['All points were found'], result_contains=[VECTORS['100001']['uncompressed']['public_key']])
     add('bsgs_no_match', bsgs_args, targets(['400000'], 'public_key'), contains=['End'])
-    add('bsgs_start_missed_existing_defect', bsgs_args, targets(['100000'], 'public_key'),
-        contains=['End'], known_defect=True)
+    add('bsgs_start_boundary', bsgs_args, targets(['100000'], 'public_key'),
+        keys=['100000'], code=1, contains=['All points were found'])
     add('bsgs_tail_overrun_existing_defect', search_args('bsgs', '100000:200001', '1048576'),
         targets(['100000', '100001', '100002', '200000', '200001', '200002', '300000', '300001'], 'public_key'),
-        keys=['100001', '100002', '200000', '200001', '200002', '300000'], known_defect=True)
+        keys=['100000', '100001', '100002', '200000', '200001', '200002', '300000'], known_defect=True)
     add('bsgs_invalid_n', search_args('bsgs', n='1025'), targets(['1'], 'public_key'),
         code=1, contains=["doesn't have exact square root"])
     add('bsgs_range_too_small', search_args('bsgs', n='1048576'), targets(['1'], 'public_key'),

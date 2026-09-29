@@ -41,7 +41,8 @@ interpreting that status. Ordinary range exhaustion returns 0. Its help command
 also returns 1. The example uses the minimum supported square-root group size
 (M=1024) and default `-k 1`, avoiding the large default table.
 
-The BSGS engine has known start/tail defects; this fixture tests an interior
+C06 fixed the tested start-boundary miss; the BSGS tail-overrun defect remains.
+This fixture tests an interior
 match and is not a demonstration of exhaustive coverage. See
 [the BSGS findings](CPU_BASELINE.md#bsgs-boundary-defects). The historical README
 contains larger examples, but their old performance numbers are not current

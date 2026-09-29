@@ -40,8 +40,8 @@ before choosing larger tables. Different `-B` orders and `-R` change selection;
 C01's boundary characterization concerns sequential BSGS.
 
 `-S` saves/reuses table/filter files. These are caches, not durable computation
-progress. The old main engine misses a target exactly at the tested range start
-and can report tail matches beyond the end. The optional GMP legacy parser also
+progress. C06 fixed the original miss at the tested range start. The old engine
+can still report tail matches beyond the end. The optional GMP legacy parser also
 rejects the tested valid uncompressed public key; that historical difference is
 recorded in [C02](BUILD_MIGRATION.md#validation-and-observed-defects).
 
