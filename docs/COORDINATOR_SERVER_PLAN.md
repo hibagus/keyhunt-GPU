@@ -305,6 +305,23 @@ run two independent writable copies behind a load balancer. A UPS and external
 backups improve home operation; high availability would require a later storage
 and coordination design.
 
+### Packaging, upgrades, and outage contract
+
+Ship a coordinator-only build for the home server, with no GPU SDK dependency or
+resident worker BSGS tables. Require protocol/capability negotiation before issuing
+leases and test incompatible versions explicitly. Follow the
+[implementation boundary decisions](GPU_REDESIGN_PLAN.md#boundaries-to-settle-during-implementation)
+for supervised workers, self-tests, and migration handling.
+
+The default online policy allows only the remaining renewable lease lifetime
+during a disconnection, with a margin for draining in-flight work. A three-minute
+work assignment does not guarantee three minutes of disconnected ownership:
+its proposed 90-second lease must be renewed. Longer outages use deliberately
+reserved offline assignments. Worker outboxes have a configured capacity; disk
+exhaustion pauses submission instead of dropping results or claiming completion.
+Expose lease time remaining, last durable acknowledgment, outbox usage, and the
+reason a worker is paused in operator status.
+
 ## 7. Implementation slices and acceptance gates
 
 These refine C12/C15 in the main plan. Each row is a separate implementation

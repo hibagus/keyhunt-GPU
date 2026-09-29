@@ -829,6 +829,55 @@ evidence on the supported stack.
   of cosmetic telemetry. Define backup/replay retention so a restore can recover
   receipts instead of silently forgetting acknowledged work.
 
+### Boundaries to settle during implementation
+
+- **A lightweight coordinator package:** build/install the coordinator separately
+  from GPU workers, without ROCm, CUDA, or GPU hardware. It needs metadata,
+  authorization, storage, and bounded CPU result verification; it should not load
+  each worker's large BSGS table. Make a CPU-only installation on the home server
+  a C15 acceptance test. Keep the shared range/identity rules in one library.
+- **Failure isolation:** a worker supervisor must keep heartbeats and healthy
+  devices responsive when one device stalls. Use supervised worker processes as
+  the initial isolation boundary, choosing partition/package grouping after memory
+  measurements; host threads alone are not the recovery boundary. Bound retries
+  and quarantine repeatedly failing work/device combinations with a visible
+  reason. Preserve committed progress and leave failed work unfinished. Do not
+  automatically reset other workloads' GPUs. C20 must demonstrate that a stalled
+  worker does not prevent healthy workers from committing progress.
+- **Runtime self-tests:** before accepting leases, run small deterministic field,
+  point, and search vectors through the selected device/kernel variant and CPU
+  verifier. Rerun after a build, kernel variant, or runtime change. A failure
+  disables that worker and reports the diagnostic; a pass supplements the full
+  differential test suite and is not proof against every possible defect.
+- **Version negotiation and upgrades:** registration advertises protocol versions,
+  modes, algorithm semantics, result formats, and checkpoint compatibility.
+  Reject incompatible combinations before claiming work. Drain or fence existing
+  leases before a breaking server/schema migration; back up first and define
+  rollback through a tested restore. Rolling upgrades are supported only for
+  explicitly compatible pairs. Keep backend performance changes separate from
+  changes to the meaning of completed coverage.
+- **Bounded operation during outages:** the 180-second work-unit target and the
+  90-second renewable lease serve different purposes. Under normal operation,
+  independent 15-second heartbeats extend ownership while the unit runs. Without
+  renewal, stop launching early enough to drain before the ownership deadline,
+  using a conservative monotonic local budget derived from the server's remaining
+  lifetime and request elapsed time. Persist unacknowledged results locally and
+  let the server decide whether reports are still current. Longer disconnected
+  operation requires explicit offline reservations; cached work is not permission
+  to continue indefinitely. Bound outbox storage and pause visibly if it fills.
+
+A small end-to-end acceptance job should connect two CPU/mock workers to the real
+scheduler, search a known finite range, find seeded boundary matches, and exhaust
+a no-match case. Interrupt workers, lose an acknowledgment, expire a lease, restart
+the coordinator, and resume with a different worker count. Verify the exact
+coverage union, results, and authorization boundaries. Add this to C12/C15 before
+long GPU runs; the same test then exercises HIP/CUDA adapters. This lets the
+control plane be validated without waiting for kernel optimization.
+
+These requirements complete the initial planning scope. Use C01 measurements and
+the small acceptance job to resolve remaining implementation choices; add further
+architecture only when a demonstrated failure or measured bottleneck warrants it.
+
 ## 12. Decisions to revisit with implementation evidence
 
 - Select BSGS `m`, filter density, limb representation, and batch size from
