@@ -145,7 +145,7 @@ ctest --preset hip-release
 ```
 
 The full HIP suite includes the preserved CPU regressions and requires an
-accessible GPU. `ctest --preset hip-release -L hardware` selects only the three
+accessible GPU. `ctest --preset hip-release -L hardware` selects only the four
 hardware checks; missing hardware fails those gates. The backend's device code
 receives no CPU SIMD/native, fast-math or LTO flags. HIP+sanitizers is explicitly
 rejected; use the separate CPU sanitizer build for host checks. Installation

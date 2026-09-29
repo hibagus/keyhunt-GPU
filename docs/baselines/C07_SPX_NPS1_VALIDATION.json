@@ -1,0 +1,38 @@
+{
+  "recorded_utc": "2026-09-29T22:28:21.126553+00:00",
+  "purpose": "CPX/QPX/SPX compatibility after user reconfigured the host to SPX/NPS1",
+  "base_commit": "00f95e9de319ee445ce1a463c23876ec3cd46239",
+  "source_state": "Partition compatibility changes captured by SHA-256 before their commit",
+  "source_sha256": {
+    "CMakeLists.txt": "b8b62d392267534fb35885582a789ee53a86248ea22241c7250bb8e699d40ea8",
+    "include/keyhunt/backend/device.h": "5b8879955ef2005d228b29e73fe5f362f8b6b64e6f0541f39970c4f9227af86d",
+    "src/backend/hip/discovery.hip": "874d998511d7ac00033919a0f625bd6514e33db40da5d07744c65c26a4f3f437",
+    "src/backend/hip/executor.hip": "bf4b1bba591b7216c82733ec14170348c429c4b22b6d4cbca5f8829b2e92746e",
+    "tests/gpu/fakes/hip/hip_runtime.h": "f6b57f12659db01c7c0ad29f37c6e411ad97c94ceb93b4d9cafa362f50e08d17",
+    "tests/unit/hip_discovery.cpp": "6865b784b6c94f10abb81d5cc2e7bf832a93dfaa4b10af1d2b0c1e789bc761d0",
+    "tests/gpu/hip_partitions.py": "7fff672eead7c9b9557b806c73b6b96d9fa9f1739fb6082112ead3b52582c6e9"
+  },
+  "available_compute_partition": "SPX, DPX, QPX, CPX",
+  "available_memory_partition": "NPS1, NPS2, NPS4",
+  "partition_settings_changed_by_validation": false,
+  "hardware_evidence": "C07_SPX_NPS1_HARDWARE.json",
+  "historical_cpx_evidence": [
+    "C07_HIP_DIAGNOSTICS.json",
+    "C07_VALIDATION.json"
+  ],
+  "qpx_validation": "Simulated discovery only (NPS1/NPS4). Real QPX launch gate remains pending.",
+  "tests": {
+    "hip-focused": {
+      "command": "ctest --preset hip-release -R 'hip_|backend_cli'",
+      "exit_code": 0,
+      "output": "Test project /home/bagus/keyhunt-GPU/build/hip-release\n    Start 5: hip_discovery_contract\n1/5 Test #5: hip_discovery_contract ...........   Passed    0.12 sec\n    Start 6: hip_failures\n2/5 Test #6: hip_failures .....................   Passed    0.62 sec\n    Start 7: hip_executor\n3/5 Test #7: hip_executor .....................   Passed    0.56 sec\n    Start 8: hip_partitions\n4/5 Test #8: hip_partitions ...................   Passed    8.73 sec\n    Start 9: backend_cli\n5/5 Test #9: backend_cli ......................   Passed    1.39 sec\n\n100% tests passed, 0 tests failed out of 5\n\nLabel Time Summary:\nbackend       =   1.51 sec*proc (2 tests)\ncpu           =   0.12 sec*proc (1 test)\nhardware      =  11.30 sec*proc (4 tests)\nhip           =  11.30 sec*proc (4 tests)\npartitions    =   8.73 sec*proc (1 test)\n\nTotal Test time (real) =  11.43 sec\n"
+    },
+    "cpu-contract-sanitizers": {
+      "command": "ASAN_OPTIONS=detect_leaks=1 UBSAN_OPTIONS=halt_on_error=1 ctest --preset cpu-sanitizers -R hip_discovery_contract",
+      "exit_code": 0,
+      "output": "Test project /home/bagus/keyhunt-GPU/build/cpu-sanitizers\n    Start 5: hip_discovery_contract\n1/1 Test #5: hip_discovery_contract ...........   Passed    0.19 sec\n\n100% tests passed, 0 tests failed out of 1\n\nLabel Time Summary:\nbackend    =   0.19 sec*proc (1 test)\ncpu        =   0.19 sec*proc (1 test)\n\nTotal Test time (real) =   0.20 sec\n"
+    }
+  },
+  "build_output": "[  1%] Building CXX object CMakeFiles/hip_discovery_test.dir/tests/unit/hip_discovery.cpp.o\nConsolidate compiler generated dependencies of target secp256k1_precomputed\nConsolidate compiler generated dependencies of target keyhunt_common\nConsolidate compiler generated dependencies of target keyhunt_ranges\n[  4%] Built target secp256k1_precomputed\n[ 24%] Built target keyhunt_ranges\n[ 25%] Built target keyhunt_common\nConsolidate compiler generated dependencies of target secp256k1\nScanning dependencies of target hip_failure_test\nScanning dependencies of target keyhunt_backend\n[ 29%] Built target secp256k1\n[ 30%] Building HIP object CMakeFiles/hip_failure_test.dir/src/backend/hip/executor.hip.o\n[ 32%] Building HIP object CMakeFiles/keyhunt_backend.dir/src/backend/hip/discovery.hip.o\nConsolidate compiler generated dependencies of target exact_range_test\n[ 35%] Built target exact_range_test\nConsolidate compiler generated dependencies of target block_grid_test\n[ 38%] Built target block_grid_test\nConsolidate compiler generated dependencies of target work_unit_test\n[ 41%] Built target work_unit_test\nConsolidate compiler generated dependencies of target range_probe\n[ 45%] Built target range_probe\n[ 46%] Building HIP object CMakeFiles/keyhunt_backend.dir/src/backend/hip/executor.hip.o\n[ 48%] Linking CXX executable hip_discovery_test\n[ 48%] Built target hip_discovery_test\nConsolidate compiler generated dependencies of target keyhunt_cpu_crypto\n[ 66%] Built target keyhunt_cpu_crypto\nConsolidate compiler generated dependencies of target secp256k1_oracle\n[ 69%] Built target secp256k1_oracle\nConsolidate compiler generated dependencies of target keyhunt_core\n[ 75%] Built target keyhunt_core\nConsolidate compiler generated dependencies of target cpu_arithmetic_probe\n[ 79%] Built target cpu_arithmetic_probe\nConsolidate compiler generated dependencies of target bounded_search_probe\n[ 82%] Built target bounded_search_probe\nConsolidate compiler generated dependencies of target result_verifier_test\n[ 85%] Built target result_verifier_test\n[ 87%] Linking HIP executable hip_failure_test\n[ 88%] Built target hip_failure_test\n[ 90%] Linking HIP static library libkeyhunt_backend.a\n[ 90%] Built target keyhunt_backend\nConsolidate compiler generated dependencies of target hip_executor_test\nConsolidate compiler generated dependencies of target keyhunt_backend_commands\n[ 91%] Building CXX object CMakeFiles/keyhunt_backend_commands.dir/src/backend/commands.cpp.o\n[ 93%] Building CXX object CMakeFiles/hip_executor_test.dir/tests/gpu/hip_executor.cpp.o\n[ 95%] Linking CXX executable hip_executor_test\n[ 96%] Linking HIP static library libkeyhunt_backend_commands.a\n[ 96%] Built target keyhunt_backend_commands\nConsolidate compiler generated dependencies of target keyhunt\n[ 98%] Linking CXX executable keyhunt\n[ 98%] Built target hip_executor_test\n[100%] Built target keyhunt\n",
+  "cpu_contract_output": "Start testing: Sep 29 22:25 UTC\n----------------------------------------------------------\n5/13 Testing: hip_discovery_contract\n5/13 Test: hip_discovery_contract\nCommand: \"/home/bagus/keyhunt-GPU/build/cpu-release/hip_discovery_test\"\nDirectory: /home/bagus/keyhunt-GPU/build/cpu-release\n\"hip_discovery_contract\" start time: Sep 29 22:25 UTC\nOutput:\n----------------------------------------------------------\nSPX/NPS1: discovery, budgets, remapping and failures passed\nQPX/NPS1: discovery, budgets, remapping and failures passed\nQPX/NPS4: discovery, budgets, remapping and failures passed\nCPX/NPS1: discovery, budgets, remapping and failures passed\nCPX/NPS4: discovery, budgets, remapping and failures passed\n<end of output>\nTest time =   0.21 sec\n----------------------------------------------------------\nTest Passed.\n\"hip_discovery_contract\" end time: Sep 29 22:25 UTC\n\"hip_discovery_contract\" time elapsed: 00:00:00\n----------------------------------------------------------\n\nEnd testing: Sep 29 22:25 UTC\n\nbackend =   0.21 sec*proc\n\ncpu =   0.21 sec*proc\n\n"
+}

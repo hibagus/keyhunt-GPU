@@ -13,7 +13,7 @@ change is committed separately. Analysis and validation evidence live under
 | C04: core extraction | Completed | [Extraction notes](CORE_EXTRACTION.md); shared configuration, owned target loaders, CPU verification; release/debug regressions pass |
 | C05: exact ranges and work units | Completed | [Exact range contract and evidence](EXACT_RANGES.md); checked 256-bit ranges, immutable blocks and bounded direct-scan work/batches; exhaustive and wide oracle tests pass |
 | C06: independent arithmetic and search vectors | Completed | [Oracle and correction evidence](ARITHMETIC_ORACLE.md); pinned libsecp256k1, field/point/search cases, arithmetic fixes; release/debug and focused sanitizers pass |
-| C07: HIP discovery and execution backend | Completed | [HIP contract and findings](HIP_BACKEND.md); gfx942 launches, explicit partition metadata gaps, bounded asynchronous ownership, 20 failure-injection boundaries; [validation evidence](baselines/C07_VALIDATION.json) |
+| C07: HIP discovery and execution backend | Completed | [HIP contract and findings](HIP_BACKEND.md); gfx942 launches, explicit partition metadata gaps, bounded asynchronous ownership, 20 failure-injection boundaries; [original validation](baselines/C07_VALIDATION.json) and [CPX/QPX/SPX compatibility](HIP_BACKEND.md#cpx-qpx-and-spx-compatibility) |
 | C08: portable GPU field and point arithmetic | Next | GPU/CPU/oracle parity, aliasing and partial batches |
 | C09–C23 | Planned | Acceptance gates remain in the redesign plan |
 

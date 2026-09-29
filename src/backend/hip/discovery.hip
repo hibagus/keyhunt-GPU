@@ -14,8 +14,8 @@ std::string read_attribute(const std::filesystem::path& path) {
     std::getline(input, value);
     return value;
 }
-void topology(DeviceInfo& info) {
-    const auto path = std::filesystem::path("/sys/bus/pci/devices") / info.pci_bus_id;
+void topology(DeviceInfo& info, const std::filesystem::path& sysfs_root) {
+    const auto path = sysfs_root / info.pci_bus_id;
     // Some drivers expose a partition BDF without a matching PCI sysfs node.
     // Do not guess a parent by rounding that BDF or invent package counts.
     info.physical_id = read_attribute(path / "unique_id");
@@ -35,7 +35,9 @@ void topology(DeviceInfo& info) {
 }
 
 bool hip_available() { return true; }
-DeviceInventory discover_hip() {
+// The root is an internal test seam, not a user-controlled device selector.
+// HIP ordinals and properties stay authoritative in CPX, QPX and SPX alike.
+static DeviceInventory discover_hip_at(const std::filesystem::path& sysfs_root) {
     DeviceInventory result;
     hip_check(hipRuntimeGetVersion(&result.runtime_version), "hipRuntimeGetVersion");
     hip_check(hipDriverGetVersion(&result.driver_version), "hipDriverGetVersion");
@@ -67,9 +69,12 @@ DeviceInventory discover_hip() {
         for (unsigned char byte : uuid.bytes)
             hex << std::hex << std::setfill('0') << std::setw(2) << unsigned(byte);
         info.uuid = hex.str();
-        topology(info);
+        topology(info, sysfs_root);
         result.devices.push_back(std::move(info));
     }
     return result;
+}
+DeviceInventory discover_hip() {
+    return discover_hip_at("/sys/bus/pci/devices");
 }
 }

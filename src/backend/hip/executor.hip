@@ -35,6 +35,9 @@ struct HipDiagnosticExecutor::Impl {
             throw std::invalid_argument("diagnostic max_steps must be in [1, 1048576]");
         DeviceScope selected(device);
         output_bytes = (options.max_steps + 1) * sizeof(DiagnosticScalar);
+        // Query this visible device on every preparation. CPX/QPX/SPX can
+        // expose different budgets; neither package HBM nor a cached partition
+        // count is an allocation limit for this executor.
         size_t free = 0, total = 0;
         hip_check(hipMemGetInfo(&free, &total), "hipMemGetInfo");
         if (options.memory_reserve_bytes > free ||
@@ -107,6 +110,8 @@ Ticket HipDiagnosticExecutor::submit(const scheduler::KernelBatch& batch) {
         hip_check(hipMemsetAsync(s.device_output, 0xa5, s.output_bytes, s.stream), "hipMemsetAsync(output)");
         hip_check(hipMemsetAsync(s.device_count, 0, sizeof(*s.device_count), s.stream), "hipMemsetAsync(count)");
         hip_check(hipEventRecord(s.start, s.stream), "hipEventRecord(start)");
+        // Cover the exact batch independently of the device's CU/XCC count.
+        // The runtime schedules these workgroups across the selected partition.
         const auto blocks = static_cast<unsigned>((batch.step_count() + 255) / 256);
         // HIP retains a thread-local last error even after the caller handled
         // a failed API call (e.g. invalid device selection). All setup calls

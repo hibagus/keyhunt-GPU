@@ -150,6 +150,13 @@ include(CTest)
 if(BUILD_TESTING)
     find_package(Python3 3.9 REQUIRED COMPONENTS Interpreter)
     include(cmake/OracleTests.cmake)
+    # This discovery contract test uses a private, minimal API double. It needs
+    # no GPU SDK; actual HIP compilation and hardware tests remain separate.
+    add_executable(hip_discovery_test tests/unit/hip_discovery.cpp)
+    target_include_directories(hip_discovery_test PRIVATE tests/gpu/fakes include)
+    keyhunt_configure_target(hip_discovery_test)
+    add_test(NAME hip_discovery_contract COMMAND hip_discovery_test)
+    set_tests_properties(hip_discovery_contract PROPERTIES TIMEOUT 30 LABELS "cpu;backend")
     if(KEYHUNT_ENABLE_HIP)
         add_executable(hip_executor_test tests/gpu/hip_executor.cpp)
         target_link_libraries(hip_executor_test PRIVATE keyhunt_backend)
@@ -163,6 +170,12 @@ if(BUILD_TESTING)
         set_target_properties(hip_failure_test PROPERTIES INTERPROCEDURAL_OPTIMIZATION OFF)
         add_test(NAME hip_failures COMMAND hip_failure_test)
         add_test(NAME hip_executor COMMAND hip_executor_test)
+        add_test(NAME hip_partitions COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/gpu/hip_partitions.py"
+            --binary $<TARGET_FILE:keyhunt>
+            --report "${CMAKE_CURRENT_BINARY_DIR}/hip-partition-results.json")
+        set_tests_properties(hip_partitions PROPERTIES TIMEOUT 300 LABELS "hip;hardware;partitions"
+            RESOURCE_LOCK hip_device)
         set_tests_properties(hip_executor hip_failures PROPERTIES TIMEOUT 90 LABELS "hip;hardware"
             RESOURCE_LOCK hip_device)
     endif()

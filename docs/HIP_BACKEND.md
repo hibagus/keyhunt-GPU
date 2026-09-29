@@ -30,13 +30,18 @@ its free count is a snapshot, not an allocation guarantee or table budget.
 The previous thread-local device selection is restored.
 
 Sysfs supplies package unique ID, partition modes and NUMA node when available.
-Missing metadata is empty (NUMA: -1), with explicit warnings. Discovery on this
-host reports **64 logical agents**. Eight agents expose package IDs and
-CPX/NPS4/CAPPING metadata; 56 expose synthetic partition BDFs without PCI sysfs
-nodes. AMD SMI also reports unavailable partition/package fields for these
-siblings. We do not infer parents by clearing BDF bits. Complete physical mapping
-and shared-memory contention remain prerequisites for C20 scaling claims.
-Each logical agent currently reports 24 GiB HIP total memory, not full-card HBM.
+Missing metadata is empty (NUMA: -1), with explicit warnings. The original C07
+CPX/NPS4 snapshot recorded 64 logical agents with 24 GiB HIP total memory each;
+56 synthetic partition BDFs lacked PCI sysfs metadata. Those historical artifacts
+remain unchanged. After the user switched the host to **SPX/NPS1**, fresh discovery
+reports eight devices, 304 CUs each, and 206,141,652,992 HIP total bytes per device
+(about 192 GiB). All eight now expose package and partition metadata.
+
+Neither snapshot is an application constant. We do not infer parents by clearing
+BDF bits or multiply a logical memory budget into a package budget. Complete
+physical mapping and shared-memory contention remain prerequisites for C20
+scaling claims. See [partition compatibility](#cpx-qpx-and-spx-compatibility) for
+the current hardware and simulated test coverage.
 
 No visible devices yields an empty list. Runtime failures include the HIP
 operation and named error and exit 2. CPU-only binaries reject the command with
@@ -152,3 +157,66 @@ python3 tools/capture_hip_baseline.py --build-dir build/hip-release \
 This harness uses separate short processes and records their event/wall times;
 it is deliberately not a steady-state benchmark. C08 must add arithmetic
 microbenchmarks, and C16 remains the durable end-to-end benchmark milestone.
+
+
+## CPX, QPX and SPX compatibility
+
+The HIP discovery and diagnostic executor support the devices exposed by all
+three compute modes. No mode-specific build, flag, or kernel variant is needed.
+The `gfx942` architecture remains the same when an MI300X changes partition mode.
+Compute and memory partition strings are optional descriptive metadata; they
+are not an execution whitelist or a formula for available memory.
+
+- Enumerate `hipGetDeviceCount` on each discovery, using current process-local
+  ordinals and UUIDs. Never assume 8, 32 or 64 devices.
+- Read CU count, lane width and memory from each selected HIP device. Query
+  `hipMemGetInfo` again when preparing an executor and retain allocation headroom.
+  Do not assume 24/48/192 GiB, or independent memory pools for sibling partitions.
+- Derive workgroup count from the bounded work item count. HIP schedules the
+  groups across the selected partition; neither CU count nor XCC count changes
+  the exact scalar interval or tail guard.
+- Allow execution when secondary-partition sysfs metadata is unavailable. Keep
+  missing metadata explicit instead of rejecting an otherwise valid HIP device.
+- Restart workers and rediscover after repartitioning. Driver reconfiguration can
+  invalidate handles and change ordinals/UUIDs; live switching inside an active
+  executor is not supported. No test or application command changes partitions.
+
+| Compute mode | Discovery contract tests | Real-hardware evidence |
+| --- | --- | --- |
+| CPX | NPS1 and NPS4; synthetic counts and per-device budgets | Original C07 CPX/NPS4 discovery of 64 agents, launches on ordinals 0 and 1 |
+| QPX | NPS1 and NPS4; synthetic counts and per-device budgets | Pending a run on QPX hardware; simulated coverage does not certify device execution |
+| SPX | NPS1; synthetic counts and per-device budgets | Current SPX/NPS1 host: all eight devices, 18 verified launches including reordered visibility |
+
+The hardware/firmware determines which combinations are available. This host's
+sysfs advertises SPX, DPX, QPX and CPX compute modes and NPS1, NPS2 and NPS4 memory
+modes; those two lists do not imply every pairing is valid. AMD describes the
+separate compute/memory dimensions, logical-device enumeration and QPX support
+in its [partition reference](https://rocm.docs.amd.com/projects/amdsmi/en/docs-7.14.0/conceptual/partition.html).
+The backend accepts the runtime's current devices instead of imposing its own
+mode-pair matrix.
+
+`hip_discovery_contract` compiles the actual discovery implementation with a
+small test-only HIP API double and temporary sysfs tree. It runs without a GPU
+SDK in CPU CI. Five profiles each check dynamic device counts, independently
+reported property/total/free memory, missing secondary metadata, restricted and
+reordered visibility, empty visibility, and restoration of the selected device
+when a memory query fails. This exercises discovery, not simulated kernel math.
+
+`hip_partitions` runs two bounded diagnostics on **every currently visible
+device**, then checks ordinal remapping when no existing HIP/CUDA ordinal filter
+would be overridden. It preserves the caller's ROCr visibility restriction. The
+same test can run under CPX, QPX or SPX, with no expected device-count constant:
+
+```sh
+ctest --preset cpu-release -R hip_discovery_contract
+ctest --preset hip-release -R 'hip_|backend_cli'
+python3 tests/gpu/hip_partitions.py --binary build/hip-release/keyhunt \
+  --report /tmp/keyhunt-current-partitions.json
+```
+
+[SPX validation](baselines/C07_SPX_NPS1_VALIDATION.json) records the five passing
+focused tests, the sanitizer contract test, source fingerprints and build output.
+[Raw SPX hardware results](baselines/C07_SPX_NPS1_HARDWARE.json) retain the inventory,
+UUIDs, allocation/timing data, commands and remapping result. This extends the
+original CPX acceptance and does not claim GPU search support or performance
+comparisons between partition modes.

@@ -12,6 +12,8 @@ struct DeviceInfo {
     int ordinal = 0;
     std::string name, architecture, uuid, pci_bus_id;
     std::string physical_id, physical_id_source;
+    // Optional observed metadata, never a mode whitelist or memory multiplier.
+    // Missing sysfs metadata on a CPX/QPX sibling does not disable execution.
     std::string compute_partition, memory_partition, memory_allocation_mode;
     int numa_node = -1;
     int compute_units = 0, warp_size = 0;
