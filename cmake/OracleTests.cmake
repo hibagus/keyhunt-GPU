@@ -40,3 +40,12 @@ add_test(NAME cpu_point_oracle COMMAND "${Python3_EXECUTABLE}"
     --oracle $<TARGET_FILE:secp256k1_oracle>
     --report "${CMAKE_CURRENT_BINARY_DIR}/cpu-point-oracle-results.json")
 set_tests_properties(cpu_point_oracle PROPERTIES TIMEOUT 120 LABELS "cpu;oracle")
+add_executable(bounded_search_probe tests/oracle/bounded_search_probe.cpp)
+target_link_libraries(bounded_search_probe PRIVATE keyhunt_core)
+keyhunt_configure_target(bounded_search_probe)
+add_test(NAME bounded_search_oracle COMMAND "${Python3_EXECUTABLE}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests/oracle/search_oracle.py"
+    --binary $<TARGET_FILE:bounded_search_probe>
+    --oracle $<TARGET_FILE:secp256k1_oracle>
+    --report "${CMAKE_CURRENT_BINARY_DIR}/bounded-search-oracle-results.json")
+set_tests_properties(bounded_search_oracle PROPERTIES TIMEOUT 120 LABELS "cpu;oracle")

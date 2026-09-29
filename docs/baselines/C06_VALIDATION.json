@@ -1,0 +1,275 @@
+{
+  "milestone": "C06 independent arithmetic and search vectors",
+  "recorded_utc": "2026-09-29T17:39:15.373983+00:00",
+  "base_commit": "944037b",
+  "preceding_c06_commits": [
+    "3c124ec",
+    "554ab8f",
+    "590b435"
+  ],
+  "oracle_commit": "0cdc758a56360bf58a851fe91085a327ec97685a",
+  "sanitizer_environment": {
+    "ASAN_OPTIONS": "detect_leaks=1",
+    "UBSAN_OPTIONS": "halt_on_error=1"
+  },
+  "builds": {
+    "cpu-release": {
+      "command": "ctest --preset cpu-release",
+      "ctest_exit_code": 0,
+      "ctest_output": "Test project /home/bagus/keyhunt-GPU/build/cpu-release\n      Start  1: oracle_selftest\n 1/11 Test  #1: oracle_selftest ..................   Passed    0.88 sec\n      Start  2: cpu_field_oracle\n 2/11 Test  #2: cpu_field_oracle .................   Passed    0.26 sec\n      Start  3: cpu_point_oracle\n 3/11 Test  #3: cpu_point_oracle .................   Passed    0.68 sec\n      Start  4: bounded_search_oracle\n 4/11 Test  #4: bounded_search_oracle ............   Passed    1.60 sec\n      Start  5: exact_range\n 5/11 Test  #5: exact_range ......................   Passed    0.00 sec\n      Start  6: block_grid\n 6/11 Test  #6: block_grid .......................   Passed    0.09 sec\n      Start  7: work_unit\n 7/11 Test  #7: work_unit ........................   Passed    0.04 sec\n      Start  8: range_oracle\n 8/11 Test  #8: range_oracle .....................   Passed    1.87 sec\n      Start  9: result_verifier\n 9/11 Test  #9: result_verifier ..................   Passed    0.03 sec\n      Start 10: cpu_baseline\n10/11 Test #10: cpu_baseline .....................   Passed   28.43 sec\n      Start 11: target_loading\n11/11 Test #11: target_loading ...................   Passed    8.54 sec\n\n100% tests passed, 0 tests failed out of 11\n\nLabel Time Summary:\nbaseline    =  28.43 sec*proc (1 test)\ncore        =  10.57 sec*proc (6 tests)\ncpu         =  42.42 sec*proc (11 tests)\noracle      =   3.42 sec*proc (4 tests)\nranges      =   2.00 sec*proc (4 tests)\n\nTotal Test time (real) =  42.44 sec\n",
+      "reports": {
+        "oracle-selftest": {
+          "oracle_commit": "0cdc758a56360bf58a851fe91085a327ec97685a",
+          "seed": 3228176846,
+          "cases": 1082,
+          "binary_sha256": "8dc92137c49502e3de62cb20a750d1c7f0bd84294ae77c5ccc9c9dffd20763c6",
+          "failures": []
+        },
+        "cpu-field-oracle": {
+          "seed": 3228507677,
+          "cases": 13280,
+          "categories": {
+            "fadd": 3209,
+            "fsub": 3209,
+            "fmul": 3230,
+            "fsquare": 562,
+            "fmulself": 562,
+            "finv": 559,
+            "fneg": 559,
+            "smulself": 138,
+            "sadd": 612,
+            "smul": 612,
+            "finvgroup": 28
+          },
+          "binary_sha256": "1ed107bf92e9a57c8e7335489766280e297aca692be3714b95fb5c84d6e36bf1",
+          "failure_count": 0,
+          "failures": []
+        },
+        "cpu-point-oracle": {
+          "seed": 201719831,
+          "cases": 2448,
+          "categories": {
+            "pub": 120,
+            "rawpub": 120,
+            "preduce": 57,
+            "pneg": 57,
+            "pdouble": 57,
+            "pdouble_direct": 57,
+            "pmul": 171,
+            "padd": 603,
+            "padd2": 603,
+            "padd_direct": 603
+          },
+          "binary_sha256": "1ed107bf92e9a57c8e7335489766280e297aca692be3714b95fb5c84d6e36bf1",
+          "failure_count": 0,
+          "failure_categories": {},
+          "failures": []
+        },
+        "bounded-search-oracle": {
+          "oracle_commit": "0cdc758a56360bf58a851fe91085a327ec97685a",
+          "search_cases": 72,
+          "bsgs_mapping_cases": 560,
+          "binary_sha256": "e6cd8319ebf4fb861ec1e2df5de568b0a645a6931a314426129ec0d9d005941e",
+          "failures": []
+        }
+      }
+    },
+    "cpu-debug": {
+      "command": "ctest --preset cpu-debug",
+      "ctest_exit_code": 0,
+      "ctest_output": "Test project /home/bagus/keyhunt-GPU/build/cpu-debug\n      Start  1: oracle_selftest\n 1/11 Test  #1: oracle_selftest ..................   Passed    0.91 sec\n      Start  2: cpu_field_oracle\n 2/11 Test  #2: cpu_field_oracle .................   Passed    0.78 sec\n      Start  3: cpu_point_oracle\n 3/11 Test  #3: cpu_point_oracle .................   Passed    1.09 sec\n      Start  4: bounded_search_oracle\n 4/11 Test  #4: bounded_search_oracle ............   Passed    1.72 sec\n      Start  5: exact_range\n 5/11 Test  #5: exact_range ......................   Passed    0.00 sec\n      Start  6: block_grid\n 6/11 Test  #6: block_grid .......................   Passed    2.18 sec\n      Start  7: work_unit\n 7/11 Test  #7: work_unit ........................   Passed    0.37 sec\n      Start  8: range_oracle\n 8/11 Test  #8: range_oracle .....................   Passed    6.29 sec\n      Start  9: result_verifier\n 9/11 Test  #9: result_verifier ..................   Passed    0.08 sec\n      Start 10: cpu_baseline\n10/11 Test #10: cpu_baseline .....................   Passed   30.40 sec\n      Start 11: target_loading\n11/11 Test #11: target_loading ...................   Passed    9.23 sec\n\n100% tests passed, 0 tests failed out of 11\n\nLabel Time Summary:\nbaseline    =  30.40 sec*proc (1 test)\ncore        =  18.15 sec*proc (6 tests)\ncpu         =  53.04 sec*proc (11 tests)\noracle      =   4.49 sec*proc (4 tests)\nranges      =   8.84 sec*proc (4 tests)\n\nTotal Test time (real) =  53.06 sec\n",
+      "reports": {
+        "oracle-selftest": {
+          "oracle_commit": "0cdc758a56360bf58a851fe91085a327ec97685a",
+          "seed": 3228176846,
+          "cases": 1082,
+          "binary_sha256": "f5ec15a20a66a472ccbfb52562270fa4a9d1b9bd94b310277b2b50eedfd12896",
+          "failures": []
+        },
+        "cpu-field-oracle": {
+          "seed": 3228507677,
+          "cases": 13280,
+          "categories": {
+            "fadd": 3209,
+            "fsub": 3209,
+            "fmul": 3230,
+            "fsquare": 562,
+            "fmulself": 562,
+            "finv": 559,
+            "fneg": 559,
+            "smulself": 138,
+            "sadd": 612,
+            "smul": 612,
+            "finvgroup": 28
+          },
+          "binary_sha256": "c33438ff6463292a48018624165a1cc778ce659b42514c164b5fb98a4d05dedd",
+          "failure_count": 0,
+          "failures": []
+        },
+        "cpu-point-oracle": {
+          "seed": 201719831,
+          "cases": 2448,
+          "categories": {
+            "pub": 120,
+            "rawpub": 120,
+            "preduce": 57,
+            "pneg": 57,
+            "pdouble": 57,
+            "pdouble_direct": 57,
+            "pmul": 171,
+            "padd": 603,
+            "padd2": 603,
+            "padd_direct": 603
+          },
+          "binary_sha256": "c33438ff6463292a48018624165a1cc778ce659b42514c164b5fb98a4d05dedd",
+          "failure_count": 0,
+          "failure_categories": {},
+          "failures": []
+        },
+        "bounded-search-oracle": {
+          "oracle_commit": "0cdc758a56360bf58a851fe91085a327ec97685a",
+          "search_cases": 72,
+          "bsgs_mapping_cases": 560,
+          "binary_sha256": "b8a123db07a9d0fd1bca03a1ec4d70939280456be1359cf736794a7077f1823b",
+          "failures": []
+        }
+      }
+    },
+    "cpu-sanitizers": {
+      "command": "ctest --preset cpu-sanitizers -E 'cpu_baseline|target_loading'",
+      "ctest_exit_code": 0,
+      "ctest_output": "Test project /home/bagus/keyhunt-GPU/build/cpu-sanitizers\n    Start 1: oracle_selftest\n1/9 Test #1: oracle_selftest ..................   Passed    0.98 sec\n    Start 2: cpu_field_oracle\n2/9 Test #2: cpu_field_oracle .................   Passed    1.29 sec\n    Start 3: cpu_point_oracle\n3/9 Test #3: cpu_point_oracle .................   Passed    1.64 sec\n    Start 4: bounded_search_oracle\n4/9 Test #4: bounded_search_oracle ............   Passed    1.98 sec\n    Start 5: exact_range\n5/9 Test #5: exact_range ......................   Passed    0.01 sec\n    Start 6: block_grid\n6/9 Test #6: block_grid .......................   Passed    5.67 sec\n    Start 7: work_unit\n7/9 Test #7: work_unit ........................   Passed    0.84 sec\n    Start 8: range_oracle\n8/9 Test #8: range_oracle .....................   Passed   13.80 sec\n    Start 9: result_verifier\n9/9 Test #9: result_verifier ..................   Passed    0.14 sec\n\n100% tests passed, 0 tests failed out of 9\n\nLabel Time Summary:\ncore      =  20.46 sec*proc (5 tests)\ncpu       =  26.35 sec*proc (9 tests)\noracle    =   5.89 sec*proc (4 tests)\nranges    =  20.32 sec*proc (4 tests)\n\nTotal Test time (real) =  26.36 sec\n",
+      "reports": {
+        "oracle-selftest": {
+          "oracle_commit": "0cdc758a56360bf58a851fe91085a327ec97685a",
+          "seed": 3228176846,
+          "cases": 1082,
+          "binary_sha256": "27e4ef3b04e4c03f952a5da10f901934af5af6ade9e0f948df20ea8fe827e83d",
+          "failures": []
+        },
+        "cpu-field-oracle": {
+          "seed": 3228507677,
+          "cases": 13280,
+          "categories": {
+            "fadd": 3209,
+            "fsub": 3209,
+            "fmul": 3230,
+            "fsquare": 562,
+            "fmulself": 562,
+            "finv": 559,
+            "fneg": 559,
+            "smulself": 138,
+            "sadd": 612,
+            "smul": 612,
+            "finvgroup": 28
+          },
+          "binary_sha256": "d17f464c3b227a48ae9725c92003f3971382168d8b1b8957f4c5512727ef139a",
+          "failure_count": 0,
+          "failures": []
+        },
+        "cpu-point-oracle": {
+          "seed": 201719831,
+          "cases": 2448,
+          "categories": {
+            "pub": 120,
+            "rawpub": 120,
+            "preduce": 57,
+            "pneg": 57,
+            "pdouble": 57,
+            "pdouble_direct": 57,
+            "pmul": 171,
+            "padd": 603,
+            "padd2": 603,
+            "padd_direct": 603
+          },
+          "binary_sha256": "d17f464c3b227a48ae9725c92003f3971382168d8b1b8957f4c5512727ef139a",
+          "failure_count": 0,
+          "failure_categories": {},
+          "failures": []
+        },
+        "bounded-search-oracle": {
+          "oracle_commit": "0cdc758a56360bf58a851fe91085a327ec97685a",
+          "search_cases": 72,
+          "bsgs_mapping_cases": 560,
+          "binary_sha256": "179e379a415dd878df2b266611e1437677ced714366784f8ba4266b8c94ee707",
+          "failures": []
+        }
+      }
+    }
+  },
+  "optional_compatibility": {
+    "command": "ctest --test-dir build/compatibility --output-on-failure -R 'legacy_xpoint_baseline|bsgsd_loopback'",
+    "exit_code": 0,
+    "output": "Internal ctest changing into directory: /home/bagus/keyhunt-GPU/build/compatibility\nTest project /home/bagus/keyhunt-GPU/build/compatibility\n    Start 12: legacy_xpoint_baseline\n1/2 Test #12: legacy_xpoint_baseline ...........   Passed    7.22 sec\n    Start 13: bsgsd_loopback\n2/2 Test #13: bsgsd_loopback ...................   Passed    0.14 sec\n\n100% tests passed, 0 tests failed out of 2\n\nLabel Time Summary:\nbsgsd     =   0.14 sec*proc (1 test)\ncpu       =   7.36 sec*proc (2 tests)\nlegacy    =   7.22 sec*proc (1 test)\n\nTotal Test time (real) =   7.37 sec\n"
+  },
+  "readme_examples": {
+    "binary_sha256": "76cec597a32d705d15ce4c2b76cc81466114498055275d003b40b28e6cde9c43",
+    "address_quickstart": {
+      "argv": [
+        "-m",
+        "address",
+        "-f",
+        "targets.txt",
+        "-r",
+        "1:401",
+        "-n",
+        "1024",
+        "-l",
+        "compress",
+        "-t",
+        "1",
+        "-q",
+        "-s",
+        "0"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "wall_seconds": 1.0354091271292418,
+      "output": "[+] Version 0.2.230519 Satoshi Quest, developed by AlbertoBSD\n[+] Mode address\n[+] Search compress only\n[+] Thread : 1\n[+] Quiet thread output\n[+] Turn off stats output\n[+] Setting search for btc adddress\n[+] N = 0x400\n[+] Range \n[+] -- from : 0x1\n[+] -- to   : 0x401\n[+] Allocating memory for 32 elements: 0.00 MB\n[+] Bloom filter for 32 elements.\n[+] Loading data to the bloomfilter total: 0.03 MB\n[+] Sorting data ... done! 32 values were loaded and sorted\n\nHit! Private Key: 1\npubkey: 0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798\nAddress 1BgGZ9tcN4rm9KBzDn7KprQz87SZ26SAMH\nrmd160 751e76e8199196d454941c45d1b3a323f1433bd6\n\nHit! Private Key: 3\npubkey: 02f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9\nAddress 1CUNEBjYrCn2y1SdiUMohaKUi4wpP326Lb\nrmd160 7dd65592d0ab2fe0d0257d571abf032cd9db93dc\n\nHit! Private Key: 7\npubkey: 025cbdf0646e5db4eaa398f365f2ea7a0e3d419b7e0330e39ce92bddedcac4f9bc\nAddress 19ZewH8Kk1PDbSNdJ97FP4EiCjTRaZMZQA\nrmd160 5dedfbf9ea599dd4e3ca6a80b333c472fd0b3f69\n\nHit! Private Key: 8\npubkey: 022f01e5e15cca351daff3843fb70f3c2f0a1bdd05e5af888a67784ef3e10a2a01\nAddress 1EhqbyUMvvs7BfL8goY6qcPbD6YKfPqb7e\nrmd160 9652d86bedf43ad264362e6e6eba6eb764508127\n\nHit! Private Key: 15\npubkey: 02352bbf4a4cdd12564f93fa332ce333301d9ad40271f8107181340aef25be59d5\nAddress 1E6NuFjCi27W5zoXg8TRdcSRq84zJeBW3k\nrmd160 8f9dff39a81ee4abcbad2ad8bafff090415a2be8\n\nHit! Private Key: 31\npubkey: 03f2dac991cc4ce4b9ea44887e5c7c0bce58c80074ab9d4dbaeb28531b7739f530\nAddress 1PitScNLyp2HCygzadCh7FveTnfmpPbfp8\nrmd160 f93ec34e9e34a8f8ff7d600cdad83047b1bcb45c\n\nHit! Private Key: 4c\npubkey: 0296516a8f65774275278d0d7420a88df0ac44bd64c7bae07c3fe397c5b3300b23\nAddress 1McVt1vMtCC7yn5b9wgX1833yCcLXzueeC\nrmd160 e2192e8a7dd8dd1c88321959b477968b941aa973\n\nHit! Private Key: e0\npubkey: 0308bc89c2f919ed158885c35600844d49890905c79b357322609c45706ce6b514\nAddress 1M92tSqNmQLYw33fuBvjmeadirh1ysMBxK\nrmd160 dce76b2613052ea012204404a97b3c25eac31715\n\nHit! Private Key: 1d3\npubkey: 0243601d61c836387485e9514ab5c8924dd2cfd466af34ac95002727e1659d60f7\nAddress 1CQFwcjw1dwhtkVWBttNLDtqL7ivBonGPV\nrmd160 7d0f6c64afb419bbd7e971e943d7404b0e0daab4\n\nHit! Private Key: 202\npubkey: 03a7a4c30291ac1db24b4ab00c442aa832f7794b5a0959bec6e8d7fee802289dcd\nAddress 1LeBZP5QCwwgXRtmVUvTVrraqPUokyLHqe\nrmd160 d7729816650e581d7462d52ad6f732da0e2ec93b\n\nEnd\n",
+      "results": {
+        "KEYFOUNDKEYFOUND.txt": "Private Key: 1\npubkey: 0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798\nAddress 1BgGZ9tcN4rm9KBzDn7KprQz87SZ26SAMH\nrmd160 751e76e8199196d454941c45d1b3a323f1433bd6\nPrivate Key: 3\npubkey: 02f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9\nAddress 1CUNEBjYrCn2y1SdiUMohaKUi4wpP326Lb\nrmd160 7dd65592d0ab2fe0d0257d571abf032cd9db93dc\nPrivate Key: 7\npubkey: 025cbdf0646e5db4eaa398f365f2ea7a0e3d419b7e0330e39ce92bddedcac4f9bc\nAddress 19ZewH8Kk1PDbSNdJ97FP4EiCjTRaZMZQA\nrmd160 5dedfbf9ea599dd4e3ca6a80b333c472fd0b3f69\nPrivate Key: 8\npubkey: 022f01e5e15cca351daff3843fb70f3c2f0a1bdd05e5af888a67784ef3e10a2a01\nAddress 1EhqbyUMvvs7BfL8goY6qcPbD6YKfPqb7e\nrmd160 9652d86bedf43ad264362e6e6eba6eb764508127\nPrivate Key: 15\npubkey: 02352bbf4a4cdd12564f93fa332ce333301d9ad40271f8107181340aef25be59d5\nAddress 1E6NuFjCi27W5zoXg8TRdcSRq84zJeBW3k\nrmd160 8f9dff39a81ee4abcbad2ad8bafff090415a2be8\nPrivate Key: 31\npubkey: 03f2dac991cc4ce4b9ea44887e5c7c0bce58c80074ab9d4dbaeb28531b7739f530\nAddress 1PitScNLyp2HCygzadCh7FveTnfmpPbfp8\nrmd160 f93ec34e9e34a8f8ff7d600cdad83047b1bcb45c\nPrivate Key: 4c\npubkey: 0296516a8f65774275278d0d7420a88df0ac44bd64c7bae07c3fe397c5b3300b23\nAddress 1McVt1vMtCC7yn5b9wgX1833yCcLXzueeC\nrmd160 e2192e8a7dd8dd1c88321959b477968b941aa973\nPrivate Key: e0\npubkey: 0308bc89c2f919ed158885c35600844d49890905c79b357322609c45706ce6b514\nAddress 1M92tSqNmQLYw33fuBvjmeadirh1ysMBxK\nrmd160 dce76b2613052ea012204404a97b3c25eac31715\nPrivate Key: 1d3\npubkey: 0243601d61c836387485e9514ab5c8924dd2cfd466af34ac95002727e1659d60f7\nAddress 1CQFwcjw1dwhtkVWBttNLDtqL7ivBonGPV\nrmd160 7d0f6c64afb419bbd7e971e943d7404b0e0daab4\nPrivate Key: 202\npubkey: 03a7a4c30291ac1db24b4ab00c442aa832f7794b5a0959bec6e8d7fee802289dcd\nAddress 1LeBZP5QCwwgXRtmVUvTVrraqPUokyLHqe\nrmd160 d7729816650e581d7462d52ad6f732da0e2ec93b\n"
+      },
+      "passed": true
+    },
+    "bsgs_quickstart": {
+      "argv": [
+        "-m",
+        "bsgs",
+        "-f",
+        "targets.txt",
+        "-r",
+        "100000:300000",
+        "-n",
+        "1048576",
+        "-t",
+        "1",
+        "-q",
+        "-s",
+        "0"
+      ],
+      "exit_code": 1,
+      "timed_out": false,
+      "wall_seconds": 0.054553631925955415,
+      "output": "[+] Version 0.2.230519 Satoshi Quest, developed by AlbertoBSD\n[+] Thread : 1\n[+] Quiet thread output\n[+] Turn off stats output\n[+] Mode BSGS sequential\n[+] Opening file targets.txt\n[+] Added 1 points from file\n[+] Range \n[+] -- from : 0x100000\n[+] -- to   : 0x300000\n[+] N = 0x100000\n[+] Bloom filter for 1024 elements : 0.88 MB\n[+] Bloom filter for 32 elements : 0.88 MB\n[+] Bloom filter for 1 elements : 0.88 MB\n[+] Allocating 0.00 MB for 1 bP Points\n\r[+] processing 0/1024 bP points : 0%\r\r[+] processing 0/1024 bP points : 0%\r\r[+] processing 1024/1024 bP points : 100%     \n[+] Making checkums .. ... done\n[+] Sorting 1 elements... Done!\n[+] Thread Key found privkey 100001   \n[+] Publickey 039fb8987e3cb30a1174b7d64de26347166841051854696930396502714f6bcf4b\nAll points were found\n",
+      "results": {
+        "KEYFOUNDKEYFOUND.txt": "Key found privkey 100001\nPublickey 039fb8987e3cb30a1174b7d64de26347166841051854696930396502714f6bcf4b\n"
+      },
+      "passed": true
+    }
+  },
+  "production_isolation": {
+    "configured_with": "BUILD_TESTING=OFF; KEYHUNT_NATIVE_CPU=OFF; KEYHUNT_ENABLE_LTO=OFF",
+    "compile_commands_exclude_test_oracle": true,
+    "keyhunt_link_line_excludes_test_oracle": true,
+    "production_only_build_performed": false
+  },
+  "limitations": [
+    "No GPU execution or device arithmetic validated.",
+    "No constant-time guarantee or exhaustive proof of all legacy arithmetic/parser correctness.",
+    "Raw generator lookup rejects invalid private scalars with an infinity sentinel; general multiplication has separate group semantics.",
+    "BSGS start-boundary expectations updated in two historical CPU cases; tail and stride defects remain.",
+    "Full application sanitizer checks excluded; existing byte-alignment/leak findings remain.",
+    "BSGS mapping is a test reference; no production BSGS coverage claim.",
+    "No production performance measurement or hosted CI run."
+  ]
+}

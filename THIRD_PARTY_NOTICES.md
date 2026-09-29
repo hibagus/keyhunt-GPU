@@ -21,7 +21,9 @@ Bitcoin Core libsecp256k1 v0.6.0, commit `0cdc758a56360bf58a851fe91085a327ec9768
 It carries the upstream [MIT notice](third_party/secp256k1-oracle/COPYING).
 [Provenance and scope](docs/ARITHMETIC_ORACLE.md) and the
 [per-file source pin](tests/oracle/secp256k1.lock.json) describe the import.
-It is not linked into the search executable.
+It is not linked into the search executable. The retained upstream Wycheproof
+fixtures have their separate [Apache 2.0 notice](third_party/secp256k1-oracle/src/wycheproof/WYCHEPROOF_COPYING);
+those fixtures are not compiled by this integration.
 
 The `src/crypto/` placement identifies maintained CPU implementation, not
 original authorship. All source notices and existing dependency licenses remain

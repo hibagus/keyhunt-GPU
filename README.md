@@ -21,9 +21,9 @@ GPU execution, checkpoints, and the coordinator are still planned.
 | NVIDIA CUDA | Planned at C18; NVIDIA compiler/device validation remains outstanding |
 | Pause/resume and distributed blocks | Planned at C12–C15 and C20; no durable progress tracking yet |
 
-The preserved CPU engine has known range, stride and sanitizer defects. Passing
-characterization tests means its observed behavior was preserved, not that it
-meets the new engine's exact-coverage contract. See [baseline findings](docs/CPU_BASELINE.md).
+The CPU engine still has range, stride and whole-application sanitizer defects.
+C06 corrected arithmetic and the tested BSGS start-boundary miss. See
+[baseline findings](docs/CPU_BASELINE.md) for the remaining coverage limitations.
 
 <details>
 <summary>Table of contents</summary>
@@ -114,7 +114,7 @@ process exit as proof of saved search progress or exact coverage.
 - [x] C03: README redesign and current usage guides.
 - [x] C04: shared host configuration, target loaders and CPU result verification.
 - [x] C05: exact 256-bit ranges, immutable blocks and bounded work planning.
-- [ ] C06: independent arithmetic and search vectors.
+- [x] C06: independent arithmetic/search oracle and CPU arithmetic corrections.
 - [ ] C07–C11: HIP discovery, arithmetic, xpoint and BSGS execution.
 - [ ] C12–C15: durable coverage, local pause/resume and authenticated coordination.
 - [ ] C16–C20: measured tuning, native CUDA, validated assembly and multiple GPUs.

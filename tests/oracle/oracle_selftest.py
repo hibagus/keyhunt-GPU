@@ -15,6 +15,9 @@ SEED = 0xC06A11CE
 def check_source():
     lock = json.loads((ROOT/'tests/oracle/secp256k1.lock.json').read_text())
     vendor = ROOT/'third_party/secp256k1-oracle'
+    actual={str(p.relative_to(vendor)) for p in vendor.rglob('*') if p.is_file()}
+    if actual!=set(lock['files']):
+        raise RuntimeError('pinned oracle file set changed')
     for name, expected in lock['files'].items():
         if hashlib.sha256((vendor/name).read_bytes()).hexdigest() != expected:
             raise RuntimeError(f'pinned oracle source changed: {name}')

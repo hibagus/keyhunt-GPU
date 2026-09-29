@@ -113,5 +113,71 @@ its exact start scalar. Two C01 baseline expectations were updated with
 [before/after evidence](baselines/C06_POINT_BASELINE_CHANGE.json), and all seven
 BSGS cases pass afterward. The other 36 cases passed without expectation changes
 in the full release run. Tail overrun and stride defects remain; this is not a
-claim of exact legacy search coverage. Bounded search corpus validation follows
-as the final C06 change. No GPU arithmetic or search has been implemented.
+claim of exact legacy search coverage. No GPU arithmetic or search has been
+implemented.
+
+## Bounded search corpus and final gate
+
+[search_vectors.json](../tests/oracle/search_vectors.json) contains 18 fixed jobs
+whose public keys come from the pinned oracle and are also checked by the affine
+model. `bounded_search_oracle` runs them with four block/work/batch geometries
+(72 cases) through a test-only executor of C05 planning plus C04 CPU verification.
+Every visited scalar is counted and every matched target index is checked.
+Cases include singleton and partial intervals, starts above 64/192 bits, a tail
+ending at `n`, included first/last candidates, excluded adjacent candidates,
+duplicate targets, no matches, empty target sets, wrong X suffixes sharing the
+historical 20-byte prefix, and equal-X/opposite-Y points. The fixture tool can
+regenerate the corpus with `--write-vectors` after independent agreement.
+
+A further 560 mathematical BSGS cases test `Q-aG = i*(mG) + jG` and reconstruction
+`k=a+i*m+j`, including the infinity baby step `j=0`, all scalar positions in tiny
+tiles, nonzero/wide starts, duplicate target processing, and rejection of partial
+tile candidates at or beyond the exclusive end. This is an independent mapping
+reference for C11, not an implementation or certification of the old CPU BSGS
+loop. Device table layouts, X collisions, giant-step counters and GPU output
+buffer handling remain C08–C11 gates.
+
+The field suite also adds 28 nonzero batch-inversion cases of sizes 1, 2, 3, 7,
+32, 33 and 64, increasing its final count to 13,280. The legacy `IntGroup` routine
+requires nonzero inputs; this does not promise zero-tolerant device inversion.
+
+Final validation on the C01 host:
+
+| Check | Result |
+| --- | --- |
+| CPU release / debug | All 11 CTest suites passed (42.44 / 53.06 seconds) |
+| Independent source/model checks | 1,082 cases; all 128 vendored files match the pin |
+| Field/scalar arithmetic | 13,280 cases, including operand aliases and batch inverses |
+| Point arithmetic | 2,448 cases |
+| Bounded searches / BSGS mapping | 72 / 560 cases |
+| ASan/UBSan | All nine oracle, range and verifier suites passed, no suppressions |
+| CPU compatibility | 38 current cases and five loader cases passed |
+| Optional compatibility | Seven legacy xpoint cases and three daemon requests passed |
+| README examples | Address and BSGS quickstarts passed |
+| Production isolation | `BUILD_TESTING=OFF` compile graph and production link line exclude the oracle |
+
+[Final evidence](baselines/C06_VALIDATION.json) records commands, CTest summaries,
+seeds, binary hashes and limitations. Sanitizers use
+`ASAN_OPTIONS=detect_leaks=1 UBSAN_OPTIONS=halt_on_error=1`. The complete application
+baseline/loader suites are excluded from that sanitizer run because their
+previously documented alignment/leak findings remain. The numbers above are
+validation timings, not throughput benchmarks. Hosted CI was not run here; its
+existing CPU CTest workflow includes the new oracle suites.
+
+```sh
+cmake --preset cpu-release
+cmake --build --preset cpu-release --parallel 4
+ctest --preset cpu-release
+cmake --preset cpu-sanitizers
+cmake --build --preset cpu-sanitizers --parallel 4
+ASAN_OPTIONS=detect_leaks=1 UBSAN_OPTIONS=halt_on_error=1 \
+  ctest --preset cpu-sanitizers -E 'cpu_baseline|target_loading'
+```
+
+The existing native table caches have no arithmetic-producer fingerprint. These
+validation runs create fresh synthetic caches; they do not establish correctness
+of an existing user's cache. Portable, versioned table metadata remains C10 work.
+C06 does not certify every legacy integer routine or parser, arbitrary malformed
+points, constant-time handling of real secrets, GPU arithmetic, or durable search
+coverage. It supplies the independent oracle and concrete regression cases needed
+before C07/C08. The test-only executor has no product CLI or checkpoint semantics.

@@ -12,12 +12,14 @@ change is committed separately. Analysis and validation evidence live under
 | C03: README and usage guides | Completed | [Redesign notes](README_REDESIGN.md); current commands, mode reference, preserved historical examples |
 | C04: core extraction | Completed | [Extraction notes](CORE_EXTRACTION.md); shared configuration, owned target loaders, CPU verification; release/debug regressions pass |
 | C05: exact ranges and work units | Completed | [Exact range contract and evidence](EXACT_RANGES.md); checked 256-bit ranges, immutable blocks and bounded direct-scan work/batches; exhaustive and wide oracle tests pass |
-| C06: independent arithmetic and search vectors | In progress | [Pinned oracle](ARITHMETIC_ORACLE.md) passes 1,082 independent checks; CPU primitive and search gates remain |
-| C07–C23 | Planned | Acceptance gates remain in the redesign plan |
+| C06: independent arithmetic and search vectors | Completed | [Oracle and correction evidence](ARITHMETIC_ORACLE.md); pinned libsecp256k1, field/point/search cases, arithmetic fixes; release/debug and focused sanitizers pass |
+| C07: HIP discovery and execution backend | Next | gfx942 build and bounded launch, device/partition/memory identity and failure reporting |
+| C08–C23 | Planned | Acceptance gates remain in the redesign plan |
 
-C01 records existing CPU boundary/stride defects rather than fixing them.
-C05 supplies a separate exact host planning contract; it does not use those
-loops as proof of exhaustive coverage or change their CLI behavior. C02 validated the optional legacy target with GMP development files extracted
+C01 records the original CPU boundary/stride defects. C06 fixes modular/point
+arithmetic and the tested BSGS start miss; tail overrun and stride defects remain.
+C05 supplies a separate exact host planning contract. C02 validated the optional
+legacy target with GMP development files extracted
 under `/tmp`; no system package was installed. Sanitizer diagnostics and known
 legacy defects remain documented follow-up work. No GPU search, checkpoint,
 coordinator, or deployment has been implemented yet.

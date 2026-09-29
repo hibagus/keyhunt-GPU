@@ -53,6 +53,12 @@ def main():
     for a,b in scalar_pairs:
         case('sadd',(a,b),(a+b)%N,3)
         case('smul',(a,b),a*b%N,2)
+    for size in (1,2,3,7,32,33,64):
+        for _ in range(4):
+            values=[rng.randrange(1,P) for _ in range(size)]
+            values[0]=P-1
+            cases.append(('finvgroup','finvgroup '+' '.join(f'{v:064x}' for v in values),
+                          ' '.join(f'{pow(v,-1,P):064x}' for v in values)))
     actual=run(options.binary,[c[1] for c in cases])
     failures=[{'operation':op,'command':c,'expected':e,'actual':a}
               for (op,c,e),a in zip(cases,actual) if a!=e]

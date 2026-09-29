@@ -116,3 +116,13 @@ ASAN_OPTIONS=detect_leaks=1 UBSAN_OPTIONS=halt_on_error=1 \
 ```
 
 This selector excludes the existing CPU curve engine's known sanitizer failures.
+
+C06 adds `oracle_selftest`, `cpu_field_oracle`, `cpu_point_oracle` and
+`bounded_search_oracle`. The pinned test-only libsecp256k1 source builds offline
+with upstream CMake and is excluded with `BUILD_TESTING=OFF`. See
+[oracle provenance and reproduction](ARITHMETIC_ORACLE.md) for the source pin,
+validation counts, arithmetic corrections and BSGS start-boundary change.
+The current passing sanitizer selector is
+`ctest --preset cpu-sanitizers -E 'cpu_baseline|target_loading'` with the sanitizer
+environment shown above; the excluded whole-application checks retain known
+findings. These focused gates do not certify the entire legacy application.

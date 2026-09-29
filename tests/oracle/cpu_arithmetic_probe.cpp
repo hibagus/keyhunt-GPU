@@ -112,6 +112,20 @@ std::string evaluate(Secp256K1& curve, const std::vector<std::string>& words) {
     if (words.size()<2) throw std::invalid_argument("missing arguments");
     const auto& op=words[0];
     if (op[0]=='p' || op=="rawpub") return points(curve,words);
+    if (op=="finvgroup") {
+        std::vector<Int> values;
+        for (size_t i=1;i<words.size();++i) {
+            auto value=integer(words[i]);
+            if (value.IsZero()) throw std::invalid_argument("group inverse requires nonzero inputs");
+            values.push_back(value);
+        }
+        IntGroup group(static_cast<int>(values.size()));
+        group.Set(values.data());
+        group.ModInv();
+        std::string result;
+        for (const auto& value:values) { if (!result.empty()) result+=' '; result+=encode(value); }
+        return result;
+    }
     auto a=integer(words[1]);
     if (words.size()==2) {
         auto result=a;
