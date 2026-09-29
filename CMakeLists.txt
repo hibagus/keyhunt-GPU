@@ -65,8 +65,12 @@ add_library(keyhunt_cpu_crypto STATIC
 target_link_libraries(keyhunt_cpu_crypto PUBLIC keyhunt_common)
 keyhunt_configure_target(keyhunt_cpu_crypto)
 
+add_library(keyhunt_core STATIC src/core/config.cpp)
+target_link_libraries(keyhunt_core PUBLIC keyhunt_cpu_crypto)
+keyhunt_configure_target(keyhunt_core)
+
 add_executable(keyhunt src/app/keyhunt.cpp)
-target_link_libraries(keyhunt PRIVATE keyhunt_cpu_crypto)
+target_link_libraries(keyhunt PRIVATE keyhunt_core)
 keyhunt_configure_target(keyhunt)
 
 if(KEYHUNT_BUILD_BSGSD)

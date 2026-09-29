@@ -17,6 +17,7 @@ email: albertobsd@gmail.com
 #include "bloom/bloom.h"
 #include "sha3/sha3.h"
 #include "keyhunt/core/util.h"
+#include "keyhunt/core/config.h"
 
 #include "keyhunt/crypto/secp256k1/SECP256k1.h"
 #include "keyhunt/crypto/secp256k1/Point.h"
@@ -43,22 +44,7 @@ email: albertobsd@gmail.com
 #endif
 #endif
 
-#define CRYPTO_NONE 0
-#define CRYPTO_BTC 1
-#define CRYPTO_ETH 2
-#define CRYPTO_ALL 3
-
-#define MODE_XPOINT 0
-#define MODE_ADDRESS 1
-#define MODE_BSGS 2
-#define MODE_RMD160 3
-#define MODE_PUB2RMD 4
-#define MODE_MINIKEYS 5
-#define MODE_VANITY 6
-
-#define SEARCH_UNCOMPRESS 0
-#define SEARCH_COMPRESS 1
-#define SEARCH_BOTH 2
+using namespace keyhunt::core;
 
 uint32_t  THREADBPWORKLOAD = 1048576;
 
@@ -174,11 +160,11 @@ void checkpointer(void *ptr,const char *file,const char *function,const  char *n
 bool isBase58(char c);
 bool isValidBase58String(char *str);
 
-bool readFileAddress(char *fileName);
-bool readFileVanity(char *fileName);
-bool forceReadFileAddress(char *fileName);
-bool forceReadFileAddressEth(char *fileName);
-bool forceReadFileXPoint(char *fileName);
+bool readFileAddress(const char *fileName);
+bool readFileVanity(const char *fileName);
+bool forceReadFileAddress(const char *fileName);
+bool forceReadFileAddressEth(const char *fileName);
+bool forceReadFileXPoint(const char *fileName);
 bool processOneVanity();
 
 bool initBloomFilter(struct bloom *bloom_arg,uint64_t items_bloom);
@@ -224,11 +210,6 @@ int THREADOUTPUT = 0;
 char *bit_range_str_min;
 char *bit_range_str_max;
 
-const char *bsgs_modes[5] = {"sequential","backward","both","random","dance"};
-const char *modes[7] = {"xpoint","address","bsgs","rmd160","pub2rmd","minikeys","vanity"};
-const char *cryptos[3] = {"btc","eth","all"};
-const char *publicsearch[3] = {"uncompress","compress","both"};
-const char *default_fileName = "addresses.txt";
 
 #if defined(_WIN64) && !defined(__CYGWIN__)
 HANDLE* tid = NULL;
@@ -274,21 +255,9 @@ uint64_t u64range;
 
 Int OUTPUTSECONDS;
 
-int FLAGSKIPCHECKSUM = 0;
-int FLAGENDOMORPHISM = 0;
 
-int FLAGBLOOMMULTIPLIER = 1;
-int FLAGVANITY = 0;
-int FLAGBASEMINIKEY = 0;
-int FLAGBSGSMODE = 0;
-int FLAGDEBUG = 0;
-int FLAGQUIET = 0;
-int FLAGMATRIX = 0;
-int KFACTOR = 1;
 int MAXLENGTHADDRESS = -1;
-int NTHREADS = 1;
 
-int FLAGSAVEREADFILE = 0;
 int FLAGREADEDFILE1 = 0;
 int FLAGREADEDFILE2 = 0;
 int FLAGREADEDFILE3 = 0;
@@ -296,23 +265,11 @@ int FLAGREADEDFILE4 = 0;
 int FLAGUPDATEFILE1 = 0;
 
 
-int FLAGSTRIDE = 0;
-int FLAGSEARCH = 2;
-int FLAGBITRANGE = 0;
-int FLAGRANGE = 0;
-int FLAGFILE = 0;
-int FLAGMODE = MODE_ADDRESS;
-int FLAGCRYPTO = 0;
 int FLAGRAWDATA	= 0;
-int FLAGRANDOM = 0;
-int FLAG_N = 0;
 int FLAGPRECALCUTED_P_FILE = 0;
 
-int bitrange;
-char *str_N;
 char *range_start;
 char *range_end;
-char *str_stride;
 Int stride;
 
 uint64_t BSGS_XVALUE_RAM = 6;
@@ -410,6 +367,8 @@ Int n_range_aux;
 
 Int lambda,lambda2,beta,beta2;
 
+SearchConfig config;
+
 Secp256K1 *secp;
 
 int main(int argc, char **argv)	{
@@ -417,7 +376,7 @@ int main(int argc, char **argv)	{
 	char rawvalue[32];
 	struct tothread *tt;	//tothread
 	Tokenizer t,tokenizerbsgs;	//tokenizer
-	char *fileName = NULL;
+	const char *fileName = config.target_file.c_str();
 	char *hextemp = NULL;
 	char *aux = NULL;
 	char *aux2 = NULL;
@@ -492,13 +451,13 @@ int main(int argc, char **argv)	{
 				menu();
 			break;
 			case '6':
-				FLAGSKIPCHECKSUM = 1;
+				config.skip_checksum = 1;
 				fprintf(stderr,"[W] Skipping checksums on files\n");
 			break;
 			case 'B':
 				index_value = indexOf(optarg,bsgs_modes,5);
 				if(index_value >= 0 && index_value <= 4)	{
-					FLAGBSGSMODE = index_value;
+					config.bsgs_order = index_value;
 					//printf("[+] BSGS mode %s\n",optarg);
 				}
 				else	{
@@ -506,20 +465,20 @@ int main(int argc, char **argv)	{
 				}
 			break;
 			case 'b':
-				bitrange = strtol(optarg,NULL,10);
-				if(bitrange > 0 && bitrange <=256 )	{
+				config.bit_range = strtol(optarg,NULL,10);
+				if(config.bit_range > 0 && config.bit_range <=256 )	{
 					MPZAUX.Set(&ONE);
-					MPZAUX.ShiftL(bitrange-1);
+					MPZAUX.ShiftL(config.bit_range-1);
 					bit_range_str_min = MPZAUX.GetBase16();
 					checkpointer((void *)bit_range_str_min,__FILE__,"malloc","bit_range_str_min" ,__LINE__ -1);
 					MPZAUX.Set(&ONE);
-					MPZAUX.ShiftL(bitrange);
+					MPZAUX.ShiftL(config.bit_range);
 					if(MPZAUX.IsGreater(&secp->order))	{
 						MPZAUX.Set(&secp->order);
 					}
 					bit_range_str_max = MPZAUX.GetBase16();
 					checkpointer((void *)bit_range_str_max,__FILE__,"malloc","bit_range_str_min" ,__LINE__ -1);
-					FLAGBITRANGE = 1;
+					config.has_bit_range = 1;
 				}
 				else	{
 					fprintf(stderr,"[E] invalid bits param: %s.\n",optarg);
@@ -529,10 +488,10 @@ int main(int argc, char **argv)	{
 				index_value = indexOf(optarg,cryptos,3);
 				switch(index_value) {
 					case 0: //btc
-						FLAGCRYPTO = CRYPTO_BTC;
+						config.crypto = CRYPTO_BTC;
 					break;
 					case 1: //eth
-						FLAGCRYPTO = CRYPTO_ETH;
+						config.crypto = CRYPTO_ETH;
 						printf("[+] Setting search for ETH adddress.\n");
 					break;
 					/*
@@ -541,7 +500,7 @@ int main(int argc, char **argv)	{
 					break;
 					*/
 					default:
-						FLAGCRYPTO = CRYPTO_NONE;
+						config.crypto = CRYPTO_NONE;
 						fprintf(stderr,"[E] Unknow crypto value %s\n",optarg);
 						exit(EXIT_FAILURE);
 					break;
@@ -549,7 +508,7 @@ int main(int argc, char **argv)	{
 			break;
 			case 'C':
 				if(strlen(optarg) == 22)	{
-					FLAGBASEMINIKEY = 1;
+					config.base_minikey = 1;
 					str_baseminikey = (char*) malloc(23);
 					checkpointer((void *)str_baseminikey,__FILE__,"malloc","str_baseminikey" ,__LINE__ - 1);
 					raw_baseminikey = (char*) malloc(23);
@@ -573,11 +532,11 @@ int main(int argc, char **argv)	{
 				
 			break;
 			case 'd':
-				FLAGDEBUG = 1;
+				config.debug = 1;
 				printf("[+] Flag DEBUG enabled\n");
 			break;
 			case 'e':
-				FLAGENDOMORPHISM = 1;
+				config.endomorphism = 1;
 				printf("[+] Endomorphism enabled\n");
 				lambda.SetBase16("5363ad4cc05c30e0a5261c028812645a122e22ea20816678df02967c1b23bd72");
 				lambda2.SetBase16("ac9c52b33fa3cf1f5ad9e3fd77ed9ba4a880b9fc8ec739c2e0cfc810b51283ce");
@@ -585,71 +544,72 @@ int main(int argc, char **argv)	{
 				beta2.SetBase16("851695d49a83f8ef919bb86153cbcb16630fb68aed0a766a3ec693d68e6afa40");
 			break;
 			case 'f':
-				FLAGFILE = 1;
-				fileName = optarg;
+				config.has_target_file = 1;
+				config.target_file = optarg;
+				fileName = config.target_file.c_str();
 			break;
 			case 'I':
-				FLAGSTRIDE = 1;
-				str_stride = optarg;
+				config.has_stride = 1;
+				config.stride = optarg;
 			break;
 			case 'k':
-				KFACTOR = (int)strtol(optarg,NULL,10);
-				if(KFACTOR <= 0)	{
-					KFACTOR = 1;
+				config.bsgs_k_factor = (int)strtol(optarg,NULL,10);
+				if(config.bsgs_k_factor <= 0)	{
+					config.bsgs_k_factor = 1;
 				}
-				printf("[+] K factor %i\n",KFACTOR);
+				printf("[+] K factor %i\n",config.bsgs_k_factor);
 			break;
 
 			case 'l':
 				switch(indexOf(optarg,publicsearch,3)) {
 					case SEARCH_UNCOMPRESS:
-						FLAGSEARCH = SEARCH_UNCOMPRESS;
+						config.encoding = SEARCH_UNCOMPRESS;
 						printf("[+] Search uncompress only\n");
 					break;
 					case SEARCH_COMPRESS:
-						FLAGSEARCH = SEARCH_COMPRESS;
+						config.encoding = SEARCH_COMPRESS;
 						printf("[+] Search compress only\n");
 					break;
 					case SEARCH_BOTH:
-						FLAGSEARCH = SEARCH_BOTH;
+						config.encoding = SEARCH_BOTH;
 						printf("[+] Search both compress and uncompress\n");
 					break;
 				}
 			break;
 			case 'M':
-				FLAGMATRIX = 1;
+				config.matrix = 1;
 				printf("[+] Matrix screen\n");
 			break;
 			case 'm':
 				switch(indexOf(optarg,modes,7)) {
 					case MODE_XPOINT: //xpoint
-						FLAGMODE = MODE_XPOINT;
+						config.mode = MODE_XPOINT;
 						printf("[+] Mode xpoint\n");
 					break;
 					case MODE_ADDRESS: //address
-						FLAGMODE = MODE_ADDRESS;
+						config.mode = MODE_ADDRESS;
 						printf("[+] Mode address\n");
 					break;
 					case MODE_BSGS:
-						FLAGMODE = MODE_BSGS;
+						config.mode = MODE_BSGS;
 						//printf("[+] Mode BSGS\n");
 					break;
 					case MODE_RMD160:
-						FLAGMODE = MODE_RMD160;
-						FLAGCRYPTO = CRYPTO_BTC;
+						config.mode = MODE_RMD160;
+						config.crypto = CRYPTO_BTC;
 						printf("[+] Mode rmd160\n");
 					break;
 					case MODE_PUB2RMD:
-						FLAGMODE = MODE_PUB2RMD;
+						config.mode = MODE_PUB2RMD;
 						printf("[+] Mode pub2rmd was removed\n");
 						exit(0);
 					break;
 					case MODE_MINIKEYS:
-						FLAGMODE = MODE_MINIKEYS;
+						config.mode = MODE_MINIKEYS;
 						printf("[+] Mode minikeys\n");
 					break;
 					case MODE_VANITY:
-						FLAGMODE = MODE_VANITY;
+						config.mode = MODE_VANITY;
 						printf("[+] Mode vanity\n");
 						if(vanity_bloom == NULL){
 							vanity_bloom = (struct bloom*) calloc(1,sizeof(struct bloom));
@@ -663,17 +623,17 @@ int main(int argc, char **argv)	{
 				}
 			break;
 			case 'n':
-				FLAG_N = 1;
-				str_N = optarg;
+				config.has_batch_size = 1;
+				config.batch_size = optarg;
 			break;
 			case 'q':
-				FLAGQUIET	= 1;
+				config.quiet	= 1;
 				printf("[+] Quiet thread output\n");
 			break;
 			case 'R':
 				printf("[+] Random mode\n");
-				FLAGRANDOM = 1;
-				FLAGBSGSMODE =  3;
+				config.random = 1;
+				config.bsgs_order =  3;
 			break;
 			case 'r':
 				if(optarg != NULL)	{
@@ -682,7 +642,7 @@ int main(int argc, char **argv)	{
 						case 1:
 							range_start = nextToken(&t);
 							if(isValidHex(range_start)) {
-								FLAGRANGE = 1;
+								config.has_range = 1;
 								range_end = secp->order.GetBase16();
 							}
 							else	{
@@ -693,7 +653,7 @@ int main(int argc, char **argv)	{
 							range_start = nextToken(&t);
 							range_end	 = nextToken(&t);
 							if(isValidHex(range_start) && isValidHex(range_end)) {
-									FLAGRANGE = 1;
+									config.has_range = 1;
 							}
 							else	{
 								if(isValidHex(range_start)) {
@@ -725,17 +685,17 @@ int main(int argc, char **argv)	{
 				}
 			break;
 			case 'S':
-				FLAGSAVEREADFILE = 1;
+				config.cache_targets = 1;
 			break;
 			case 't':
-				NTHREADS = strtol(optarg,NULL,10);
-				if(NTHREADS <= 0)	{
-					NTHREADS = 1;
+				config.threads = strtol(optarg,NULL,10);
+				if(config.threads <= 0)	{
+					config.threads = 1;
 				}
-				printf((NTHREADS > 1) ? "[+] Threads : %u\n": "[+] Thread : %u\n",NTHREADS);
+				printf((config.threads > 1) ? "[+] Threads : %u\n": "[+] Thread : %u\n",config.threads);
 			break;
 			case 'v':
-				FLAGVANITY = 1;
+				config.vanity = 1;
 				if(vanity_bloom == NULL){
 					vanity_bloom = (struct bloom*) calloc(1,sizeof(struct bloom));
 					checkpointer((void *)vanity_bloom,__FILE__,"calloc","vanity_bloom" ,__LINE__ -1);
@@ -764,11 +724,11 @@ int main(int argc, char **argv)	{
 				}
 			break;
 			case 'z':
-				FLAGBLOOMMULTIPLIER= strtol(optarg,NULL,10);
-				if(FLAGBLOOMMULTIPLIER <= 0)	{
-					FLAGBLOOMMULTIPLIER = 1;
+				config.bloom_multiplier= strtol(optarg,NULL,10);
+				if(config.bloom_multiplier <= 0)	{
+					config.bloom_multiplier = 1;
 				}
-				printf("[+] Bloom Size Multiplier %i\n",FLAGBLOOMMULTIPLIER);
+				printf("[+] Bloom Size Multiplier %i\n",config.bloom_multiplier);
 			break;
 			default:
 				fprintf(stderr,"[E] Unknow opcion -%c\n",c);
@@ -777,43 +737,43 @@ int main(int argc, char **argv)	{
 		}
 	}
 	
-	if(  FLAGBSGSMODE == MODE_BSGS && FLAGENDOMORPHISM)	{
+	if(  config.bsgs_order == MODE_BSGS && config.endomorphism)	{
 		fprintf(stderr,"[E] Endomorphism doesn't work with BSGS\n");
 		exit(EXIT_FAILURE);
 	}
 	
 	
-	if(  FLAGBSGSMODE == MODE_BSGS  && FLAGSTRIDE)	{
+	if(  config.bsgs_order == MODE_BSGS  && config.has_stride)	{
 		fprintf(stderr,"[E] Stride doesn't work with BSGS\n");
 		exit(EXIT_FAILURE);
 	}
-	if(FLAGSTRIDE)	{
-		if(str_stride[0] == '0' && str_stride[1] == 'x')	{
-			stride.SetBase16(str_stride+2);
+	if(config.has_stride)	{
+		if(config.stride.c_str()[0] == '0' && config.stride.c_str()[1] == 'x')	{
+			stride.SetBase16(config.stride.c_str()+2);
 		}
 		else{
-			stride.SetBase10(str_stride);
+			stride.SetBase10(config.stride.c_str());
 		}
 		printf("[+] Stride : %s\n",stride.GetBase10());
 	}
 	else	{
-		FLAGSTRIDE = 1;
+		config.has_stride = 1;
 		stride.Set(&ONE);
 	}
 	init_generator();
-	if(FLAGMODE == MODE_BSGS )	{
-		printf("[+] Mode BSGS %s\n",bsgs_modes[FLAGBSGSMODE]);
+	if(config.mode == MODE_BSGS )	{
+		printf("[+] Mode BSGS %s\n",bsgs_modes[config.bsgs_order]);
 	}
 	
-	if(FLAGFILE == 0) {
-		fileName =(char*) default_fileName;
+	if(config.has_target_file == 0) {
+		fileName = config.target_file.c_str();
 	}
 	
-	if(FLAGMODE == MODE_ADDRESS && FLAGCRYPTO == CRYPTO_NONE) {	//When none crypto is defined the default search is for Bitcoin
-		FLAGCRYPTO = CRYPTO_BTC;
+	if(config.mode == MODE_ADDRESS && config.crypto == CRYPTO_NONE) {	//When none crypto is defined the default search is for Bitcoin
+		config.crypto = CRYPTO_BTC;
 		printf("[+] Setting search for btc adddress\n");
 	}
-	if(FLAGRANGE) {
+	if(config.has_range) {
 		n_range_start.SetBase16(range_start);
 		if(n_range_start.IsZero())	{
 			n_range_start.AddOne();
@@ -832,31 +792,31 @@ int main(int argc, char **argv)	{
 			}
 			else	{
 				fprintf(stderr,"[E] Start and End range can't be great than N\nFallback to random mode!\n");
-				FLAGRANGE = 0;
+				config.has_range = 0;
 			}
 		}
 		else	{
 			fprintf(stderr,"[E] Start and End range can't be the same\nFallback to random mode!\n");
-			FLAGRANGE = 0;
+			config.has_range = 0;
 		}
 	}
-	if(FLAGMODE != MODE_BSGS && FLAGMODE != MODE_MINIKEYS)	{
+	if(config.mode != MODE_BSGS && config.mode != MODE_MINIKEYS)	{
 		BSGS_N.SetInt32(DEBUGCOUNT);
-		if(FLAGRANGE == 0 && FLAGBITRANGE == 0)	{
+		if(config.has_range == 0 && config.has_bit_range == 0)	{
 			n_range_start.SetInt32(1);
 			n_range_end.Set(&secp->order);
 			n_range_diff.Set(&n_range_end);
 			n_range_diff.Sub(&n_range_start);
 		}
 		else	{
-			if(FLAGBITRANGE)	{
+			if(config.has_bit_range)	{
 				n_range_start.SetBase16(bit_range_str_min);
 				n_range_end.SetBase16(bit_range_str_max);
 				n_range_diff.Set(&n_range_end);
 				n_range_diff.Sub(&n_range_start);
 			}
 			else	{
-				if(FLAGRANGE == 0)	{
+				if(config.has_range == 0)	{
 					fprintf(stderr,"[W] WTF!\n");
 				}
 			}
@@ -864,30 +824,30 @@ int main(int argc, char **argv)	{
 	}
 	N = 0;
 	
-	if(FLAGMODE != MODE_BSGS )	{
-		if(FLAG_N){
-			if(str_N[0] == '0' && str_N[1] == 'x')	{
-				N_SEQUENTIAL_MAX =strtol(str_N,NULL,16);
+	if(config.mode != MODE_BSGS )	{
+		if(config.has_batch_size){
+			if(config.batch_size.c_str()[0] == '0' && config.batch_size.c_str()[1] == 'x')	{
+				N_SEQUENTIAL_MAX =strtol(config.batch_size.c_str(),NULL,16);
 			}
 			else	{
-				N_SEQUENTIAL_MAX =strtol(str_N,NULL,10);
+				N_SEQUENTIAL_MAX =strtol(config.batch_size.c_str(),NULL,10);
 			}
 			
 			if(N_SEQUENTIAL_MAX < 1024)	{
 				fprintf(stderr,"[I] n value need to be equal or great than 1024, back to defaults\n");
-				FLAG_N = 0;
+				config.has_batch_size = 0;
 				N_SEQUENTIAL_MAX = 0x100000000;
 			}
 			if(N_SEQUENTIAL_MAX % 1024 != 0)	{
 				fprintf(stderr,"[I] n value need to be multiplier of  1024\n");
-				FLAG_N = 0;
+				config.has_batch_size = 0;
 				N_SEQUENTIAL_MAX = 0x100000000;
 			}
 		}
 		printf("[+] N = %p\n",(void*)N_SEQUENTIAL_MAX);
-		if(FLAGMODE == MODE_MINIKEYS)	{
+		if(config.mode == MODE_MINIKEYS)	{
 			BSGS_N.SetInt32(DEBUGCOUNT);
-			if(FLAGBASEMINIKEY)	{
+			if(config.base_minikey)	{
 				printf("[+] Base Minikey : %s\n",str_baseminikey);
 			}
 			minikeyN = (char*) malloc(22);
@@ -917,14 +877,14 @@ int main(int argc, char **argv)	{
 			minikey_n_limit = 21 -i;
 		}
 		else	{
-			if(FLAGBITRANGE)	{	// Bit Range
-				printf("[+] Bit Range %i\n",bitrange);
+			if(config.has_bit_range)	{	// Bit Range
+				printf("[+] Bit Range %i\n",config.bit_range);
 			}
 			else	{
 				printf("[+] Range \n");
 			}
 		}
-		if(FLAGMODE != MODE_MINIKEYS)	{
+		if(config.mode != MODE_MINIKEYS)	{
 			hextemp = n_range_start.GetBase16();
 			printf("[+] -- from : 0x%s\n",hextemp);
 			free(hextemp);
@@ -933,7 +893,7 @@ int main(int argc, char **argv)	{
 			free(hextemp);
 		}
 
-		switch(FLAGMODE)	{
+		switch(config.mode)	{
 			case MODE_MINIKEYS:
 			case MODE_RMD160:
 			case MODE_ADDRESS:
@@ -951,7 +911,7 @@ int main(int argc, char **argv)	{
 			break;
 		}
 		
-		if(FLAGMODE != MODE_VANITY && !FLAGREADEDFILE1)	{
+		if(config.mode != MODE_VANITY && !FLAGREADEDFILE1)	{
 			printf("[+] Sorting data ...");
 			_sort(addressTable,N);
 			printf(" done! %" PRIu64 " values were loaded and sorted\n",N);
@@ -959,7 +919,7 @@ int main(int argc, char **argv)	{
 		}
 	}
 	
-	if(FLAGMODE == MODE_BSGS )	{
+	if(config.mode == MODE_BSGS )	{
 		printf("[+] Opening file %s\n",fileName);
 		fd = fopen(fileName,"rb");
 		if(fd == NULL)	{
@@ -1049,16 +1009,16 @@ int main(int argc, char **argv)	{
 		BSGS_M.SetInt64(bsgs_m);
 
 
-		if(FLAG_N)	{	//Custom N by the -n param
+		if(config.has_batch_size)	{	//Custom N by the -n param
 						
 			/* Here we need to validate if the given string is a valid hexadecimal number or a base 10 number*/
 			
 			/* Now the conversion*/
-			if(str_N[0] == '0' && str_N[1] == 'x' )	{	/*We expected a hexadecimal value after 0x  -> str_N +2 */
-				BSGS_N.SetBase16((char*)(str_N+2));
+			if(config.batch_size.c_str()[0] == '0' && config.batch_size.c_str()[1] == 'x' )	{	/*We expected a hexadecimal value after 0x  -> config.batch_size.c_str() +2 */
+				BSGS_N.SetBase16((char*)(config.batch_size.c_str()+2));
 			}
 			else	{
-				BSGS_N.SetBase10(str_N);
+				BSGS_N.SetBase10(config.batch_size.c_str());
 			}
 			
 		}
@@ -1086,14 +1046,14 @@ int main(int argc, char **argv)	{
 
 		bsgs_m = BSGS_M.GetInt64();
 
-		if(FLAGRANGE || FLAGBITRANGE)	{
-			if(FLAGBITRANGE)	{	// Bit Range
+		if(config.has_range || config.has_bit_range)	{
+			if(config.has_bit_range)	{	// Bit Range
 				n_range_start.SetBase16(bit_range_str_min);
 				n_range_end.SetBase16(bit_range_str_max);
 
 				n_range_diff.Set(&n_range_end);
 				n_range_diff.Sub(&n_range_start);
-				printf("[+] Bit Range %i\n",bitrange);
+				printf("[+] Bit Range %i\n",config.bit_range);
 				printf("[+] -- from : 0x%s\n",bit_range_str_min);
 				printf("[+] -- to   : 0x%s\n",bit_range_str_max);
 			}
@@ -1126,7 +1086,7 @@ int main(int argc, char **argv)	{
 	M3	5497558139
 		*/
 
-		BSGS_M.Mult((uint64_t)KFACTOR);
+		BSGS_M.Mult((uint64_t)config.bsgs_k_factor);
 		BSGS_AUX.SetInt32(32);
 		BSGS_R.Set(&BSGS_M);
 		BSGS_R.Mod(&BSGS_AUX);
@@ -1370,7 +1330,7 @@ int main(int argc, char **argv)	{
 		checkpointer((void *)bPtable,__FILE__,"malloc","bPtable" ,__LINE__ -1 );
 		memset(bPtable,0,bytes);
 		
-		if(FLAGSAVEREADFILE)	{
+		if(config.cache_targets)	{
 			/*Reading file for 1st bloom filter */
 
 			snprintf(buffer_bloom_file,1024,"keyhunt_bsgs_4_%" PRIu64 ".blm",bsgs_m);
@@ -1396,7 +1356,7 @@ int main(int argc, char **argv)	{
 						fprintf(stderr,"[E] Error reading the file %s\n",buffer_bloom_file);
 						exit(EXIT_FAILURE);
 					}
-					if(FLAGSKIPCHECKSUM == 0)	{
+					if(config.skip_checksum == 0)	{
 						sha256((uint8_t*)bloom_bP[i].bf,bloom_bP[i].bytes,(uint8_t*)rawvalue);
 						if(memcmp(bloom_bP_checksums[i].data,rawvalue,32) != 0 || memcmp(bloom_bP_checksums[i].backup,rawvalue,32) != 0 )	{	/* Verification */
 							fprintf(stderr,"[E] Error checksum file mismatch! %s\n",buffer_bloom_file);
@@ -1451,7 +1411,7 @@ int main(int argc, char **argv)	{
 						memcpy(bloom_bP_checksums[i].data,oldbloom_bP.checksum,32);
 						memcpy(bloom_bP_checksums[i].backup,oldbloom_bP.checksum_backup,32);
 						memset(rawvalue,0,32);
-						if(FLAGSKIPCHECKSUM == 0)	{
+						if(config.skip_checksum == 0)	{
 							sha256((uint8_t*)bloom_bP[i].bf,bloom_bP[i].bytes,(uint8_t*)rawvalue);
 							if(memcmp(bloom_bP_checksums[i].data,rawvalue,32) != 0 || memcmp(bloom_bP_checksums[i].backup,rawvalue,32) != 0 )	{	/* Verification */
 								fprintf(stderr,"[E] Error checksum file mismatch! %s\n",buffer_bloom_file);
@@ -1500,7 +1460,7 @@ int main(int argc, char **argv)	{
 						exit(EXIT_FAILURE);
 					}
 					memset(rawvalue,0,32);
-					if(FLAGSKIPCHECKSUM == 0)	{								
+					if(config.skip_checksum == 0)	{
 						sha256((uint8_t*)bloom_bPx2nd[i].bf,bloom_bPx2nd[i].bytes,(uint8_t*)rawvalue);
 						if(memcmp(bloom_bPx2nd_checksums[i].data,rawvalue,32) != 0 || memcmp(bloom_bPx2nd_checksums[i].backup,rawvalue,32) != 0 )	{		/* Verification */
 							fprintf(stderr,"[E] Error checksum file mismatch! %s\n",buffer_bloom_file);
@@ -1550,7 +1510,7 @@ int main(int argc, char **argv)	{
 					fprintf(stderr,"[E] Error reading the file %s\n",buffer_bloom_file);
 					exit(EXIT_FAILURE);
 				}
-				if(FLAGSKIPCHECKSUM == 0)	{
+				if(config.skip_checksum == 0)	{
 					sha256((uint8_t*)bPtable,bytes,(uint8_t*)checksum_backup);
 					if(memcmp(checksum,checksum_backup,32) != 0)	{
 						fprintf(stderr,"[E] Error checksum file mismatch! %s\n",buffer_bloom_file);
@@ -1590,7 +1550,7 @@ int main(int argc, char **argv)	{
 						exit(EXIT_FAILURE);
 					}
 					memset(rawvalue,0,32);
-					if(FLAGSKIPCHECKSUM == 0)	{							
+					if(config.skip_checksum == 0)	{
 						sha256((uint8_t*)bloom_bPx3rd[i].bf,bloom_bPx3rd[i].bytes,(uint8_t*)rawvalue);
 						if(memcmp(bloom_bPx3rd_checksums[i].data,rawvalue,32) != 0 || memcmp(bloom_bPx3rd_checksums[i].backup,rawvalue,32) != 0 )	{		/* Verification */
 							fprintf(stderr,"[E] Error checksum file mismatch! %s\n",buffer_bloom_file);
@@ -1640,22 +1600,22 @@ int main(int argc, char **argv)	{
 				fflush(stdout);
 				
 #if defined(_WIN64) && !defined(__CYGWIN__)
-				tid = (HANDLE*)calloc(NTHREADS, sizeof(HANDLE));
+				tid = (HANDLE*)calloc(config.threads, sizeof(HANDLE));
 				checkpointer((void *)tid,__FILE__,"calloc","tid" ,__LINE__ -1 );
-				bPload_mutex = (HANDLE*) calloc(NTHREADS,sizeof(HANDLE));
+				bPload_mutex = (HANDLE*) calloc(config.threads,sizeof(HANDLE));
 #else
-				tid = (pthread_t *) calloc(NTHREADS,sizeof(pthread_t));
-				bPload_mutex = (pthread_mutex_t*) calloc(NTHREADS,sizeof(pthread_mutex_t));
+				tid = (pthread_t *) calloc(config.threads,sizeof(pthread_t));
+				bPload_mutex = (pthread_mutex_t*) calloc(config.threads,sizeof(pthread_mutex_t));
 #endif
 				checkpointer((void *)bPload_mutex,__FILE__,"calloc","bPload_mutex" ,__LINE__ -1 );
-				bPload_temp_ptr = (struct bPload*) calloc(NTHREADS,sizeof(struct bPload));
+				bPload_temp_ptr = (struct bPload*) calloc(config.threads,sizeof(struct bPload));
 				checkpointer((void *)bPload_temp_ptr,__FILE__,"calloc","bPload_temp_ptr" ,__LINE__ -1 );
-				bPload_threads_available = (char*) calloc(NTHREADS,sizeof(char));
+				bPload_threads_available = (char*) calloc(config.threads,sizeof(char));
 				checkpointer((void *)bPload_threads_available,__FILE__,"calloc","bPload_threads_available" ,__LINE__ -1 );
 				
-				memset(bPload_threads_available,1,NTHREADS);
+				memset(bPload_threads_available,1,config.threads);
 				
-				for(j = 0; j < NTHREADS; j++)	{
+				for(j = 0; j < config.threads; j++)	{
 #if defined(_WIN64) && !defined(__CYGWIN__)
 					bPload_mutex[j] = CreateMutex(NULL, FALSE, NULL);
 #else
@@ -1664,7 +1624,7 @@ int main(int argc, char **argv)	{
 				}
 				
 				do	{
-					for(j = 0; j < NTHREADS && !salir; j++)	{
+					for(j = 0; j < config.threads && !salir; j++)	{
 
 						if(bPload_threads_available[j] && !salir)	{
 							bPload_threads_available[j] = 0;
@@ -1697,7 +1657,7 @@ int main(int argc, char **argv)	{
 						OLDFINISHED_ITEMS = FINISHED_ITEMS;
 					}
 					
-					for(j = 0 ; j < NTHREADS ; j++)	{
+					for(j = 0 ; j < config.threads ; j++)	{
 
 #if defined(_WIN64) && !defined(__CYGWIN__)
 						WaitForSingleObject(bPload_mutex[j], INFINITE);
@@ -1751,24 +1711,24 @@ int main(int argc, char **argv)	{
 				fflush(stdout);
 				
 #if defined(_WIN64) && !defined(__CYGWIN__)
-				tid = (HANDLE*)calloc(NTHREADS, sizeof(HANDLE));
-				bPload_mutex = (HANDLE*) calloc(NTHREADS,sizeof(HANDLE));
+				tid = (HANDLE*)calloc(config.threads, sizeof(HANDLE));
+				bPload_mutex = (HANDLE*) calloc(config.threads,sizeof(HANDLE));
 #else
-				tid = (pthread_t *) calloc(NTHREADS,sizeof(pthread_t));
-				bPload_mutex = (pthread_mutex_t*) calloc(NTHREADS,sizeof(pthread_mutex_t));
+				tid = (pthread_t *) calloc(config.threads,sizeof(pthread_t));
+				bPload_mutex = (pthread_mutex_t*) calloc(config.threads,sizeof(pthread_mutex_t));
 #endif
 				checkpointer((void *)tid,__FILE__,"calloc","tid" ,__LINE__ -1 );
 				checkpointer((void *)bPload_mutex,__FILE__,"calloc","bPload_mutex" ,__LINE__ -1 );
 				
-				bPload_temp_ptr = (struct bPload*) calloc(NTHREADS,sizeof(struct bPload));
+				bPload_temp_ptr = (struct bPload*) calloc(config.threads,sizeof(struct bPload));
 				checkpointer((void *)bPload_temp_ptr,__FILE__,"calloc","bPload_temp_ptr" ,__LINE__ -1 );
-				bPload_threads_available = (char*) calloc(NTHREADS,sizeof(char));
+				bPload_threads_available = (char*) calloc(config.threads,sizeof(char));
 				checkpointer((void *)bPload_threads_available,__FILE__,"calloc","bPload_threads_available" ,__LINE__ -1 );
 				
 
-				memset(bPload_threads_available,1,NTHREADS);
+				memset(bPload_threads_available,1,config.threads);
 				
-				for(j = 0; j < NTHREADS; j++)	{
+				for(j = 0; j < config.threads; j++)	{
 #if defined(_WIN64) && !defined(__CYGWIN__)
 					bPload_mutex = CreateMutex(NULL, FALSE, NULL);
 #else
@@ -1777,7 +1737,7 @@ int main(int argc, char **argv)	{
 				}
 				
 				do	{
-					for(j = 0; j < NTHREADS && !salir; j++)	{
+					for(j = 0; j < config.threads && !salir; j++)	{
 
 						if(bPload_threads_available[j] && !salir)	{
 							bPload_threads_available[j] = 0;
@@ -1811,7 +1771,7 @@ int main(int argc, char **argv)	{
 						OLDFINISHED_ITEMS = FINISHED_ITEMS;
 					}
 					
-					for(j = 0 ; j < NTHREADS ; j++)	{
+					for(j = 0 ; j < config.threads ; j++)	{
 
 #if defined(_WIN64) && !defined(__CYGWIN__)
 						WaitForSingleObject(bPload_mutex[j], INFINITE);
@@ -1878,7 +1838,7 @@ int main(int argc, char **argv)	{
 			printf("Done!\n");
 			fflush(stdout);
 		}
-		if(FLAGSAVEREADFILE || FLAGUPDATEFILE1 )	{
+		if(config.cache_targets || FLAGUPDATEFILE1 )	{
 			if(!FLAGREADEDFILE1 || FLAGUPDATEFILE1)	{
 				snprintf(buffer_bloom_file,1024,"keyhunt_bsgs_4_%" PRIu64 ".blm",bsgs_m);
 				
@@ -2027,24 +1987,24 @@ int main(int argc, char **argv)	{
 
 		i = 0;
 
-		steps = (uint64_t *) calloc(NTHREADS,sizeof(uint64_t));
+		steps = (uint64_t *) calloc(config.threads,sizeof(uint64_t));
 		checkpointer((void *)steps,__FILE__,"calloc","steps" ,__LINE__ -1 );
-		ends = (unsigned int *) calloc(NTHREADS,sizeof(int));
+		ends = (unsigned int *) calloc(config.threads,sizeof(int));
 		checkpointer((void *)ends,__FILE__,"calloc","ends" ,__LINE__ -1 );
 #if defined(_WIN64) && !defined(__CYGWIN__)
-		tid = (HANDLE*)calloc(NTHREADS, sizeof(HANDLE));
+		tid = (HANDLE*)calloc(config.threads, sizeof(HANDLE));
 #else
-		tid = (pthread_t *) calloc(NTHREADS,sizeof(pthread_t));
+		tid = (pthread_t *) calloc(config.threads,sizeof(pthread_t));
 #endif
 		checkpointer((void *)tid,__FILE__,"calloc","tid" ,__LINE__ -1 );
 		
-		for(j= 0;j < NTHREADS; j++)	{
+		for(j= 0;j < config.threads; j++)	{
 			tt = (tothread*) malloc(sizeof(struct tothread));
 			checkpointer((void *)tt,__FILE__,"malloc","tt" ,__LINE__ -1 );
 			tt->nt = j;
 			steps[j] = 0;
 			s = 0;
-			switch(FLAGBSGSMODE)	{
+			switch(config.bsgs_order)	{
 #if defined(_WIN64) && !defined(__CYGWIN__)
 				case 0:
 					tid[j] = CreateThread(NULL, 0, thread_process_bsgs, (void*)tt, 0, &s);
@@ -2091,24 +2051,24 @@ int main(int argc, char **argv)	{
 		}
 		free(aux);
 	}
-	if(FLAGMODE != MODE_BSGS)	{
-		steps = (uint64_t *) calloc(NTHREADS,sizeof(uint64_t));
+	if(config.mode != MODE_BSGS)	{
+		steps = (uint64_t *) calloc(config.threads,sizeof(uint64_t));
 		checkpointer((void *)steps,__FILE__,"calloc","steps" ,__LINE__ -1 );
-		ends = (unsigned int *) calloc(NTHREADS,sizeof(int));
+		ends = (unsigned int *) calloc(config.threads,sizeof(int));
 		checkpointer((void *)ends,__FILE__,"calloc","ends" ,__LINE__ -1 );
 #if defined(_WIN64) && !defined(__CYGWIN__)
-		tid = (HANDLE*)calloc(NTHREADS, sizeof(HANDLE));
+		tid = (HANDLE*)calloc(config.threads, sizeof(HANDLE));
 #else
-		tid = (pthread_t *) calloc(NTHREADS,sizeof(pthread_t));
+		tid = (pthread_t *) calloc(config.threads,sizeof(pthread_t));
 #endif
 		checkpointer((void *)tid,__FILE__,"calloc","tid" ,__LINE__ -1 );
-		for(j= 0;j < NTHREADS; j++)	{
+		for(j= 0;j < config.threads; j++)	{
 			tt = (tothread*) malloc(sizeof(struct tothread));
 			checkpointer((void *)tt,__FILE__,"malloc","tt" ,__LINE__ -1 );
 			tt->nt = j;
 			steps[j] = 0;
 			s = 0;
-			switch(FLAGMODE)	{
+			switch(config.mode)	{
 #if defined(_WIN64) && !defined(__CYGWIN__)
 				case MODE_ADDRESS:
 				case MODE_XPOINT:
@@ -2155,7 +2115,7 @@ int main(int argc, char **argv)	{
 		sleep_ms(1000);
 		seconds.AddOne();
 		check_flag = 1;
-		for(j = 0; j <NTHREADS && check_flag; j++) {
+		for(j = 0; j <config.threads && check_flag; j++) {
 			check_flag &= ends[j];
 		}
 		if(check_flag)	{
@@ -2166,14 +2126,14 @@ int main(int argc, char **argv)	{
 			MPZAUX.Mod(&OUTPUTSECONDS);
 			if(MPZAUX.IsZero()) {
 				total.SetInt32(0);
-				for(j = 0; j < NTHREADS; j++) {
+				for(j = 0; j < config.threads; j++) {
 					pretotal.Set(&debugcount_mpz);
 					pretotal.Mult(steps[j]);					
 					total.Add(&pretotal);
 				}
 				
-				if(FLAGENDOMORPHISM)	{
-					if(FLAGMODE == MODE_XPOINT)	{
+				if(config.endomorphism)	{
+					if(config.mode == MODE_XPOINT)	{
 						total.Mult(3);
 					}
 					else	{
@@ -2181,7 +2141,7 @@ int main(int argc, char **argv)	{
 					}
 				}
 				else	{
-					if(FLAGSEARCH == SEARCH_COMPRESS)	{
+					if(config.encoding == SEARCH_COMPRESS)	{
 						total.Mult(2);
 					}
 				}
@@ -2199,7 +2159,7 @@ int main(int argc, char **argv)	{
 				
 				
 				if(pretotal.IsLower(&int_limits[0]))	{
-					if(FLAGMATRIX)	{
+					if(config.matrix)	{
 						sprintf(buffer,"[+] Total %s keys in %s seconds: %s keys/s\n",str_total,str_seconds,str_pretotal);
 					}
 					else	{
@@ -2221,7 +2181,7 @@ int main(int argc, char **argv)	{
 					div_pretotal.Set(&pretotal);
 					div_pretotal.Div(&int_limits[salir ? i : i-1]);
 					str_divpretotal = div_pretotal.GetBase10();
-					if(FLAGMATRIX)	{
+					if(config.matrix)	{
 						sprintf(buffer,"[+] Total %s keys in %s seconds: ~%s %s (%s keys/s)\n",str_total,str_seconds,str_divpretotal,str_limits_prefixs[salir ? i : i-1],str_pretotal);
 					}
 					else	{
@@ -2365,14 +2325,14 @@ void *thread_process_minikeys(void *vargp)	{
 	minikey2check[23] = 0x00;
 	
 	do	{
-		if(FLAGRANDOM)	{
+		if(config.random)	{
 			counter.Rand(256);
 			for(k = 0; k < 21; k++)	{
 				buffer_b58[k] =(uint8_t)((uint8_t) rawbuffer[k] % 58);
 			}
 		}
 		else	{
-			if(FLAGBASEMINIKEY)	{
+			if(config.base_minikey)	{
 #if defined(_WIN64) && !defined(__CYGWIN__)
 				WaitForSingleObject(write_random, INFINITE);
 				memcpy(buffer_b58,raw_baseminikey,21);
@@ -2417,12 +2377,12 @@ void *thread_process_minikeys(void *vargp)	{
 		set_minikey(minikey2check+1,buffer_b58,21);
 		if(continue_flag)	{
 			count = 0;
-			if(FLAGMATRIX)	{
+			if(config.matrix)	{
 					printf("[+] Base minikey: %s     \n",minikey2check);
 					fflush(stdout);
 			}
 			else	{
-				if(!FLAGQUIET)	{
+				if(!config.quiet)	{
 					printf("\r[+] Base minikey: %s     \r",minikey2check);
 					fflush(stdout);
 				}
@@ -2537,7 +2497,7 @@ void *thread_process(void *vargp)	{
 	
 	char publickeyhashrmd160_endomorphism[12][4][20];
 	
-	bool calculate_y = FLAGSEARCH == SEARCH_UNCOMPRESS || FLAGSEARCH == SEARCH_BOTH || FLAGCRYPTO  == CRYPTO_ETH;
+	bool calculate_y = config.encoding == SEARCH_UNCOMPRESS || config.encoding == SEARCH_BOTH || config.crypto  == CRYPTO_ETH;
 	Int key_mpz,keyfound,temp_stride;
 	tt = (struct tothread *)vargp;
 	thread_number = tt->nt;
@@ -2545,7 +2505,7 @@ void *thread_process(void *vargp)	{
 	grp->Set(dx);
 			
 	do {
-		if(FLAGRANDOM){
+		if(config.random){
 			key_mpz.Rand(&n_range_start,&n_range_end);
 		}
 		else	{
@@ -2568,14 +2528,14 @@ void *thread_process(void *vargp)	{
 		}
 		if(continue_flag)	{
 			count = 0;
-			if(FLAGMATRIX)	{
+			if(config.matrix)	{
 					hextemp = key_mpz.GetBase16();
 					printf("Base key: %s thread %i\n",hextemp,thread_number);
 					fflush(stdout);
 					free(hextemp);
 			}
 			else	{
-				if(FLAGQUIET == 0){
+				if(config.quiet == 0){
 					hextemp = key_mpz.GetBase16();
 					printf("\rBase key: %s     \r",hextemp);
 					fflush(stdout);
@@ -2643,7 +2603,7 @@ void *thread_process(void *vargp)	{
 					pts[pp_offset] = pp;
 					pts[pn_offset] = pn;
 					
-					if(FLAGENDOMORPHISM)	{
+					if(config.endomorphism)	{
 						/*
 							Q = (x,y)
 							For any point Q
@@ -2667,7 +2627,7 @@ void *thread_process(void *vargp)	{
 				/*
 					Half point for endomorphism because pts[CPU_GRP_SIZE / 2] was not calcualte in the previous cycle
 				*/
-				if(FLAGENDOMORPHISM)	{
+				if(config.endomorphism)	{
 					if( calculate_y  )	{
 
 						endomorphism_beta[CPU_GRP_SIZE / 2].y.Set(&pts[CPU_GRP_SIZE / 2].y);
@@ -2701,7 +2661,7 @@ void *thread_process(void *vargp)	{
 				/*
 					First point for endomorphism because pts[0] was not calcualte previously
 				*/
-				if(FLAGENDOMORPHISM)	{
+				if(config.endomorphism)	{
 					if( calculate_y  )	{
 						endomorphism_beta[0].y.Set(&pn.y);
 						endomorphism_beta2[0].y.Set(&pn.y);
@@ -2711,13 +2671,13 @@ void *thread_process(void *vargp)	{
 				}
 								
 				for(j = 0; j < CPU_GRP_SIZE/4;j++){
-					switch(FLAGMODE)	{
+					switch(config.mode)	{
 						case MODE_RMD160:
 						case MODE_ADDRESS:
-							if(FLAGCRYPTO == CRYPTO_BTC){
+							if(config.crypto == CRYPTO_BTC){
 								
-								if(FLAGSEARCH == SEARCH_COMPRESS || FLAGSEARCH == SEARCH_BOTH ){
-									if(FLAGENDOMORPHISM)	{
+								if(config.encoding == SEARCH_COMPRESS || config.encoding == SEARCH_BOTH ){
+									if(config.endomorphism)	{
 										secp->GetHash160_fromX(P2PKH,0x02,&pts[(j*4)].x,&pts[(j*4)+1].x,&pts[(j*4)+2].x,&pts[(j*4)+3].x,(uint8_t*)publickeyhashrmd160_endomorphism[0][0],(uint8_t*)publickeyhashrmd160_endomorphism[0][1],(uint8_t*)publickeyhashrmd160_endomorphism[0][2],(uint8_t*)publickeyhashrmd160_endomorphism[0][3]);
 										secp->GetHash160_fromX(P2PKH,0x03,&pts[(j*4)].x,&pts[(j*4)+1].x,&pts[(j*4)+2].x,&pts[(j*4)+3].x,(uint8_t*)publickeyhashrmd160_endomorphism[1][0],(uint8_t*)publickeyhashrmd160_endomorphism[1][1],(uint8_t*)publickeyhashrmd160_endomorphism[1][2],(uint8_t*)publickeyhashrmd160_endomorphism[1][3]);
 
@@ -2733,8 +2693,8 @@ void *thread_process(void *vargp)	{
 									}
 									
 								}
-								if(FLAGSEARCH == SEARCH_UNCOMPRESS || FLAGSEARCH == SEARCH_BOTH){
-									if(FLAGENDOMORPHISM)	{
+								if(config.encoding == SEARCH_UNCOMPRESS || config.encoding == SEARCH_BOTH){
+									if(config.endomorphism)	{
 										for(l = 0; l < 4; l++)	{
 											endomorphism_negeted_point[l] = secp->Negation(pts[(j*4)+l]);
 										}
@@ -2759,8 +2719,8 @@ void *thread_process(void *vargp)	{
 									}
 								}
 							}								
-							else if(FLAGCRYPTO == CRYPTO_ETH){
-								if(FLAGENDOMORPHISM)	{
+							else if(config.crypto == CRYPTO_ETH){
+								if(config.endomorphism)	{
 									for(k = 0; k < 4;k++)	{
 										endomorphism_negeted_point[k] = secp->Negation(pts[(j*4)+k]);
 										generate_binaddress_eth(pts[(4*j)+k],(uint8_t*)publickeyhashrmd160_endomorphism[0][k]);
@@ -2784,14 +2744,14 @@ void *thread_process(void *vargp)	{
 					}
 
 
-					switch(FLAGMODE)	{
+					switch(config.mode)	{
 						case MODE_RMD160:
 						case MODE_ADDRESS:
-							if( FLAGCRYPTO  == CRYPTO_BTC) {
+							if( config.crypto  == CRYPTO_BTC) {
 								
 								for(k = 0; k < 4;k++)	{
-									if(FLAGSEARCH == SEARCH_COMPRESS || FLAGSEARCH == SEARCH_BOTH){
-										if(FLAGENDOMORPHISM)	{
+									if(config.encoding == SEARCH_COMPRESS || config.encoding == SEARCH_BOTH){
+										if(config.endomorphism)	{
 											for(l = 0;l < 6; l++)	{
 												r = bloom_check(&bloom,publickeyhashrmd160_endomorphism[l][k],MAXLENGTHADDRESS);
 												if(r) {
@@ -2877,8 +2837,8 @@ void *thread_process(void *vargp)	{
 										}
 									}
 
-									if(FLAGSEARCH == SEARCH_UNCOMPRESS || FLAGSEARCH == SEARCH_BOTH)	{
-										if(FLAGENDOMORPHISM)	{
+									if(config.encoding == SEARCH_UNCOMPRESS || config.encoding == SEARCH_BOTH)	{
+										if(config.endomorphism)	{
 											for(l = 6;l < 12; l++)	{	//We check the array from 6 to 12(excluded) because we save the uncompressed information there
 												r = bloom_check(&bloom,publickeyhashrmd160_endomorphism[l][k],MAXLENGTHADDRESS);	//Check in Bloom filter
 												if(r) {
@@ -2938,8 +2898,8 @@ void *thread_process(void *vargp)	{
 									}
 								}
 							}
-							else if( FLAGCRYPTO == CRYPTO_ETH) {
-								if(FLAGENDOMORPHISM)	{
+							else if( config.crypto == CRYPTO_ETH) {
+								if(config.endomorphism)	{
 									for(k = 0; k < 4;k++)	{
 										for(l = 0;l < 6; l++)	{
 											r = bloom_check(&bloom,publickeyhashrmd160_endomorphism[l][k],MAXLENGTHADDRESS);
@@ -3004,7 +2964,7 @@ void *thread_process(void *vargp)	{
 						break;
 						case MODE_XPOINT:
 							for(k = 0; k < 4;k++)	{
-								if(FLAGENDOMORPHISM)	{
+								if(config.endomorphism)	{
 									pts[(4*j)+k].x.Get32Bytes((unsigned char *)rawvalue);
 									r = bloom_check(&bloom,rawvalue,MAXLENGTHADDRESS);
 									if(r) {
@@ -3139,7 +3099,7 @@ void *thread_process_vanity(void *vargp)	{
 	
 	//if FLAGENDOMORPHISM  == 1 and only compress search is enabled then there is no need to calculate the Y value value					
 	
-	bool calculate_y = FLAGSEARCH == SEARCH_UNCOMPRESS || FLAGSEARCH == SEARCH_BOTH;
+	bool calculate_y = config.encoding == SEARCH_UNCOMPRESS || config.encoding == SEARCH_BOTH;
 	
 	/*
 	if(FLAGDEBUG && thread_number == 0)	{
@@ -3155,7 +3115,7 @@ void *thread_process_vanity(void *vargp)	{
 	
 
 	do {
-		if(FLAGRANDOM){
+		if(config.random){
 			key_mpz.Rand(&n_range_start,&n_range_end);
 		}
 		else	{
@@ -3178,14 +3138,14 @@ void *thread_process_vanity(void *vargp)	{
 		}
 		if(continue_flag)	{
 			count = 0;
-			if(FLAGMATRIX)	{
+			if(config.matrix)	{
 					hextemp = key_mpz.GetBase16();
 					printf("Base key: %s thread %i\n",hextemp,thread_number);
 					fflush(stdout);
 					free(hextemp);
 			}
 			else	{
-				if(FLAGQUIET == 0)	{
+				if(config.quiet == 0)	{
 					hextemp = key_mpz.GetBase16();
 					printf("\rBase key: %s     \r",hextemp);
 					fflush(stdout);
@@ -3252,7 +3212,7 @@ void *thread_process_vanity(void *vargp)	{
 					pts[pp_offset] = pp;
 					pts[pn_offset] = pn;
 					
-					if(FLAGENDOMORPHISM)	{
+					if(config.endomorphism)	{
 						/*
 							Q = (x,y)
 							For any point Q
@@ -3276,7 +3236,7 @@ void *thread_process_vanity(void *vargp)	{
 				/*
 					Half point for endomorphism because pts[CPU_GRP_SIZE / 2] was not calcualte in the previous cycle
 				*/
-				if(FLAGENDOMORPHISM)	{
+				if(config.endomorphism)	{
 					if( calculate_y  )	{
 
 						endomorphism_beta[CPU_GRP_SIZE / 2].y.Set(&pts[CPU_GRP_SIZE / 2].y);
@@ -3309,7 +3269,7 @@ void *thread_process_vanity(void *vargp)	{
 				/*
 					First point for endomorphism because pts[0] was not calcualte previously
 				*/
-				if(FLAGENDOMORPHISM)	{
+				if(config.endomorphism)	{
 					if( calculate_y  )	{
 						endomorphism_beta[0].y.Set(&pn.y);
 						endomorphism_beta2[0].y.Set(&pn.y);
@@ -3319,8 +3279,8 @@ void *thread_process_vanity(void *vargp)	{
 				}
 				
 				for(j = 0; j < CPU_GRP_SIZE/4;j++)	{
-					if(FLAGSEARCH == SEARCH_COMPRESS || FLAGSEARCH == SEARCH_BOTH ){
-						if(FLAGENDOMORPHISM)	{
+					if(config.encoding == SEARCH_COMPRESS || config.encoding == SEARCH_BOTH ){
+						if(config.endomorphism)	{
 							secp->GetHash160_fromX(P2PKH,0x02,&pts[(j*4)].x,&pts[(j*4)+1].x,&pts[(j*4)+2].x,&pts[(j*4)+3].x,(uint8_t*)publickeyhashrmd160_endomorphism[0][0],(uint8_t*)publickeyhashrmd160_endomorphism[0][1],(uint8_t*)publickeyhashrmd160_endomorphism[0][2],(uint8_t*)publickeyhashrmd160_endomorphism[0][3]);
 							secp->GetHash160_fromX(P2PKH,0x03,&pts[(j*4)].x,&pts[(j*4)+1].x,&pts[(j*4)+2].x,&pts[(j*4)+3].x,(uint8_t*)publickeyhashrmd160_endomorphism[1][0],(uint8_t*)publickeyhashrmd160_endomorphism[1][1],(uint8_t*)publickeyhashrmd160_endomorphism[1][2],(uint8_t*)publickeyhashrmd160_endomorphism[1][3]);
 
@@ -3336,8 +3296,8 @@ void *thread_process_vanity(void *vargp)	{
 							secp->GetHash160_fromX(P2PKH,0x03,&pts[(j*4)].x,&pts[(j*4)+1].x,&pts[(j*4)+2].x,&pts[(j*4)+3].x,(uint8_t*)publickeyhashrmd160_endomorphism[1][0],(uint8_t*)publickeyhashrmd160_endomorphism[1][1],(uint8_t*)publickeyhashrmd160_endomorphism[1][2],(uint8_t*)publickeyhashrmd160_endomorphism[1][3]);
 						}
 					}
-					if(FLAGSEARCH == SEARCH_UNCOMPRESS || FLAGSEARCH == SEARCH_BOTH)	{
-						if(FLAGENDOMORPHISM)	{
+					if(config.encoding == SEARCH_UNCOMPRESS || config.encoding == SEARCH_BOTH)	{
+						if(config.endomorphism)	{
 							for(l = 0; l < 4; l++)	{
 								endomorphism_negeted_point[l] = secp->Negation(pts[(j*4)+l]);
 							}
@@ -3361,8 +3321,8 @@ void *thread_process_vanity(void *vargp)	{
 						}
 					}
 					for(k = 0; k < 4;k++)	{
-						if(FLAGSEARCH == SEARCH_COMPRESS || FLAGSEARCH == SEARCH_BOTH ){
-							if(FLAGENDOMORPHISM)	{
+						if(config.encoding == SEARCH_COMPRESS || config.encoding == SEARCH_BOTH ){
+							if(config.endomorphism)	{
 								for(l = 0;l < 6; l++)	{
 									if(vanityrmdmatch((uint8_t*)publickeyhashrmd160_endomorphism[l][k]))	{
 										// Here the given publickeyhashrmd160 match againts one of the vanity targets
@@ -3444,8 +3404,8 @@ void *thread_process_vanity(void *vargp)	{
 								}									
 							}
 						}
-						if(FLAGSEARCH == SEARCH_UNCOMPRESS || FLAGSEARCH == SEARCH_BOTH)	{
-							if(FLAGENDOMORPHISM)	{
+						if(config.encoding == SEARCH_UNCOMPRESS || config.encoding == SEARCH_BOTH)	{
+							if(config.endomorphism)	{
 								for(l = 6;l < 12; l++)	{
 									if(vanityrmdmatch((uint8_t*)publickeyhashrmd160_endomorphism[l][k]))	{
 										// Here the given publickeyhashrmd160 match againts one of the vanity targets
@@ -3843,14 +3803,14 @@ void *thread_process_bsgs(void *vargp)	{
 		if(base_key.IsGreaterOrEqual(&n_range_end))
 			break;
 		
-		if(FLAGMATRIX)	{
+		if(config.matrix)	{
 			aux_c = base_key.GetBase16();
 			printf("[+] Thread 0x%s \n",aux_c);
 			fflush(stdout);
 			free(aux_c);
 		}
 		else	{
-			if(FLAGQUIET == 0){
+			if(config.quiet == 0){
 				aux_c = base_key.GetBase16();
 				printf("\r[+] Thread 0x%s   \r",aux_c);
 				fflush(stdout);
@@ -4073,14 +4033,14 @@ void *thread_process_bsgs_random(void *vargp)	{
 		pthread_mutex_unlock(&bsgs_thread);
 #endif
 
-		if(FLAGMATRIX)	{
+		if(config.matrix)	{
 				aux_c = base_key.GetBase16();
 				printf("[+] Thread 0x%s  \n",aux_c);
 				fflush(stdout);
 				free(aux_c);
 		}
 		else{
-			if(FLAGQUIET == 0){
+			if(config.quiet == 0){
 				aux_c = base_key.GetBase16();
 				printf("\r[+] Thread 0x%s  \r",aux_c);
 				fflush(stdout);
@@ -4879,14 +4839,14 @@ void *thread_process_bsgs_dance(void *vargp)	{
 		if(entrar == 0)
 			break;
 			
-		if(FLAGMATRIX)	{
+		if(config.matrix)	{
 			aux_c = base_key.GetBase16();
 			printf("[+] Thread 0x%s \n",aux_c);
 			fflush(stdout);
 			free(aux_c);
 		}
 		else	{
-			if(FLAGQUIET == 0){
+			if(config.quiet == 0){
 				aux_c = base_key.GetBase16();
 				printf("\r[+] Thread 0x%s   \r",aux_c);
 				fflush(stdout);
@@ -5139,14 +5099,14 @@ void *thread_process_bsgs_backward(void *vargp)	{
 		if(entrar == 0)
 			break;
 		
-		if(FLAGMATRIX)	{
+		if(config.matrix)	{
 			aux_c = base_key.GetBase16();
 			printf("[+] Thread 0x%s \n",aux_c);
 			fflush(stdout);
 			free(aux_c);
 		}
 		else	{
-			if(FLAGQUIET == 0){
+			if(config.quiet == 0){
 				aux_c = base_key.GetBase16();
 				printf("\r[+] Thread 0x%s   \r",aux_c);
 				fflush(stdout);
@@ -5423,14 +5383,14 @@ void *thread_process_bsgs_both(void *vargp)	{
 			break;
 
 		
-		if(FLAGMATRIX)	{
+		if(config.matrix)	{
 			aux_c = base_key.GetBase16();
 			printf("[+] Thread 0x%s \n",aux_c);
 			fflush(stdout);
 			free(aux_c);
 		}
 		else	{
-			if(FLAGQUIET == 0){
+			if(config.quiet == 0){
 				aux_c = base_key.GetBase16();
 				printf("\r[+] Thread 0x%s   \r",aux_c);
 				fflush(stdout);
@@ -6085,7 +6045,7 @@ bool processOneVanity()	{
 }
 
 
-bool readFileVanity(char *fileName)	{
+bool readFileVanity(const char *fileName)	{
 	FILE *fileDescriptor;
 	int i,k,len;
 	char aux[100],*hextemp;
@@ -6128,7 +6088,7 @@ bool readFileVanity(char *fileName)	{
 	return true;
 }
 
-bool readFileAddress(char *fileName)	{
+bool readFileAddress(const char *fileName)	{
 	FILE *fileDescriptor;
 	char fileBloomName[30];	/* Actually it is Bloom and Table but just to keep the variable name short*/
 	uint8_t checksum[32],hexPrefix[9];
@@ -6138,7 +6098,7 @@ bool readFileAddress(char *fileName)	{
 	/*
 		if the FLAGSAVEREADFILE is Set to 1 we need to the checksum and check if we have that information already saved
 	*/
-	if(FLAGSAVEREADFILE)	{	/* if the flag is set to REAd and SAVE the file firs we need to check it the file exist*/
+	if(config.cache_targets)	{	/* if the flag is set to REAd and SAVE the file firs we need to check it the file exist*/
 		if(!sha256_file((const char*)fileName,checksum)){
 			fprintf(stderr,"[E] sha256_file error line %i\n",__LINE__ - 1);
 			return false;
@@ -6193,7 +6153,7 @@ bool readFileAddress(char *fileName)	{
 				fclose(fileDescriptor);
 				return false;
 			}
-			if(FLAGSKIPCHECKSUM == 0){
+			if(config.skip_checksum == 0){
 				
 				//calculate checksum of the current readed data
 				sha256((uint8_t*)bloom.bf,bloom.bytes,(uint8_t*)checksum);
@@ -6252,7 +6212,7 @@ bool readFileAddress(char *fileName)	{
 				fclose(fileDescriptor);
 				return false;
 			}
-			if(FLAGSKIPCHECKSUM == 0)	{
+			if(config.skip_checksum == 0)	{
 					
 				sha256((uint8_t*)addressTable,dataSize,(uint8_t*)checksum);
 				if(memcmp(checksum,dataChecksum,32) != 0)	{
@@ -6267,19 +6227,19 @@ bool readFileAddress(char *fileName)	{
 			MAXLENGTHADDRESS = sizeof(struct address_value);
 		}
 	}
-	if(FLAGVANITY)	{
+	if(config.vanity)	{
 		processOneVanity();
 	}
 	if(!FLAGREADEDFILE1)	{
 		/*
 			if the data_ file doesn't exist we need read it first:
 		*/
-		switch(FLAGMODE)	{
+		switch(config.mode)	{
 			case MODE_ADDRESS:
-				if(FLAGCRYPTO == CRYPTO_BTC)	{
+				if(config.crypto == CRYPTO_BTC)	{
 					return forceReadFileAddress(fileName);
 				}
-				if(FLAGCRYPTO == CRYPTO_ETH)	{
+				if(config.crypto == CRYPTO_ETH)	{
 					return forceReadFileAddressEth(fileName);
 				}
 			break;
@@ -6298,7 +6258,7 @@ bool readFileAddress(char *fileName)	{
 	return true;
 }
 
-bool forceReadFileAddress(char *fileName)	{
+bool forceReadFileAddress(const char *fileName)	{
 	/* Here we read the original file as usual */
 	FILE *fileDescriptor;
 	bool validAddress;
@@ -6371,7 +6331,7 @@ bool forceReadFileAddress(char *fileName)	{
 	return true;
 }
 
-bool forceReadFileAddressEth(char *fileName)	{
+bool forceReadFileAddressEth(const char *fileName)	{
 	/* Here we read the original file as usual */
 	FILE *fileDescriptor;
 	bool validAddress;
@@ -6451,7 +6411,7 @@ bool forceReadFileAddressEth(char *fileName)	{
 
 
 
-bool forceReadFileXPoint(char *fileName)	{
+bool forceReadFileXPoint(const char *fileName)	{
 	/* Here we read the original file as usual */
 	FILE *fileDescriptor;
 	uint64_t numberItems,i;
@@ -6566,7 +6526,7 @@ bool initBloomFilter(struct bloom *bloom_arg,uint64_t items_bloom)	{
 		}
 	}
 	else	{
-		if(bloom_init2(bloom_arg,FLAGBLOOMMULTIPLIER*items_bloom,0.000001)	== 1){
+		if(bloom_init2(bloom_arg,config.bloom_multiplier*items_bloom,0.000001)	== 1){
 			fprintf(stderr,"[E] error bloom_init for %" PRIu64 " elements.\n",items_bloom);
 			r = false;
 		}
@@ -6577,7 +6537,7 @@ bool initBloomFilter(struct bloom *bloom_arg,uint64_t items_bloom)	{
 
 void writeFileIfNeeded(const char *fileName)	{
 	//printf("[D] FLAGSAVEREADFILE %i, FLAGREADEDFILE1 %i\n",FLAGSAVEREADFILE,FLAGREADEDFILE1);
-	if(FLAGSAVEREADFILE && !FLAGREADEDFILE1)	{
+	if(config.cache_targets && !FLAGREADEDFILE1)	{
 		FILE *fileDescriptor;
 		char fileBloomName[30];
 		uint8_t checksum[32],hexPrefix[9];
