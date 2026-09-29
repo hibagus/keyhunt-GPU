@@ -1,9 +1,15 @@
 # BSGSD
 
+Current status: this is the original unauthenticated local daemon, built with
+`make bsgsd` or the optional CMake target. It is separate from the planned
+[HTTPS coordinator](docs/COORDINATOR_SERVER_PLAN.md). The inherited `-p` option
+changes the displayed port, but the socket still binds TCP 8080. Keep it on
+loopback; see [build and validation notes](docs/BUILD_MIGRATION.md).
+
 `BSGS` method  but as local `server`, final `D` stand for daemon.
 
 ### Compilation
-Same as keyhunt we need to do 
+Same as keyhunt we need to do
 ```make bsgsd```
 
 ### Parameters
@@ -15,7 +21,7 @@ Same as keyhunt we need to do
  - `-i ip`     IP for listening default is `127.0.0.1`
  - `-p port`   Port for listening default is `8080`
 
-bsgsd use the same keyhunt files `.blm` and `.tbl` 
+bsgsd use the same keyhunt files `.blm` and `.tbl`
 
 ### Server
 This program is an small and custom server without any protocol.
@@ -41,7 +47,7 @@ The server only reply one single line. Client must read that line and proceed ac
 
  - `404 Not Found` if the key wasn't in the given range
  - `400 Bad Request`if there is some error on client request
- - `value` hexadecimal value with the Private KEY in case of be found 
+ - `value` hexadecimal value with the Private KEY in case of be found
 
 The server will close the Conection inmediatly after send that line, also in case some other error the server will close the Conection without send any error message. Client need to hadle the Conection status by his own.
 
@@ -142,7 +148,7 @@ def send_and_receive_line(host, port, message):
         pass
         return None, None
 
-		
+
 # TCP connection details
 host = 'localhost'  # Change this to the server's hostname or IP address
 port = 8080       # Change this to the server's port number

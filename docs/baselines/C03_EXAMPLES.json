@@ -1,0 +1,55 @@
+{
+  "binary_sha256": "826fa69465becacb33c9d1bcdf6a1de61e1dc190d0425e10c97e1f331f938f0f",
+  "address_quickstart": {
+    "argv": [
+      "-m",
+      "address",
+      "-f",
+      "targets.txt",
+      "-r",
+      "1:401",
+      "-n",
+      "1024",
+      "-l",
+      "compress",
+      "-t",
+      "1",
+      "-q",
+      "-s",
+      "0"
+    ],
+    "exit_code": 0,
+    "timed_out": false,
+    "wall_seconds": 1.0334234631154686,
+    "output": "[+] Version 0.2.230519 Satoshi Quest, developed by AlbertoBSD\n[+] Mode address\n[+] Search compress only\n[+] Thread : 1\n[+] Quiet thread output\n[+] Turn off stats output\n[+] Setting search for btc adddress\n[+] N = 0x400\n[+] Range \n[+] -- from : 0x1\n[+] -- to   : 0x401\n[+] Allocating memory for 32 elements: 0.00 MB\n[+] Bloom filter for 32 elements.\n[+] Loading data to the bloomfilter total: 0.03 MB\n[+] Sorting data ... done! 32 values were loaded and sorted\n\nHit! Private Key: 1\npubkey: 0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798\nAddress 1BgGZ9tcN4rm9KBzDn7KprQz87SZ26SAMH\nrmd160 751e76e8199196d454941c45d1b3a323f1433bd6\n\nHit! Private Key: 3\npubkey: 02f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9\nAddress 1CUNEBjYrCn2y1SdiUMohaKUi4wpP326Lb\nrmd160 7dd65592d0ab2fe0d0257d571abf032cd9db93dc\n\nHit! Private Key: 7\npubkey: 025cbdf0646e5db4eaa398f365f2ea7a0e3d419b7e0330e39ce92bddedcac4f9bc\nAddress 19ZewH8Kk1PDbSNdJ97FP4EiCjTRaZMZQA\nrmd160 5dedfbf9ea599dd4e3ca6a80b333c472fd0b3f69\n\nHit! Private Key: 8\npubkey: 022f01e5e15cca351daff3843fb70f3c2f0a1bdd05e5af888a67784ef3e10a2a01\nAddress 1EhqbyUMvvs7BfL8goY6qcPbD6YKfPqb7e\nrmd160 9652d86bedf43ad264362e6e6eba6eb764508127\n\nHit! Private Key: 15\npubkey: 02352bbf4a4cdd12564f93fa332ce333301d9ad40271f8107181340aef25be59d5\nAddress 1E6NuFjCi27W5zoXg8TRdcSRq84zJeBW3k\nrmd160 8f9dff39a81ee4abcbad2ad8bafff090415a2be8\n\nHit! Private Key: 31\npubkey: 03f2dac991cc4ce4b9ea44887e5c7c0bce58c80074ab9d4dbaeb28531b7739f530\nAddress 1PitScNLyp2HCygzadCh7FveTnfmpPbfp8\nrmd160 f93ec34e9e34a8f8ff7d600cdad83047b1bcb45c\n\nHit! Private Key: 4c\npubkey: 0296516a8f65774275278d0d7420a88df0ac44bd64c7bae07c3fe397c5b3300b23\nAddress 1McVt1vMtCC7yn5b9wgX1833yCcLXzueeC\nrmd160 e2192e8a7dd8dd1c88321959b477968b941aa973\n\nHit! Private Key: e0\npubkey: 0308bc89c2f919ed158885c35600844d49890905c79b357322609c45706ce6b514\nAddress 1M92tSqNmQLYw33fuBvjmeadirh1ysMBxK\nrmd160 dce76b2613052ea012204404a97b3c25eac31715\n\nHit! Private Key: 1d3\npubkey: 0243601d61c836387485e9514ab5c8924dd2cfd466af34ac95002727e1659d60f7\nAddress 1CQFwcjw1dwhtkVWBttNLDtqL7ivBonGPV\nrmd160 7d0f6c64afb419bbd7e971e943d7404b0e0daab4\n\nHit! Private Key: 202\npubkey: 03a7a4c30291ac1db24b4ab00c442aa832f7794b5a0959bec6e8d7fee802289dcd\nAddress 1LeBZP5QCwwgXRtmVUvTVrraqPUokyLHqe\nrmd160 d7729816650e581d7462d52ad6f732da0e2ec93b\n\nEnd\n",
+    "results": {
+      "KEYFOUNDKEYFOUND.txt": "Private Key: 1\npubkey: 0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798\nAddress 1BgGZ9tcN4rm9KBzDn7KprQz87SZ26SAMH\nrmd160 751e76e8199196d454941c45d1b3a323f1433bd6\nPrivate Key: 3\npubkey: 02f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9\nAddress 1CUNEBjYrCn2y1SdiUMohaKUi4wpP326Lb\nrmd160 7dd65592d0ab2fe0d0257d571abf032cd9db93dc\nPrivate Key: 7\npubkey: 025cbdf0646e5db4eaa398f365f2ea7a0e3d419b7e0330e39ce92bddedcac4f9bc\nAddress 19ZewH8Kk1PDbSNdJ97FP4EiCjTRaZMZQA\nrmd160 5dedfbf9ea599dd4e3ca6a80b333c472fd0b3f69\nPrivate Key: 8\npubkey: 022f01e5e15cca351daff3843fb70f3c2f0a1bdd05e5af888a67784ef3e10a2a01\nAddress 1EhqbyUMvvs7BfL8goY6qcPbD6YKfPqb7e\nrmd160 9652d86bedf43ad264362e6e6eba6eb764508127\nPrivate Key: 15\npubkey: 02352bbf4a4cdd12564f93fa332ce333301d9ad40271f8107181340aef25be59d5\nAddress 1E6NuFjCi27W5zoXg8TRdcSRq84zJeBW3k\nrmd160 8f9dff39a81ee4abcbad2ad8bafff090415a2be8\nPrivate Key: 31\npubkey: 03f2dac991cc4ce4b9ea44887e5c7c0bce58c80074ab9d4dbaeb28531b7739f530\nAddress 1PitScNLyp2HCygzadCh7FveTnfmpPbfp8\nrmd160 f93ec34e9e34a8f8ff7d600cdad83047b1bcb45c\nPrivate Key: 4c\npubkey: 0296516a8f65774275278d0d7420a88df0ac44bd64c7bae07c3fe397c5b3300b23\nAddress 1McVt1vMtCC7yn5b9wgX1833yCcLXzueeC\nrmd160 e2192e8a7dd8dd1c88321959b477968b941aa973\nPrivate Key: e0\npubkey: 0308bc89c2f919ed158885c35600844d49890905c79b357322609c45706ce6b514\nAddress 1M92tSqNmQLYw33fuBvjmeadirh1ysMBxK\nrmd160 dce76b2613052ea012204404a97b3c25eac31715\nPrivate Key: 1d3\npubkey: 0243601d61c836387485e9514ab5c8924dd2cfd466af34ac95002727e1659d60f7\nAddress 1CQFwcjw1dwhtkVWBttNLDtqL7ivBonGPV\nrmd160 7d0f6c64afb419bbd7e971e943d7404b0e0daab4\nPrivate Key: 202\npubkey: 03a7a4c30291ac1db24b4ab00c442aa832f7794b5a0959bec6e8d7fee802289dcd\nAddress 1LeBZP5QCwwgXRtmVUvTVrraqPUokyLHqe\nrmd160 d7729816650e581d7462d52ad6f732da0e2ec93b\n"
+    },
+    "passed": true
+  },
+  "bsgs_quickstart": {
+    "argv": [
+      "-m",
+      "bsgs",
+      "-f",
+      "targets.txt",
+      "-r",
+      "100000:300000",
+      "-n",
+      "1048576",
+      "-t",
+      "1",
+      "-q",
+      "-s",
+      "0"
+    ],
+    "exit_code": 1,
+    "timed_out": false,
+    "wall_seconds": 0.05213994812220335,
+    "output": "[+] Version 0.2.230519 Satoshi Quest, developed by AlbertoBSD\n[+] Thread : 1\n[+] Quiet thread output\n[+] Turn off stats output\n[+] Mode BSGS sequential\n[+] Opening file targets.txt\n[+] Added 1 points from file\n[+] Range \n[+] -- from : 0x100000\n[+] -- to   : 0x300000\n[+] N = 0x100000\n[+] Bloom filter for 1024 elements : 0.88 MB\n[+] Bloom filter for 32 elements : 0.88 MB\n[+] Bloom filter for 1 elements : 0.88 MB\n[+] Allocating 0.00 MB for 1 bP Points\n\r[+] processing 0/1024 bP points : 0%\r\r[+] processing 0/1024 bP points : 0%\r\r[+] processing 1024/1024 bP points : 100%     \n[+] Making checkums .. ... done\n[+] Sorting 1 elements... Done!\n[+] Thread Key found privkey 100001   \n[+] Publickey 039fb8987e3cb30a1174b7d64de26347166841051854696930396502714f6bcf4b\nAll points were found\n",
+    "results": {
+      "KEYFOUNDKEYFOUND.txt": "Key found privkey 100001\nPublickey 039fb8987e3cb30a1174b7d64de26347166841051854696930396502714f6bcf4b\n"
+    },
+    "passed": true
+  }
+}
