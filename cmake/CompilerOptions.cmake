@@ -11,6 +11,8 @@ function(keyhunt_configure_target target)
     set_target_properties(${target} PROPERTIES INTERPROCEDURAL_OPTIMIZATION OFF)
     target_compile_options(${target} PRIVATE -m64 -mssse3 -Wall -Wextra
         "$<$<COMPILE_LANGUAGE:CXX>:-Wno-deprecated-copy>")
+    target_compile_definitions(${target} PRIVATE
+        "$<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:Debug>>:_GLIBCXX_ASSERTIONS>")
     if(KEYHUNT_NATIVE_CPU)
         target_compile_options(${target} PRIVATE -march=native -mtune=native)
     endif()

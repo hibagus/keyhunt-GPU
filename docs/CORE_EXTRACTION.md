@@ -65,3 +65,18 @@ failure before target loading: `init_generator` indexes `Gn` after `reserve`, li
 the old BSGS loader. Inspection found the same pattern in `GSn`, `BSGS_AMP2` and
 `BSGS_AMP3`. [The first assertion](baselines/C04_DEBUG_ASSERTION.json) is saved for a
 separate correctness fix; this diagnostic run is not a passing debug gate.
+
+## Follow-up: construct generator table elements
+
+A separate fix changes `reserve` to `resize` for `Gn`, `GSn`, `BSGS_AMP2` and
+`BSGS_AMP3`. All four are filled by index and require live `Point` objects.
+Debug builds now define `_GLIBCXX_ASSERTIONS` for C++ targets, which detects this
+class of error when building with libstdc++.
+
+After the fix, both release and debug pass all 38 baseline cases and the five
+loader integration cases. Debug runs with the new bounds checks enabled (40.43s
+for both suites); release takes 37.85s. The earlier failure record is historical:
+the process aborted with SIGABRT without emitting assertion text on this host.
+The failing reserve/index pattern was identified by source inspection and the
+passing run after resizing. This does not resolve the separate C02 alignment and
+leak sanitizer findings.

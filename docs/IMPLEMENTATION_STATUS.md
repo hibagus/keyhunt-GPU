@@ -10,7 +10,7 @@ change is committed separately. Analysis and validation evidence live under
 | C01: CPU and environment baseline | Completed | [Analysis and reproduction](CPU_BASELINE.md); 38 characterization checks, raw build/hardware/timing artifacts |
 | C02: source organization and CMake | Completed | [Migration evidence](BUILD_MIGRATION.md) and [build guide](BUILD.md); CPU release/debug, isolated GMP legacy parity, daemon loopback and install checks |
 | C03: README and usage guides | Completed | [Redesign notes](README_REDESIGN.md); current commands, mode reference, preserved historical examples |
-| C04: core extraction | In progress | [Extraction notes](CORE_EXTRACTION.md); configuration separated, target loading and verification next |
+| C04: core extraction | In progress | [Extraction notes](CORE_EXTRACTION.md); configuration and target loaders separated; generator-vector bounds fixed; verification next |
 | C05–C23 | Planned | Acceptance gates remain in the redesign plan |
 
 C01 records existing CPU boundary/stride defects rather than fixing them.
