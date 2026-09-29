@@ -1,0 +1,251 @@
+g++ -march=native -mtune=native -Wall -Wextra -Ofast -ftree-vectorize -flto -c oldbloom/bloom.cpp -o oldbloom.o
+g++ -march=native -mtune=native -Wall -Wextra -Ofast -ftree-vectorize -flto -c bloom/bloom.cpp -o bloom.o
+gcc -march=native -mtune=native -Wno-unused-result -Ofast -ftree-vectorize -c base58/base58.c -o base58.o
+gcc -march=native -mtune=native -Wall -Wextra -Ofast -ftree-vectorize -c xxhash/xxhash.c -o xxhash.o
+g++ -march=native -mtune=native -Wall -Wextra -Ofast -ftree-vectorize -c util.c -o util.o
+g++ -march=native -mtune=native -Wall -Wextra -Ofast -ftree-vectorize -c sha3/sha3.c -o sha3.o
+g++ -march=native -mtune=native -Wall -Wextra -Ofast -ftree-vectorize -c sha3/keccak.c -o keccak.o
+g++ -march=native -mtune=native -Wall -Wextra -Ofast -ftree-vectorize -c hashing.c -o hashing.o
+hashing.c: In function ‘int sha256(const unsigned char*, size_t, unsigned char*)’:
+hashing.c:11:20: warning: ‘int SHA256_Init(SHA256_CTX*)’ is deprecated: Since OpenSSL 3.0 [-Wdeprecated-declarations]
+   11 |     if (SHA256_Init(&ctx) != 1) {
+      |         ~~~~~~~~~~~^~~~~~
+In file included from hashing.c:2:
+/usr/include/openssl/sha.h:73:27: note: declared here
+   73 | OSSL_DEPRECATEDIN_3_0 int SHA256_Init(SHA256_CTX *c);
+      |                           ^~~~~~~~~~~
+hashing.c:15:22: warning: ‘int SHA256_Update(SHA256_CTX*, const void*, size_t)’ is deprecated: Since OpenSSL 3.0 [-Wdeprecated-declarations]
+   15 |     if (SHA256_Update(&ctx, data, length) != 1) {
+      |         ~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+In file included from hashing.c:2:
+/usr/include/openssl/sha.h:74:27: note: declared here
+   74 | OSSL_DEPRECATEDIN_3_0 int SHA256_Update(SHA256_CTX *c,
+      |                           ^~~~~~~~~~~~~
+hashing.c:19:21: warning: ‘int SHA256_Final(unsigned char*, SHA256_CTX*)’ is deprecated: Since OpenSSL 3.0 [-Wdeprecated-declarations]
+   19 |     if (SHA256_Final(digest, &ctx) != 1) {
+      |         ~~~~~~~~~~~~^~~~~~~~~~~~~~
+In file included from hashing.c:2:
+/usr/include/openssl/sha.h:76:27: note: declared here
+   76 | OSSL_DEPRECATEDIN_3_0 int SHA256_Final(unsigned char *md, SHA256_CTX *c);
+      |                           ^~~~~~~~~~~~
+hashing.c: In function ‘int sha256_4(size_t, const unsigned char*, const unsigned char*, const unsigned char*, const unsigned char*, unsigned char*, unsigned char*, unsigned char*, unsigned char*)’:
+hashing.c:32:20: warning: ‘int SHA256_Init(SHA256_CTX*)’ is deprecated: Since OpenSSL 3.0 [-Wdeprecated-declarations]
+   32 |     if (SHA256_Init(&ctx[0]) != 1 || SHA256_Init(&ctx[1]) != 1 ||
+      |         ~~~~~~~~~~~^~~~~~~~~
+In file included from hashing.c:2:
+/usr/include/openssl/sha.h:73:27: note: declared here
+   73 | OSSL_DEPRECATEDIN_3_0 int SHA256_Init(SHA256_CTX *c);
+      |                           ^~~~~~~~~~~
+hashing.c:32:49: warning: ‘int SHA256_Init(SHA256_CTX*)’ is deprecated: Since OpenSSL 3.0 [-Wdeprecated-declarations]
+   32 |     if (SHA256_Init(&ctx[0]) != 1 || SHA256_Init(&ctx[1]) != 1 ||
+      |                                      ~~~~~~~~~~~^~~~~~~~~
+In file included from hashing.c:2:
+/usr/include/openssl/sha.h:73:27: note: declared here
+   73 | OSSL_DEPRECATEDIN_3_0 int SHA256_Init(SHA256_CTX *c);
+      |                           ^~~~~~~~~~~
+hashing.c:33:20: warning: ‘int SHA256_Init(SHA256_CTX*)’ is deprecated: Since OpenSSL 3.0 [-Wdeprecated-declarations]
+   33 |         SHA256_Init(&ctx[2]) != 1 || SHA256_Init(&ctx[3]) != 1) {
+      |         ~~~~~~~~~~~^~~~~~~~~
+In file included from hashing.c:2:
+/usr/include/openssl/sha.h:73:27: note: declared here
+   73 | OSSL_DEPRECATEDIN_3_0 int SHA256_Init(SHA256_CTX *c);
+      |                           ^~~~~~~~~~~
+hashing.c:33:49: warning: ‘int SHA256_Init(SHA256_CTX*)’ is deprecated: Since OpenSSL 3.0 [-Wdeprecated-declarations]
+   33 |         SHA256_Init(&ctx[2]) != 1 || SHA256_Init(&ctx[3]) != 1) {
+      |                                      ~~~~~~~~~~~^~~~~~~~~
+In file included from hashing.c:2:
+/usr/include/openssl/sha.h:73:27: note: declared here
+   73 | OSSL_DEPRECATEDIN_3_0 int SHA256_Init(SHA256_CTX *c);
+      |                           ^~~~~~~~~~~
+hashing.c:38:22: warning: ‘int SHA256_Update(SHA256_CTX*, const void*, size_t)’ is deprecated: Since OpenSSL 3.0 [-Wdeprecated-declarations]
+   38 |     if (SHA256_Update(&ctx[0], data0, length) != 1 ||
+      |         ~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~
+In file included from hashing.c:2:
+/usr/include/openssl/sha.h:74:27: note: declared here
+   74 | OSSL_DEPRECATEDIN_3_0 int SHA256_Update(SHA256_CTX *c,
+      |                           ^~~~~~~~~~~~~
+hashing.c:39:22: warning: ‘int SHA256_Update(SHA256_CTX*, const void*, size_t)’ is deprecated: Since OpenSSL 3.0 [-Wdeprecated-declarations]
+   39 |         SHA256_Update(&ctx[1], data1, length) != 1 ||
+      |         ~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~
+In file included from hashing.c:2:
+/usr/include/openssl/sha.h:74:27: note: declared here
+   74 | OSSL_DEPRECATEDIN_3_0 int SHA256_Update(SHA256_CTX *c,
+      |                           ^~~~~~~~~~~~~
+hashing.c:40:22: warning: ‘int SHA256_Update(SHA256_CTX*, const void*, size_t)’ is deprecated: Since OpenSSL 3.0 [-Wdeprecated-declarations]
+   40 |         SHA256_Update(&ctx[2], data2, length) != 1 ||
+      |         ~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~
+In file included from hashing.c:2:
+/usr/include/openssl/sha.h:74:27: note: declared here
+   74 | OSSL_DEPRECATEDIN_3_0 int SHA256_Update(SHA256_CTX *c,
+      |                           ^~~~~~~~~~~~~
+hashing.c:41:22: warning: ‘int SHA256_Update(SHA256_CTX*, const void*, size_t)’ is deprecated: Since OpenSSL 3.0 [-Wdeprecated-declarations]
+   41 |         SHA256_Update(&ctx[3], data3, length) != 1) {
+      |         ~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~
+In file included from hashing.c:2:
+/usr/include/openssl/sha.h:74:27: note: declared here
+   74 | OSSL_DEPRECATEDIN_3_0 int SHA256_Update(SHA256_CTX *c,
+      |                           ^~~~~~~~~~~~~
+hashing.c:46:21: warning: ‘int SHA256_Final(unsigned char*, SHA256_CTX*)’ is deprecated: Since OpenSSL 3.0 [-Wdeprecated-declarations]
+   46 |     if (SHA256_Final(digest0, &ctx[0]) != 1 ||
+      |         ~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+In file included from hashing.c:2:
+/usr/include/openssl/sha.h:76:27: note: declared here
+   76 | OSSL_DEPRECATEDIN_3_0 int SHA256_Final(unsigned char *md, SHA256_CTX *c);
+      |                           ^~~~~~~~~~~~
+hashing.c:47:21: warning: ‘int SHA256_Final(unsigned char*, SHA256_CTX*)’ is deprecated: Since OpenSSL 3.0 [-Wdeprecated-declarations]
+   47 |         SHA256_Final(digest1, &ctx[1]) != 1 ||
+      |         ~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+In file included from hashing.c:2:
+/usr/include/openssl/sha.h:76:27: note: declared here
+   76 | OSSL_DEPRECATEDIN_3_0 int SHA256_Final(unsigned char *md, SHA256_CTX *c);
+      |                           ^~~~~~~~~~~~
+hashing.c:48:21: warning: ‘int SHA256_Final(unsigned char*, SHA256_CTX*)’ is deprecated: Since OpenSSL 3.0 [-Wdeprecated-declarations]
+   48 |         SHA256_Final(digest2, &ctx[2]) != 1 ||
+      |         ~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+In file included from hashing.c:2:
+/usr/include/openssl/sha.h:76:27: note: declared here
+   76 | OSSL_DEPRECATEDIN_3_0 int SHA256_Final(unsigned char *md, SHA256_CTX *c);
+      |                           ^~~~~~~~~~~~
+hashing.c:49:21: warning: ‘int SHA256_Final(unsigned char*, SHA256_CTX*)’ is deprecated: Since OpenSSL 3.0 [-Wdeprecated-declarations]
+   49 |         SHA256_Final(digest3, &ctx[3]) != 1) {
+      |         ~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+In file included from hashing.c:2:
+/usr/include/openssl/sha.h:76:27: note: declared here
+   76 | OSSL_DEPRECATEDIN_3_0 int SHA256_Final(unsigned char *md, SHA256_CTX *c);
+      |                           ^~~~~~~~~~~~
+hashing.c: In function ‘int rmd160(const unsigned char*, size_t, unsigned char*)’:
+hashing.c:70:23: warning: ‘int RIPEMD160_Init(RIPEMD160_CTX*)’ is deprecated: Since OpenSSL 3.0 [-Wdeprecated-declarations]
+   70 |     if (RIPEMD160_Init(&ctx) != 1) {
+      |         ~~~~~~~~~~~~~~^~~~~~
+In file included from hashing.c:3:
+/usr/include/openssl/ripemd.h:45:27: note: declared here
+   45 | OSSL_DEPRECATEDIN_3_0 int RIPEMD160_Init(RIPEMD160_CTX *c);
+      |                           ^~~~~~~~~~~~~~
+hashing.c:74:25: warning: ‘int RIPEMD160_Update(RIPEMD160_CTX*, const void*, size_t)’ is deprecated: Since OpenSSL 3.0 [-Wdeprecated-declarations]
+   74 |     if (RIPEMD160_Update(&ctx, data, length) != 1) {
+      |         ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+In file included from hashing.c:3:
+/usr/include/openssl/ripemd.h:46:27: note: declared here
+   46 | OSSL_DEPRECATEDIN_3_0 int RIPEMD160_Update(RIPEMD160_CTX *c, const void *data,
+      |                           ^~~~~~~~~~~~~~~~
+hashing.c:78:24: warning: ‘int RIPEMD160_Final(unsigned char*, RIPEMD160_CTX*)’ is deprecated: Since OpenSSL 3.0 [-Wdeprecated-declarations]
+   78 |     if (RIPEMD160_Final(digest, &ctx) != 1) {
+      |         ~~~~~~~~~~~~~~~^~~~~~~~~~~~~~
+In file included from hashing.c:3:
+/usr/include/openssl/ripemd.h:48:27: note: declared here
+   48 | OSSL_DEPRECATEDIN_3_0 int RIPEMD160_Final(unsigned char *md, RIPEMD160_CTX *c);
+      |                           ^~~~~~~~~~~~~~~
+hashing.c: In function ‘int rmd160_4(size_t, const unsigned char*, const unsigned char*, const unsigned char*, const unsigned char*, unsigned char*, unsigned char*, unsigned char*, unsigned char*)’:
+hashing.c:91:23: warning: ‘int RIPEMD160_Init(RIPEMD160_CTX*)’ is deprecated: Since OpenSSL 3.0 [-Wdeprecated-declarations]
+   91 |     if (RIPEMD160_Init(&ctx[0]) != 1 || RIPEMD160_Init(&ctx[1]) != 1 ||
+      |         ~~~~~~~~~~~~~~^~~~~~~~~
+In file included from hashing.c:3:
+/usr/include/openssl/ripemd.h:45:27: note: declared here
+   45 | OSSL_DEPRECATEDIN_3_0 int RIPEMD160_Init(RIPEMD160_CTX *c);
+      |                           ^~~~~~~~~~~~~~
+hashing.c:91:55: warning: ‘int RIPEMD160_Init(RIPEMD160_CTX*)’ is deprecated: Since OpenSSL 3.0 [-Wdeprecated-declarations]
+   91 |     if (RIPEMD160_Init(&ctx[0]) != 1 || RIPEMD160_Init(&ctx[1]) != 1 ||
+      |                                         ~~~~~~~~~~~~~~^~~~~~~~~
+In file included from hashing.c:3:
+/usr/include/openssl/ripemd.h:45:27: note: declared here
+   45 | OSSL_DEPRECATEDIN_3_0 int RIPEMD160_Init(RIPEMD160_CTX *c);
+      |                           ^~~~~~~~~~~~~~
+hashing.c:92:23: warning: ‘int RIPEMD160_Init(RIPEMD160_CTX*)’ is deprecated: Since OpenSSL 3.0 [-Wdeprecated-declarations]
+   92 |         RIPEMD160_Init(&ctx[2]) != 1 || RIPEMD160_Init(&ctx[3]) != 1) {
+      |         ~~~~~~~~~~~~~~^~~~~~~~~
+In file included from hashing.c:3:
+/usr/include/openssl/ripemd.h:45:27: note: declared here
+   45 | OSSL_DEPRECATEDIN_3_0 int RIPEMD160_Init(RIPEMD160_CTX *c);
+      |                           ^~~~~~~~~~~~~~
+hashing.c:92:55: warning: ‘int RIPEMD160_Init(RIPEMD160_CTX*)’ is deprecated: Since OpenSSL 3.0 [-Wdeprecated-declarations]
+   92 |         RIPEMD160_Init(&ctx[2]) != 1 || RIPEMD160_Init(&ctx[3]) != 1) {
+      |                                         ~~~~~~~~~~~~~~^~~~~~~~~
+In file included from hashing.c:3:
+/usr/include/openssl/ripemd.h:45:27: note: declared here
+   45 | OSSL_DEPRECATEDIN_3_0 int RIPEMD160_Init(RIPEMD160_CTX *c);
+      |                           ^~~~~~~~~~~~~~
+hashing.c:97:25: warning: ‘int RIPEMD160_Update(RIPEMD160_CTX*, const void*, size_t)’ is deprecated: Since OpenSSL 3.0 [-Wdeprecated-declarations]
+   97 |     if (RIPEMD160_Update(&ctx[0], data0, length) != 1 ||
+      |         ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~
+In file included from hashing.c:3:
+/usr/include/openssl/ripemd.h:46:27: note: declared here
+   46 | OSSL_DEPRECATEDIN_3_0 int RIPEMD160_Update(RIPEMD160_CTX *c, const void *data,
+      |                           ^~~~~~~~~~~~~~~~
+hashing.c:98:25: warning: ‘int RIPEMD160_Update(RIPEMD160_CTX*, const void*, size_t)’ is deprecated: Since OpenSSL 3.0 [-Wdeprecated-declarations]
+   98 |         RIPEMD160_Update(&ctx[1], data1, length) != 1 ||
+      |         ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~
+In file included from hashing.c:3:
+/usr/include/openssl/ripemd.h:46:27: note: declared here
+   46 | OSSL_DEPRECATEDIN_3_0 int RIPEMD160_Update(RIPEMD160_CTX *c, const void *data,
+      |                           ^~~~~~~~~~~~~~~~
+hashing.c:99:25: warning: ‘int RIPEMD160_Update(RIPEMD160_CTX*, const void*, size_t)’ is deprecated: Since OpenSSL 3.0 [-Wdeprecated-declarations]
+   99 |         RIPEMD160_Update(&ctx[2], data2, length) != 1 ||
+      |         ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~
+In file included from hashing.c:3:
+/usr/include/openssl/ripemd.h:46:27: note: declared here
+   46 | OSSL_DEPRECATEDIN_3_0 int RIPEMD160_Update(RIPEMD160_CTX *c, const void *data,
+      |                           ^~~~~~~~~~~~~~~~
+hashing.c:100:25: warning: ‘int RIPEMD160_Update(RIPEMD160_CTX*, const void*, size_t)’ is deprecated: Since OpenSSL 3.0 [-Wdeprecated-declarations]
+  100 |         RIPEMD160_Update(&ctx[3], data3, length) != 1) {
+      |         ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~
+In file included from hashing.c:3:
+/usr/include/openssl/ripemd.h:46:27: note: declared here
+   46 | OSSL_DEPRECATEDIN_3_0 int RIPEMD160_Update(RIPEMD160_CTX *c, const void *data,
+      |                           ^~~~~~~~~~~~~~~~
+hashing.c:105:24: warning: ‘int RIPEMD160_Final(unsigned char*, RIPEMD160_CTX*)’ is deprecated: Since OpenSSL 3.0 [-Wdeprecated-declarations]
+  105 |     if (RIPEMD160_Final(digest0, &ctx[0]) != 1 ||
+      |         ~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+In file included from hashing.c:3:
+/usr/include/openssl/ripemd.h:48:27: note: declared here
+   48 | OSSL_DEPRECATEDIN_3_0 int RIPEMD160_Final(unsigned char *md, RIPEMD160_CTX *c);
+      |                           ^~~~~~~~~~~~~~~
+hashing.c:106:24: warning: ‘int RIPEMD160_Final(unsigned char*, RIPEMD160_CTX*)’ is deprecated: Since OpenSSL 3.0 [-Wdeprecated-declarations]
+  106 |         RIPEMD160_Final(digest1, &ctx[1]) != 1 ||
+      |         ~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+In file included from hashing.c:3:
+/usr/include/openssl/ripemd.h:48:27: note: declared here
+   48 | OSSL_DEPRECATEDIN_3_0 int RIPEMD160_Final(unsigned char *md, RIPEMD160_CTX *c);
+      |                           ^~~~~~~~~~~~~~~
+hashing.c:107:24: warning: ‘int RIPEMD160_Final(unsigned char*, RIPEMD160_CTX*)’ is deprecated: Since OpenSSL 3.0 [-Wdeprecated-declarations]
+  107 |         RIPEMD160_Final(digest2, &ctx[2]) != 1 ||
+      |         ~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+In file included from hashing.c:3:
+/usr/include/openssl/ripemd.h:48:27: note: declared here
+   48 | OSSL_DEPRECATEDIN_3_0 int RIPEMD160_Final(unsigned char *md, RIPEMD160_CTX *c);
+      |                           ^~~~~~~~~~~~~~~
+hashing.c:108:24: warning: ‘int RIPEMD160_Final(unsigned char*, RIPEMD160_CTX*)’ is deprecated: Since OpenSSL 3.0 [-Wdeprecated-declarations]
+  108 |         RIPEMD160_Final(digest3, &ctx[3]) != 1) {
+      |         ~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+In file included from hashing.c:3:
+/usr/include/openssl/ripemd.h:48:27: note: declared here
+   48 | OSSL_DEPRECATEDIN_3_0 int RIPEMD160_Final(unsigned char *md, RIPEMD160_CTX *c);
+      |                           ^~~~~~~~~~~~~~~
+hashing.c: In function ‘bool sha256_file(const char*, uint8_t*)’:
+hashing.c:127:20: warning: ‘int SHA256_Init(SHA256_CTX*)’ is deprecated: Since OpenSSL 3.0 [-Wdeprecated-declarations]
+  127 |     if (SHA256_Init(&ctx) != 1) {
+      |         ~~~~~~~~~~~^~~~~~
+In file included from hashing.c:2:
+/usr/include/openssl/sha.h:73:27: note: declared here
+   73 | OSSL_DEPRECATEDIN_3_0 int SHA256_Init(SHA256_CTX *c);
+      |                           ^~~~~~~~~~~
+hashing.c:134:26: warning: ‘int SHA256_Update(SHA256_CTX*, const void*, size_t)’ is deprecated: Since OpenSSL 3.0 [-Wdeprecated-declarations]
+  134 |         if (SHA256_Update(&ctx, buffer, bytes_read) != 1) {
+      |             ~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from hashing.c:2:
+/usr/include/openssl/sha.h:74:27: note: declared here
+   74 | OSSL_DEPRECATEDIN_3_0 int SHA256_Update(SHA256_CTX *c,
+      |                           ^~~~~~~~~~~~~
+hashing.c:141:21: warning: ‘int SHA256_Final(unsigned char*, SHA256_CTX*)’ is deprecated: Since OpenSSL 3.0 [-Wdeprecated-declarations]
+  141 |     if (SHA256_Final(digest, &ctx) != 1) {
+      |         ~~~~~~~~~~~~^~~~~~~~~~~~~~
+In file included from hashing.c:2:
+/usr/include/openssl/sha.h:76:27: note: declared here
+   76 | OSSL_DEPRECATEDIN_3_0 int SHA256_Final(unsigned char *md, SHA256_CTX *c);
+      |                           ^~~~~~~~~~~~
+g++ -march=native -mtune=native -Wall -Wextra -Ofast -ftree-vectorize -c gmp256k1/Int.cpp -o Int.o
+In file included from gmp256k1/Int.cpp:20:
+gmp256k1/Int.h:32:9: fatal error: gmp.h: No such file or directory
+   32 | #include<gmp.h>
+      |         ^~~~~~~
+compilation terminated.
+make: *** [Makefile:33: legacy] Error 1

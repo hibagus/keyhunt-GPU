@@ -1,6 +1,6 @@
 # Keyhunt GPU redesign plan
 
-Status: proposed implementation plan; this change adds documentation only.
+Status: implementation started; see [implementation status](IMPLEMENTATION_STATUS.md).
 Prepared: 2026-09-29.
 Main repository baseline: `2134a20` (`main`).
 Reference repository baseline: `/home/bagus/keyhuntM1CPU` at `f80e95e`.
@@ -24,8 +24,9 @@ semantics. Provide durable pause/resume, automatic or manual work selection, and
 coordination across computers. Optimize measured bottlenecks, including optional
 architecture-specific assembly, without weakening coverage or result correctness.
 
-This document specifies future behavior. Proposed commands, file paths, schemas,
-and performance targets below are not features of the current executable.
+This document specifies the target design. Consult the implementation status for
+completed milestones; proposed commands, paths, schemas, and performance targets
+below are not implemented unless explicitly listed there.
 Implementation should proceed as individually reviewable commits in section 10.
 
 | Requirement | Design and delivery sections |
@@ -49,8 +50,9 @@ Implementation should proceed as individually reviewable commits in section 10.
   `keyhunt_legacy.cpp` and `bsgsd.cpp` add separate large implementations.
 - CPU arithmetic and hashes contain x86 assembly/SSE. These should remain host
   implementations; moving them into a GPU translation unit is not a port.
-- Existing modes include `address`, `rmd160`, `xpoint`, `bsgs`, `pub2rmd`,
-  `minikeys`, and `vanity`, with Bitcoin/Ethereum and compression options.
+- Active modes include `address`, `rmd160`, `xpoint`, `bsgs`, `minikeys`, and
+  `vanity`, with Bitcoin/Ethereum and compression options. C01 confirms that the
+  main executable recognizes `pub2rmd` only to report its removal and exit.
 - The `-S` BSGS files are precomputation caches, not search progress checkpoints.
   The function named `checkpointer` checks allocations, not recovery state.
 - [BSGSD.md](../BSGSD.md) describes a daemon that keeps BSGS tables in memory and
@@ -99,9 +101,9 @@ before sizing tables. The SMI VRAM figure alone is not a per-worker memory budge
 Partition-aware profiling is necessary; AMD documents how partition mode changes
 the scope of counters and resources. [AMD partition profiling guide][partitions]
 
-No CPU baseline benchmark, GPU correctness test, or throughput measurement was
-performed for this planning change. Availability of the tools and devices is
-verified; successful compilation and runtime compatibility remain C01/C07 gates.
+The original planning inspection did not build or benchmark the program. C01
+now records the [CPU baseline](CPU_BASELINE.md), including measured legacy defects
+and build limitations. GPU compilation and runtime compatibility remain C07 gates.
 
 ## 3. Repository and build architecture
 
@@ -890,7 +892,8 @@ released capabilities. Check local links and run executable examples in CI.
 One logical change per commit. Do not mix file moves, algorithm changes, and
 performance tuning. Every implementation commit includes the directly relevant
 tests and documentation; split further if a row is too large to review. The
-current planning commit precedes C01 and changes no program behavior.
+original planning commits preceded C01 and changed no program behavior. Track
+implementation evidence in [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md).
 
 | ID | Suggested commit | Dependencies | Acceptance gate |
 | --- | --- | --- | --- |
