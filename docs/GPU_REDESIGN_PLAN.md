@@ -5,6 +5,11 @@ Prepared: 2026-09-29.
 Main repository baseline: `2134a20` (`main`).
 Reference repository baseline: `/home/bagus/keyhuntM1CPU` at `f80e95e`.
 
+Server refinement: the [coordinator server plan](COORDINATOR_SERVER_PLAN.md)
+specifies externally stored SQLite, project permissions, Apache HTTPS on TCP 443,
+and per-client certificate authentication. It is the detailed deployment design
+for sections 7–8 and implementation milestone C15.
+
 ## 1. Intended outcome
 
 Keep the existing CPU functionality while separating the application, arithmetic,
@@ -140,6 +145,7 @@ keyhunt-GPU/
 │   └── recovery/
 ├── benchmarks/                 # repeatable harnesses and machine-readable data
 ├── tools/                      # environment capture, journal inspection/export
+├── deploy/                     # Apache/systemd templates; no live state or keys
 ├── docs/                       # architecture, modes, operations, benchmark notes
 └── .github/workflows/           # CPU checks and explicit GPU validation jobs
 ```
@@ -181,8 +187,11 @@ Keep the existing CLI and legacy target working during the transition.
 - Keep `-march=native` and CPU SSE/NEON flags on CPU targets. Do not forward
   x86 flags, global `-Ofast`, or floating-point fast-math flags into integer
   cryptographic kernels. Scope LTO and device linking by backend/toolchain.
-- Place builds, caches, journals, result files, and generated benchmark output
-  in ignored directories. Keep small reproducible test vectors tracked.
+- Place runtime state outside the checkout: the coordinator uses
+  `/var/lib/keyhunt-coordinator/`, while standalone journals and worker outboxes
+  use the user's state directory. Ignore accidental runtime databases, WAL/SHM
+  files, credentials, caches, builds, and results. Track migrations, deployment
+  templates, and small synthetic test vectors; never live databases/private keys.
 
 ### Execution contract
 
@@ -421,9 +430,14 @@ of truth for coverage. Retrying a claim request must return the original lease.
 
 ### Storage choice
 
-Use SQLite on local reliable storage for the initial single-machine journal and
-for the coordinator's authoritative database. It provides transactional updates
-without requiring a database server. Configure WAL, foreign keys, busy handling,
+For distributed operation, a dedicated server owns the authoritative SQLite
+journal at `/var/lib/keyhunt-coordinator/progress.sqlite`, outside the repository
+and web document root. Workers use an authenticated HTTPS API; Apache never serves
+the database file. Start with one database containing project-scoped records so
+permissions and progress can be committed together. The
+[server plan](COORDINATOR_SERVER_PLAN.md) defines the schema boundaries and roles.
+Optional standalone journals and worker retry outboxes also live outside checkouts,
+under the user's state directory. Configure WAL, foreign keys, busy handling,
 and `synchronous=FULL` for the durable mode; batch progress transactions so fsync
 does not sit in the kernel loop. SQLite WAL requires same-host users and does not
 support a database shared by workers over NFS/SMB. [SQLite WAL][sqlite-wal]
@@ -435,6 +449,9 @@ Suggested schema responsibilities, to be finalized with migration tests:
 
 | Entity | Durable contents |
 | --- | --- |
+| `projects`, `project_memberships` | Opaque project UUIDs, names, active state, and client roles |
+| `clients`, `credentials` | Stable client identity, registered certificate/key fingerprints, validity and revocation |
+| `idempotency_records` | Project/client/operation-scoped request keys, payload digests, and committed responses |
 | `jobs` | Canonical manifest and digest, schema/semantic versions, root range, mode, target digest, block width, search/stop policy, creation state |
 | `coverage` | Exact disjoint completed intervals with block/target-group identity; indexed for merging and complement queries |
 | `leases` | Work ID, exact interval, worker, monotonically increasing fencing generation, expiry, committed frontier, state |
@@ -442,6 +459,12 @@ Suggested schema responsibilities, to be finalized with migration tests:
 | `scheduler_state` | Selection algorithm/version, seed/counter, sparse selection index, coordinator epoch |
 | `events` | Transaction sequence, idempotency key, claim/progress/pause/release/complete events and compact payload |
 | `exports` | Reserved offline intervals, manifest digest, assignment generation, import/revocation state |
+
+Jobs, leases, coverage, results, exports, and events carry project scope, with
+composite foreign keys and indexes. Check authenticated project membership on
+every operation and inside the same transaction as each mutation. Project IDs
+organize and authorize access; the job digest identifies search semantics within
+a project. Neither identifier is an authentication secret.
 
 The durable coverage and event are committed in one transaction. SQLite's WAL
 provides crash recovery; `events` provides a bounded application audit trail.
@@ -514,18 +537,27 @@ its WAL is live. Keep pre-migration backups and a recovery/inspection command.
 
 ### Online coordination
 
-Start with an optional single coordinator process and a versioned authenticated
-HTTP API, backed by its local SQLite journal. Local execution uses the same
-scheduler library directly. Workers do not mount or directly write the
-coordinator's database. A larger SQL service can replace the store if measured
-claim/progress traffic exceeds the single-writer design; do not require it first.
+Use a dedicated coordinator process behind Apache on the home server. The
+proposed origin is `https://dbkeyprogress.rumahsimanis.bagus.my.id`, using standard
+HTTPS TCP 443. Apache requires mutual TLS with individually approved client
+certificates, then proxies requests over a protected Unix socket. The coordinator
+checks registered credentials and project roles on every read/write. SQLite and
+all private keys remain outside Git. See the
+[server plan](COORDINATOR_SERVER_PLAN.md) for enrollment, revocation, proxy trust,
+project isolation, home-network setup, and recovery.
+
+Workers do not mount or directly write the coordinator's database. Optional local
+execution uses the same scheduler library with standalone state. A larger SQL
+service can replace the store if measured traffic exceeds the single-writer
+design; separate database files per project are not required initially.
 
 Proposed operations: register capabilities, claim (sequential/random/exact block),
 heartbeat, report progress/results, complete, release, pause/resume job, inspect
-coverage, and export/import assignments. Use TLS outside a trusted local channel,
-scoped worker credentials, validated manifests, bounded payloads, and exact hex
-integers in the protocol. Coordination initially assumes cooperative workers;
-it does not prove that a dishonest client searched a range.
+coverage, and export/import assignments. Every operation is project-scoped; a
+worker may update only its own current lease. Validate manifests, bound payloads,
+and use exact hex integers. Reading unfinished blocks is only a preview; claiming
+work is atomic. Coordination initially assumes cooperative workers; authentication
+does not prove that a client searched a range.
 
 Claim and completion transitions use transactions and compare the lease's worker,
 generation, job digest, and range. Use coordinator time for deadlines. As initial
@@ -573,23 +605,33 @@ These names illustrate the intended interface; finalize them with CLI compatibil
 tests. All new range endpoints below are explicitly end-exclusive.
 
 ```sh
+# On the coordinator server; Apache exposes the authenticated HTTPS endpoint.
+keyhunt coordinator --state /var/lib/keyhunt-coordinator/progress.sqlite \
+  --listen-unix /run/keyhunt-coordinator/api.sock
+
+# On a remote worker after enrollment and a project-role grant.
 keyhunt devices --backend hip
+keyhunt worker --coordinator https://dbkeyprogress.rumahsimanis.bagus.my.id \
+  --project PROJECT_UUID --job JOB_DIGEST \
+  --tls-cert "$HOME/.config/keyhunt/worker.crt" \
+  --tls-key "$HOME/.config/keyhunt/worker.key" \
+  --backend hip --devices 0 --select random --checkpoint-interval 10s
+
+# Optional standalone/offline operation, with state outside the repository.
 keyhunt job create --mode bsgs --targets targets.txt \
-  --range-start 0x1000 --range-end-exclusive 0x2000 \
-  --block-bits 8 --state runs/demo.sqlite
-keyhunt run --state runs/demo.sqlite --backend hip --devices 0 \
-  --select random --checkpoint-interval 10s
-keyhunt run --state runs/demo.sqlite --backend hip --block 0x3 --once
-keyhunt status --state runs/demo.sqlite
-keyhunt pause --state runs/demo.sqlite
-keyhunt resume --state runs/demo.sqlite --backend hip --devices 0
-keyhunt coordinator --state runs/demo.sqlite --listen 127.0.0.1:8090
-keyhunt worker --coordinator https://coordinator.example:8090 \
-  --job JOB_DIGEST --backend hip --select sequential
+  --range-start 0x1000 --range-end-exclusive 0x2000 --block-bits 8 \
+  --state "$HOME/.local/state/keyhunt/demo.sqlite"
+keyhunt run --state "$HOME/.local/state/keyhunt/demo.sqlite" \
+  --backend hip --block 0x3 --once
+keyhunt status --state "$HOME/.local/state/keyhunt/demo.sqlite"
+keyhunt pause --state "$HOME/.local/state/keyhunt/demo.sqlite"
+keyhunt resume --state "$HOME/.local/state/keyhunt/demo.sqlite" \
+  --backend hip --devices 0
 ```
 
-Credential handling and active-process control must be specified before these
-commands ship. Legacy search flags remain supported by a compatibility parser.
+The server plan specifies credential handling and authorization; active-process
+controls and command names still require implementation tests. Legacy search flags
+remain supported by a compatibility parser.
 
 ## 9. README and supporting documentation
 
@@ -635,10 +677,10 @@ current planning commit precedes C01 and changes no program behavior.
 | C09 | `feat: execute bounded xpoint searches on HIP` | C08 | Nonzero and >64-bit ranges, no-match cases, exact coverage, candidate overflow/replay validated |
 | C10 | `feat: add versioned GPU BSGS table preparation` | C08 | Table format, collision handling, checksums, memory budgeting, and CPU/GPU filter agreement validated |
 | C11 | `feat: implement complete HIP BSGS range search` | C09, C10 | Tiny exhaustive and seeded large-offset BSGS cases match CPU/oracle, including tile ends and all targets |
-| C12 | `feat: persist sparse coverage and transactional leases` | C05 | Lazy allocation, interval merging, random/sequential/manual selection, wide IDs, and concurrent claims pass |
+| C12 | `feat: persist sparse coverage and transactional leases` | C05 | External state directories, project-scoped schema, lazy allocation, interval merging, selection policies, wide IDs, and concurrent claims pass |
 | C13 | `feat: checkpoint verified progress and replay incomplete work` | C09, C11, C12 | Faults at every commit boundary preserve matches and coverage; mismatched/corrupt jobs rejected |
 | C14 | `feat: add graceful pause resume and state inspection` | C13 | Signals/control path, bounded drain, resume with changed device count, backup and migration checks pass |
-| C15 | `feat: coordinate workers with fenced renewable leases` | C12–C14 | Multi-process/two-host run, stale completions, retries, network loss, coordinator restart, and local outbox pass |
+| C15 | `feat: coordinate authenticated project-scoped workers` | C12–C14 | Separate S02–S06 commits in the server plan: Apache mTLS, project roles, revocation, fenced leases, retries, outbox, two-host operation, and restore pass |
 | C16 | `perf: add reproducible GPU profiling and benchmark harness` | C11, C14 | Comparable timing/coverage metrics, raw repeated samples, hardware and durability metadata recorded |
 | C17 | `perf: tune HIP batching arithmetic and memory layout` | C16 | One measured optimization per commit; correctness, pause latency, and throughput gates preserved |
 | C18 | `feat: add native CUDA backend over shared kernels` | C11, C13 | NVIDIA compile and real-hardware parity/recovery tests pass; backend matrix updated |
@@ -666,6 +708,7 @@ modes is an explicit follow-up phase, not an implied part of the first BSGS rele
 | Scheduling | Exhaustive small partitions; variable lease spans; manual busy/done blocks; random selection near exhaustion; high-bit IDs and sparse state |
 | Recovery | Kill before/after GPU completion, result commit, coverage commit, and acknowledgment; disk-full/failed sync; resume and deduplication |
 | Distributed | Simultaneous claims, lease expiry, stale generations, lost replies, heartbeat failure, coordinator epoch recovery, offline reservations |
+| Server access | Required client certificates, registered credentials, cross-project denial, lease ownership, forged proxy headers, revocation on live connections, private socket boundary, credential-safe restore |
 | Performance | Repeated equivalent workloads, one partition/package/multiple packages, storage overhead, allocation headroom, pause and replay bounds |
 
 CPU CI runs without GPU SDKs. Backend compile checks and real-hardware integration
@@ -674,8 +717,9 @@ GPU jobs run small deterministic workloads first, then opt-in benchmarks. Keep
 performance noise out of correctness gates and retain failures for inspection.
 
 Before the first HIP release, require C01–C14 and a reproducible measured baseline.
-Before distributed use, require C15 fault-injection coverage. Before advertising
-NVIDIA support, require C18 hardware validation. Before enabling assembly by
+Before distributed use, require C15 fault-injection and server access-control
+coverage. Before advertising NVIDIA support, require C18 hardware validation.
+Before enabling assembly by
 default, require C19 correctness and performance evidence on the supported stack.
 
 ## 12. Decisions to revisit with implementation evidence
