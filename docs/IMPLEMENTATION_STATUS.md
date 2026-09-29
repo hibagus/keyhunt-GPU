@@ -11,12 +11,13 @@ change is committed separately. Analysis and validation evidence live under
 | C02: source organization and CMake | Completed | [Migration evidence](BUILD_MIGRATION.md) and [build guide](BUILD.md); CPU release/debug, isolated GMP legacy parity, daemon loopback and install checks |
 | C03: README and usage guides | Completed | [Redesign notes](README_REDESIGN.md); current commands, mode reference, preserved historical examples |
 | C04: core extraction | Completed | [Extraction notes](CORE_EXTRACTION.md); shared configuration, owned target loaders, CPU verification; release/debug regressions pass |
-| C05: exact ranges and work units | In progress | [Exact range contract](EXACT_RANGES.md); checked integers, scalar intervals and immutable block grids pass release/debug/sanitizers; bounded work planning remains |
-| C06–C23 | Planned | Acceptance gates remain in the redesign plan |
+| C05: exact ranges and work units | Completed | [Exact range contract and evidence](EXACT_RANGES.md); checked 256-bit ranges, immutable blocks and bounded direct-scan work/batches; exhaustive and wide oracle tests pass |
+| C06: independent arithmetic and search vectors | Next | Pinned independent curve oracle, infinity/alias/carry tests, negative and boundary cases |
+| C07–C23 | Planned | Acceptance gates remain in the redesign plan |
 
 C01 records existing CPU boundary/stride defects rather than fixing them.
-The new exact-range engine must not reuse those loops as proof of exhaustive
-coverage. C02 validated the optional legacy target with GMP development files extracted
+C05 supplies a separate exact host planning contract; it does not use those
+loops as proof of exhaustive coverage or change their CLI behavior. C02 validated the optional legacy target with GMP development files extracted
 under `/tmp`; no system package was installed. Sanitizer diagnostics and known
 legacy defects remain documented follow-up work. No GPU search, checkpoint,
 coordinator, or deployment has been implemented yet.

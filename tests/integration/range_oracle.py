@@ -22,14 +22,19 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--binary", type=Path, required=True)
     parser.add_argument("--report", type=Path, required=True)
-    args = parser.parse_args()
-    binary = args.binary.resolve()
+    options = parser.parse_args()
+    binary = options.binary.resolve()
     rng = random.Random(SEED)
     cases = []
 
     def add(category, operation, values, expected):
         command = operation + " " + " ".join(canonical(x) for x in values)
-        answer = "error" if expected is None else "ok " + " ".join(canonical(x) for x in expected)
+        if expected is None:
+            answer = "error"
+        elif expected == "none":
+            answer = "ok none"
+        else:
+            answer = "ok " + " ".join(canonical(x) for x in expected)
         cases.append((category, command, answer))
 
     def arithmetic(category, a, b):
@@ -95,6 +100,76 @@ def main():
     for scalar in (0, ORDER, MAX):
         add("block_grid_boundaries", "locate", (1, ORDER, 1, scalar), None)
 
+    local_max = (1 << 64)-1
+
+    def work_case(category, begin, end, width, index, cursor, limit):
+        count = (end-begin+width-1)//width
+        start, stop = begin+index*width, min(end, begin+(index+1)*width)
+        expected = None
+        if index < count and 0 < limit <= local_max and start <= cursor <= stop:
+            expected = "none" if cursor == stop else (cursor, min(stop, cursor+limit), min(stop-cursor, limit))
+        args = (begin, end, width, index, cursor, limit)
+        add(category, "work", args, expected)
+        return args, expected
+
+    def batch_case(category, work_args, work_result, cursor, limit, index):
+        expected = None
+        if work_result == "none":
+            expected = "none"
+        elif work_result is not None:
+            start, stop, _ = work_result
+            if 0 < limit <= local_max and start <= cursor <= stop:
+                if cursor == stop:
+                    expected = "none"
+                else:
+                    count = min(stop-cursor, limit)
+                    if 0 <= index < count:
+                        expected = (cursor, cursor+count, count, cursor+index)
+        add(category, "batch", (*work_args, cursor, limit, index), expected)
+
+    for begin in range(1, 4):
+        for end in range(begin+1, 10):
+            for width in range(1, 7):
+                count = (end-begin+width-1)//width
+                for index in range(count):
+                    start, stop = begin+index*width, min(end, begin+(index+1)*width)
+                    for cursor in range(start-1, stop+2):
+                        for limit in range(5):
+                            args, expected = work_case("exhaustive_small_work", begin, end, width, index, cursor, limit)
+                            if expected is not None and expected != "none":
+                                for batch_cursor in range(expected[0]-1, expected[1]+2):
+                                    for batch_limit in range(4):
+                                        batch_case("exhaustive_small_batches", args, expected,
+                                                   batch_cursor, batch_limit, 0)
+
+    for _ in range(1500):
+        begin = rng.randrange(1, ORDER)
+        end = rng.randrange(begin+1, ORDER+1)
+        width = rng.randrange(1, 1 << rng.choice((1, 64, 128, 256)))
+        count = (end-begin+width-1)//width
+        index = rng.randrange(count)
+        start, stop = begin+index*width, min(end, begin+(index+1)*width)
+        cursor = rng.randrange(start, stop)
+        limit = rng.randrange(1, local_max+1)
+        args, expected = work_case("random_wide_work", begin, end, width, index, cursor, limit)
+        for batch_limit in (1, rng.randrange(1, local_max+1), local_max):
+            batch_cursor = rng.randrange(expected[0], expected[1])
+            batch_count = min(expected[1]-batch_cursor, batch_limit)
+            for local_index in (0, batch_count-1, batch_count):
+                batch_case("random_wide_batches", args, expected, batch_cursor, batch_limit, local_index)
+
+    for begin, end, width, index, cursor in (
+            (1, ORDER, MAX, 0, 1), (1, ORDER, 1, 1 << 200, (1 << 200)+1),
+            (ORDER-3, ORDER, MAX, 0, ORDER-3), (ORDER-3, ORDER, 2, 1, ORDER-1),
+            (ORDER-3, ORDER, 2, 1, ORDER), (1, ORDER, 1, ORDER-1, ORDER)):
+        for limit in (0, 1, local_max, local_max+1):
+            args, expected = work_case("work_boundaries", begin, end, width, index, cursor, limit)
+            if expected is not None and expected != "none":
+                for batch_cursor in (expected[0], expected[1]):
+                    for batch_limit in (0, 1, local_max, local_max+1):
+                        for local_index in (0, local_max, local_max+1):
+                            batch_case("batch_boundaries", args, expected, batch_cursor, batch_limit, local_index)
+
     started = time.monotonic()
     result = subprocess.run([str(binary)], input="\n".join(x[1] for x in cases)+"\n",
                             text=True, capture_output=True, timeout=90)
@@ -112,7 +187,7 @@ def main():
               "binary_sha256": hashlib.sha256(binary.read_bytes()).hexdigest(),
               "cases": len(cases), "categories": dict(Counter(x[0] for x in cases)),
               "wall_seconds": round(time.monotonic()-started, 3), "failures": failures}
-    args.report.write_text(json.dumps(report, indent=2)+"\n")
+    options.report.write_text(json.dumps(report, indent=2)+"\n")
     print(json.dumps(report, indent=2))
     return bool(failures)
 

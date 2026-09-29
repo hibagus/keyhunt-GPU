@@ -54,6 +54,55 @@ with width 32, the four blocks end at 1032, 1064, 1096 and 1100. A block lookup
 says nothing about whether it is unexplored, in progress or finished; the sparse
 journal and assignment transactions belong to C12.
 
+## Bounded work units and kernel batches
+
+[WorkUnit and KernelBatch](../include/keyhunt/scheduler/work_unit.h) subdivide a
+selected block lazily. A work unit owns an exact interval, parent block bounds
+and 256-bit block ID, job/target/configuration digests, assignment ID, assignment
+generation and local executor generation. Kernel batches retain that complete
+parent description. Identity comparisons include every field. Digests are opaque
+caller-supplied values in C05; canonical manifest construction is later work.
+
+The initial mapping is explicitly `DirectXPointV1`: one consecutive scalar per
+step, `scalar = batch.begin + local_index`. Unknown mappings are rejected. This
+is planning support for C09, not an implemented search backend. BSGS's scalar
+span versus giant-step count, tile alignment, target groups and residual tails
+need C11's separate mapping. No existing stride, endomorphism, random search or
+minikey execution is silently admitted as exhaustive contiguous coverage.
+
+Both planning functions take an explicit cursor and positive `uint64_t` step
+limit. They reject cursors outside the parent, return no allocation at its
+exclusive end, and clip the requested span before adding an endpoint. Work-unit
+and kernel-batch step counts each fit 64 bits; absolute scalars, block IDs and
+logical widths retain all 256 bits. `scalar_at(index)` checks `index < count`
+before adding it to the full scalar. GPU grid products and bounds must receive
+separate device-side checks in the executor; this host method does not validate
+a launch or device arithmetic.
+
+There is deliberately no automatic cursor advancement or completion method.
+Repeated planning with the same inputs yields the same bounds for safe replay.
+The future owner must supply a cursor derived from committed coverage and persist
+exact in-flight bounds; passing an arbitrary later cursor does not prove that the
+prefix was searched. Resume can plan the remaining suffix of a recorded work
+unit from an interior batch cursor. New units may have a different size without
+changing the existing unit or the job's block grid.
+
+The 12-hour logical block target, 180-second local work target, 0.1–1-second kernel
+target, approximately 10-second local checkpoint cadence, 2-hour machine sync and
+30-day reservation remain the plan's independent controls. C05 accepts explicit
+widths/counts; it does not infer a measured GPU rate or implement timers. No
+network exchange is necessary to calculate work inside a block. One GPU per
+active block, assignment ownership, expiry, and sparse unexplored/in-progress/
+finished state still require their scheduler/journal/coordinator milestones.
+
+Nonzero assignment IDs and positive generations are syntactically required.
+Their authority, current generation, lease and matching manifest must be checked
+by the future owner; constructing a work unit is not authorization. A completion
+will also need its exact parent unit/batch interval and execution identity checked,
+CPU-verified in-range candidates saved, overflow replayed, and accepted coverage
+committed before advancing. These result and persistence gates belong to C09 and
+C12–C15. Work-unit objects are not checkpoint serialization or proof of coverage.
+
 ## Validation
 
 `exact_range` tests parsing, byte order, all 256 single-bit/carry boundaries,
@@ -82,6 +131,33 @@ comparisons, including random 256-bit block lookups and shorter tails, in releas
 debug and the same unsuppressed sanitizer configuration. See
 [recorded grid evidence](baselines/C05_GRID_VALIDATION.json).
 
-Bounded work-unit planning is the remaining C05 change. No
-checkpoint, ownership, completion accounting or search execution is introduced
-by this integer contract.
+`work_unit` enumerates every candidate through all three levels for small jobs,
+asserting exactly one visit per scalar. It also tests identity snapshots, explicit
+replay/resume cursors, changes to new work sizes, all invalid cursor/index limits,
+256-bit starts and IDs, `UINT64_MAX` counts, and tails ending at the curve order.
+The expanded Python oracle independently checks work and batch bounds and scalar
+reconstruction across exhaustive small and seeded wide domains.
+
+Final C05 validation passed all seven CTest suites in release (39.88 seconds) and
+debug (49.40 seconds). This includes 38 original CPU cases, five loader cases,
+55 verifier checks, 1,059 integer/interval checks, 197,479 block checks, 191,517
+work-planning checks and 111,829 Python-oracle comparisons. All four new planning
+suites also passed ASan/UBSan with leak detection and halt-on-error enabled
+(20.26 seconds), without suppressions. These are test-suite timings, not search
+throughput measurements. [Final evidence](baselines/C05_VALIDATION.json) records
+commands, full CTest summaries, oracle categories and binary hashes.
+
+The new oracle harness initially failed to write its report because a work-argument
+tuple shadowed the CLI options variable; separating the variable names fixed the
+harness. All final comparisons and suites above passed after that correction.
+The existing CPU arithmetic sanitizer defects remain separate C06 follow-up work.
+Hosted CI has not been run here; the existing CPU workflow will pick up these
+CTest additions on a future push.
+
+C05 was split into checked integers/intervals (`ca82e05`), immutable block geometry
+(`1910d90`), and bounded work/batch planning, each with its tests and documentation.
+
+This is a host planning library, without new user-facing CLI commands. The CPU
+compatibility path retains its C01 behavior. New scheduled execution must use this
+contract; old CPU output cannot be imported as coverage just because a candidate
+passes the C04 cryptographic verifier.

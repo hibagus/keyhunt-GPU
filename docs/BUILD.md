@@ -100,3 +100,18 @@ C04 adds `result_verifier` and `target_loading` to CTest. Debug builds enable
 libstdc++ bounds assertions. See the [core extraction notes](CORE_EXTRACTION.md)
 for the test cases and the inherited arithmetic overflow that currently prevents
 a clean verifier sanitizer run. CPU release/debug builds remain the passing gates.
+
+C05 adds `exact_range`, `block_grid`, `work_unit` and `range_oracle`. The
+[exact range notes](EXACT_RANGES.md) describe their exhaustive and wide-integer
+checks. They run in the normal CPU suite and use no GPU SDK. The isolated planning
+library also has a passing sanitizer gate:
+
+```sh
+cmake --preset cpu-sanitizers
+cmake --build --preset cpu-sanitizers --parallel 4 \
+  --target exact_range_test block_grid_test work_unit_test range_probe
+ASAN_OPTIONS=detect_leaks=1 UBSAN_OPTIONS=halt_on_error=1 \
+  ctest --preset cpu-sanitizers -L ranges
+```
+
+This selector excludes the existing CPU curve engine's known sanitizer failures.

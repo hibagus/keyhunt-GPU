@@ -24,7 +24,8 @@ inline constexpr int SEARCH_BOTH = 2;
 
 // Input preferences only. Progress counters, caches and arithmetic working state
 // belong to the executor. The CLI resolves mode-dependent defaults before work.
-// Range normalization is still in the CPU adapter until C05 supplies its contract.
+// The CPU compatibility adapter retains its legacy range normalization. New
+// scheduled execution uses the separate exact_range and scheduler contracts.
 struct SearchConfig {
     int skip_checksum = 0;
     int endomorphism = 0;

@@ -1,0 +1,129 @@
+{
+  "stage": "C05 complete: exact ranges, immutable blocks, bounded direct xpoint work and batches",
+  "recorded_utc": "2026-09-29T17:09:24.120840+00:00",
+  "pre_c05_commit": "7d48047",
+  "preceding_c05_commits": [
+    "ca82e05",
+    "1910d90"
+  ],
+  "unit_checks_per_build": {
+    "exact_range": 1059,
+    "block_grid": 197479,
+    "work_unit": 191517
+  },
+  "unchanged_cpu_checks": {
+    "baseline_cases": 38,
+    "loader_cases": 5,
+    "verifier_checks": 55
+  },
+  "sanitizer_environment": {
+    "ASAN_OPTIONS": "detect_leaks=1",
+    "UBSAN_OPTIONS": "halt_on_error=1"
+  },
+  "builds": {
+    "cpu-release": {
+      "configure_command": "cmake --preset cpu-release",
+      "build_command": "cmake --build --preset cpu-release --parallel 4",
+      "test_command": "ctest --preset cpu-release",
+      "ctest_exit_code": 0,
+      "ctest_output": "Test project /home/bagus/keyhunt-GPU/build/cpu-release\n    Start 1: exact_range\n1/7 Test #1: exact_range ......................   Passed    0.00 sec\n    Start 2: block_grid\n2/7 Test #2: block_grid .......................   Passed    0.09 sec\n    Start 3: work_unit\n3/7 Test #3: work_unit ........................   Passed    0.04 sec\n    Start 4: range_oracle\n4/7 Test #4: range_oracle .....................   Passed    1.85 sec\n    Start 5: result_verifier\n5/7 Test #5: result_verifier ..................   Passed    0.03 sec\n    Start 6: cpu_baseline\n6/7 Test #6: cpu_baseline .....................   Passed   29.35 sec\n    Start 7: target_loading\n7/7 Test #7: target_loading ...................   Passed    8.51 sec\n\n100% tests passed, 0 tests failed out of 7\n\nLabel Time Summary:\nbaseline    =  29.35 sec*proc (1 test)\ncore        =  10.53 sec*proc (6 tests)\ncpu         =  39.87 sec*proc (7 tests)\nranges      =   1.99 sec*proc (4 tests)\n\nTotal Test time (real) =  39.88 sec\n",
+      "oracle": {
+        "seed": 3227417287,
+        "binary": "/home/bagus/keyhunt-GPU/build/cpu-release/range_probe",
+        "binary_sha256": "f54e96ab69196e5e8fdee022122e0b63afcc89500990465043f9c8542d5fe665",
+        "cases": 111829,
+        "categories": {
+          "exhaustive_small_arithmetic": 4096,
+          "wide_arithmetic_boundaries": 9216,
+          "random_wide_arithmetic": 8000,
+          "exhaustive_small_intervals": 289,
+          "random_wide_intervals": 1000,
+          "scalar_domain_boundaries": 6,
+          "exhaustive_small_grids": 10607,
+          "random_wide_grids": 20000,
+          "block_grid_boundaries": 47,
+          "exhaustive_small_work": 6300,
+          "exhaustive_small_batches": 37052,
+          "random_wide_work": 1500,
+          "random_wide_batches": 13500,
+          "work_boundaries": 24,
+          "batch_boundaries": 192
+        },
+        "wall_seconds": 1.379,
+        "failures": []
+      }
+    },
+    "cpu-debug": {
+      "configure_command": "cmake --preset cpu-debug",
+      "build_command": "cmake --build --preset cpu-debug --parallel 4",
+      "test_command": "ctest --preset cpu-debug",
+      "ctest_exit_code": 0,
+      "ctest_output": "Test project /home/bagus/keyhunt-GPU/build/cpu-debug\n    Start 1: exact_range\n1/7 Test #1: exact_range ......................   Passed    0.00 sec\n    Start 2: block_grid\n2/7 Test #2: block_grid .......................   Passed    2.18 sec\n    Start 3: work_unit\n3/7 Test #3: work_unit ........................   Passed    0.36 sec\n    Start 4: range_oracle\n4/7 Test #4: range_oracle .....................   Passed    6.29 sec\n    Start 5: result_verifier\n5/7 Test #5: result_verifier ..................   Passed    0.07 sec\n    Start 6: cpu_baseline\n6/7 Test #6: cpu_baseline .....................   Passed   31.30 sec\n    Start 7: target_loading\n7/7 Test #7: target_loading ...................   Passed    9.19 sec\n\n100% tests passed, 0 tests failed out of 7\n\nLabel Time Summary:\nbaseline    =  31.30 sec*proc (1 test)\ncore        =  18.10 sec*proc (6 tests)\ncpu         =  49.39 sec*proc (7 tests)\nranges      =   8.83 sec*proc (4 tests)\n\nTotal Test time (real) =  49.40 sec\n",
+      "oracle": {
+        "seed": 3227417287,
+        "binary": "/home/bagus/keyhunt-GPU/build/cpu-debug/range_probe",
+        "binary_sha256": "dee0cfec6c70b22382398dcd3de977075704cc9fcb6b06a444778c907679abbb",
+        "cases": 111829,
+        "categories": {
+          "exhaustive_small_arithmetic": 4096,
+          "wide_arithmetic_boundaries": 9216,
+          "random_wide_arithmetic": 8000,
+          "exhaustive_small_intervals": 289,
+          "random_wide_intervals": 1000,
+          "scalar_domain_boundaries": 6,
+          "exhaustive_small_grids": 10607,
+          "random_wide_grids": 20000,
+          "block_grid_boundaries": 47,
+          "exhaustive_small_work": 6300,
+          "exhaustive_small_batches": 37052,
+          "random_wide_work": 1500,
+          "random_wide_batches": 13500,
+          "work_boundaries": 24,
+          "batch_boundaries": 192
+        },
+        "wall_seconds": 5.817,
+        "failures": []
+      }
+    },
+    "cpu-sanitizers": {
+      "configure_command": "cmake --preset cpu-sanitizers",
+      "build_command": "cmake --build --preset cpu-sanitizers --parallel 4 --target exact_range_test block_grid_test work_unit_test range_probe",
+      "test_command": "ctest --preset cpu-sanitizers -L ranges",
+      "ctest_exit_code": 0,
+      "ctest_output": "Test project /home/bagus/keyhunt-GPU/build/cpu-sanitizers\n    Start 1: exact_range\n1/4 Test #1: exact_range ......................   Passed    0.01 sec\n    Start 2: block_grid\n2/4 Test #2: block_grid .......................   Passed    5.69 sec\n    Start 3: work_unit\n3/4 Test #3: work_unit ........................   Passed    0.84 sec\n    Start 4: range_oracle\n4/4 Test #4: range_oracle .....................   Passed   13.72 sec\n\n100% tests passed, 0 tests failed out of 4\n\nLabel Time Summary:\ncore      =  20.25 sec*proc (4 tests)\ncpu       =  20.25 sec*proc (4 tests)\nranges    =  20.25 sec*proc (4 tests)\n\nTotal Test time (real) =  20.26 sec\n",
+      "oracle": {
+        "seed": 3227417287,
+        "binary": "/home/bagus/keyhunt-GPU/build/cpu-sanitizers/range_probe",
+        "binary_sha256": "f12b63d88cafc7e498091ca485591af24cbb7529f1759d47e53392c2c31f7df5",
+        "cases": 111829,
+        "categories": {
+          "exhaustive_small_arithmetic": 4096,
+          "wide_arithmetic_boundaries": 9216,
+          "random_wide_arithmetic": 8000,
+          "exhaustive_small_intervals": 289,
+          "random_wide_intervals": 1000,
+          "scalar_domain_boundaries": 6,
+          "exhaustive_small_grids": 10607,
+          "random_wide_grids": 20000,
+          "block_grid_boundaries": 47,
+          "exhaustive_small_work": 6300,
+          "exhaustive_small_batches": 37052,
+          "random_wide_work": 1500,
+          "random_wide_batches": 13500,
+          "work_boundaries": 24,
+          "batch_boundaries": 192
+        },
+        "wall_seconds": 13.241,
+        "failures": []
+      }
+    }
+  },
+  "limits": [
+    "Host planning API only; no new search CLI or GPU execution.",
+    "Consecutive DirectXPointV1 mapping only; BSGS and alternate enumeration mappings remain separate gates.",
+    "Opaque identity digests and syntactic metadata checks do not establish assignment authority or accepted coverage.",
+    "No persistence, completion accounting, calibration timer, checkpoint, lease or coordinator is implemented.",
+    "Existing CPU boundary/stride behavior and curve sanitizer findings remain unchanged.",
+    "Hosted CI was not run; existing CTest workflow will include these tests on push."
+  ]
+}

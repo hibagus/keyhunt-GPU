@@ -68,7 +68,8 @@ keyhunt_configure_target(keyhunt_cpu_crypto)
 # Exact scheduling arithmetic is independent of the legacy curve engine.
 add_library(keyhunt_ranges STATIC
     src/core/exact_range.cpp
-    src/scheduler/block_grid.cpp)
+    src/scheduler/block_grid.cpp
+    src/scheduler/work_unit.cpp)
 target_include_directories(keyhunt_ranges PUBLIC include)
 keyhunt_configure_target(keyhunt_ranges)
 
@@ -122,6 +123,11 @@ if(BUILD_TESTING)
     keyhunt_configure_target(block_grid_test)
     add_test(NAME block_grid COMMAND block_grid_test)
     set_tests_properties(block_grid PROPERTIES TIMEOUT 30 LABELS "cpu;core;ranges")
+    add_executable(work_unit_test tests/unit/work_unit.cpp)
+    target_link_libraries(work_unit_test PRIVATE keyhunt_ranges)
+    keyhunt_configure_target(work_unit_test)
+    add_test(NAME work_unit COMMAND work_unit_test)
+    set_tests_properties(work_unit PROPERTIES TIMEOUT 30 LABELS "cpu;core;ranges")
     add_executable(range_probe tests/unit/range_probe.cpp)
     target_link_libraries(range_probe PRIVATE keyhunt_ranges)
     keyhunt_configure_target(range_probe)
