@@ -1,8 +1,10 @@
 # CUDA/HIP port audit — 2026-09-29
 
-Latest follow-up: [C14–C15 audit and refreshed MI300X figures](audits/C15_AUDIT.md)
-passes 57 HIP and 41 CPU tests, reproduces two supervisor pause/quarantine defects,
-and measures warm execution and coordinated block startup costs.
+Latest follow-up: [C16 profiling audit](audits/C16_AUDIT.md) passes 58 HIP and
+42 CPU tests, independently checks the retained benchmark evidence, reproduces a
+mixed-BSGS-group reporting defect, and measures periodic-checkpoint throughput.
+The [C14–C15 audit](audits/C15_AUDIT.md) reproduces two still-open supervisor
+pause/quarantine defects and measures coordinated block startup costs.
 The [C12–C13 audit](audits/C13_AUDIT.md) covers durable GPU execution and
 whole-process throughput with different checkpoint cadences.
 C16 implementation evidence now lives in [GPU profiling and benchmarks](GPU_PROFILING.md):
