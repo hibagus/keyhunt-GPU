@@ -1,6 +1,9 @@
 # CUDA/HIP port audit — 2026-09-29
 
-Current implementation: [C17 measured tuning](HIP_TUNING.md) addresses A12, A13,
+Current implementation: [C20 concurrent execution](MULTI_GPU.md) addresses A16,
+A17 and A18, and corrects the selected-device startup path identified by A20.
+HIP/mock evidence is recorded; new NVIDIA hardware acceptance remains a follow-up.
+[C17 measured tuning](HIP_TUNING.md) addresses A12, A13,
 A14 and A19 with separate changes and retained paired evidence. The audits below
 remain scoped to their frozen revisions.
 
@@ -14,8 +17,9 @@ validation of the merged C19 revision remains an acceptance gap on this HIP host
 The [C16 profiling audit](audits/C16_AUDIT.md) passes 58 HIP and 42 CPU tests,
 independently checks its retained benchmark evidence, reproduces the earlier
 mixed-BSGS-group reporting defect, and measures periodic-checkpoint throughput.
-The [C14–C15 audit](audits/C15_AUDIT.md) reproduces two still-open supervisor
-pause/quarantine defects and measures coordinated block startup costs.
+The [C14–C15 audit](audits/C15_AUDIT.md) reproduces the supervisor
+pause/quarantine defects and coordinated block startup costs subsequently
+addressed by C20.
 The [C12–C13 audit](audits/C13_AUDIT.md) covers durable GPU execution and
 whole-process throughput with different checkpoint cadences.
 C16 implementation evidence now lives in [GPU profiling and benchmarks](GPU_PROFILING.md):

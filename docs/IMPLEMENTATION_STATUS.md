@@ -26,7 +26,8 @@ change is committed separately. Analysis and validation evidence live under
 | C17: measured HIP tuning | Completed | [Changes, rejected experiment and paired evidence](HIP_TUNING.md); xpoint kernels 1.94–2.33× and BSGS kernels 1.31–1.72× faster on the measured MI300X workloads; exact overflow recovery, compact transfers, complete grouping metrics, pause checks; 33 CPU / 59 HIP / 8 debug / 6 sanitizer tests pass |
 | C18: native CUDA | Completed | [CUDA build, tuning and acceptance](CUDA_BACKEND.md); 47 CUDA-build and 32 CPU tests, eight H200s, exact xpoint/BSGS parity, checkpoint recovery, 12 sanitizer runs and measured PTX/mixed-coordinate optimizations; [validation evidence](baselines/C18_VALIDATION.json) |
 | C19: gfx942 arithmetic specializations | Completed (opt-in) | [Carry/borrow intrinsics, rejected experiments and ISA evidence](GFX942_SPECIALIZATIONS.md); small-target stepped xpoint kernels 1.051–1.060× faster, portable fallback; 33 CPU / 61 HIP / 4 debug / 4 sanitizer checks pass |
-| C20–C23 | Planned | Acceptance gates remain in the redesign plan |
+| C20: concurrent GPU scheduling | Completed (HIP scope) | [Ownership, operations and measured evidence](MULTI_GPU.md); persistent per-device executors, transactional balancing, calibrated immutable widths, independent controls and bounded recovery; 48 validated 1/2/4/8-GPU runs, 66 HIP / 47 CPU / 9 debug / 7 sanitizer gates; [acceptance manifest](baselines/C20_VALIDATION.json) |
+| C21–C23 | Planned | Acceptance gates remain in the redesign plan |
 
 C01 records the original CPU boundary/stride defects. C06 fixes modular/point
 arithmetic and the tested BSGS start miss; tail overrun and stride defects remain.
@@ -40,20 +41,21 @@ separate commands. C13 also fixes the legacy/canonical BSGS target type-name col
 found by debug and sanitizer creation tests. C14 adds durable local pause/resume,
 graceful signals and live control inspection. C15 adds authenticated coordination
 and isolated localhost deployment with separate worker journals. Public ingress
-and a physical second host remain deferred by user decision; simultaneous
-multi-GPU execution remains C20. CPX/QPX/SPX contracts remain
+and a physical second host remain deferred by user decision. C20 adds
+simultaneous multi-GPU execution with independent device processes. CPX/QPX/SPX contracts remain
 supported, with current hardware validation on SPX/NPS1 and no partition changes.
 
 C16 adds comparable standalone execution/durability metrics and opt-in measurement
 tools without changing search kernels or persistent schemas. C15 supervisor
-availability findings remain tracked in the [follow-up audit](audits/C15_AUDIT.md).
+findings in the [frozen audit](audits/C15_AUDIT.md) are addressed by C20.
 
 C17 retains portable arithmetic while improving measured kernel throughput,
 candidate memory/transfer bounds and sparse-tail overflow recovery. Each
 optimization is committed separately with comments and paired evidence. The
 [acceptance scope and limits](HIP_TUNING.md#pause-validation-and-limits) distinguish
 kernel/executor gains from startup-sensitive process rates and preserve the
-remaining supervisor findings. No handwritten ISA or multi-GPU speedup is claimed.
+supervisor findings subsequently addressed by C20. C17 itself makes no
+handwritten ISA or multi-GPU speedup claim.
 
 C19 adds opt-in gfx942 compiler carry/borrow intrinsics with a configure-time
 capability check and a real-HIP portable arithmetic fallback gate. The
@@ -61,5 +63,9 @@ capability check and a real-HIP portable arithmetic fallback gate. The
 [paired evidence](GFX942_SPECIALIZATIONS.md) separate kernel improvements from
 startup-sensitive CLI timings. Multiplication ISA was rejected for regressions;
 explicit carry assembly was not retained because its incremental gain over
-intrinsics stayed below the acceptance threshold. C20 multi-GPU scheduling and
-supervisor lifecycle findings remain open.
+intrinsics stayed below the acceptance threshold.
+
+C20 completes concurrent machine execution on the validated HIP host. Eight GPUs
+measure 6.04× xpoint and 4.75× BSGS finite-job throughput relative to one GPU, with
+exact coverage and retained results. It addresses A16–A18 and the selected-device
+startup path from A20; new NVIDIA hardware acceptance remains a follow-up.
