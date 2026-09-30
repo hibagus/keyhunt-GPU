@@ -175,3 +175,19 @@ Seven focused tests pass: both xpoint CLI kernels, durable checkpoint execution,
 fault/recovery, owner controls and HIP pause. New fixtures require large batches
 to return across later work units, retain exact coverage/results, and keep fully
 dense capacity-one input at one initial overflow rather than repeated retries.
+
+## Corrected: mixed durable BSGS metrics (A19)
+
+The independent [C16 audit](audits/C16_AUDIT.md) found that durable summaries
+reported only the last grouping kernel. Version 2 now accumulates launch counts,
+overflows, attempted/useful target giant steps and kernel time separately for
+groups 1 and 8. The old scalar is explicitly last-dispatch information. Benchmark
+validation checks group totals against the aggregate and reports the complete
+set as unknown for frozen version 1 executables. This changes diagnostics only.
+
+Six focused metric/checkpoint/failure tests pass, plus a rerun with visible-CU
+adapted integration geometry. Cases cover overflow into another group, mixed
+target subsets and a final short tile. The [live audit reproduction](baselines/C17_GROUPS.json)
+passes five measured repetitions plus warm-up for volatile and timed modes, each
+with exact coverage and 524,288 useful steps. Durable output correctly retains
+two group-8 and two group-1 launches instead of labeling the run only group 1.

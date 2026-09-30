@@ -82,7 +82,17 @@ class MetricsTest(unittest.TestCase):
             summary[key] = 1.
         rows = [dict(type="checkpoint", transaction_ms=1.), summary]
         block = dict(state="finished", remaining=[], covered=[dict(begin=self.case["begin"], end_exclusive=self.case["end_exclusive"])])
-        validate_durable(rows, self.case, "gpu", block, [])
+        self.assertIsNone(validate_durable(rows, self.case, "gpu", block, [])["actual_groups"])
+        # A last group of 8 cannot replace the complete mixed-dispatch history.
+        summary.update(metrics_version=2,batches=2,overflow_replays=0,bsgs_groups=[
+            dict(group_size=1,batches=1,overflow_replays=0,device_steps="2",verified_device_steps="2",kernel_ms=.25),
+            dict(group_size=8,batches=1,overflow_replays=0,device_steps="2",verified_device_steps="2",kernel_ms=.75)])
+        self.assertEqual(validate_durable(rows,self.case,"gpu",block,[])["actual_groups"],[1,8])
+        for key,value in [("group_size",8),("device_steps","3"),("batches",2),("kernel_ms",.5)]:
+            changed=copy.deepcopy(rows);changed[-1]["bsgs_groups"][0][key]=value
+            with self.assertRaises(InvalidSample):validate_durable(changed,self.case,"gpu",block,[])
+        changed=copy.deepcopy(rows);changed[-1]["bsgs_groups"].pop()
+        with self.assertRaises(InvalidSample):validate_durable(changed,self.case,"gpu",block,[])
         block["covered"] = []
         with self.assertRaises(InvalidSample):
             validate_durable(rows, self.case, "gpu", block, [])

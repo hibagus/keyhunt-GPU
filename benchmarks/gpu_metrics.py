@@ -117,7 +117,7 @@ def validate_durable(rows, case, uuid, block, results):
     require(bool(rows) and rows[-1]["type"] == "summary", "missing durable summary")
     summary = rows[-1]
     width, steps = work(case)
-    require(summary["metrics_version"] == 1 and summary["uuid"] == uuid and
+    require(summary["metrics_version"] in (1, 2) and summary["uuid"] == uuid and
             summary["mode"] == case["mode"] and summary["complete"] and summary["durable_coverage"] and
             summary["durability"] == "local" and hexint(summary["resumed_scalars"]) == 0 and
             hexint(summary["computed_scalars"]) == width and hexint(summary["verified_device_steps"]) == steps,
@@ -137,7 +137,29 @@ def validate_durable(rows, case, uuid, block, results):
                "preparation_ms", "executor_setup_ms", "table_upload_ms", "executor_wall_ms", "replay_kernel_ms",
                "checkpoint_ms", "revalidation_ms", "peak_device_allocation_bytes", "peak_pinned_allocation_bytes")}
     metrics["download_bytes"] = hexint(summary["download_bytes"])
-    metrics["actual_groups"] = [summary["bsgs_group_size"]] if case["mode"] == "bsgs" else []
+    metrics["actual_groups"] = []
+    if case["mode"] == "bsgs":
+        metrics["last_group"] = summary["bsgs_group_size"]
+        # Version 1 only recorded the final dispatch. Do not misrepresent that
+        # value as a complete set when comparing frozen pre-C17 executables.
+        metrics["actual_groups"] = None
+        if summary["metrics_version"] == 2:
+            groups = summary["bsgs_groups"]
+            sizes = [g["group_size"] for g in groups]
+            require(sizes == sorted(set(sizes)) and all(g in (1, 8) for g in sizes) and
+                    summary["bsgs_group_size"] in sizes, "invalid BSGS group set")
+            for g in groups:
+                require(g["batches"] > 0 and 0 <= g["overflow_replays"] <= g["batches"] and
+                        0 <= hexint(g["verified_device_steps"]) <= hexint(g["device_steps"]) and
+                        math.isfinite(g["kernel_ms"]) and g["kernel_ms"] >= 0, "invalid BSGS group costs")
+            for key in ("batches", "overflow_replays"):
+                require(sum(g[key] for g in groups) == summary[key], "BSGS group launch totals differ")
+            for key in ("device_steps", "verified_device_steps"):
+                require(sum(hexint(g[key]) for g in groups) == hexint(summary[key]), "BSGS group work totals differ")
+            require(math.isclose(sum(g["kernel_ms"] for g in groups), summary["kernel_ms"],
+                                 rel_tol=1e-8, abs_tol=1e-6), "BSGS group kernel time differs")
+            metrics["actual_groups"] = sizes
+            metrics["group_costs"] = groups
     return metrics
 
 

@@ -339,7 +339,8 @@ This section records C13 acceptance. C14 subsequently adds
 
 ## C16 execution metrics
 
-Checkpoint summaries now include `metrics_version: 1`, device ordinal/UUID and
+C16 introduced version 1 execution metrics; current summaries use
+`metrics_version: 2`, device ordinal/UUID and
 checkpoint cadence, successful `verified_device_steps`, HIP event `kernel_ms`
 and `download_ms`, host `seed_ms`, executor `verification_ms` and
 `executor_wall_ms`, owner `revalidation_ms`, discarded-attempt `replay_kernel_ms`,
@@ -360,3 +361,13 @@ summary and must never contribute a throughput sample.
 
 CPU receipt tests exercise overflow costs, useful-work counts, peak allocations,
 transfer totals, BSGS target multiplicity, and completed-job retry metrics.
+
+C17 fixes mixed BSGS dispatch reporting: `bsgs_groups` contains one record per
+observed group (`group_size` 1 or 8), with `batches`, `overflow_replays`, attempted
+`device_steps`, accepted `verified_device_steps`, and `kernel_ms`. Work counts are
+hexadecimal strings. Group totals equal the summary totals, including discarded
+overflow attempts. `bsgs_group_size` is retained for compatibility and means only
+**the last dispatch**, zero when none ran. Xpoint and completed BSGS retries have
+an empty group list. Benchmark readers label the complete group set unknown for
+version 1 summaries; they cannot reconstruct it from the final group. See
+[the C17 live reproduction](baselines/C17_GROUPS.json).

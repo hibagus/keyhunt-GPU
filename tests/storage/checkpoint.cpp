@@ -101,12 +101,17 @@ int main(){
         rejects([&]{CheckpointRun::bsgs(j,bg,bs,wrong_table,verifier,[&](const auto& b){return execute(b,bs,verifier,1);},options);});
         options.target_batch=3;options.giant_steps=3;
         auto replay=CheckpointRun::bsgs(j,bg,bs,table,verifier,[&](const auto& b){
-            auto r=execute(b,bs,verifier,1);r.kernel_ms=2;r.wall_ms=3;return r;
+            auto r=execute(b,bs,verifier,1);r.kernel_ms=2;r.wall_ms=3;r.group_size=b.target_count()>1?8:1;return r;
         },options);
         require(replay.verified_device_steps==UInt256(9) && replay.device_steps==UInt256(18) &&
                 replay.computed_scalars==UInt256(9) && replay.kernel_ms==8 && replay.replay_kernel_ms==2 &&
                 replay.executor_wall_ms==12,"BSGS target-giant replay accounting");
         require(replay.overflows>0&&j.results(bscope).size()==3,"BSGS replay/deduplication");
+        require(replay.bsgs_group_size==1 && replay.bsgs_groups[0].batches==3 && replay.bsgs_groups[1].batches==1 &&
+                replay.bsgs_groups[0].device_steps==UInt256(9) && replay.bsgs_groups[0].verified_device_steps==UInt256(9) &&
+                replay.bsgs_groups[0].kernel_ms==6 && replay.bsgs_groups[1].kernel_ms==2 &&
+                replay.bsgs_groups[1].overflows==1 && replay.bsgs_groups[1].device_steps==UInt256(9) &&
+                replay.bsgs_groups[1].verified_device_steps==UInt256(),"mixed BSGS overflow metrics lost");
         j.check();
 
         // A failing verifier must not accept a result or its dependent interval.

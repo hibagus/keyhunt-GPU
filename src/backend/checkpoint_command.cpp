@@ -164,7 +164,7 @@ int checkpoint_command(int argc,char** argv){
         <<",\"device_steps\":"<<quote(summary.device_steps.hex())<<",\"match_observations\":"<<summary.match_observations
         <<",\"batches\":"<<summary.batches<<",\"overflow_replays\":"<<summary.overflows<<",\"checkpoints\":"<<summary.checkpoints
         <<",\"checkpoint_ms\":"<<summary.checkpoint_ms
-        <<",\"metrics_version\":1,\"device\":"<<device<<",\"uuid\":"<<quote(inventory.devices[device].uuid)
+        <<",\"metrics_version\":2,\"device\":"<<device<<",\"uuid\":"<<quote(inventory.devices[device].uuid)
         <<",\"mode\":"<<quote(mode==Mode::XPoint?"xpoint":"bsgs")
         <<",\"checkpoint_seconds\":"<<options.checkpoint_seconds<<",\"bsgs_group_size\":"<<summary.bsgs_group_size
         <<",\"verified_device_steps\":"<<quote(summary.verified_device_steps.hex())
@@ -175,7 +175,17 @@ int checkpoint_command(int argc,char** argv){
         <<",\"peak_device_allocation_bytes\":"<<summary.peak_device_allocation_bytes
         <<",\"peak_pinned_allocation_bytes\":"<<summary.peak_pinned_allocation_bytes
         <<",\"preparation_ms\":"<<preparation_ms<<",\"executor_setup_ms\":"<<executor_setup_ms
-        <<",\"table_upload_ms\":"<<table_upload_ms<<",\"wall_ms\":"<<elapsed()<<'}';flush();return 0;
+        <<",\"table_upload_ms\":"<<table_upload_ms<<",\"wall_ms\":"<<elapsed()
+        <<",\"bsgs_groups\":[";
+    bool comma=false;
+    for(unsigned i=0;i<summary.bsgs_groups.size();++i){
+        const auto& group=summary.bsgs_groups[i];if(!group.batches)continue;
+        std::cout<<(comma?",":"")<<"{\"group_size\":"<<(i?8:1)<<",\"batches\":"<<group.batches
+            <<",\"overflow_replays\":"<<group.overflows<<",\"device_steps\":"<<quote(group.device_steps.hex())
+            <<",\"verified_device_steps\":"<<quote(group.verified_device_steps.hex())<<",\"kernel_ms\":"<<group.kernel_ms<<'}';
+        comma=true;
+    }
+    std::cout<<"]}";flush();return 0;
 #endif
 }
 } // namespace keyhunt::backend

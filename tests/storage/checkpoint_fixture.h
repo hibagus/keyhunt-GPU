@@ -39,7 +39,7 @@ inline backend::XPointResult execute(const scheduler::KernelBatch& batch,const c
 }
 inline backend::BsgsSearchResult execute(const core::BsgsBatch& batch,const core::BsgsPublicKeyTargets& targets,
     const core::XPointVerifier& verifier,uint32_t capacity){
-    backend::BsgsSearchResult result{batch,{}};result.device_steps=batch.steps();
+    backend::BsgsSearchResult result{batch,{}};result.device_steps=batch.steps();result.group_size=1;
     for(auto scalar=batch.interval().begin();scalar<batch.interval().end();scalar=scalar.add(UInt256(1))){
         const auto pub=verifier.derive(scalar);
         for(uint32_t t=batch.first_target();t<batch.first_target()+batch.target_count();++t)

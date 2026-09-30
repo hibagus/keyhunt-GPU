@@ -238,7 +238,16 @@ CheckpointSummary CheckpointRun::bsgs(Journal& journal,const Grant& grant,const 
                     throw std::runtime_error("BSGS completion does not match submitted checkpoint work");
                 counts(result.overflow,result.verified_steps,result.device_steps,result.candidate_count,result.matches.size(),
                     batch.steps(),count,o.candidate_capacity);
+                if(result.group_size!=1 && result.group_size!=8)
+                    throw std::runtime_error("invalid BSGS dispatch group");
                 state.account(result);state.summary.bsgs_group_size=result.group_size;
+                // A target tail or replay can switch kernels within one run.
+                // Preserve all dispatch costs, not only the last group observed.
+                auto& group=state.summary.bsgs_groups[result.group_size==8];
+                ++group.batches;group.overflows+=result.overflow;
+                group.device_steps=group.device_steps.add(UInt256(result.device_steps));
+                group.verified_device_steps=group.verified_device_steps.add(UInt256(result.verified_steps));
+                group.kernel_ms+=result.kernel_ms;
                 if(result.overflow){
                     ++state.summary.overflows;if(count==1)throw std::logic_error("single-target overflow");
                     limit=uint32_t(std::min<uint64_t>(o.candidate_capacity,count/2));continue;

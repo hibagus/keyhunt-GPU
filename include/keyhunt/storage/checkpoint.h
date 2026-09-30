@@ -1,5 +1,6 @@
 #pragma once
 #include "keyhunt/storage/journal.h"
+#include <array>
 #include "keyhunt/backend/hip_xpoint.h"
 #include "keyhunt/backend/hip_bsgs.h"
 
@@ -8,10 +9,17 @@ struct CheckpointOptions {
     uint64_t xpoint_steps=1048576,giant_steps=16384;
     uint32_t target_batch=64,candidate_capacity=1024,checkpoint_seconds=10;
 };
+struct BsgsGroupMetrics {
+    uint64_t batches=0,overflows=0;
+    UInt256 device_steps,verified_device_steps;
+    double kernel_ms=0;
+};
 struct CheckpointSummary {
     UInt256 resumed_scalars,computed_scalars,device_steps,verified_device_steps;
     uint64_t match_observations=0,batches=0,overflows=0,checkpoints=0;
-    unsigned bsgs_group_size=0; // Actual dispatch; zero if no BSGS batch ran.
+    unsigned bsgs_group_size=0; // Last dispatch only; zero if no BSGS batch ran.
+    // Indices 0/1 describe groups 1/8 across every attempt, including overflow.
+    std::array<BsgsGroupMetrics,2> bsgs_groups{};
     double checkpoint_ms=0;
     // Include failed overflow attempts in cost, but never in useful work. BSGS
     // device steps count target giants; scalar coverage is credited separately.

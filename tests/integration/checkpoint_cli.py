@@ -113,6 +113,29 @@ with tempfile.TemporaryDirectory(prefix="keyhunt-c13-cli-") as temporary:
         assert recovered["overflow_replays"]==1 and recovered["batches"]<40
         verify(scope,expected)
         report["cases"].append({"case":"dense-prefix","summary":recovered})
+        # Both a target-subset tail and a short final tile switch the automatic
+        # grouping kernel. Preserve the complete dispatch history in either case.
+        inventory=json.loads(subprocess.check_output([str(binary),"devices","--backend","hip"],text=True))
+        units=inventory["devices"][0]["compute_units"]
+        mixed_cases=[]
+        if units>4:
+            # Select geometry using visible CUs so the same test also works on
+            # smaller partitions; at <=4 CUs auto grouping cannot select group 1.
+            subset_giants=1024*((units+123)//124)
+            final_targets=min(32,(units-1)//4)
+            final_giants=1024*((units+4*final_targets-1)//(4*final_targets))
+            mixed_cases=[("mixed-subsets",17*subset_giants*2-1,32,31,subset_giants),
+                         ("mixed-final-tile",17*(final_giants+1)-1,final_targets,final_targets,final_giants)]
+        for label,width,target_count,target_batch,giants in mixed_cases:
+            scope,run,expected,_=prepare("bsgs",1000,1000+width,list(range(1,target_count+1)),label)
+            mixed=call("checkpoint","run",*run,"--giant-batch",str(giants),"--target-batch",str(target_batch))[-1]
+            groups=mixed["bsgs_groups"]
+            assert mixed["metrics_version"]==2 and [g["group_size"] for g in groups]==[1,8]
+            assert mixed["bsgs_group_size"]==1 and sum(g["batches"] for g in groups)==mixed["batches"]
+            assert sum(int(g["device_steps"],16) for g in groups)==int(mixed["device_steps"],16)
+            assert sum(int(g["verified_device_steps"],16) for g in groups)==int(mixed["verified_device_steps"],16)
+            verify(scope,expected)
+            report["cases"].append({"case":label,"summary":mixed})
         for mode in ("xpoint","bsgs"):
             # The first acknowledgment is durable; kill with many batches still
             # pending, then change launch geometry and replay the exact complement.
