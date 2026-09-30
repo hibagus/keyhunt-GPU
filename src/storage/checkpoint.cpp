@@ -1,3 +1,4 @@
+#include "keyhunt/scheduler/xpoint_batch_size.h"
 #include "keyhunt/storage/checkpoint.h"
 #include "checkpoint_data.h"
 #include <algorithm>
@@ -189,12 +190,12 @@ CheckpointSummary CheckpointRun::xpoint(Journal& journal,const Grant& grant,cons
     if(grant.epoch.size()!=16)throw std::invalid_argument("invalid journal epoch");
     std::copy(grant.epoch.begin(),grant.epoch.end(),identity.assignment_id.begin());
     identity.assignment_generation=uint64_t(grant.generation);identity.executor_generation=uint64_t(state.executor);
-    uint64_t limit=o.xpoint_steps;
+    scheduler::XPointBatchSize sizing(o.xpoint_steps,o.candidate_capacity);
     for(const auto& gap:state.remaining){
         auto cursor=gap.begin();
         while(cursor<gap.end()){
             if(!state.boundary())return state.summary;
-            state.validate();const auto steps=std::min(UInt256(limit),gap.end().subtract(cursor)).to_uint64();
+            state.validate();const auto steps=std::min(UInt256(sizing.limit()),gap.end().subtract(cursor)).to_uint64();
             const auto work=scheduler::WorkUnit::plan(grid,grant.block,cursor,steps,identity);
             const auto batch=*scheduler::KernelBatch::plan(*work,cursor,steps);
             const auto result=run(batch);++state.summary.batches;
@@ -206,9 +207,9 @@ CheckpointSummary CheckpointRun::xpoint(Journal& journal,const Grant& grant,cons
             state.account(result);
             if(result.overflow){
                 ++state.summary.overflows;
-                if(steps==1)throw std::logic_error("single-step overflow");
-                limit=std::min<uint64_t>(o.candidate_capacity,steps/2);continue;
+                sizing.overflow(steps);continue;
             }
+            sizing.accepted(result.candidate_count);
             state.verified(batch.interval(),result.matches,false);
             state.summary.match_observations+=result.matches.size();state.cover(batch.interval());
             state.flush(result.matches);cursor=batch.interval().end();

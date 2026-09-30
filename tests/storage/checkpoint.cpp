@@ -46,11 +46,32 @@ int main(){
         },options);
         require(measured.overflows==1 && measured.device_steps==UInt256(12) &&
                 measured.verified_device_steps==UInt256(8) && measured.computed_scalars==UInt256(8),"xpoint replay accounting");
-        require(measured.kernel_ms==18 && measured.replay_kernel_ms==2 && measured.executor_wall_ms==36 &&
-                measured.download_ms==9 && measured.seed_ms==2.25 && measured.verification_ms==4.5 &&
-                measured.download_bytes==UInt256(576) && measured.peak_device_allocation_bytes==1024 &&
+        require(measured.batches==6 && measured.kernel_ms==12 && measured.replay_kernel_ms==2 && measured.executor_wall_ms==24 &&
+                measured.download_ms==6 && measured.seed_ms==1.5 && measured.verification_ms==3 &&
+                measured.download_bytes==UInt256(384) && measured.peak_device_allocation_bytes==1024 &&
                 measured.peak_pinned_allocation_bytes==128,"xpoint timing/transfer accounting");
         require(finished.verified_device_steps==UInt256() && finished.kernel_ms==0,"retry reported phantom GPU work");
+
+        // A dense prefix must not reduce every subsequent work unit to one
+        // scalar. Exact receipts still cover the interval once; all hits persist.
+        const auto prefix=x_targets(verifier,{100,101,102,103});
+        auto prefix_scope=CheckpointRun::create_xpoint(j,project,ScalarInterval(UInt256(100),UInt256(4196)),UInt256(4096),prefix);
+        auto prefix_grant=j.claim(prefix_scope,"worker","prefix").at(0);
+        auto recovery_options=options;recovery_options.xpoint_steps=256;
+        bool recovered_batch=false;
+        auto recovered_prefix=CheckpointRun::xpoint(j,prefix_grant,prefix,verifier,[&](const auto& b){
+            if(b.interval().begin()>=UInt256(612) && b.step_count()==256)recovered_batch=true;
+            return execute(b,prefix,verifier,1);
+        },recovery_options);
+        require(recovered_batch && recovered_prefix.batches<40 && recovered_prefix.overflows==1 &&
+                recovered_prefix.computed_scalars==UInt256(4096) && j.results(prefix_scope).size()==4,"sparse tail did not recover");
+        const auto full=x_targets(verifier,{1,2,3,4,5,6,7,8});
+        auto full_scope=CheckpointRun::create_xpoint(j,project,ScalarInterval(UInt256(1),UInt256(9)),UInt256(8),full);
+        auto full_grant=j.claim(full_scope,"worker","full").at(0);
+        recovery_options.xpoint_steps=8;
+        auto saturated=CheckpointRun::xpoint(j,full_grant,full,verifier,[&](const auto& b){return execute(b,full,verifier,1);},recovery_options);
+        require(saturated.batches==9 && saturated.overflows==1 && saturated.computed_scalars==UInt256(8) &&
+                j.results(full_scope).size()==8,"dense recovery repeatedly overflowed");
 
         // No-match batches coalesce until the timer/end boundary, avoiding a
         // FULL fsync in every short kernel loop by default.

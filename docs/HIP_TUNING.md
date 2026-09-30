@@ -152,3 +152,26 @@ The measured capacity-dependent gain, predictable allocation reduction and lack
 of material default regression justify retaining this below-threshold default
 change. Four HIP search/fault tests pass, including both `n/2` sign matches,
 capacity-one overflow, repeated 64-target subsets and guard corruption.
+
+## Accepted: recover xpoint batch size after overflow (A12)
+
+Both volatile and durable owners share a bounded policy. Overflow discards the
+attempt and reduces the limit to `min(capacity, attempted steps/2)`. Since unique
+X targets emit at most one candidate per scalar, the next attempt fits even on
+fully dense input. Successful attempts at most half full double the limit, up to
+the original configured maximum; full buffers keep their stable smaller size.
+Each success advances exact coverage, and every overflow is followed by a fitting
+attempt. Recovery is in-memory tuning, not persisted coverage or target state.
+
+The [alternating dense-prefix comparison](baselines/C17_RECOVERY.json) searches
+4,095 scalars with four initial matches, 256-scalar work units and capacity one.
+Both versions execute 4,351 attempted steps and accept exactly 4,095 useful steps,
+all four matches and one discarded overflow. Launches drop from **4,096 to 28**
+in both volatile and durable modes. Median warm-executor speedups are 25.427×
+and 28.841×; whole-process speedups are 1.350× and 1.464× because startup still
+dominates the short optimized run. These are dense-prefix-specific results.
+
+Seven focused tests pass: both xpoint CLI kernels, durable checkpoint execution,
+fault/recovery, owner controls and HIP pause. New fixtures require large batches
+to return across later work units, retain exact coverage/results, and keep fully
+dense capacity-one input at one initial overflow rather than repeated retries.

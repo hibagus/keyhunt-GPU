@@ -108,6 +108,11 @@ with tempfile.TemporaryDirectory(prefix="keyhunt-c13-cli-") as temporary:
         report["cases"].append({"case":label,"summary":summary,"finished_retry":again})
 
     if args.hip:
+        scope,run,expected,_=prepare("xpoint",100,4196,[100,101,102,103],"dense-prefix")
+        recovered=call("checkpoint","run",*run,"--batch-size","256","--candidate-capacity","1")[-1]
+        assert recovered["overflow_replays"]==1 and recovered["batches"]<40
+        verify(scope,expected)
+        report["cases"].append({"case":"dense-prefix","summary":recovered})
         for mode in ("xpoint","bsgs"):
             # The first acknowledgment is durable; kill with many batches still
             # pending, then change launch geometry and replay the exact complement.

@@ -1,5 +1,6 @@
 #include "keyhunt/backend/device.h"
 #include "keyhunt/core/xpoint_search.h"
+#include "keyhunt/scheduler/xpoint_batch_size.h"
 #ifdef KEYHUNT_HAS_HIP
 #include "keyhunt/backend/hip_xpoint.h"
 #endif
@@ -88,10 +89,11 @@ int xpoint_command(int argc, char** argv) {
     flush_record();
     auto cursor = interval.begin();
     UInt256 verified, attempts, match_count;
-    uint64_t launches = 0, overflows = 0, attempt_limit = batch_size;
+    uint64_t launches = 0, overflows = 0;
+    scheduler::XPointBatchSize sizing(batch_size,uint32_t(capacity));
     double kernel_ms = 0, download_ms = 0, verification_ms = 0, seed_ms = 0;
     while (auto work = scheduler::WorkUnit::plan(grid,UInt256(0),cursor,batch_size,identity)) {
-        while (auto batch = scheduler::KernelBatch::plan(*work,cursor,attempt_limit)) {
+        while (auto batch = scheduler::KernelBatch::plan(*work,cursor,sizing.limit())) {
             const auto ticket = executor.submit(*batch);
             executor.drain(); // only this stream; executor API also supports poll()
             const auto result = executor.take(ticket);
@@ -116,12 +118,10 @@ int xpoint_command(int argc, char** argv) {
             flush_record(); // output backpressure precedes any cursor advancement
             if (result.overflow) {
                 ++overflows;
-                if (batch->step_count() == 1) throw std::logic_error("single xpoint step cannot overflow a nonempty buffer");
-                // Unique X targets yield at most one candidate per scalar. This
-                // smaller limit therefore guarantees bounded replay terminates.
-                attempt_limit = std::min<uint64_t>(capacity,batch->step_count()/2);
+                sizing.overflow(batch->step_count());
                 continue;
             }
+            sizing.accepted(result.candidate_count);
             verified = verified.add(UInt256(result.verified_steps));
             match_count = match_count.add(UInt256(result.matches.size()));
             cursor = batch->interval().end();

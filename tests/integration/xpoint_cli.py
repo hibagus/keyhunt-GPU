@@ -72,6 +72,7 @@ def main():
                       ('single_order',N-1,1,'boundary',1,1,0),
                       ('no_match',1<<200,129,'none',128,1,0),
                       ('dense_replay',1<<128,129,'dense',129,1,0),
+                      ('dense_prefix',1<<128,2049,'prefix',256,1,0),
                       ('full_x',1<<192,9,'near',9,9,0)]
             rng=random.Random(report['seed'])
             for i in range(8):
@@ -85,6 +86,7 @@ def main():
             xs = {k:pub[2:66] for k,pub in public.items()}
             for name,begin,count,kind,batch,capacity,device in cases:
                 if kind == 'small': targets=[xs[k] for k in [begin,begin+count//2,begin+count-1]]
+                elif kind == 'prefix': targets=[xs[k] for k in range(begin,begin+4)]
                 elif kind == 'dense': targets=[xs[k] for k in range(begin,begin+count)]
                 elif kind == 'none': targets=['00'*32]
                 elif kind == 'near': targets=[f'{int(xs[begin],16)^1:064x}']
@@ -118,7 +120,10 @@ def main():
                 assert int(summary['verified_steps'],16)==count and int(summary['device_steps'],16)==executed
                 assert int(summary['matches'],16)==len(expected) and summary['launch_count']==len(records)-2
                 assert summary['overflow_replays']==overflows
-                if name in ('dense_replay','order'): assert overflows>0
+                if name in ('dense_replay','order','dense_prefix'): assert overflows>0
+                if name == 'dense_prefix':
+                    assert summary['launch_count']<40, 'overflow permanently shrank later work'
+                    assert any(r['device_steps']==batch and not r['overflow'] for r in records[1:-1]), 'large batches never recovered'
                 report['cases'].append({'name':name,'device':device,'begin':hex(begin),'count':count,
                     'targets':len(unique),'expected_matches':len(expected),'summary':summary})
             # Exercise every local-offset table bit at the maximum batch size.
