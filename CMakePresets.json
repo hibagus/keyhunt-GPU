@@ -41,6 +41,30 @@
         "KEYHUNT_ENABLE_HIP": "ON",
         "CMAKE_HIP_ARCHITECTURES": "gfx942"
       }
+    },
+    {
+      "name": "coordinator-release",
+      "inherits": "cpu-release",
+      "displayName": "Coordinator Release",
+      "cacheVariables": {
+        "KEYHUNT_ENABLE_COORDINATOR": "ON"
+      }
+    },
+    {
+      "name": "coordinator-debug",
+      "inherits": "cpu-debug",
+      "displayName": "Coordinator Debug",
+      "cacheVariables": {
+        "KEYHUNT_ENABLE_COORDINATOR": "ON"
+      }
+    },
+    {
+      "name": "coordinator-sanitizers",
+      "inherits": "cpu-sanitizers",
+      "displayName": "Coordinator Sanitizers",
+      "cacheVariables": {
+        "KEYHUNT_ENABLE_COORDINATOR": "ON"
+      }
     }
   ],
   "buildPresets": [
@@ -59,6 +83,18 @@
     {
       "name": "hip-release",
       "configurePreset": "hip-release"
+    },
+    {
+      "name": "coordinator-release",
+      "configurePreset": "coordinator-release"
+    },
+    {
+      "name": "coordinator-debug",
+      "configurePreset": "coordinator-debug"
+    },
+    {
+      "name": "coordinator-sanitizers",
+      "configurePreset": "coordinator-sanitizers"
     }
   ],
   "testPresets": [
@@ -86,6 +122,27 @@
     {
       "name": "hip-release",
       "configurePreset": "hip-release",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "coordinator-release",
+      "configurePreset": "coordinator-release",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "coordinator-debug",
+      "configurePreset": "coordinator-debug",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "coordinator-sanitizers",
+      "configurePreset": "coordinator-sanitizers",
       "output": {
         "outputOnFailure": true
       }

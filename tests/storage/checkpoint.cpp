@@ -133,7 +133,7 @@ int main(){
         sqlite3_close(raw);chmod((v1/"progress.sqlite").c_str(),0600);
         {Database migrated(v1.string());migrated.check();Statement q(migrated.handle(),"SELECT name FROM projects");require(q.step()&&q.text(0)=="v1 retained","migration lost project");}
         unsigned backups=0;for(const auto& entry:std::filesystem::directory_iterator(v1)){
-            if(entry.is_directory()&&entry.path().filename().string().rfind("pre-v2-",0)==0){
+            if(entry.is_directory()&&entry.path().filename().string().rfind("pre-v3-",0)==0){
                 ++backups;sqlite3* snapshot=nullptr;require(sqlite3_open_v2((entry.path()/"progress.sqlite").c_str(),&snapshot,SQLITE_OPEN_READONLY,nullptr)==SQLITE_OK,"backup read");
                 {Statement q(snapshot,"PRAGMA user_version");require(q.step()&&q.integer(0)==1,"migration backup was not v1");}
                 {Statement q(snapshot,"SELECT value FROM metadata WHERE key='quarantine'");require(q.step()&&q.blob(0)==Bytes{1},"migration backup not sealed");}

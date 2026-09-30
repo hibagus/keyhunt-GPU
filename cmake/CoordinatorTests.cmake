@@ -1,0 +1,6 @@
+add_executable(coordinator_registry_test tests/coordinator/registry.cpp)
+target_include_directories(coordinator_registry_test PRIVATE src/storage src/coordinator)
+target_link_libraries(coordinator_registry_test PRIVATE keyhunt_coordination)
+keyhunt_configure_target(coordinator_registry_test)
+add_test(NAME coordinator_registry COMMAND coordinator_registry_test)
+set_tests_properties(coordinator_registry PROPERTIES TIMEOUT 120 LABELS "cpu;coordinator;security")

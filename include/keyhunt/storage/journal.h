@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+namespace keyhunt::coordination { class Repository; class Worker; }
 namespace keyhunt::storage {
 using core::UInt256;
 using core::ScalarInterval;
@@ -40,7 +41,7 @@ struct BlockState {
 };
 struct StoredMatch { int64_t id; UInt256 block,scalar; uint32_t target; std::vector<uint8_t> target_bytes; };
 class CheckpointRun;
-namespace detail { struct Binding; }
+namespace detail { struct Binding; class Database; }
 struct Statistics {
     UInt256 blocks,unexplored,finished;
     uint64_t assignments=0,coverage_intervals=0,finished_runs=0,tree_nodes=0,requests=0,events=0;
@@ -79,6 +80,10 @@ public:
     static void restore(const std::string& snapshot_directory,const std::string& destination_directory);
 private:
     friend class CheckpointRun;
+    friend class coordination::Repository;
+    friend class coordination::Worker;
+    detail::Database& database() const;
+    int64_t timestamp() const;
     void bind_search(const Scope&,const detail::Binding&);
     int64_t begin_search(const Grant&);
     void validate_search(const Grant&,int64_t executor) const;

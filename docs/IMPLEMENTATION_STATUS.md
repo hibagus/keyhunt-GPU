@@ -21,7 +21,7 @@ change is committed separately. Analysis and validation evidence live under
 | C12: sparse coverage and transactional assignments | Completed | [Storage contracts, commands and measurements](STORAGE.md); private versioned SQLite, exact sparse rank selection, merged coverage, fenced ownership, concurrent/idempotent claims and quarantined backup/restore; [acceptance evidence](baselines/C12_VALIDATION.json) |
 | C13: checkpoint verified progress and replay incomplete work | Completed | [Checkpoint contracts, commands and findings](CHECKPOINTS.md); canonical input binding, atomic verified matches/coverage, fourteen process-exit faults, real HIP restart, migration/corruption gates and a corrected BSGS type collision; [acceptance evidence](baselines/C13_VALIDATION.json) |
 | C14: graceful pause, resume and inspection | Completed | [Controls, operations and measurements](PAUSE_RESUME.md); graceful signals, private local commands, bounded drain, resume fencing, online snapshots and real HIP restart across 2/1/3 visible devices; [acceptance evidence](baselines/C14_VALIDATION.json) |
-| C15: authenticated project-scoped coordination | Next | Separate S02–S06 changes for mTLS, project roles, reservations, local outbox, scheduled synchronization, fencing and restore reconciliation |
+| C15: authenticated project-scoped coordination | In progress | [S02 implementation](COORDINATOR.md); Separate S02–S06 changes for mTLS, project roles, reservations, local outbox, scheduled synchronization, fencing and restore reconciliation |
 | C16–C23 | Planned | Acceptance gates remain in the redesign plan |
 
 C01 records the original CPU boundary/stride defects. C06 fixes modular/point

@@ -67,6 +67,6 @@ public:
     ~Transaction();
     void commit();
 private:
-    Database& db_; bool active_=true;
+    Database& db_; bool active_=true;std::string savepoint_;
 };
 } // namespace keyhunt::storage::detail

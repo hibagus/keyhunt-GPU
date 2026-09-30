@@ -141,6 +141,8 @@ struct Journal::Impl {
 };
 Journal::Journal(const std::string& directory,Clock clock):impl_(std::make_unique<Impl>(directory,std::move(clock))){}
 Journal::~Journal()=default;
+detail::Database& Journal::database()const{return impl_->db;}
+int64_t Journal::timestamp()const{return impl_->now();}
 std::string Journal::create_project(const std::string& name){
     if(name.empty()||name.size()>256)throw std::invalid_argument("project name must have 1..256 printable ASCII characters");
     for(unsigned char c:name)if(c<32||c>126)throw std::invalid_argument("project name must be printable ASCII");

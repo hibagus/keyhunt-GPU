@@ -1,6 +1,7 @@
 #include "sqlite.h"
 #include "schema_v1.h"
 #include "schema_v2.h"
+#include "schema_v3.h"
 #include "keyhunt/crypto/hash/sha256.h"
 #include <algorithm>
 #include <cerrno>
@@ -137,39 +138,41 @@ Database::Database(const std::string& directory){
         {
             Transaction tx(*this);
             auto version=scalar(db_,"PRAGMA user_version");const auto app=scalar(db_,"PRAGMA application_id");
-            const Bytes schema(schema_v1,schema_v1+std::strlen(schema_v1));
-            const Bytes second(schema_v2,schema_v2+std::strlen(schema_v2));
-            if(version==0 && app==0 && scalar(db_,"SELECT count(*) FROM sqlite_schema WHERE name NOT LIKE 'sqlite_%'")==0){
-                exec(schema_v1);
-                Statement m(db_,"INSERT INTO migrations VALUES(1,?)");m.bind(1,digest(schema));m.step();
-                metadata("epoch",random_bytes(16));metadata("quarantine",Bytes{0});
-                exec("PRAGMA application_id="+std::to_string(application_id)+"; PRAGMA user_version=1;");
-                version=1;
-            }else{
-                if((version!=1 && version!=2) || app!=application_id)throw std::runtime_error("foreign or unsupported journal schema");
-                Statement m(db_,"SELECT digest FROM migrations WHERE version=1");
-                if(!m.step() || m.blob(0)!=digest(schema) || scalar(db_,"SELECT count(*) FROM migrations")!=version)
-                    throw std::runtime_error("journal migration checksum mismatch");
+            const std::vector<const char*> schemas{schema_v1,schema_v2,schema_v3};
+            const int64_t latest=int64_t(schemas.size());
+            const bool fresh=version==0 && app==0 &&
+                scalar(db_,"SELECT count(*) FROM sqlite_schema WHERE name NOT LIKE 'sqlite_%'")==0;
+            if(!fresh){
+                if(version<1 || version>latest || app!=application_id)
+                    throw std::runtime_error("foreign or unsupported journal schema");
+                if(scalar(db_,"SELECT count(*) FROM migrations")!=version)
+                    throw std::runtime_error("journal migration count mismatch");
+                for(int64_t i=1;i<=version;++i){
+                    Statement m(db_,"SELECT digest FROM migrations WHERE version=?");m.bind(1,i);
+                    const auto* schema=schemas[size_t(i-1)];
+                    if(!m.step() || m.blob(0)!=digest(Bytes(schema,schema+std::strlen(schema))))
+                        throw std::runtime_error("journal migration checksum mismatch");
+                }
                 if(metadata("epoch").size()!=16 || (metadata("quarantine")!=Bytes{0} && metadata("quarantine")!=Bytes{1}))
                     throw std::runtime_error("invalid journal metadata");
-                if(version==1){
+                if(version<latest){
                     check();
-                    // A separate reader backs up committed v1 state while this
-                    // connection holds the writer reservation against changes.
-                    const auto backup_dir=prepare((directory_/("pre-v2-"+uuid())).string());
+                    // Retain the committed source version once, before applying
+                    // any migration, while holding the writer reservation.
+                    const auto backup_dir=prepare((directory_/("pre-v"+std::to_string(latest)+"-"+uuid())).string());
                     sqlite3* reader=nullptr;
                     try{open(&reader,file,SQLITE_OPEN_READONLY);copy_snapshot(reader,backup_dir/"progress.sqlite");sqlite3_close(reader);}
                     catch(...){if(reader)sqlite3_close(reader);throw;}
                 }
             }
-            if(version==1){
-                exec(schema_v2);
-                Statement migration(db_,"INSERT INTO migrations VALUES(2,?)");migration.bind(1,digest(second));migration.step();
-                exec("PRAGMA user_version=2");
-            }else{
-                Statement migration(db_,"SELECT digest FROM migrations WHERE version=2");
-                if(!migration.step() || migration.blob(0)!=digest(second))throw std::runtime_error("journal v2 migration checksum mismatch");
+            for(int64_t i=version+1;i<=latest;++i){
+                const auto* schema=schemas[size_t(i-1)];exec(schema);
+                Statement m(db_,"INSERT INTO migrations VALUES(?,?)");
+                m.bind(1,i);m.bind(2,digest(Bytes(schema,schema+std::strlen(schema))));m.step();
+                if(i==1){metadata("epoch",random_bytes(16));metadata("quarantine",Bytes{0});}
+                exec("PRAGMA user_version="+std::to_string(i));
             }
+            exec("PRAGMA application_id="+std::to_string(application_id));
             tx.commit();
         }
         Statement mode(db_,"PRAGMA journal_mode=WAL");if(!mode.step() || mode.text(0)!="wal")throw std::runtime_error("journal requires WAL support");
@@ -190,21 +193,32 @@ void Database::restore(const std::string& source,const std::string& destination)
     sqlite3* check=nullptr;
     try {
         open(&check,file,SQLITE_OPEN_READONLY);
-        if(scalar(check,"PRAGMA application_id")!=application_id || (scalar(check,"PRAGMA user_version")!=1 && scalar(check,"PRAGMA user_version")!=2))
+        if(scalar(check,"PRAGMA application_id")!=application_id || (scalar(check,"PRAGMA user_version")<1 || scalar(check,"PRAGMA user_version")>3))
             throw std::runtime_error("restore source is not a supported journal");
         sqlite3_close(check);check=nullptr;
     }catch(...){if(check)sqlite3_close(check);throw;}
     Database snapshot(source);snapshot.check();snapshot.backup(destination);
 }
-Transaction::Transaction(Database& db,bool write):db_(db){db_.exec(write?"BEGIN IMMEDIATE":"BEGIN");}
-Transaction::~Transaction(){if(active_)try{db_.exec("ROLLBACK");}catch(...) {}}
+Transaction::Transaction(Database& db,bool write):db_(db){
+    if(sqlite3_get_autocommit(db_.handle()))db_.exec(write?"BEGIN IMMEDIATE":"BEGIN");
+    else{
+        savepoint_="kh_"+uuid();std::replace(savepoint_.begin(),savepoint_.end(),'-','_');
+        db_.exec("SAVEPOINT "+savepoint_);
+    }
+}
+Transaction::~Transaction(){
+    if(active_)try{
+        if(savepoint_.empty())db_.exec("ROLLBACK");
+        else{db_.exec("ROLLBACK TO "+savepoint_);db_.exec("RELEASE "+savepoint_);}
+    }catch(...) {}
+}
 void Transaction::commit(){
 #ifdef KEYHUNT_TEST_STORAGE_FAILURES
-    if(transaction_test_hook)transaction_test_hook("before_commit");
+    if(savepoint_.empty() && transaction_test_hook)transaction_test_hook("before_commit");
 #endif
-    db_.exec("COMMIT");active_=false;
+    db_.exec(savepoint_.empty()?"COMMIT":"RELEASE "+savepoint_);active_=false;
 #ifdef KEYHUNT_TEST_STORAGE_FAILURES
-    if(transaction_test_hook)transaction_test_hook("after_commit");
+    if(savepoint_.empty() && transaction_test_hook)transaction_test_hook("after_commit");
 #endif
 }
 } // namespace keyhunt::storage::detail

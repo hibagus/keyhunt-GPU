@@ -19,6 +19,11 @@ int main(){
   {Transaction tx(db);db.exec("INSERT INTO projects VALUES('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa','rollback')");}
   {Statement s(db.handle(),"SELECT count(*) FROM projects");require(s.step()&&s.integer(0)==0,"rollback");}
   {Transaction tx(db);db.exec("INSERT INTO projects VALUES('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa','retained')");tx.commit();}
+  // Releasing an inner savepoint does not survive outer rollback.
+  {Transaction outer(db);{Transaction inner(db);db.exec("INSERT INTO projects VALUES('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb','nested')");inner.commit();}}
+  {Statement s(db.handle(),"SELECT count(*) FROM projects");require(s.step()&&s.integer(0)==1,"inner transaction escaped rollback");}
+  {Transaction outer(db);{Transaction inner(db);db.exec("DELETE FROM projects");}outer.commit();}
+  {Statement s(db.handle(),"SELECT count(*) FROM projects");require(s.step()&&s.integer(0)==1,"savepoint rollback lost prior rows");}
   db.backup((root/"backup").string());rejects([&]{db.backup((root/"backup").string());});
   sqlite3* raw=nullptr;require(sqlite3_open_v2((root/"backup/progress.sqlite").c_str(),&raw,SQLITE_OPEN_READONLY,nullptr)==SQLITE_OK,"open snapshot");
   {Statement mode(raw,"PRAGMA journal_mode");require(mode.step()&&mode.text(0)=="delete","snapshot needs WAL");}sqlite3_close(raw);
@@ -27,7 +32,7 @@ int main(){
   Database restored((root/"restored").string());restored.check();rejects([&]{restored.writable();});
   {Statement s(restored.handle(),"SELECT name FROM projects");require(s.step()&&s.text(0)=="retained","snapshot missing commit");}
   require(restored.metadata("epoch")!=backup.metadata("epoch"),"restore epoch");
-  {Database future((root/"future").string());future.exec("PRAGMA user_version=3");}rejects([&]{Database future((root/"future").string());});
+  {Database future((root/"future").string());future.exec("PRAGMA user_version=99");}rejects([&]{Database future((root/"future").string());});
   {Database bad((root/"bad").string());bad.exec("UPDATE migrations SET digest=zeroblob(32)");}rejects([&]{Database bad((root/"bad").string());});
   struct stat st{};stat((root/"live/progress.sqlite").c_str(),&st);require((st.st_mode&0777)==0600,"database mode");
   std::cout<<"Storage schema, private paths, transactions and quarantined backup/restore passed (SQLite "<<sqlite3_libversion()<<")\n";
