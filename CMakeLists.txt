@@ -97,6 +97,17 @@ target_include_directories(keyhunt_core PRIVATE kernels)
 target_link_libraries(keyhunt_core PUBLIC keyhunt_cpu_crypto keyhunt_ranges)
 keyhunt_configure_target(keyhunt_core)
 
+# Local durable state is CPU-only and independent of either GPU SDK. Require
+# the upstream WAL-reset fix for concurrent writers/checkpointers.
+find_package(SQLite3 3.51.3 REQUIRED)
+file(READ "${CMAKE_CURRENT_SOURCE_DIR}/src/storage/schema_v1.sql" KEYHUNT_SCHEMA_V1)
+configure_file(src/storage/schema_v1.h.in generated/schema_v1.h @ONLY)
+add_library(keyhunt_storage STATIC src/storage/sqlite.cpp)
+target_include_directories(keyhunt_storage PUBLIC include PRIVATE src/storage "${CMAKE_CURRENT_BINARY_DIR}/generated")
+target_compile_definitions(keyhunt_storage PRIVATE KEYHUNT_SOURCE_ROOT="${CMAKE_CURRENT_SOURCE_DIR}")
+target_link_libraries(keyhunt_storage PUBLIC keyhunt_core SQLite::SQLite3)
+keyhunt_configure_target(keyhunt_storage)
+
 # These targets deliberately do not use the legacy CPU compiler-options helper.
 # HIP language compilation receives no x86 SIMD, native tuning, LTO or fast-math.
 if(KEYHUNT_ENABLE_HIP)
@@ -158,6 +169,7 @@ if(BUILD_TESTING)
     include(cmake/XPointTests.cmake)
     include(cmake/BsgsTableTests.cmake)
     include(cmake/BsgsSearchTests.cmake)
+    include(cmake/StorageTests.cmake)
     # This discovery contract test uses a private, minimal API double. It needs
     # no GPU SDK; actual HIP compilation and hardware tests remain separate.
     add_executable(hip_discovery_test tests/unit/hip_discovery.cpp)

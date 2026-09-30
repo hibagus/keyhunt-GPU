@@ -1,0 +1,6 @@
+add_executable(storage_database_test tests/storage/database.cpp)
+target_include_directories(storage_database_test PRIVATE src/storage)
+target_link_libraries(storage_database_test PRIVATE keyhunt_storage)
+keyhunt_configure_target(storage_database_test)
+add_test(NAME storage_database COMMAND storage_database_test)
+set_tests_properties(storage_database PROPERTIES TIMEOUT 60 LABELS "cpu;storage")
