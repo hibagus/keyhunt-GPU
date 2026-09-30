@@ -1,0 +1,773 @@
+{
+  "recorded_utc": "2026-09-30T04:19:11.284544+00:00",
+  "base_commit": "e27a91804de4662ac37cf12831156b13ba75cea3",
+  "source_sha256": {
+    "include/keyhunt/core/bsgs_layout.h": "616e52cf1ec632dc330b3d4268751217e731f03e13a285ca91ec28649aabd8d0",
+    "include/keyhunt/core/bsgs_table.h": "4d6fd8351f3118dd27d1064b2335b32629cbe4fdbc77e5ee09c3b7065ab72289",
+    "src/core/bsgs_table.cpp": "2d5922a0eda9a9fa07ad7100eee738488d64f1b3995bae4caeac11995701e36b",
+    "src/backend/bsgs_table_command.cpp": "cc797bfdc88b46e09cdf91517853fba269950fe2a056b52a73e39028c7e619f9",
+    "tests/unit/bsgs_table.cpp": "4cbc7b28323a16d2ee4ff1d222827f9d863ea9c03e7d29a62c4ccb995b23903d",
+    "tests/integration/bsgs_table.py": "0793e194973fc4c5602888ac52e84c5b0173d313cbe1b4f63e25bdb3c0453cc7",
+    "cmake/BsgsTableTests.cmake": "96646d24faf4adedcff7fbadd24deac65b978b75d80c2ec9a16a7fa4a22b8fdb"
+  },
+  "cpu_release": {
+    "oracle_commit": "0cdc758a56360bf58a851fe91085a327ec97685a",
+    "tables": [
+      {
+        "m": 1,
+        "bits": 8,
+        "checksum": "85f234946bdbec9f5a352a98c25ce49d74fa3120e0a48c2ab5596b4c899bfaeb",
+        "entries_checked": 1,
+        "metadata": {
+          "format_version": 1,
+          "curve": "secp256k1",
+          "mapping": "jG:0<=j<m",
+          "m": 1,
+          "buckets": 1,
+          "bloom_words": 1,
+          "bits_per_entry": 8,
+          "resident_bytes": 72,
+          "host_peak_bytes": 1049081,
+          "file_bytes": 232,
+          "checksum": "85f234946bdbec9f5a352a98c25ce49d74fa3120e0a48c2ab5596b4c899bfaeb",
+          "search_coverage": false,
+          "wall_ms": 31.4198
+        }
+      },
+      {
+        "m": 2,
+        "bits": 16,
+        "checksum": "04c14d426c0b3d442c0733f26f6d51d81f4075eea60cbcb2c3f215fab5092c73",
+        "entries_checked": 2,
+        "metadata": {
+          "format_version": 1,
+          "curve": "secp256k1",
+          "mapping": "jG:0<=j<m",
+          "m": 2,
+          "buckets": 1,
+          "bloom_words": 1,
+          "bits_per_entry": 16,
+          "resident_bytes": 120,
+          "host_peak_bytes": 1049177,
+          "file_bytes": 280,
+          "checksum": "04c14d426c0b3d442c0733f26f6d51d81f4075eea60cbcb2c3f215fab5092c73",
+          "search_coverage": false,
+          "wall_ms": 31.184
+        }
+      },
+      {
+        "m": 7,
+        "bits": 32,
+        "checksum": "a2cb00b24061fc0367b9ba8ae4cbccc327658056ab8260bca3e5250cbdbaa4be",
+        "entries_checked": 7,
+        "metadata": {
+          "format_version": 1,
+          "curve": "secp256k1",
+          "mapping": "jG:0<=j<m",
+          "m": 7,
+          "buckets": 1,
+          "bloom_words": 4,
+          "bits_per_entry": 32,
+          "resident_bytes": 384,
+          "host_peak_bytes": 1049705,
+          "file_bytes": 544,
+          "checksum": "a2cb00b24061fc0367b9ba8ae4cbccc327658056ab8260bca3e5250cbdbaa4be",
+          "search_coverage": false,
+          "wall_ms": 31.0869
+        }
+      },
+      {
+        "m": 8,
+        "bits": 8,
+        "checksum": "2cae1e09052c6eab0f06f2276dde99e95e7ac0c253bbe7fa4638dfd7a4967584",
+        "entries_checked": 8,
+        "metadata": {
+          "format_version": 1,
+          "curve": "secp256k1",
+          "mapping": "jG:0<=j<m",
+          "m": 8,
+          "buckets": 1,
+          "bloom_words": 1,
+          "bits_per_entry": 8,
+          "resident_bytes": 408,
+          "host_peak_bytes": 1049753,
+          "file_bytes": 568,
+          "checksum": "2cae1e09052c6eab0f06f2276dde99e95e7ac0c253bbe7fa4638dfd7a4967584",
+          "search_coverage": false,
+          "wall_ms": 31.177
+        }
+      },
+      {
+        "m": 9,
+        "bits": 16,
+        "checksum": "4d879d46089985e588fe9dd7401bce09cc24e112919c3a941ac935243ee74899",
+        "entries_checked": 9,
+        "metadata": {
+          "format_version": 1,
+          "curve": "secp256k1",
+          "mapping": "jG:0<=j<m",
+          "m": 9,
+          "buckets": 2,
+          "bloom_words": 4,
+          "bits_per_entry": 16,
+          "resident_bytes": 488,
+          "host_peak_bytes": 1049914,
+          "file_bytes": 648,
+          "checksum": "4d879d46089985e588fe9dd7401bce09cc24e112919c3a941ac935243ee74899",
+          "search_coverage": false,
+          "wall_ms": 31.0903
+        }
+      },
+      {
+        "m": 127,
+        "bits": 8,
+        "checksum": "41c3c95123ce5ce7ea69282d7116fa43a334c59c7a4bf35980d08d96d6549306",
+        "entries_checked": 127,
+        "metadata": {
+          "format_version": 1,
+          "curve": "secp256k1",
+          "mapping": "jG:0<=j<m",
+          "m": 127,
+          "buckets": 16,
+          "bloom_words": 16,
+          "bits_per_entry": 8,
+          "resident_bytes": 6360,
+          "host_peak_bytes": 1061672,
+          "file_bytes": 6520,
+          "checksum": "41c3c95123ce5ce7ea69282d7116fa43a334c59c7a4bf35980d08d96d6549306",
+          "search_coverage": false,
+          "wall_ms": 31.5733
+        }
+      },
+      {
+        "m": 128,
+        "bits": 16,
+        "checksum": "80f046335185a1934ff71259773eda407d5e572658e51c2cc92bb29e4fd10891",
+        "entries_checked": 128,
+        "metadata": {
+          "format_version": 1,
+          "curve": "secp256k1",
+          "mapping": "jG:0<=j<m",
+          "m": 128,
+          "buckets": 16,
+          "bloom_words": 32,
+          "bits_per_entry": 16,
+          "resident_bytes": 6536,
+          "host_peak_bytes": 1062024,
+          "file_bytes": 6696,
+          "checksum": "80f046335185a1934ff71259773eda407d5e572658e51c2cc92bb29e4fd10891",
+          "search_coverage": false,
+          "wall_ms": 31.7223
+        }
+      },
+      {
+        "m": 129,
+        "bits": 32,
+        "checksum": "5259b32dcb07f98c6c72907bf28a1c550e440c52bb80f827836bc6e86c04f2bf",
+        "entries_checked": 129,
+        "metadata": {
+          "format_version": 1,
+          "curve": "secp256k1",
+          "mapping": "jG:0<=j<m",
+          "m": 129,
+          "buckets": 32,
+          "bloom_words": 128,
+          "bits_per_entry": 32,
+          "resident_bytes": 7480,
+          "host_peak_bytes": 1063913,
+          "file_bytes": 7640,
+          "checksum": "5259b32dcb07f98c6c72907bf28a1c550e440c52bb80f827836bc6e86c04f2bf",
+          "search_coverage": false,
+          "wall_ms": 31.3862
+        }
+      },
+      {
+        "m": 257,
+        "bits": 16,
+        "checksum": "12af8158df481f3d0ae6d95f4192c71897fafd9cf7ba8e112aca8bd2d04c90d5",
+        "entries_checked": 257,
+        "metadata": {
+          "format_version": 1,
+          "curve": "secp256k1",
+          "mapping": "jG:0<=j<m",
+          "m": 257,
+          "buckets": 64,
+          "bloom_words": 128,
+          "bits_per_entry": 16,
+          "resident_bytes": 13880,
+          "host_peak_bytes": 1076729,
+          "file_bytes": 14040,
+          "checksum": "12af8158df481f3d0ae6d95f4192c71897fafd9cf7ba8e112aca8bd2d04c90d5",
+          "search_coverage": false,
+          "wall_ms": 31.6348
+        }
+      },
+      {
+        "m": 4097,
+        "bits": 16,
+        "checksum": "3927725097cc508a786accce768579fde60b1258c1d099aeb65938a48d400056",
+        "entries_checked": 4097,
+        "metadata": {
+          "format_version": 1,
+          "curve": "secp256k1",
+          "mapping": "jG:0<=j<m",
+          "m": 4097,
+          "buckets": 1024,
+          "bloom_words": 2048,
+          "bits_per_entry": 16,
+          "resident_bytes": 221240,
+          "host_peak_bytes": 1491929,
+          "file_bytes": 221400,
+          "checksum": "3927725097cc508a786accce768579fde60b1258c1d099aeb65938a48d400056",
+          "search_coverage": false,
+          "wall_ms": 53.8812
+        }
+      }
+    ],
+    "rejections": [
+      {
+        "name": "legacy",
+        "error": "keyhunt: not a versioned BSGS table; rebuild legacy .blm/.tbl caches explicitly"
+      },
+      {
+        "name": "truncated_header",
+        "error": "keyhunt: not a versioned BSGS table; rebuild legacy .blm/.tbl caches explicitly"
+      },
+      {
+        "name": "truncated_payload",
+        "error": "keyhunt: BSGS truncated table or trailing bytes"
+      },
+      {
+        "name": "trailing_data",
+        "error": "keyhunt: BSGS truncated table or trailing bytes"
+      },
+      {
+        "name": "checksum",
+        "error": "keyhunt: BSGS checksum mismatch"
+      },
+      {
+        "name": "host_budget",
+        "error": "keyhunt: BSGS table exceeds the host memory budget"
+      },
+      {
+        "name": "header_8",
+        "error": "keyhunt: unsupported BSGS format/curve/mapping/hash version"
+      },
+      {
+        "name": "header_12",
+        "error": "keyhunt: unsupported BSGS header/entry/filter format"
+      },
+      {
+        "name": "header_16",
+        "error": "keyhunt: unsupported BSGS format/curve/mapping/hash version"
+      },
+      {
+        "name": "header_20",
+        "error": "keyhunt: unsupported BSGS format/curve/mapping/hash version"
+      },
+      {
+        "name": "header_24",
+        "error": "keyhunt: unsupported BSGS format/curve/mapping/hash version"
+      },
+      {
+        "name": "header_28",
+        "error": "keyhunt: unsupported BSGS format/curve/mapping/hash version"
+      },
+      {
+        "name": "header_32",
+        "error": "keyhunt: unsupported BSGS format/curve/mapping/hash version"
+      },
+      {
+        "name": "header_36",
+        "error": "keyhunt: unsupported BSGS header/entry/filter format"
+      },
+      {
+        "name": "header_40",
+        "error": "keyhunt: BSGS inconsistent section sizes"
+      },
+      {
+        "name": "header_48",
+        "error": "keyhunt: BSGS inconsistent section sizes"
+      },
+      {
+        "name": "header_56",
+        "error": "keyhunt: BSGS inconsistent section sizes"
+      },
+      {
+        "name": "header_64",
+        "error": "keyhunt: BSGS bits per entry must be 8, 16 or 32"
+      },
+      {
+        "name": "header_68",
+        "error": "keyhunt: unsupported BSGS header/entry/filter format"
+      },
+      {
+        "name": "header_72",
+        "error": "keyhunt: BSGS inconsistent section sizes"
+      },
+      {
+        "name": "header_80",
+        "error": "keyhunt: BSGS inconsistent section sizes"
+      },
+      {
+        "name": "header_88",
+        "error": "keyhunt: BSGS inconsistent section sizes"
+      },
+      {
+        "name": "header_96",
+        "error": "keyhunt: BSGS inconsistent section sizes"
+      },
+      {
+        "name": "header_104",
+        "error": "keyhunt: BSGS reserved header bytes are nonzero"
+      },
+      {
+        "name": "bucket_endpoint",
+        "error": "keyhunt: BSGS invalid bucket endpoints"
+      },
+      {
+        "name": "point",
+        "error": "keyhunt: BSGS invalid bucket or baby index"
+      },
+      {
+        "name": "reserved_entry",
+        "error": "keyhunt: BSGS reserved entry bytes are nonzero"
+      },
+      {
+        "name": "index",
+        "error": "keyhunt: BSGS baby point does not equal jG"
+      },
+      {
+        "name": "permuted_jG_mapping",
+        "error": "keyhunt: BSGS baby point does not equal jG"
+      },
+      {
+        "name": "filter_false_negative",
+        "error": "keyhunt: BSGS Bloom filter has a false negative"
+      },
+      {
+        "name": "overflowing_m",
+        "error": "keyhunt: BSGS size addition overflow"
+      },
+      {
+        "name": "arguments",
+        "error": "keyhunt: usage: keyhunt bsgs-table build --m N --output FILE [--bits-per-entry 8|16|32] [--host-memory BYTES] OR bsgs-table inspect --input FILE [--host-memory BYTES]"
+      },
+      {
+        "name": "arguments",
+        "error": "keyhunt: usage: keyhunt bsgs-table build --m N --output FILE [--bits-per-entry 8|16|32] [--host-memory BYTES] OR bsgs-table inspect --input FILE [--host-memory BYTES]"
+      },
+      {
+        "name": "arguments",
+        "error": "keyhunt: usage: keyhunt bsgs-table build --m N --output FILE [--bits-per-entry 8|16|32] [--host-memory BYTES] OR bsgs-table inspect --input FILE [--host-memory BYTES]"
+      },
+      {
+        "name": "arguments",
+        "error": "keyhunt: BSGS m must be positive"
+      },
+      {
+        "name": "arguments",
+        "error": "keyhunt: expected an unsigned decimal integer: -1"
+      },
+      {
+        "name": "arguments",
+        "error": "keyhunt: expected an unsigned decimal integer: 18446744073709551616"
+      },
+      {
+        "name": "arguments",
+        "error": "keyhunt: BSGS bits per entry must be 8, 16 or 32"
+      },
+      {
+        "name": "arguments",
+        "error": "keyhunt: duplicate BSGS option"
+      },
+      {
+        "name": "arguments",
+        "error": "keyhunt: usage: keyhunt bsgs-table build --m N --output FILE [--bits-per-entry 8|16|32] [--host-memory BYTES] OR bsgs-table inspect --input FILE [--host-memory BYTES]"
+      }
+    ],
+    "binary_sha256": "4376fdad95fc2f4c313c644e2ef50dbc23c410a17a6cbe2e03c30dadf8594a5b"
+  },
+  "cpu_sanitizers": {
+    "oracle_commit": "0cdc758a56360bf58a851fe91085a327ec97685a",
+    "tables": [
+      {
+        "m": 1,
+        "bits": 8,
+        "checksum": "85f234946bdbec9f5a352a98c25ce49d74fa3120e0a48c2ab5596b4c899bfaeb",
+        "entries_checked": 1,
+        "metadata": {
+          "format_version": 1,
+          "curve": "secp256k1",
+          "mapping": "jG:0<=j<m",
+          "m": 1,
+          "buckets": 1,
+          "bloom_words": 1,
+          "bits_per_entry": 8,
+          "resident_bytes": 72,
+          "host_peak_bytes": 1049081,
+          "file_bytes": 232,
+          "checksum": "85f234946bdbec9f5a352a98c25ce49d74fa3120e0a48c2ab5596b4c899bfaeb",
+          "search_coverage": false,
+          "wall_ms": 133.77
+        }
+      },
+      {
+        "m": 2,
+        "bits": 16,
+        "checksum": "04c14d426c0b3d442c0733f26f6d51d81f4075eea60cbcb2c3f215fab5092c73",
+        "entries_checked": 2,
+        "metadata": {
+          "format_version": 1,
+          "curve": "secp256k1",
+          "mapping": "jG:0<=j<m",
+          "m": 2,
+          "buckets": 1,
+          "bloom_words": 1,
+          "bits_per_entry": 16,
+          "resident_bytes": 120,
+          "host_peak_bytes": 1049177,
+          "file_bytes": 280,
+          "checksum": "04c14d426c0b3d442c0733f26f6d51d81f4075eea60cbcb2c3f215fab5092c73",
+          "search_coverage": false,
+          "wall_ms": 133.736
+        }
+      },
+      {
+        "m": 7,
+        "bits": 32,
+        "checksum": "a2cb00b24061fc0367b9ba8ae4cbccc327658056ab8260bca3e5250cbdbaa4be",
+        "entries_checked": 7,
+        "metadata": {
+          "format_version": 1,
+          "curve": "secp256k1",
+          "mapping": "jG:0<=j<m",
+          "m": 7,
+          "buckets": 1,
+          "bloom_words": 4,
+          "bits_per_entry": 32,
+          "resident_bytes": 384,
+          "host_peak_bytes": 1049705,
+          "file_bytes": 544,
+          "checksum": "a2cb00b24061fc0367b9ba8ae4cbccc327658056ab8260bca3e5250cbdbaa4be",
+          "search_coverage": false,
+          "wall_ms": 132.702
+        }
+      },
+      {
+        "m": 8,
+        "bits": 8,
+        "checksum": "2cae1e09052c6eab0f06f2276dde99e95e7ac0c253bbe7fa4638dfd7a4967584",
+        "entries_checked": 8,
+        "metadata": {
+          "format_version": 1,
+          "curve": "secp256k1",
+          "mapping": "jG:0<=j<m",
+          "m": 8,
+          "buckets": 1,
+          "bloom_words": 1,
+          "bits_per_entry": 8,
+          "resident_bytes": 408,
+          "host_peak_bytes": 1049753,
+          "file_bytes": 568,
+          "checksum": "2cae1e09052c6eab0f06f2276dde99e95e7ac0c253bbe7fa4638dfd7a4967584",
+          "search_coverage": false,
+          "wall_ms": 132.563
+        }
+      },
+      {
+        "m": 9,
+        "bits": 16,
+        "checksum": "4d879d46089985e588fe9dd7401bce09cc24e112919c3a941ac935243ee74899",
+        "entries_checked": 9,
+        "metadata": {
+          "format_version": 1,
+          "curve": "secp256k1",
+          "mapping": "jG:0<=j<m",
+          "m": 9,
+          "buckets": 2,
+          "bloom_words": 4,
+          "bits_per_entry": 16,
+          "resident_bytes": 488,
+          "host_peak_bytes": 1049914,
+          "file_bytes": 648,
+          "checksum": "4d879d46089985e588fe9dd7401bce09cc24e112919c3a941ac935243ee74899",
+          "search_coverage": false,
+          "wall_ms": 134.177
+        }
+      },
+      {
+        "m": 127,
+        "bits": 8,
+        "checksum": "41c3c95123ce5ce7ea69282d7116fa43a334c59c7a4bf35980d08d96d6549306",
+        "entries_checked": 127,
+        "metadata": {
+          "format_version": 1,
+          "curve": "secp256k1",
+          "mapping": "jG:0<=j<m",
+          "m": 127,
+          "buckets": 16,
+          "bloom_words": 16,
+          "bits_per_entry": 8,
+          "resident_bytes": 6360,
+          "host_peak_bytes": 1061672,
+          "file_bytes": 6520,
+          "checksum": "41c3c95123ce5ce7ea69282d7116fa43a334c59c7a4bf35980d08d96d6549306",
+          "search_coverage": false,
+          "wall_ms": 134.845
+        }
+      },
+      {
+        "m": 128,
+        "bits": 16,
+        "checksum": "80f046335185a1934ff71259773eda407d5e572658e51c2cc92bb29e4fd10891",
+        "entries_checked": 128,
+        "metadata": {
+          "format_version": 1,
+          "curve": "secp256k1",
+          "mapping": "jG:0<=j<m",
+          "m": 128,
+          "buckets": 16,
+          "bloom_words": 32,
+          "bits_per_entry": 16,
+          "resident_bytes": 6536,
+          "host_peak_bytes": 1062024,
+          "file_bytes": 6696,
+          "checksum": "80f046335185a1934ff71259773eda407d5e572658e51c2cc92bb29e4fd10891",
+          "search_coverage": false,
+          "wall_ms": 134.713
+        }
+      },
+      {
+        "m": 129,
+        "bits": 32,
+        "checksum": "5259b32dcb07f98c6c72907bf28a1c550e440c52bb80f827836bc6e86c04f2bf",
+        "entries_checked": 129,
+        "metadata": {
+          "format_version": 1,
+          "curve": "secp256k1",
+          "mapping": "jG:0<=j<m",
+          "m": 129,
+          "buckets": 32,
+          "bloom_words": 128,
+          "bits_per_entry": 32,
+          "resident_bytes": 7480,
+          "host_peak_bytes": 1063913,
+          "file_bytes": 7640,
+          "checksum": "5259b32dcb07f98c6c72907bf28a1c550e440c52bb80f827836bc6e86c04f2bf",
+          "search_coverage": false,
+          "wall_ms": 134.243
+        }
+      },
+      {
+        "m": 257,
+        "bits": 16,
+        "checksum": "12af8158df481f3d0ae6d95f4192c71897fafd9cf7ba8e112aca8bd2d04c90d5",
+        "entries_checked": 257,
+        "metadata": {
+          "format_version": 1,
+          "curve": "secp256k1",
+          "mapping": "jG:0<=j<m",
+          "m": 257,
+          "buckets": 64,
+          "bloom_words": 128,
+          "bits_per_entry": 16,
+          "resident_bytes": 13880,
+          "host_peak_bytes": 1076729,
+          "file_bytes": 14040,
+          "checksum": "12af8158df481f3d0ae6d95f4192c71897fafd9cf7ba8e112aca8bd2d04c90d5",
+          "search_coverage": false,
+          "wall_ms": 139.045
+        }
+      },
+      {
+        "m": 4097,
+        "bits": 16,
+        "checksum": "3927725097cc508a786accce768579fde60b1258c1d099aeb65938a48d400056",
+        "entries_checked": 4097,
+        "metadata": {
+          "format_version": 1,
+          "curve": "secp256k1",
+          "mapping": "jG:0<=j<m",
+          "m": 4097,
+          "buckets": 1024,
+          "bloom_words": 2048,
+          "bits_per_entry": 16,
+          "resident_bytes": 221240,
+          "host_peak_bytes": 1491929,
+          "file_bytes": 221400,
+          "checksum": "3927725097cc508a786accce768579fde60b1258c1d099aeb65938a48d400056",
+          "search_coverage": false,
+          "wall_ms": 249.777
+        }
+      }
+    ],
+    "rejections": [
+      {
+        "name": "legacy",
+        "error": "keyhunt: not a versioned BSGS table; rebuild legacy .blm/.tbl caches explicitly"
+      },
+      {
+        "name": "truncated_header",
+        "error": "keyhunt: not a versioned BSGS table; rebuild legacy .blm/.tbl caches explicitly"
+      },
+      {
+        "name": "truncated_payload",
+        "error": "keyhunt: BSGS truncated table or trailing bytes"
+      },
+      {
+        "name": "trailing_data",
+        "error": "keyhunt: BSGS truncated table or trailing bytes"
+      },
+      {
+        "name": "checksum",
+        "error": "keyhunt: BSGS checksum mismatch"
+      },
+      {
+        "name": "host_budget",
+        "error": "keyhunt: BSGS table exceeds the host memory budget"
+      },
+      {
+        "name": "header_8",
+        "error": "keyhunt: unsupported BSGS format/curve/mapping/hash version"
+      },
+      {
+        "name": "header_12",
+        "error": "keyhunt: unsupported BSGS header/entry/filter format"
+      },
+      {
+        "name": "header_16",
+        "error": "keyhunt: unsupported BSGS format/curve/mapping/hash version"
+      },
+      {
+        "name": "header_20",
+        "error": "keyhunt: unsupported BSGS format/curve/mapping/hash version"
+      },
+      {
+        "name": "header_24",
+        "error": "keyhunt: unsupported BSGS format/curve/mapping/hash version"
+      },
+      {
+        "name": "header_28",
+        "error": "keyhunt: unsupported BSGS format/curve/mapping/hash version"
+      },
+      {
+        "name": "header_32",
+        "error": "keyhunt: unsupported BSGS format/curve/mapping/hash version"
+      },
+      {
+        "name": "header_36",
+        "error": "keyhunt: unsupported BSGS header/entry/filter format"
+      },
+      {
+        "name": "header_40",
+        "error": "keyhunt: BSGS inconsistent section sizes"
+      },
+      {
+        "name": "header_48",
+        "error": "keyhunt: BSGS inconsistent section sizes"
+      },
+      {
+        "name": "header_56",
+        "error": "keyhunt: BSGS inconsistent section sizes"
+      },
+      {
+        "name": "header_64",
+        "error": "keyhunt: BSGS bits per entry must be 8, 16 or 32"
+      },
+      {
+        "name": "header_68",
+        "error": "keyhunt: unsupported BSGS header/entry/filter format"
+      },
+      {
+        "name": "header_72",
+        "error": "keyhunt: BSGS inconsistent section sizes"
+      },
+      {
+        "name": "header_80",
+        "error": "keyhunt: BSGS inconsistent section sizes"
+      },
+      {
+        "name": "header_88",
+        "error": "keyhunt: BSGS inconsistent section sizes"
+      },
+      {
+        "name": "header_96",
+        "error": "keyhunt: BSGS inconsistent section sizes"
+      },
+      {
+        "name": "header_104",
+        "error": "keyhunt: BSGS reserved header bytes are nonzero"
+      },
+      {
+        "name": "bucket_endpoint",
+        "error": "keyhunt: BSGS invalid bucket endpoints"
+      },
+      {
+        "name": "point",
+        "error": "keyhunt: BSGS invalid bucket or baby index"
+      },
+      {
+        "name": "reserved_entry",
+        "error": "keyhunt: BSGS reserved entry bytes are nonzero"
+      },
+      {
+        "name": "index",
+        "error": "keyhunt: BSGS baby point does not equal jG"
+      },
+      {
+        "name": "permuted_jG_mapping",
+        "error": "keyhunt: BSGS baby point does not equal jG"
+      },
+      {
+        "name": "filter_false_negative",
+        "error": "keyhunt: BSGS Bloom filter has a false negative"
+      },
+      {
+        "name": "overflowing_m",
+        "error": "keyhunt: BSGS size addition overflow"
+      },
+      {
+        "name": "arguments",
+        "error": "keyhunt: usage: keyhunt bsgs-table build --m N --output FILE [--bits-per-entry 8|16|32] [--host-memory BYTES] OR bsgs-table inspect --input FILE [--host-memory BYTES]"
+      },
+      {
+        "name": "arguments",
+        "error": "keyhunt: usage: keyhunt bsgs-table build --m N --output FILE [--bits-per-entry 8|16|32] [--host-memory BYTES] OR bsgs-table inspect --input FILE [--host-memory BYTES]"
+      },
+      {
+        "name": "arguments",
+        "error": "keyhunt: usage: keyhunt bsgs-table build --m N --output FILE [--bits-per-entry 8|16|32] [--host-memory BYTES] OR bsgs-table inspect --input FILE [--host-memory BYTES]"
+      },
+      {
+        "name": "arguments",
+        "error": "keyhunt: BSGS m must be positive"
+      },
+      {
+        "name": "arguments",
+        "error": "keyhunt: expected an unsigned decimal integer: -1"
+      },
+      {
+        "name": "arguments",
+        "error": "keyhunt: expected an unsigned decimal integer: 18446744073709551616"
+      },
+      {
+        "name": "arguments",
+        "error": "keyhunt: BSGS bits per entry must be 8, 16 or 32"
+      },
+      {
+        "name": "arguments",
+        "error": "keyhunt: duplicate BSGS option"
+      },
+      {
+        "name": "arguments",
+        "error": "keyhunt: usage: keyhunt bsgs-table build --m N --output FILE [--bits-per-entry 8|16|32] [--host-memory BYTES] OR bsgs-table inspect --input FILE [--host-memory BYTES]"
+      }
+    ],
+    "binary_sha256": "01da577832fb2fa06fffe6aa5395fa62932c3514d1fa8768d0b69ae1556581b5"
+  },
+  "tests": {
+    "/tmp/c10-host-tests-final.log": "Test project /home/bagus/keyhunt-GPU/build/cpu-release\n    Start  9: bsgs_table_contract\n1/2 Test  #9: bsgs_table_contract ..............   Passed    0.31 sec\n    Start 10: bsgs_table_oracle\n2/2 Test #10: bsgs_table_oracle ................   Passed    1.59 sec\n\n100% tests passed, 0 tests failed out of 2\n\nLabel Time Summary:\nbsgs      =   1.90 sec*proc (2 tests)\ncpu       =   1.90 sec*proc (2 tests)\noracle    =   1.59 sec*proc (1 test)\ntables    =   1.90 sec*proc (2 tests)\n\nTotal Test time (real) =   1.90 sec\n",
+    "/tmp/c10-host-san-tests.log": "Test project /home/bagus/keyhunt-GPU/build/cpu-sanitizers\n    Start  9: bsgs_table_contract\n1/2 Test  #9: bsgs_table_contract ..............   Passed    1.31 sec\n    Start 10: bsgs_table_oracle\n2/2 Test #10: bsgs_table_oracle ................   Passed    6.98 sec\n\n100% tests passed, 0 tests failed out of 2\n\nLabel Time Summary:\nbsgs      =   8.30 sec*proc (2 tests)\ncpu       =   8.30 sec*proc (2 tests)\noracle    =   6.98 sec*proc (1 test)\ntables    =   8.30 sec*proc (2 tests)\n\nTotal Test time (real) =   8.31 sec\n"
+  }
+}

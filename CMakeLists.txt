@@ -90,7 +90,8 @@ add_library(keyhunt_core STATIC
     src/core/config.cpp
     src/core/cpu_targets.cpp
     src/core/result_verifier.cpp
-    src/core/xpoint_search.cpp)
+    src/core/xpoint_search.cpp
+    src/core/bsgs_table.cpp)
 target_link_libraries(keyhunt_core PUBLIC keyhunt_cpu_crypto keyhunt_ranges)
 keyhunt_configure_target(keyhunt_core)
 
@@ -106,7 +107,7 @@ else()
     add_library(keyhunt_backend STATIC src/backend/hip/unavailable.cpp)
 endif()
 target_include_directories(keyhunt_backend PUBLIC include)
-add_library(keyhunt_backend_commands STATIC src/backend/commands.cpp src/backend/xpoint_command.cpp)
+add_library(keyhunt_backend_commands STATIC src/backend/commands.cpp src/backend/xpoint_command.cpp src/backend/bsgs_table_command.cpp)
 target_link_libraries(keyhunt_backend_commands PUBLIC keyhunt_backend keyhunt_core)
 target_compile_options(keyhunt_backend_commands PRIVATE -Wall -Wextra)
 if(KEYHUNT_ENABLE_SANITIZERS)
@@ -153,6 +154,7 @@ if(BUILD_TESTING)
     include(cmake/OracleTests.cmake)
     include(cmake/GpuArithmeticTests.cmake)
     include(cmake/XPointTests.cmake)
+    include(cmake/BsgsTableTests.cmake)
     # This discovery contract test uses a private, minimal API double. It needs
     # no GPU SDK; actual HIP compilation and hardware tests remain separate.
     add_executable(hip_discovery_test tests/unit/hip_discovery.cpp)
