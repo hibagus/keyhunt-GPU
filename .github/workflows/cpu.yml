@@ -46,3 +46,8 @@ jobs:
           python3 tests/integration/readme_examples.py
           --binary build/cpu-release/keyhunt
           --report build/cpu-release/readme-examples.json
+      - name: Check GPU quickstart preparation without a GPU SDK
+        run: >-
+          python3 tests/integration/gpu_examples.py
+          --binary build/cpu-release/keyhunt --backend cpu
+          --report build/cpu-release/gpu-examples-cpu.json

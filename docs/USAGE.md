@@ -1,13 +1,13 @@
 # Usage
 
 Run these commands from the repository root after following [BUILD.md](BUILD.md).
-The legacy `-m` search commands use the preserved CPU engine. HIP provides device
-discovery, bounded diagnostics and the separate [bounded xpoint search](HIP_XPOINT.md).
-C10 adds [versioned BSGS table preparation](BSGS_TABLES.md), including HIP lookup
-validation, and C11 implements [bounded HIP BSGS range search](HIP_BSGS.md).
-C12/C13 add [local state](STORAGE.md) and [verified checkpoint commands](CHECKPOINTS.md).
-C14 adds [graceful pause, resume and signal controls](PAUSE_RESUME.md).
-Authenticated coordinator commands remain planned.
+The legacy `-m` search commands use the preserved CPU engine. Native HIP and CUDA
+provide exact bounded xpoint/BSGS searches, versioned tables, local checkpoints,
+pause/resume and concurrent supervised workers. Start with the complete
+[GPU quickstart](GPU_QUICKSTART.md) for both modes, fixtures, durable results and
+completed-grant replay. The [mode matrix](MODES.md) distinguishes GPU support from
+legacy CPU modes. For authenticated workers use the
+[localhost coordinator setup](COORDINATOR.md#s06-isolated-localhost-operation).
 
 ## A finite address search
 
@@ -70,8 +70,8 @@ Results are appended in the process working directory:
 | `keyhunt_bsgs_*.blm`, `keyhunt_bsgs_*.tbl` | Precomputation caches when enabled with `-S` |
 
 Caches speed up table preparation; they do not record visited ranges. Empty or
-malformed inputs are not consistently rejected by the old parser. New structured
-job input validation will be added during core extraction.
+malformed inputs are not consistently rejected by the old parser. The separate GPU commands and `checkpoint create` strictly validate canonical
+targets and bind them to immutable job inputs.
 
 ## Search controls today
 
@@ -83,7 +83,7 @@ For the ordinary legacy/C09/C11 commands, Ctrl-C stops the process without a
 durable progress checkpoint. An OS stop/continue can suspend and resume that same
 live process, but its memory does not survive failure. C12 provides local
 assignment ownership and thirty-day expiry through [`keyhunt state`](STORAGE.md). C13 adds the separate
-[`keyhunt checkpoint` commands](CHECKPOINTS.md), which persist verified HIP results
+[`keyhunt checkpoint` commands](CHECKPOINTS.md), which persist verified HIP/CUDA results
 and accepted coverage and resume the committed complement after process failure.
 For `checkpoint run`, C14 makes SIGINT/SIGTERM checkpoint and exit, SIGUSR1 pause,
 and SIGUSR2 resume. The `checkpoint pause|resume|stop|status` commands provide the

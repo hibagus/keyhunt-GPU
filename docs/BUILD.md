@@ -98,7 +98,7 @@ H200 host ([finding](C18_TEST_ENVIRONMENT.md)).
 Hardware tests require visible devices and fail when execution is unavailable.
 For focused native checks, use `ctest --preset hip-release -L hardware` or
 `ctest --preset cuda-h200 -L hardware`. Run benchmarks only after tests finish.
-The [finite GPU quickstart](USAGE.md#gpu-discovery-and-launch-check) links the
+The [finite GPU quickstart](GPU_QUICKSTART.md) links the
 search and checkpoint commands for either build.
 
 ### Optional tuning and workers
