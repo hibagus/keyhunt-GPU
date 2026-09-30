@@ -44,3 +44,15 @@ keyhunt_configure_target(storage_checkpoint_failures_test)
 add_test(NAME storage_checkpoint_failures COMMAND storage_checkpoint_failures_test)
 set_tests_properties(storage_checkpoint_failures PROPERTIES TIMEOUT 120 LABELS "cpu;storage;recovery")
 
+set(checkpoint_cli_options "")
+if(KEYHUNT_ENABLE_HIP)
+    list(APPEND checkpoint_cli_options --hip)
+endif()
+add_test(NAME checkpoint_cli COMMAND "${Python3_EXECUTABLE}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/checkpoint_cli.py"
+    --binary $<TARGET_FILE:keyhunt> --oracle $<TARGET_FILE:secp256k1_oracle>
+    --report "${CMAKE_CURRENT_BINARY_DIR}/checkpoint-cli-results.json" ${checkpoint_cli_options})
+set_tests_properties(checkpoint_cli PROPERTIES TIMEOUT 240 LABELS "cpu;storage;cli")
+if(KEYHUNT_ENABLE_HIP)
+    set_tests_properties(checkpoint_cli PROPERTIES LABELS "hip;hardware;storage;cli;recovery")
+endif()

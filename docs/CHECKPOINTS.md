@@ -158,3 +158,96 @@ cases recover the expected result set and exact coverage. The hooks are compiled
 only into test binaries; production has no environment-controlled fault injection.
 These are process-failure tests, not certification of power-loss behavior in the
 underlying storage hardware.
+
+## Public commands
+
+`checkpoint create` resolves actual inputs on the CPU and registers the canonical
+binding. Use `state claim` to reserve a block, then `checkpoint run` to execute
+that grant on one HIP logical device. All actions accept `--state-dir` or the
+C12 state-directory environment defaults.
+
+~~~sh
+export KEYHUNT_STATE_DIR="$HOME/.local/state/keyhunt-durable"
+./build/cpu-release/keyhunt state project-create --name "Checkpoint example"
+# Set PROJECT to the returned project UUID.
+printf '%s\n' 79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798 > /tmp/keyhunt-x.txt
+./build/cpu-release/keyhunt checkpoint create --project "$PROJECT" \
+  --mode xpoint --range 1:101 --block-width 100 --targets /tmp/keyhunt-x.txt
+# Set JOB to the returned job digest.
+./build/cpu-release/keyhunt state claim --project "$PROJECT" --job "$JOB" \
+  --owner workstation --request allocation-001
+# Set GRANT to the returned assignment's complete grant token.
+./build/hip-release/keyhunt checkpoint run --backend hip --grant "$GRANT" \
+  --targets /tmp/keyhunt-x.txt --device 0 --batch-size 256
+./build/cpu-release/keyhunt checkpoint results --project "$PROJECT" --job "$JOB"
+~~~
+
+The range is half-open and scalar endpoints/block widths are hexadecimal. Other
+numeric options are decimal. Repeat the same `checkpoint run` with the retained
+grant after a process failure; no new claim is needed while ownership is valid.
+Device/batch/kernel choices may change. The same input file path is not required,
+but its canonical target content must match.
+
+For BSGS, prepare a C10 table, use `--mode bsgs --table FILE` when creating the job,
+and provide the same compatible table on execution:
+
+~~~sh
+./build/cpu-release/keyhunt bsgs-table build --m 257 --output /tmp/checkpoint-babies.khb
+printf '%s\n' 0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798 > /tmp/keyhunt-pub.txt
+./build/cpu-release/keyhunt checkpoint create --project "$PROJECT" \
+  --mode bsgs --range 1:10001 --block-width 10000 \
+  --targets /tmp/keyhunt-pub.txt --table /tmp/checkpoint-babies.khb
+# Claim the returned job as above, then use that new GRANT:
+./build/hip-release/keyhunt checkpoint run --backend hip --grant "$GRANT" \
+  --targets /tmp/keyhunt-pub.txt --table /tmp/checkpoint-babies.khb \
+  --giant-batch 256 --target-batch 64 --group-size auto
+~~~
+
+| Action | Options |
+| --- | --- |
+| `create` | Required `--project`, `--mode xpoint\|bsgs`, `--range`, `--block-width`, `--targets`; BSGS requires `--table` and accepts `--host-memory` |
+| `run`, common | Required `--backend hip`, `--grant`, `--targets`; optional `--device` (0), `--candidate-capacity` (1024), `--checkpoint-seconds 0..60` (10) |
+| `run`, xpoint | `--batch-size 1..1048576` (1048576), `--kernel stepped\|direct` (stepped); capacity 1..1048576 |
+| `run`, BSGS | Required `--table`; `--giant-batch` (16384), `--target-batch 1..64` (64), product at most 1048576; capacity 1..65536; `--group-size auto\|1\|8`; `--host-memory` (1073741824 bytes), `--reserve-bytes` (67108864 bytes) |
+| `results` | Required `--project`, `--job`; optional `--after` (0), `--limit 1..1000` (100) |
+
+The BSGS memory limit retains the C11 target/table/executor budgeting contract.
+Canonical journal bindings, audit history and SQLite caches add host memory outside
+that executor budget. Full preflight audits scale with historical state; the GPU
+loop remains bounded by launch/candidate options.
+
+Creation returns one JSON object with project/job/target/algorithm digests.
+Execution emits NDJSON checkpoint acknowledgments and a final summary. A checkpoint
+record lists exactly the newly accepted intervals and reports local durability.
+A BSGS subgroup may emit `durable_results: true` with `durable_coverage: false` and
+an empty interval list. A final complete summary confirms the assigned block,
+not every block in the job. `resumed_scalars` counts previously accepted coverage;
+`computed_scalars` counts newly accepted coverage this invocation. Device steps
+and match observations include replayed work, so they are not distinct-result
+counts. The results query is the authoritative deduplicated match set.
+
+Results are ordered by their durable row ID. Pass `next_after` to the next query
+until `results` is empty; IDs are decimal strings. Each row includes its wide
+scalar/block, canonical target index and target bytes. IDs can have gaps.
+These local commands do not implement remote authentication.
+
+CPU-only builds support creation, claims, checks and result inspection. A HIP
+execution request on such a build fails explicitly. Signals retain ordinary
+process-exit behavior in C13; only already committed progress survives. Graceful
+drain/checkpoint controls are C14 work.
+
+## End-to-end verification
+
+The command regression derives known targets from the pinned libsecp256k1 oracle.
+It tests high-bit xpoint ranges, BSGS near the curve-order endpoint, canonical
+duplicate/order equivalence, wrong targets/tables, corrupted table files, no-match
+batching, result pagination, and overflow replay. Both real HIP modes are killed
+after a checkpoint acknowledgment, then restarted with different launch geometry.
+The journal retains acknowledged matches and resumes the accepted complement.
+A concurrent second owner is rejected; a `/dev/full` output failure also preserves
+the committed state. These cases use synthetic public fixtures on logical device 0.
+
+~~~sh
+ctest --preset cpu-release -L storage
+ctest --preset hip-release -R checkpoint
+~~~
