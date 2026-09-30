@@ -74,3 +74,11 @@ add_test(NAME checkpoint_controls COMMAND "${Python3_EXECUTABLE}"
     --binary $<TARGET_FILE:keyhunt> --driver $<TARGET_FILE:checkpoint_control_driver>
     --report "${CMAKE_CURRENT_BINARY_DIR}/checkpoint-controls-results.json")
 set_tests_properties(checkpoint_controls PROPERTIES TIMEOUT 120 LABELS "cpu;storage;cli;recovery")
+
+if(KEYHUNT_ENABLE_HIP)
+    add_test(NAME checkpoint_pause_hip COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/checkpoint_pause_hip.py"
+        --binary $<TARGET_FILE:keyhunt> --oracle $<TARGET_FILE:secp256k1_oracle>
+        --report "${CMAKE_CURRENT_BINARY_DIR}/checkpoint-pause-hip-results.json")
+    set_tests_properties(checkpoint_pause_hip PROPERTIES TIMEOUT 180 LABELS "hip;hardware;storage;cli;recovery")
+endif()

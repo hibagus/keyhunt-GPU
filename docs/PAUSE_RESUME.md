@@ -141,3 +141,18 @@ keeps a sealed pre-migration snapshot; its checksum and recovery tests remain
 acceptance gates. Running activity is intentionally not a durable allocation
 state. Changing device ordinal, visible-device count or compatible batch geometry
 does not change the bound job; targets, algorithm and BSGS table must still match.
+
+## Hardware recovery gate
+
+The `checkpoint_pause_hip` integration test uses pinned libsecp256k1 targets and
+real xpoint/BSGS executors. It pauses repeatedly, verifies an unchanged frontier
+while idle, checks online backup and quarantined restore, exits via SIGINT and
+SIGTERM, then finishes the exact remaining range with changed launch geometry.
+Every expected boundary match must appear exactly once.
+
+On an unrestricted host with at least three logical devices, the same grant
+moves from visible devices `0,1` (ordinal 1), to `1` (ordinal 0), to `0,1,2`
+(ordinal 2). This tests fewer/more visible devices and a different physical GPU
+without changing logical job identity. Restricted or single-device environments
+retain their caller's visibility and record that count-change coverage was not
+exercised. Partition modes are not changed by this test.
