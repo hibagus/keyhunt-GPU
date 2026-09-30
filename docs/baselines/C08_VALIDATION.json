@@ -1,0 +1,428 @@
+{
+  "milestone": "C08 portable GPU arithmetic",
+  "recorded_utc": "2026-09-30T01:46:16.601667+00:00",
+  "implementation_commits": [
+    "cc809c7",
+    "4c9afff"
+  ],
+  "base_commit": "4c9afff2e81da47e72214a10d1813e7f46302643",
+  "source_sha256": {
+    "kernels/common/field.h": "91be102a7437cd475e2a5e7831ffe6128a4039cf240c5ca841bcc8e2676899bf",
+    "kernels/common/point.h": "34289c51a5188fc098e01f9c13e0c3b13642c15c10544d2d058cad3e2ff29f10",
+    "tests/gpu/arithmetic_cases.h": "7653ce2f692a2746557e8be12d7c89ac505c674bc61dbf17b9e64354a790dadf",
+    "tests/gpu/arithmetic_probe.cpp": "d6c0fedc1a84d0c7ac19e0c66ac88a108431b283fa38fca06257acf9783aabc6",
+    "tests/gpu/arithmetic_probe.hip": "30cf627a5ca5aa6121c9b0fa9228b31f2dd620745d68718ba9e0409093ef7505",
+    "tests/gpu/multiply16.h": "7ffa5d5b8d66daf98db7fed67a36312990fda5892cebe39f006aabfb596b4c70",
+    "tests/gpu/arithmetic_benchmark.hip": "1d1a0494d44d0c06189bce9caee723c8d609418c0a5fce9a2527dbf69bc9c600",
+    "tests/gpu/device_arithmetic.py": "d751265beb767d65eb4858460795d8de01d616caa041dbaa5e5ed98de18c9af7",
+    "tests/gpu/field_oracle.py": "e2a42072555230cd8fda22602c2d81c928806841743d90237f7d0f7b9bab9237",
+    "tests/gpu/point_oracle.py": "e11bff1bc8425c555ca53363151004480f47297bec370671de532db65cb60f48",
+    "cmake/GpuArithmeticTests.cmake": "215d7255b49292c78b221f5477839cf0038836c7fab06e596437abfafcbd2fdc"
+  },
+  "builds": {
+    "hip-release": {
+      "command": "ctest --preset hip-release",
+      "exit_code": 0,
+      "ctest_output": "Test project /home/bagus/keyhunt-GPU/build/hip-release\n      Start  1: oracle_selftest\n 1/21 Test  #1: oracle_selftest ..................   Passed    0.88 sec\n      Start  2: cpu_field_oracle\n 2/21 Test  #2: cpu_field_oracle .................   Passed    0.26 sec\n      Start  3: cpu_point_oracle\n 3/21 Test  #3: cpu_point_oracle .................   Passed    0.69 sec\n      Start  4: bounded_search_oracle\n 4/21 Test  #4: bounded_search_oracle ............   Passed    1.79 sec\n      Start  5: portable_field_oracle\n 5/21 Test  #5: portable_field_oracle ............   Passed    0.31 sec\n      Start  6: hip_field_oracle\n 6/21 Test  #6: hip_field_oracle .................   Passed    4.46 sec\n      Start  7: portable_point_oracle\n 7/21 Test  #7: portable_point_oracle ............   Passed    1.34 sec\n      Start  8: hip_point_oracle\n 8/21 Test  #8: hip_point_oracle .................   Passed    4.27 sec\n      Start  9: hip_arithmetic_devices\n 9/21 Test  #9: hip_arithmetic_devices ...........   Passed    4.59 sec\n      Start 10: hip_discovery_contract\n10/21 Test #10: hip_discovery_contract ...........   Passed    0.20 sec\n      Start 11: hip_failures\n11/21 Test #11: hip_failures .....................   Passed    0.62 sec\n      Start 12: hip_executor\n12/21 Test #12: hip_executor .....................   Passed    0.59 sec\n      Start 13: hip_partitions\n13/21 Test #13: hip_partitions ...................   Passed    8.75 sec\n      Start 14: backend_cli\n14/21 Test #14: backend_cli ......................   Passed    1.38 sec\n      Start 15: exact_range\n15/21 Test #15: exact_range ......................   Passed    0.04 sec\n      Start 16: block_grid\n16/21 Test #16: block_grid .......................   Passed    0.13 sec\n      Start 17: work_unit\n17/21 Test #17: work_unit ........................   Passed    0.08 sec\n      Start 18: range_oracle\n18/21 Test #18: range_oracle .....................   Passed    1.95 sec\n      Start 19: result_verifier\n19/21 Test #19: result_verifier ..................   Passed    0.07 sec\n      Start 20: cpu_baseline\n20/21 Test #20: cpu_baseline .....................   Passed   29.10 sec\n      Start 21: target_loading\n21/21 Test #21: target_loading ...................   Passed    8.80 sec\n\n100% tests passed, 0 tests failed out of 21\n\nLabel Time Summary:\narithmetic    =  14.98 sec*proc (5 tests)\nbackend       =   1.59 sec*proc (2 tests)\nbaseline      =  29.10 sec*proc (1 test)\ncore          =  11.08 sec*proc (6 tests)\ncpu           =  45.66 sec*proc (14 tests)\nhardware      =  24.66 sec*proc (7 tests)\nhip           =  24.66 sec*proc (7 tests)\noracle        =  18.60 sec*proc (9 tests)\npartitions    =   8.75 sec*proc (1 test)\nranges        =   2.20 sec*proc (4 tests)\n\nTotal Test time (real) =  70.33 sec\n",
+      "arithmetic_reports": {
+        "hip-point-oracle-results.json": {
+          "seed": 201850903,
+          "oracle_commit": "0cdc758a56360bf58a851fe91085a327ec97685a",
+          "cases": 1278,
+          "cpu_comparisons": 1270,
+          "categories": {
+            "pub": 100,
+            "preduce": 45,
+            "pdouble": 45,
+            "pneg": 45,
+            "pmul": 135,
+            "padd": 450,
+            "pmixed": 450,
+            "pvalid": 8
+          },
+          "boundary_batch_sizes": [
+            1,
+            127,
+            128,
+            129,
+            257
+          ],
+          "binary_sha256": "cd0237b5fe5c4a14c62489ba743f8ba45f47ff71598a1516b66c34924afe4c3e",
+          "stats": {
+            "cases": 1278,
+            "batches": 5,
+            "kernel_ms": 71.8206,
+            "wall_ms": 381.628,
+            "batch_capacity": 257,
+            "device": 0
+          },
+          "failure_count": 0,
+          "failures": [],
+          "cpu_failures": []
+        },
+        "hip-field-oracle-results.json": {
+          "seed": 3230604829,
+          "cases": 13381,
+          "cpu_comparisons": 9006,
+          "categories": {
+            "fadd": 2960,
+            "fsub": 2960,
+            "fmul": 2960,
+            "fmul16": 2960,
+            "fnorm": 300,
+            "fbytes": 300,
+            "fsquare": 300,
+            "fneg": 300,
+            "finv": 300,
+            "finvgroup": 40,
+            "flimits": 1
+          },
+          "boundary_batch_sizes": [
+            1,
+            127,
+            128,
+            129,
+            256,
+            257,
+            1024
+          ],
+          "binary_sha256": "cd0237b5fe5c4a14c62489ba743f8ba45f47ff71598a1516b66c34924afe4c3e",
+          "stats": {
+            "cases": 13381,
+            "batches": 53,
+            "kernel_ms": 20.7941,
+            "wall_ms": 405.937,
+            "batch_capacity": 257,
+            "device": 0
+          },
+          "failure_count": 0,
+          "failures": [],
+          "cpu_failures": []
+        },
+        "portable-point-oracle-results.json": {
+          "seed": 201850903,
+          "oracle_commit": "0cdc758a56360bf58a851fe91085a327ec97685a",
+          "cases": 1278,
+          "cpu_comparisons": 1270,
+          "categories": {
+            "pub": 100,
+            "preduce": 45,
+            "pdouble": 45,
+            "pneg": 45,
+            "pmul": 135,
+            "padd": 450,
+            "pmixed": 450,
+            "pvalid": 8
+          },
+          "boundary_batch_sizes": [
+            1,
+            127,
+            128,
+            129,
+            257
+          ],
+          "binary_sha256": "97542d2f967bffa60cd0ff96a0547dbb69dc559ac36edd4baae83e1cb9995825",
+          "stats": {
+            "cases": 1278,
+            "batches": 5,
+            "kernel_ms": 0,
+            "wall_ms": 145.602,
+            "batch_capacity": 257,
+            "device": 0
+          },
+          "failure_count": 0,
+          "failures": [],
+          "cpu_failures": []
+        },
+        "portable-field-oracle-results.json": {
+          "seed": 3230604829,
+          "cases": 13381,
+          "cpu_comparisons": 9006,
+          "categories": {
+            "fadd": 2960,
+            "fsub": 2960,
+            "fmul": 2960,
+            "fmul16": 2960,
+            "fnorm": 300,
+            "fbytes": 300,
+            "fsquare": 300,
+            "fneg": 300,
+            "finv": 300,
+            "finvgroup": 40,
+            "flimits": 1
+          },
+          "boundary_batch_sizes": [
+            1,
+            127,
+            128,
+            129,
+            256,
+            257,
+            1024
+          ],
+          "binary_sha256": "97542d2f967bffa60cd0ff96a0547dbb69dc559ac36edd4baae83e1cb9995825",
+          "stats": {
+            "cases": 13381,
+            "batches": 53,
+            "kernel_ms": 0,
+            "wall_ms": 75.6748,
+            "batch_capacity": 257,
+            "device": 0
+          },
+          "failure_count": 0,
+          "failures": [],
+          "cpu_failures": []
+        }
+      }
+    },
+    "cpu-release": {
+      "command": "ctest --preset cpu-release",
+      "exit_code": 0,
+      "ctest_output": "Test project /home/bagus/keyhunt-GPU/build/cpu-release\n      Start  1: oracle_selftest\n 1/15 Test  #1: oracle_selftest ..................   Passed    0.98 sec\n      Start  2: cpu_field_oracle\n 2/15 Test  #2: cpu_field_oracle .................   Passed    0.36 sec\n      Start  3: cpu_point_oracle\n 3/15 Test  #3: cpu_point_oracle .................   Passed    0.69 sec\n      Start  4: bounded_search_oracle\n 4/15 Test  #4: bounded_search_oracle ............   Passed    1.73 sec\n      Start  5: portable_field_oracle\n 5/15 Test  #5: portable_field_oracle ............   Passed    0.31 sec\n      Start  6: portable_point_oracle\n 6/15 Test  #6: portable_point_oracle ............   Passed    1.34 sec\n      Start  7: hip_discovery_contract\n 7/15 Test  #7: hip_discovery_contract ...........   Passed    0.22 sec\n      Start  8: backend_cli\n 8/15 Test  #8: backend_cli ......................   Passed    0.16 sec\n      Start  9: exact_range\n 9/15 Test  #9: exact_range ......................   Passed    0.05 sec\n      Start 10: block_grid\n10/15 Test #10: block_grid .......................   Passed    0.14 sec\n      Start 11: work_unit\n11/15 Test #11: work_unit ........................   Passed    0.08 sec\n      Start 12: range_oracle\n12/15 Test #12: range_oracle .....................   Passed    2.01 sec\n      Start 13: result_verifier\n13/15 Test #13: result_verifier ..................   Passed    0.08 sec\n      Start 14: cpu_baseline\n14/15 Test #14: cpu_baseline .....................   Passed   28.48 sec\n      Start 15: target_loading\n15/15 Test #15: target_loading ...................   Passed    8.59 sec\n\n100% tests passed, 0 tests failed out of 15\n\nLabel Time Summary:\narithmetic    =   1.65 sec*proc (2 tests)\nbackend       =   0.38 sec*proc (2 tests)\nbaseline      =  28.48 sec*proc (1 test)\ncore          =  10.94 sec*proc (6 tests)\ncpu           =  45.21 sec*proc (15 tests)\noracle        =   5.41 sec*proc (6 tests)\nranges        =   2.28 sec*proc (4 tests)\n\nTotal Test time (real) =  45.23 sec\n",
+      "arithmetic_reports": {
+        "portable-point-oracle-results.json": {
+          "seed": 201850903,
+          "oracle_commit": "0cdc758a56360bf58a851fe91085a327ec97685a",
+          "cases": 1278,
+          "cpu_comparisons": 1270,
+          "categories": {
+            "pub": 100,
+            "preduce": 45,
+            "pdouble": 45,
+            "pneg": 45,
+            "pmul": 135,
+            "padd": 450,
+            "pmixed": 450,
+            "pvalid": 8
+          },
+          "boundary_batch_sizes": [
+            1,
+            127,
+            128,
+            129,
+            257
+          ],
+          "binary_sha256": "97542d2f967bffa60cd0ff96a0547dbb69dc559ac36edd4baae83e1cb9995825",
+          "stats": {
+            "cases": 1278,
+            "batches": 5,
+            "kernel_ms": 0,
+            "wall_ms": 145.438,
+            "batch_capacity": 257,
+            "device": 0
+          },
+          "failure_count": 0,
+          "failures": [],
+          "cpu_failures": []
+        },
+        "portable-field-oracle-results.json": {
+          "seed": 3230604829,
+          "cases": 13381,
+          "cpu_comparisons": 9006,
+          "categories": {
+            "fadd": 2960,
+            "fsub": 2960,
+            "fmul": 2960,
+            "fmul16": 2960,
+            "fnorm": 300,
+            "fbytes": 300,
+            "fsquare": 300,
+            "fneg": 300,
+            "finv": 300,
+            "finvgroup": 40,
+            "flimits": 1
+          },
+          "boundary_batch_sizes": [
+            1,
+            127,
+            128,
+            129,
+            256,
+            257,
+            1024
+          ],
+          "binary_sha256": "97542d2f967bffa60cd0ff96a0547dbb69dc559ac36edd4baae83e1cb9995825",
+          "stats": {
+            "cases": 13381,
+            "batches": 53,
+            "kernel_ms": 0,
+            "wall_ms": 75.6673,
+            "batch_capacity": 257,
+            "device": 0
+          },
+          "failure_count": 0,
+          "failures": [],
+          "cpu_failures": []
+        }
+      }
+    },
+    "cpu-debug": {
+      "command": "ctest --preset cpu-debug",
+      "exit_code": 0,
+      "ctest_output": "Test project /home/bagus/keyhunt-GPU/build/cpu-debug\n      Start  1: oracle_selftest\n 1/15 Test  #1: oracle_selftest ..................   Passed    1.01 sec\n      Start  2: cpu_field_oracle\n 2/15 Test  #2: cpu_field_oracle .................   Passed    0.83 sec\n      Start  3: cpu_point_oracle\n 3/15 Test  #3: cpu_point_oracle .................   Passed    1.10 sec\n      Start  4: bounded_search_oracle\n 4/15 Test  #4: bounded_search_oracle ............   Passed    1.82 sec\n      Start  5: portable_field_oracle\n 5/15 Test  #5: portable_field_oracle ............   Passed    0.81 sec\n      Start  6: portable_point_oracle\n 6/15 Test  #6: portable_point_oracle ............   Passed    2.50 sec\n      Start  7: hip_discovery_contract\n 7/15 Test  #7: hip_discovery_contract ...........   Passed    0.12 sec\n      Start  8: backend_cli\n 8/15 Test  #8: backend_cli ......................   Passed    0.04 sec\n      Start  9: exact_range\n 9/15 Test  #9: exact_range ......................   Passed    0.05 sec\n      Start 10: block_grid\n10/15 Test #10: block_grid .......................   Passed    2.23 sec\n      Start 11: work_unit\n11/15 Test #11: work_unit ........................   Passed    0.40 sec\n      Start 12: range_oracle\n12/15 Test #12: range_oracle .....................   Passed    6.34 sec\n      Start 13: result_verifier\n13/15 Test #13: result_verifier ..................   Passed    0.13 sec\n      Start 14: cpu_baseline\n14/15 Test #14: cpu_baseline .....................   Passed   30.41 sec\n      Start 15: target_loading\n15/15 Test #15: target_loading ...................   Passed    9.24 sec\n\n100% tests passed, 0 tests failed out of 15\n\nLabel Time Summary:\narithmetic    =   3.31 sec*proc (2 tests)\nbackend       =   0.16 sec*proc (2 tests)\nbaseline      =  30.41 sec*proc (1 test)\ncore          =  18.40 sec*proc (6 tests)\ncpu           =  57.04 sec*proc (15 tests)\noracle        =   8.07 sec*proc (6 tests)\nranges        =   9.03 sec*proc (4 tests)\n\nTotal Test time (real) =  57.06 sec\n",
+      "arithmetic_reports": {
+        "portable-point-oracle-results.json": {
+          "seed": 201850903,
+          "oracle_commit": "0cdc758a56360bf58a851fe91085a327ec97685a",
+          "cases": 1278,
+          "cpu_comparisons": 1270,
+          "categories": {
+            "pub": 100,
+            "preduce": 45,
+            "pdouble": 45,
+            "pneg": 45,
+            "pmul": 135,
+            "padd": 450,
+            "pmixed": 450,
+            "pvalid": 8
+          },
+          "boundary_batch_sizes": [
+            1,
+            127,
+            128,
+            129,
+            257
+          ],
+          "binary_sha256": "43cf11d274d72f8f29d8bababffb9907504e2b61ec62bd3280f0bb06e7402a4c",
+          "stats": {
+            "cases": 1278,
+            "batches": 5,
+            "kernel_ms": 0,
+            "wall_ms": 715.657,
+            "batch_capacity": 257,
+            "device": 0
+          },
+          "failure_count": 0,
+          "failures": [],
+          "cpu_failures": []
+        },
+        "portable-field-oracle-results.json": {
+          "seed": 3230604829,
+          "cases": 13381,
+          "cpu_comparisons": 9006,
+          "categories": {
+            "fadd": 2960,
+            "fsub": 2960,
+            "fmul": 2960,
+            "fmul16": 2960,
+            "fnorm": 300,
+            "fbytes": 300,
+            "fsquare": 300,
+            "fneg": 300,
+            "finv": 300,
+            "finvgroup": 40,
+            "flimits": 1
+          },
+          "boundary_batch_sizes": [
+            1,
+            127,
+            128,
+            129,
+            256,
+            257,
+            1024
+          ],
+          "binary_sha256": "43cf11d274d72f8f29d8bababffb9907504e2b61ec62bd3280f0bb06e7402a4c",
+          "stats": {
+            "cases": 13381,
+            "batches": 53,
+            "kernel_ms": 0,
+            "wall_ms": 173.445,
+            "batch_capacity": 257,
+            "device": 0
+          },
+          "failure_count": 0,
+          "failures": [],
+          "cpu_failures": []
+        }
+      }
+    },
+    "cpu-sanitizers": {
+      "command": "ASAN_OPTIONS=detect_leaks=1 UBSAN_OPTIONS=halt_on_error=1 ctest --preset cpu-sanitizers -E 'cpu_baseline|target_loading'",
+      "exit_code": 0,
+      "ctest_output": "Test project /home/bagus/keyhunt-GPU/build/cpu-sanitizers\n      Start  1: oracle_selftest\n 1/13 Test  #1: oracle_selftest ..................   Passed    0.99 sec\n      Start  2: cpu_field_oracle\n 2/13 Test  #2: cpu_field_oracle .................   Passed    1.31 sec\n      Start  3: cpu_point_oracle\n 3/13 Test  #3: cpu_point_oracle .................   Passed    1.64 sec\n      Start  4: bounded_search_oracle\n 4/13 Test  #4: bounded_search_oracle ............   Passed    2.03 sec\n      Start  5: portable_field_oracle\n 5/13 Test  #5: portable_field_oracle ............   Passed    1.56 sec\n      Start  6: portable_point_oracle\n 6/13 Test  #6: portable_point_oracle ............   Passed    5.30 sec\n      Start  7: hip_discovery_contract\n 7/13 Test  #7: hip_discovery_contract ...........   Passed    0.18 sec\n      Start  8: backend_cli\n 8/13 Test  #8: backend_cli ......................   Passed    0.15 sec\n      Start  9: exact_range\n 9/13 Test  #9: exact_range ......................   Passed    0.06 sec\n      Start 10: block_grid\n10/13 Test #10: block_grid .......................   Passed    5.72 sec\n      Start 11: work_unit\n11/13 Test #11: work_unit ........................   Passed    0.89 sec\n      Start 12: range_oracle\n12/13 Test #12: range_oracle .....................   Passed   13.76 sec\n      Start 13: result_verifier\n13/13 Test #13: result_verifier ..................   Passed    0.20 sec\n\n100% tests passed, 0 tests failed out of 13\n\nLabel Time Summary:\narithmetic    =   6.86 sec*proc (2 tests)\nbackend       =   0.33 sec*proc (2 tests)\ncore          =  20.62 sec*proc (5 tests)\ncpu           =  33.78 sec*proc (13 tests)\noracle        =  12.83 sec*proc (6 tests)\nranges        =  20.42 sec*proc (4 tests)\n\nTotal Test time (real) =  33.78 sec\n",
+      "arithmetic_reports": {
+        "portable-point-oracle-results.json": {
+          "seed": 201850903,
+          "oracle_commit": "0cdc758a56360bf58a851fe91085a327ec97685a",
+          "cases": 1278,
+          "cpu_comparisons": 1270,
+          "categories": {
+            "pub": 100,
+            "preduce": 45,
+            "pdouble": 45,
+            "pneg": 45,
+            "pmul": 135,
+            "padd": 450,
+            "pmixed": 450,
+            "pvalid": 8
+          },
+          "boundary_batch_sizes": [
+            1,
+            127,
+            128,
+            129,
+            257
+          ],
+          "binary_sha256": "a37207b97c97dcc1b398416ab0889d943e7528b9d3101ef922c4e1f492833626",
+          "stats": {
+            "cases": 1278,
+            "batches": 5,
+            "kernel_ms": 0,
+            "wall_ms": 2165.19,
+            "batch_capacity": 257,
+            "device": 0
+          },
+          "failure_count": 0,
+          "failures": [],
+          "cpu_failures": []
+        },
+        "portable-field-oracle-results.json": {
+          "seed": 3230604829,
+          "cases": 13381,
+          "cpu_comparisons": 9006,
+          "categories": {
+            "fadd": 2960,
+            "fsub": 2960,
+            "fmul": 2960,
+            "fmul16": 2960,
+            "fnorm": 300,
+            "fbytes": 300,
+            "fsquare": 300,
+            "fneg": 300,
+            "finv": 300,
+            "finvgroup": 40,
+            "flimits": 1
+          },
+          "boundary_batch_sizes": [
+            1,
+            127,
+            128,
+            129,
+            256,
+            257,
+            1024
+          ],
+          "binary_sha256": "a37207b97c97dcc1b398416ab0889d943e7528b9d3101ef922c4e1f492833626",
+          "stats": {
+            "cases": 13381,
+            "batches": 53,
+            "kernel_ms": 0,
+            "wall_ms": 461.028,
+            "batch_capacity": 257,
+            "device": 0
+          },
+          "failure_count": 0,
+          "failures": [],
+          "cpu_failures": []
+        }
+      }
+    }
+  },
+  "limits": [
+    "CUDA remains C18.",
+    "Live arithmetic on SPX/NPS1 only; QPX hardware validation pending.",
+    "No GPU search, BSGS tables, checkpoint or candidate replay.",
+    "Sanitizers exclude the known whole-application cpu_baseline/target_loading failures."
+  ]
+}

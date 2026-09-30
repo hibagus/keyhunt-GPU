@@ -63,8 +63,8 @@ synchronous transfer path and default stream are test infrastructure; production
 search integration must retain C07's explicit ownership/backpressure contract.
 The event and host times in these reports are correctness-run measurements, not
 a benchmark or end-to-end key throughput. [Field evidence](baselines/C08_FIELD.json)
-records the HIP, host and sanitizer results. Point arithmetic follows in a
-separate C08 change.
+records the initial HIP, host and sanitizer results. The point layer and final
+measurement/acceptance records below extend that first C08 change.
 
 ## Points, scalars and exceptional cases
 
@@ -116,3 +116,65 @@ ASAN_OPTIONS=detect_leaks=1 UBSAN_OPTIONS=halt_on_error=1 \
 [Point evidence](baselines/C08_POINT.json) contains both point reports, focused
 field/point CTest output and sanitizer results. No legacy arithmetic or range
 semantics were changed in this milestone.
+
+
+## Initial gfx942 measurements
+
+An opt-in `hip_arithmetic_benchmark` runs one warm-up and five measured samples
+per kernel, alternating kernel order. Every result and the final tail guard are
+checked after each launch. There are 1,025 independent input items (a partial
+128-thread workgroup at the end), with 32 chained multiplies per item, one inverse,
+or 16 point doublings. Input generation, upload and expected-value construction
+occur before measurement. Event times cover the kernel; wall samples include
+output initialization, launch, download and host comparison. No overlap or search
+throughput is claimed. The host was not reserved and clocks were not controlled.
+
+| Kernel | Median kernel ms | VGPRs | Scratch bytes/lane | LDS bytes/block |
+| --- | ---: | ---: | ---: | ---: |
+| 8x32 multiplication | 0.028064 | 56 | 0 | 0 |
+| 16x16 multiplication candidate | 0.080141 | 53 | 0 | 12288 |
+| Fermat inverse | 0.401552 | 60 | 0 | 32768 |
+| Jacobian doubling | 0.132741 | 128 | 36 | 0 |
+
+The compiler also reports eight spilled VGPRs for the doubling microkernel.
+That is a concrete tuning target for C17, not a correctness failure. Resource
+estimates describe these specific wrappers and compilation flags, not every
+future search kernel or actual achieved occupancy.
+
+The 16x16 candidate lives only in `tests/gpu/multiply16.h`. It uses 32-bit product
+accumulators and the same reduction helper, including conversion back to the
+8x32 canonical layout. Its 2,960 multiply cases and aliases independently agree
+with Python on both host and HIP. In this workload its median is about 2.86 times
+the 8x32 median. Keep 8x32 for the portable baseline; do not promote the alternate
+accumulator. This comparison does not select a universally optimal limb layout
+or rule out 4x64/other representations and future whole-workload measurements.
+
+[Measurement evidence](baselines/C08_MEASUREMENTS.json) retains every timing,
+source/binary fingerprint, exact HIP compile command, device inventory, runtime
+versions and raw compiler resource remarks. Reproduce timing samples with:
+
+```sh
+cmake --build --preset hip-release --parallel 4 --target hip_arithmetic_benchmark
+./build/hip-release/hip_arithmetic_benchmark 0 > /tmp/keyhunt-arithmetic-timing.json
+```
+
+## Final acceptance and remaining scope
+
+[Final C08 validation](baselines/C08_VALIDATION.json) records full HIP release,
+CPU release/debug and the established focused sanitizer gate. Final field suites
+include 13,381 cases (9,006 legacy CPU comparisons), and point suites include
+1,278 cases (1,270 CPU comparisons). [All-device evidence](baselines/C08_DEVICES.json)
+records 129 mixed field/point cases per visible device, with exact returned counts
+and a guarded partial batch. All eight current SPX/NPS1 devices pass.
+
+No arithmetic depends on CPX/QPX/SPX metadata, device count or CU count. Real C08
+arithmetic execution was measured on SPX/NPS1; C07's older CPX hardware evidence
+covers discovery/diagnostics, and QPX hardware validation is still pending. The
+mode-independent discovery contract remains tested separately.
+
+C08 does not implement compressed point decoding, cryptographic signing, arbitrary
+scalar modular operations, lookup tables, a GPU search, candidate-buffer replay,
+checkpoints or throughput tuning. C09 must integrate these primitives with exact
+range planning, result ownership and CPU verification. C10/C11 must validate the
+BSGS table/filter/mapping contracts independently. The pinned oracle remains
+test-only and is never linked into the application.

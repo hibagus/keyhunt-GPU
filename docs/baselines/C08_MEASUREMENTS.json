@@ -1,0 +1,313 @@
+{
+  "recorded_utc": "2026-09-30T01:46:16.601667+00:00",
+  "base_commit": "4c9afff2e81da47e72214a10d1813e7f46302643",
+  "source_state": "measurement change recorded before its commit; exact sources fingerprinted below",
+  "source_sha256": {
+    "kernels/common/field.h": "91be102a7437cd475e2a5e7831ffe6128a4039cf240c5ca841bcc8e2676899bf",
+    "kernels/common/point.h": "34289c51a5188fc098e01f9c13e0c3b13642c15c10544d2d058cad3e2ff29f10",
+    "tests/gpu/arithmetic_cases.h": "7653ce2f692a2746557e8be12d7c89ac505c674bc61dbf17b9e64354a790dadf",
+    "tests/gpu/arithmetic_probe.cpp": "d6c0fedc1a84d0c7ac19e0c66ac88a108431b283fa38fca06257acf9783aabc6",
+    "tests/gpu/arithmetic_probe.hip": "30cf627a5ca5aa6121c9b0fa9228b31f2dd620745d68718ba9e0409093ef7505",
+    "tests/gpu/multiply16.h": "7ffa5d5b8d66daf98db7fed67a36312990fda5892cebe39f006aabfb596b4c70",
+    "tests/gpu/arithmetic_benchmark.hip": "1d1a0494d44d0c06189bce9caee723c8d609418c0a5fce9a2527dbf69bc9c600",
+    "tests/gpu/device_arithmetic.py": "d751265beb767d65eb4858460795d8de01d616caa041dbaa5e5ed98de18c9af7",
+    "tests/gpu/field_oracle.py": "e2a42072555230cd8fda22602c2d81c928806841743d90237f7d0f7b9bab9237",
+    "tests/gpu/point_oracle.py": "e11bff1bc8425c555ca53363151004480f47297bec370671de532db65cb60f48",
+    "cmake/GpuArithmeticTests.cmake": "215d7255b49292c78b221f5477839cf0038836c7fab06e596437abfafcbd2fdc"
+  },
+  "benchmark_binary_sha256": "e5caf82c93524bb1c2943a53325af0896be3639ba7cc43f52d9d97f926d714a7",
+  "inventory": {
+    "backend": "hip",
+    "runtime_version": 71526333,
+    "driver_version": 71526333,
+    "devices": [
+      {
+        "ordinal": 0,
+        "name": "AMD Instinct MI300X",
+        "architecture": "gfx942:sramecc+:xnack-",
+        "uuid": "30646366333934386337333264313231",
+        "pci_bus_id": "0000:1b:00.0",
+        "physical_id": "0dcf3948c732d121",
+        "physical_id_source": "sysfs.unique_id",
+        "compute_partition": "SPX",
+        "memory_partition": "NPS1",
+        "memory_allocation_mode": "CAPPING",
+        "numa_node": 0,
+        "compute_units": 304,
+        "warp_size": 64,
+        "property_memory_bytes": 206141652992,
+        "total_memory_bytes": 206141652992,
+        "free_memory_bytes": 205533478912,
+        "warnings": []
+      },
+      {
+        "ordinal": 1,
+        "name": "AMD Instinct MI300X",
+        "architecture": "gfx942:sramecc+:xnack-",
+        "uuid": "30393337633864376335303031303365",
+        "pci_bus_id": "0000:3d:00.0",
+        "physical_id": "0937c8d7c500103e",
+        "physical_id_source": "sysfs.unique_id",
+        "compute_partition": "SPX",
+        "memory_partition": "NPS1",
+        "memory_allocation_mode": "CAPPING",
+        "numa_node": 0,
+        "compute_units": 304,
+        "warp_size": 64,
+        "property_memory_bytes": 206141652992,
+        "total_memory_bytes": 206141652992,
+        "free_memory_bytes": 205533478912,
+        "warnings": []
+      },
+      {
+        "ordinal": 2,
+        "name": "AMD Instinct MI300X",
+        "architecture": "gfx942:sramecc+:xnack-",
+        "uuid": "34616433376163376162633937306666",
+        "pci_bus_id": "0000:4e:00.0",
+        "physical_id": "4ad37ac7abc970ff",
+        "physical_id_source": "sysfs.unique_id",
+        "compute_partition": "SPX",
+        "memory_partition": "NPS1",
+        "memory_allocation_mode": "CAPPING",
+        "numa_node": 0,
+        "compute_units": 304,
+        "warp_size": 64,
+        "property_memory_bytes": 206141652992,
+        "total_memory_bytes": 206141652992,
+        "free_memory_bytes": 205533478912,
+        "warnings": []
+      },
+      {
+        "ordinal": 3,
+        "name": "AMD Instinct MI300X",
+        "architecture": "gfx942:sramecc+:xnack-",
+        "uuid": "64636438643565303832323137646663",
+        "pci_bus_id": "0000:5f:00.0",
+        "physical_id": "dcd8d5e082217dfc",
+        "physical_id_source": "sysfs.unique_id",
+        "compute_partition": "SPX",
+        "memory_partition": "NPS1",
+        "memory_allocation_mode": "CAPPING",
+        "numa_node": 0,
+        "compute_units": 304,
+        "warp_size": 64,
+        "property_memory_bytes": 206141652992,
+        "total_memory_bytes": 206141652992,
+        "free_memory_bytes": 205533478912,
+        "warnings": []
+      },
+      {
+        "ordinal": 4,
+        "name": "AMD Instinct MI300X",
+        "architecture": "gfx942:sramecc+:xnack-",
+        "uuid": "63613033303464653334643962636639",
+        "pci_bus_id": "0000:9d:00.0",
+        "physical_id": "ca0304de34d9bcf9",
+        "physical_id_source": "sysfs.unique_id",
+        "compute_partition": "SPX",
+        "memory_partition": "NPS1",
+        "memory_allocation_mode": "CAPPING",
+        "numa_node": 1,
+        "compute_units": 304,
+        "warp_size": 64,
+        "property_memory_bytes": 206141652992,
+        "total_memory_bytes": 206141652992,
+        "free_memory_bytes": 205533478912,
+        "warnings": []
+      },
+      {
+        "ordinal": 5,
+        "name": "AMD Instinct MI300X",
+        "architecture": "gfx942:sramecc+:xnack-",
+        "uuid": "66366665356431386461333065623431",
+        "pci_bus_id": "0000:bd:00.0",
+        "physical_id": "f6fe5d18da30eb41",
+        "physical_id_source": "sysfs.unique_id",
+        "compute_partition": "SPX",
+        "memory_partition": "NPS1",
+        "memory_allocation_mode": "CAPPING",
+        "numa_node": 1,
+        "compute_units": 304,
+        "warp_size": 64,
+        "property_memory_bytes": 206141652992,
+        "total_memory_bytes": 206141652992,
+        "free_memory_bytes": 205533478912,
+        "warnings": []
+      },
+      {
+        "ordinal": 6,
+        "name": "AMD Instinct MI300X",
+        "architecture": "gfx942:sramecc+:xnack-",
+        "uuid": "32333266393737383136343134663766",
+        "pci_bus_id": "0000:cd:00.0",
+        "physical_id": "232f977816414f7f",
+        "physical_id_source": "sysfs.unique_id",
+        "compute_partition": "SPX",
+        "memory_partition": "NPS1",
+        "memory_allocation_mode": "CAPPING",
+        "numa_node": 1,
+        "compute_units": 304,
+        "warp_size": 64,
+        "property_memory_bytes": 206141652992,
+        "total_memory_bytes": 206141652992,
+        "free_memory_bytes": 205533478912,
+        "warnings": []
+      },
+      {
+        "ordinal": 7,
+        "name": "AMD Instinct MI300X",
+        "architecture": "gfx942:sramecc+:xnack-",
+        "uuid": "37386338613437353837623036353233",
+        "pci_bus_id": "0000:dd:00.0",
+        "physical_id": "78c8a47587b06523",
+        "physical_id_source": "sysfs.unique_id",
+        "compute_partition": "SPX",
+        "memory_partition": "NPS1",
+        "memory_allocation_mode": "CAPPING",
+        "numa_node": 1,
+        "compute_units": 304,
+        "warp_size": 64,
+        "property_memory_bytes": 206141652992,
+        "total_memory_bytes": 206141652992,
+        "free_memory_bytes": 205533478912,
+        "warnings": []
+      }
+    ]
+  },
+  "compile_commands": [
+    {
+      "directory": "/home/bagus/keyhunt-GPU/build/hip-release",
+      "command": "/opt/rocm/core-10.0/lib/llvm/bin/clang++ -D__HIP_ROCclr__=1 -I/home/bagus/keyhunt-GPU/kernels -I/home/bagus/keyhunt-GPU/src/backend/hip -O3 -DNDEBUG --offload-arch=gfx942 -Wall -Wextra -std=gnu++17 -o CMakeFiles/hip_arithmetic_probe.dir/tests/gpu/arithmetic_probe.hip.o -x hip -c /home/bagus/keyhunt-GPU/tests/gpu/arithmetic_probe.hip",
+      "file": "/home/bagus/keyhunt-GPU/tests/gpu/arithmetic_probe.hip"
+    },
+    {
+      "directory": "/home/bagus/keyhunt-GPU/build/hip-release",
+      "command": "/opt/rocm/core-10.0/lib/llvm/bin/clang++ -D__HIP_ROCclr__=1 -I/home/bagus/keyhunt-GPU/kernels -I/home/bagus/keyhunt-GPU/src/backend/hip -O3 -DNDEBUG --offload-arch=gfx942 -Wall -Wextra -std=gnu++17 -o CMakeFiles/hip_arithmetic_benchmark.dir/tests/gpu/arithmetic_benchmark.hip.o -x hip -c /home/bagus/keyhunt-GPU/tests/gpu/arithmetic_benchmark.hip",
+      "file": "/home/bagus/keyhunt-GPU/tests/gpu/arithmetic_benchmark.hip"
+    }
+  ],
+  "compiler_resources": {
+    "command": [
+      "/opt/rocm/core-10.0/lib/llvm/bin/clang++",
+      "-D__HIP_ROCclr__=1",
+      "-I/home/bagus/keyhunt-GPU/kernels",
+      "-I/home/bagus/keyhunt-GPU/src/backend/hip",
+      "-O3",
+      "-DNDEBUG",
+      "--offload-arch=gfx942",
+      "-Wall",
+      "-Wextra",
+      "-std=gnu++17",
+      "-o",
+      "/tmp/keyhunt-c08-resource.o",
+      "-x",
+      "hip",
+      "-c",
+      "/home/bagus/keyhunt-GPU/tests/gpu/arithmetic_benchmark.hip",
+      "--offload-device-only",
+      "-Rpass-analysis=kernel-resource-usage"
+    ],
+    "exit_code": 0,
+    "output": "/home/bagus/keyhunt-GPU/tests/gpu/arithmetic_benchmark.hip:35:1: remark: Function Name: _Z16benchmark_kernelILj0EEvPK5InputP6Outputmj [-Rpass-analysis=kernel-resource-usage]\n   35 | __global__ void benchmark_kernel(const Input* input, Output* output, uint64_t count, unsigned rounds) {\n      | ^\n/home/bagus/keyhunt-GPU/tests/gpu/arithmetic_benchmark.hip:35:1: remark:     TotalSGPRs: 44 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/tests/gpu/arithmetic_benchmark.hip:35:1: remark:     VGPRs: 56 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/tests/gpu/arithmetic_benchmark.hip:35:1: remark:     AGPRs: 0 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/tests/gpu/arithmetic_benchmark.hip:35:1: remark:     ScratchSize [bytes/lane]: 0 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/tests/gpu/arithmetic_benchmark.hip:35:1: remark:     Dynamic Stack: False [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/tests/gpu/arithmetic_benchmark.hip:35:1: remark:     Occupancy [waves/SIMD]: 8 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/tests/gpu/arithmetic_benchmark.hip:35:1: remark:     SGPRs Spill: 0 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/tests/gpu/arithmetic_benchmark.hip:35:1: remark:     VGPRs Spill: 0 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/tests/gpu/arithmetic_benchmark.hip:35:1: remark:     LDS Size [bytes/block]: 0 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/tests/gpu/arithmetic_benchmark.hip:35:1: remark: Function Name: _Z16benchmark_kernelILj1EEvPK5InputP6Outputmj [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/tests/gpu/arithmetic_benchmark.hip:35:1: remark:     TotalSGPRs: 45 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/tests/gpu/arithmetic_benchmark.hip:35:1: remark:     VGPRs: 53 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/tests/gpu/arithmetic_benchmark.hip:35:1: remark:     AGPRs: 0 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/tests/gpu/arithmetic_benchmark.hip:35:1: remark:     ScratchSize [bytes/lane]: 0 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/tests/gpu/arithmetic_benchmark.hip:35:1: remark:     Dynamic Stack: False [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/tests/gpu/arithmetic_benchmark.hip:35:1: remark:     Occupancy [waves/SIMD]: 8 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/tests/gpu/arithmetic_benchmark.hip:35:1: remark:     SGPRs Spill: 0 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/tests/gpu/arithmetic_benchmark.hip:35:1: remark:     VGPRs Spill: 0 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/tests/gpu/arithmetic_benchmark.hip:35:1: remark:     LDS Size [bytes/block]: 12288 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/tests/gpu/arithmetic_benchmark.hip:35:1: remark: Function Name: _Z16benchmark_kernelILj2EEvPK5InputP6Outputmj [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/tests/gpu/arithmetic_benchmark.hip:35:1: remark:     TotalSGPRs: 50 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/tests/gpu/arithmetic_benchmark.hip:35:1: remark:     VGPRs: 60 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/tests/gpu/arithmetic_benchmark.hip:35:1: remark:     AGPRs: 0 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/tests/gpu/arithmetic_benchmark.hip:35:1: remark:     ScratchSize [bytes/lane]: 0 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/tests/gpu/arithmetic_benchmark.hip:35:1: remark:     Dynamic Stack: False [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/tests/gpu/arithmetic_benchmark.hip:35:1: remark:     Occupancy [waves/SIMD]: 8 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/tests/gpu/arithmetic_benchmark.hip:35:1: remark:     SGPRs Spill: 0 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/tests/gpu/arithmetic_benchmark.hip:35:1: remark:     VGPRs Spill: 0 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/tests/gpu/arithmetic_benchmark.hip:35:1: remark:     LDS Size [bytes/block]: 32768 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/tests/gpu/arithmetic_benchmark.hip:35:1: remark: Function Name: _Z16benchmark_kernelILj3EEvPK5InputP6Outputmj [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/tests/gpu/arithmetic_benchmark.hip:35:1: remark:     TotalSGPRs: 59 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/tests/gpu/arithmetic_benchmark.hip:35:1: remark:     VGPRs: 128 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/tests/gpu/arithmetic_benchmark.hip:35:1: remark:     AGPRs: 0 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/tests/gpu/arithmetic_benchmark.hip:35:1: remark:     ScratchSize [bytes/lane]: 36 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/tests/gpu/arithmetic_benchmark.hip:35:1: remark:     Dynamic Stack: False [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/tests/gpu/arithmetic_benchmark.hip:35:1: remark:     Occupancy [waves/SIMD]: 4 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/tests/gpu/arithmetic_benchmark.hip:35:1: remark:     SGPRs Spill: 0 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/tests/gpu/arithmetic_benchmark.hip:35:1: remark:     VGPRs Spill: 8 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/tests/gpu/arithmetic_benchmark.hip:35:1: remark:     LDS Size [bytes/block]: 0 [-Rpass-analysis=kernel-resource-usage]\n"
+  },
+  "benchmark": {
+    "device": 0,
+    "seed": 201899759,
+    "items": 1025,
+    "warmup_per_kernel": 1,
+    "measured_samples": 5,
+    "kernels": [
+      {
+        "name": "multiply_8x32",
+        "rounds": 32,
+        "kernel_ms": [
+          0.028505,
+          0.028143,
+          0.028064,
+          0.028064,
+          0.027863
+        ],
+        "wall_ms": [
+          0.066694,
+          0.066775,
+          0.067102,
+          0.066529,
+          0.06599
+        ],
+        "median_kernel_ms": 0.028064,
+        "min_kernel_ms": 0.027863,
+        "max_kernel_ms": 0.028505
+      },
+      {
+        "name": "multiply_16x16",
+        "rounds": 32,
+        "kernel_ms": [
+          0.080222,
+          0.07946,
+          0.080141,
+          0.07934,
+          0.084431
+        ],
+        "wall_ms": [
+          0.120119,
+          0.117992,
+          0.119125,
+          0.116709,
+          0.122152
+        ],
+        "median_kernel_ms": 0.080141,
+        "min_kernel_ms": 0.07934,
+        "max_kernel_ms": 0.084431
+      },
+      {
+        "name": "inverse",
+        "rounds": 1,
+        "kernel_ms": [
+          0.402233,
+          0.401591,
+          0.401311,
+          0.401552,
+          0.401351
+        ],
+        "wall_ms": [
+          0.439491,
+          0.437506,
+          0.439787,
+          0.438198,
+          0.43977
+        ],
+        "median_kernel_ms": 0.401552,
+        "min_kernel_ms": 0.401311,
+        "max_kernel_ms": 0.402233
+      },
+      {
+        "name": "point_double",
+        "rounds": 16,
+        "kernel_ms": [
+          0.132862,
+          0.143085,
+          0.132701,
+          0.132741,
+          0.13246
+        ],
+        "wall_ms": [
+          0.172131,
+          0.183646,
+          0.171126,
+          0.172375,
+          0.177394
+        ],
+        "median_kernel_ms": 0.132741,
+        "min_kernel_ms": 0.13246,
+        "max_kernel_ms": 0.143085
+      }
+    ]
+  },
+  "limits": [
+    "One SPX/NPS1 device, no exclusive host reservation or controlled clocks.",
+    "Events time only the kernel. Wall samples include reset, launch, download and comparison.",
+    "16x16 candidate includes conversion to 8x32 output; this is not a complete alternate point layout.",
+    "No key-search throughput, backend scaling or hardware-counter measurement."
+  ]
+}

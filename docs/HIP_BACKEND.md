@@ -1,8 +1,9 @@
 # HIP backend foundation (C07)
 
 C07 adds optional AMD HIP discovery and bounded diagnostic execution. It does not
-implement a GPU search or mark any interval as searched. C08 supplies field/point
-arithmetic; C09 supplies the first xpoint search.
+implement a GPU search or mark any interval as searched. C08 now supplies
+[portable field/point arithmetic](GPU_ARITHMETIC.md); the first xpoint search
+remains C09 work.
 
 ## Build and discovery
 
@@ -155,8 +156,9 @@ python3 tools/capture_hip_baseline.py --build-dir build/hip-release \
 ```
 
 This harness uses separate short processes and records their event/wall times;
-it is deliberately not a steady-state benchmark. C08 must add arithmetic
-microbenchmarks, and C16 remains the durable end-to-end benchmark milestone.
+it is deliberately not a steady-state benchmark. C08 now adds
+[arithmetic microbenchmarks](GPU_ARITHMETIC.md#initial-gfx942-measurements); C16
+remains the durable end-to-end benchmark milestone.
 
 
 ## CPX, QPX and SPX compatibility

@@ -34,9 +34,9 @@ def main():
     pairs = [(a,b) for a in sorted(edges) for b in sorted(edges)]
     pairs += [(rng.getrandbits(256),rng.getrandbits(256)) for _ in range(1024)]
     for a,b in pairs:
-        for op, result in [('fadd',(a+b)%P),('fsub',(a-b)%P),('fmul',a*b%P)]:
+        for op, result in [('fadd',(a+b)%P),('fsub',(a-b)%P),('fmul',a*b%P),('fmul16',a*b%P)]:
             value=f'{result:064x}'
-            case(op,(a,b),' '.join([value]*3), value if a<P and b<P else None)
+            case(op,(a,b),' '.join([value]*3), value if a<P and b<P and op != 'fmul16' else None)
     for a in sorted(edges)+[rng.getrandbits(256) for _ in range(256)]:
         reduced=a%P
         case('fnorm',(a,),f'{reduced:064x}')

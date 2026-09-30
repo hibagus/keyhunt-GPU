@@ -83,6 +83,7 @@ Request parse(const std::string& line) {
     else if (op == "fadd") request.op = Op::Add;
     else if (op == "fsub") request.op = Op::Sub;
     else if (op == "fmul") request.op = Op::Mul;
+    else if (op == "fmul16") request.op = Op::Mul16;
     else if (op == "fsquare") request.op = Op::Square;
     else if (op == "fneg") request.op = Op::Negate;
     else if (op == "finv") request.op = Op::Inverse;
@@ -92,7 +93,7 @@ Request parse(const std::string& line) {
         if (request.count == 32) throw std::invalid_argument("group capacity exceeded");
         request.values[request.count++] = decode(word);
     }
-    const bool binary = request.op == Op::Add || request.op == Op::Sub || request.op == Op::Mul;
+    const bool binary = request.op == Op::Add || request.op == Op::Sub || request.op == Op::Mul || request.op == Op::Mul16;
     if (request.op != Op::BatchInverse && request.count != (binary ? 2U : 1U))
         throw std::invalid_argument("wrong operation arity");
     return request;
@@ -113,7 +114,7 @@ std::string format(const Request& request, const Result& result) {
         return text;
     }
     switch (request.op) {
-    case Op::Add: case Op::Sub: case Op::Mul: count = 3; break;
+    case Op::Add: case Op::Sub: case Op::Mul: case Op::Mul16: count = 3; break;
     case Op::Square: case Op::Negate: count = 2; break;
     case Op::Inverse: case Op::Bytes: count = 2; text = std::to_string(result.flags); break;
     case Op::BatchInverse: count = request.count; text = std::to_string(result.flags); break;

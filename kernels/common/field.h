@@ -105,6 +105,20 @@ KEYHUNT_HD inline void sub(Field& out, const Field& a, const Field& b) {
     out = result;
 }
 KEYHUNT_HD inline void neg(Field& out, const Field& a) { sub(out, Field{}, a); }
+// The reduction is independent of how the full product was accumulated. Keeping
+// it separate also lets test-only radix alternatives share the proven fold.
+KEYHUNT_HD inline Field reduce_product(const uint32_t product[16]) {
+    Field low{};
+    uint64_t carry = 0;
+    for (unsigned i = 0; i < 8; ++i) {
+        // Fold the upper eight limbs without dropping the shifted top limb.
+        const uint64_t sum = uint64_t(product[i]) + uint64_t(product[i+8])*977
+                           + (i ? product[i+7] : 0) + carry;
+        low.limb[i] = uint32_t(sum);
+        carry = sum >> 32;
+    }
+    return fold(low, carry + product[15]);
+}
 KEYHUNT_HD inline void mul(Field& out, const Field& a, const Field& b) {
     uint32_t product[16]{};
     for (unsigned i = 0; i < 8; ++i) {
@@ -117,16 +131,7 @@ KEYHUNT_HD inline void mul(Field& out, const Field& a, const Field& b) {
         }
         product[i+8] = uint32_t(carry);
     }
-    Field low{};
-    uint64_t carry = 0;
-    for (unsigned i = 0; i < 8; ++i) {
-        // Fold the upper eight limbs without dropping the shifted top limb.
-        const uint64_t sum = uint64_t(product[i]) + uint64_t(product[i+8])*977
-                           + (i ? product[i+7] : 0) + carry;
-        low.limb[i] = uint32_t(sum);
-        carry = sum >> 32;
-    }
-    out = fold(low, carry + product[15]);
+    out = reduce_product(product);
 }
 KEYHUNT_HD inline void square(Field& out, const Field& a) { mul(out, a, a); }
 KEYHUNT_HD inline bool inverse(Field& out, const Field& a) {

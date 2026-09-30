@@ -145,10 +145,32 @@ ctest --preset hip-release
 ```
 
 The full HIP suite includes the preserved CPU regressions and requires an
-accessible GPU. `ctest --preset hip-release -L hardware` selects only the four
+accessible GPU. `ctest --preset hip-release -L hardware` selects the HIP
 hardware checks; missing hardware fails those gates. The backend's device code
 receives no CPU SIMD/native, fast-math or LTO flags. HIP+sanitizers is explicitly
 rejected; use the separate CPU sanitizer build for host checks. Installation
 includes the same `keyhunt` executable and uses the installed ROCm runtime.
 See [HIP_BACKEND.md](HIP_BACKEND.md) for alternate SDK paths, partition identity
 limitations, memory/ownership rules, and reproduction of the recorded evidence.
+
+
+## Portable GPU arithmetic checks
+
+C08 builds `portable_arithmetic_probe` in CPU test configurations and adds
+`hip_arithmetic_probe` and an opt-in `hip_arithmetic_benchmark` to HIP test builds.
+Shared integer headers compile without CPU native/SIMD, LTO or fast-math flags.
+The public C07 diagnostic commands retain their transport-only behavior.
+
+```sh
+ctest --preset hip-release -L arithmetic
+ctest --preset cpu-release -L arithmetic
+ASAN_OPTIONS=detect_leaks=1 UBSAN_OPTIONS=halt_on_error=1 \
+  ctest --preset cpu-sanitizers -L arithmetic
+./build/hip-release/hip_arithmetic_benchmark 0
+```
+
+The arithmetic label includes field and point differential tests and, on HIP,
+a small corpus on each visible logical device. Benchmark output is JSON with
+warm-up, raw kernel-event samples and checked results; timing never decides a
+CTest pass. See [GPU_ARITHMETIC.md](GPU_ARITHMETIC.md) for exact representation,
+zero/infinity/aliasing contracts, benchmark interpretation and validation scope.

@@ -10,6 +10,10 @@ if(KEYHUNT_ENABLE_SANITIZERS)
 endif()
 if(KEYHUNT_ENABLE_HIP)
     add_executable(hip_arithmetic_probe tests/gpu/arithmetic_probe.hip)
+    add_executable(hip_arithmetic_benchmark tests/gpu/arithmetic_benchmark.hip)
+    target_include_directories(hip_arithmetic_benchmark PRIVATE kernels src/backend/hip)
+    target_compile_options(hip_arithmetic_benchmark PRIVATE -Wall -Wextra)
+    set_target_properties(hip_arithmetic_benchmark PROPERTIES INTERPROCEDURAL_OPTIMIZATION OFF)
     target_include_directories(hip_arithmetic_probe PRIVATE kernels src/backend/hip)
     target_compile_options(hip_arithmetic_probe PRIVATE -Wall -Wextra)
     set_target_properties(hip_arithmetic_probe PROPERTIES INTERPROCEDURAL_OPTIMIZATION OFF)
@@ -45,3 +49,13 @@ foreach(backend portable hip)
         set_tests_properties(${backend}_point_oracle PROPERTIES LABELS "hip;hardware;arithmetic;oracle" RESOURCE_LOCK hip_device)
     endif()
 endforeach()
+
+if(KEYHUNT_ENABLE_HIP)
+    add_test(NAME hip_arithmetic_devices COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/gpu/device_arithmetic.py"
+        --binary $<TARGET_FILE:keyhunt> --probe $<TARGET_FILE:hip_arithmetic_probe>
+        --oracle $<TARGET_FILE:secp256k1_oracle>
+        --report "${CMAKE_CURRENT_BINARY_DIR}/hip-arithmetic-devices.json")
+    set_tests_properties(hip_arithmetic_devices PROPERTIES TIMEOUT 300
+        LABELS "hip;hardware;arithmetic;oracle" RESOURCE_LOCK hip_device)
+endif()

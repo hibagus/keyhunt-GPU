@@ -1,0 +1,264 @@
+{
+  "oracle_commit": "0cdc758a56360bf58a851fe91085a327ec97685a",
+  "inventory": {
+    "backend": "hip",
+    "runtime_version": 71526333,
+    "driver_version": 71526333,
+    "devices": [
+      {
+        "ordinal": 0,
+        "name": "AMD Instinct MI300X",
+        "architecture": "gfx942:sramecc+:xnack-",
+        "uuid": "30646366333934386337333264313231",
+        "pci_bus_id": "0000:1b:00.0",
+        "physical_id": "0dcf3948c732d121",
+        "physical_id_source": "sysfs.unique_id",
+        "compute_partition": "SPX",
+        "memory_partition": "NPS1",
+        "memory_allocation_mode": "CAPPING",
+        "numa_node": 0,
+        "compute_units": 304,
+        "warp_size": 64,
+        "property_memory_bytes": 206141652992,
+        "total_memory_bytes": 206141652992,
+        "free_memory_bytes": 205533478912,
+        "warnings": []
+      },
+      {
+        "ordinal": 1,
+        "name": "AMD Instinct MI300X",
+        "architecture": "gfx942:sramecc+:xnack-",
+        "uuid": "30393337633864376335303031303365",
+        "pci_bus_id": "0000:3d:00.0",
+        "physical_id": "0937c8d7c500103e",
+        "physical_id_source": "sysfs.unique_id",
+        "compute_partition": "SPX",
+        "memory_partition": "NPS1",
+        "memory_allocation_mode": "CAPPING",
+        "numa_node": 0,
+        "compute_units": 304,
+        "warp_size": 64,
+        "property_memory_bytes": 206141652992,
+        "total_memory_bytes": 206141652992,
+        "free_memory_bytes": 205533478912,
+        "warnings": []
+      },
+      {
+        "ordinal": 2,
+        "name": "AMD Instinct MI300X",
+        "architecture": "gfx942:sramecc+:xnack-",
+        "uuid": "34616433376163376162633937306666",
+        "pci_bus_id": "0000:4e:00.0",
+        "physical_id": "4ad37ac7abc970ff",
+        "physical_id_source": "sysfs.unique_id",
+        "compute_partition": "SPX",
+        "memory_partition": "NPS1",
+        "memory_allocation_mode": "CAPPING",
+        "numa_node": 0,
+        "compute_units": 304,
+        "warp_size": 64,
+        "property_memory_bytes": 206141652992,
+        "total_memory_bytes": 206141652992,
+        "free_memory_bytes": 205533478912,
+        "warnings": []
+      },
+      {
+        "ordinal": 3,
+        "name": "AMD Instinct MI300X",
+        "architecture": "gfx942:sramecc+:xnack-",
+        "uuid": "64636438643565303832323137646663",
+        "pci_bus_id": "0000:5f:00.0",
+        "physical_id": "dcd8d5e082217dfc",
+        "physical_id_source": "sysfs.unique_id",
+        "compute_partition": "SPX",
+        "memory_partition": "NPS1",
+        "memory_allocation_mode": "CAPPING",
+        "numa_node": 0,
+        "compute_units": 304,
+        "warp_size": 64,
+        "property_memory_bytes": 206141652992,
+        "total_memory_bytes": 206141652992,
+        "free_memory_bytes": 205533478912,
+        "warnings": []
+      },
+      {
+        "ordinal": 4,
+        "name": "AMD Instinct MI300X",
+        "architecture": "gfx942:sramecc+:xnack-",
+        "uuid": "63613033303464653334643962636639",
+        "pci_bus_id": "0000:9d:00.0",
+        "physical_id": "ca0304de34d9bcf9",
+        "physical_id_source": "sysfs.unique_id",
+        "compute_partition": "SPX",
+        "memory_partition": "NPS1",
+        "memory_allocation_mode": "CAPPING",
+        "numa_node": 1,
+        "compute_units": 304,
+        "warp_size": 64,
+        "property_memory_bytes": 206141652992,
+        "total_memory_bytes": 206141652992,
+        "free_memory_bytes": 205533478912,
+        "warnings": []
+      },
+      {
+        "ordinal": 5,
+        "name": "AMD Instinct MI300X",
+        "architecture": "gfx942:sramecc+:xnack-",
+        "uuid": "66366665356431386461333065623431",
+        "pci_bus_id": "0000:bd:00.0",
+        "physical_id": "f6fe5d18da30eb41",
+        "physical_id_source": "sysfs.unique_id",
+        "compute_partition": "SPX",
+        "memory_partition": "NPS1",
+        "memory_allocation_mode": "CAPPING",
+        "numa_node": 1,
+        "compute_units": 304,
+        "warp_size": 64,
+        "property_memory_bytes": 206141652992,
+        "total_memory_bytes": 206141652992,
+        "free_memory_bytes": 205533478912,
+        "warnings": []
+      },
+      {
+        "ordinal": 6,
+        "name": "AMD Instinct MI300X",
+        "architecture": "gfx942:sramecc+:xnack-",
+        "uuid": "32333266393737383136343134663766",
+        "pci_bus_id": "0000:cd:00.0",
+        "physical_id": "232f977816414f7f",
+        "physical_id_source": "sysfs.unique_id",
+        "compute_partition": "SPX",
+        "memory_partition": "NPS1",
+        "memory_allocation_mode": "CAPPING",
+        "numa_node": 1,
+        "compute_units": 304,
+        "warp_size": 64,
+        "property_memory_bytes": 206141652992,
+        "total_memory_bytes": 206141652992,
+        "free_memory_bytes": 205533478912,
+        "warnings": []
+      },
+      {
+        "ordinal": 7,
+        "name": "AMD Instinct MI300X",
+        "architecture": "gfx942:sramecc+:xnack-",
+        "uuid": "37386338613437353837623036353233",
+        "pci_bus_id": "0000:dd:00.0",
+        "physical_id": "78c8a47587b06523",
+        "physical_id_source": "sysfs.unique_id",
+        "compute_partition": "SPX",
+        "memory_partition": "NPS1",
+        "memory_allocation_mode": "CAPPING",
+        "numa_node": 1,
+        "compute_units": 304,
+        "warp_size": 64,
+        "property_memory_bytes": 206141652992,
+        "total_memory_bytes": 206141652992,
+        "free_memory_bytes": 205533478912,
+        "warnings": []
+      }
+    ]
+  },
+  "cases_per_device": 129,
+  "corpus_sha256": "0b6291aa3b2bab6862b889842e40b6c8f3205c9fe39c4163bb94eebe0acd1ab1",
+  "binary_sha256": "cd0237b5fe5c4a14c62489ba743f8ba45f47ff71598a1516b66c34924afe4c3e",
+  "devices": [
+    {
+      "ordinal": 0,
+      "uuid": "30646366333934386337333264313231",
+      "stats": {
+        "cases": 129,
+        "batches": 1,
+        "kernel_ms": 40.8652,
+        "wall_ms": 327.661,
+        "batch_capacity": 129,
+        "device": 0
+      }
+    },
+    {
+      "ordinal": 1,
+      "uuid": "30393337633864376335303031303365",
+      "stats": {
+        "cases": 129,
+        "batches": 1,
+        "kernel_ms": 46.4027,
+        "wall_ms": 331.898,
+        "batch_capacity": 129,
+        "device": 1
+      }
+    },
+    {
+      "ordinal": 2,
+      "uuid": "34616433376163376162633937306666",
+      "stats": {
+        "cases": 129,
+        "batches": 1,
+        "kernel_ms": 36.2824,
+        "wall_ms": 323.393,
+        "batch_capacity": 129,
+        "device": 2
+      }
+    },
+    {
+      "ordinal": 3,
+      "uuid": "64636438643565303832323137646663",
+      "stats": {
+        "cases": 129,
+        "batches": 1,
+        "kernel_ms": 36.6129,
+        "wall_ms": 566.305,
+        "batch_capacity": 129,
+        "device": 3
+      }
+    },
+    {
+      "ordinal": 4,
+      "uuid": "63613033303464653334643962636639",
+      "stats": {
+        "cases": 129,
+        "batches": 1,
+        "kernel_ms": 42.3139,
+        "wall_ms": 331.188,
+        "batch_capacity": 129,
+        "device": 4
+      }
+    },
+    {
+      "ordinal": 5,
+      "uuid": "66366665356431386461333065623431",
+      "stats": {
+        "cases": 129,
+        "batches": 1,
+        "kernel_ms": 36.9156,
+        "wall_ms": 324.626,
+        "batch_capacity": 129,
+        "device": 5
+      }
+    },
+    {
+      "ordinal": 6,
+      "uuid": "32333266393737383136343134663766",
+      "stats": {
+        "cases": 129,
+        "batches": 1,
+        "kernel_ms": 41.9005,
+        "wall_ms": 331.566,
+        "batch_capacity": 129,
+        "device": 6
+      }
+    },
+    {
+      "ordinal": 7,
+      "uuid": "37386338613437353837623036353233",
+      "stats": {
+        "cases": 129,
+        "batches": 1,
+        "kernel_ms": 37.6734,
+        "wall_ms": 325.665,
+        "batch_capacity": 129,
+        "device": 7
+      }
+    }
+  ],
+  "failures": []
+}

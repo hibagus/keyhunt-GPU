@@ -1,8 +1,9 @@
 #pragma once
 #include "common/point.h"
+#include "multiply16.h"
 
 namespace keyhunt::gpu::test {
-enum class Op : uint32_t { Normalize, Add, Sub, Mul, Square, Negate, Inverse, BatchInverse, Bytes, Limits, Public, PointAdd, PointMixed, PointDouble, PointNegate, PointReduce, PointMultiply, PointValid };
+enum class Op : uint32_t { Normalize, Add, Sub, Mul, Mul16, Square, Negate, Inverse, BatchInverse, Bytes, Limits, Public, PointAdd, PointMixed, PointDouble, PointNegate, PointReduce, PointMultiply, PointValid };
 struct Request { Op op{}; uint32_t count = 0; Field values[32]{}; };
 struct Result { Field values[32]{}; uint32_t flags = 0; };
 
@@ -78,6 +79,9 @@ KEYHUNT_HD inline Result evaluate(const Request& request) {
         result.values[1] = left; result.values[2] = right; break;
     case Op::Mul:
         mul(result.values[0], a, b); mul(left, left, b); mul(right, a, right);
+        result.values[1] = left; result.values[2] = right; break;
+    case Op::Mul16:
+        multiply16(result.values[0],a,b); multiply16(left,left,b); multiply16(right,a,right);
         result.values[1] = left; result.values[2] = right; break;
     case Op::Square:
         square(result.values[0], a); square(left, left); result.values[1] = left; break;
