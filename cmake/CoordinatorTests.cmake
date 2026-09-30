@@ -75,3 +75,18 @@ target_link_libraries(coordinator_recovery_test PRIVATE keyhunt_core SQLite::SQL
 keyhunt_configure_target(coordinator_recovery_test)
 add_test(NAME coordinator_recovery COMMAND coordinator_recovery_test)
 set_tests_properties(coordinator_recovery PROPERTIES TIMEOUT 120 LABELS "cpu;coordinator;recovery")
+
+if(KEYHUNT_TEST_APACHE_ROOT AND TARGET keyhunt-worker)
+    add_test(NAME coordinator_local_launcher COMMAND ${Python3_EXECUTABLE}
+        ${PROJECT_SOURCE_DIR}/tests/coordinator/local_launcher.py
+        --coordinator $<TARGET_FILE:keyhunt-coordinator> --worker $<TARGET_FILE:keyhunt-worker>
+        --apache-root ${KEYHUNT_TEST_APACHE_ROOT})
+    set_tests_properties(coordinator_local_launcher PROPERTIES TIMEOUT 120 LABELS "cpu;coordinator;integration")
+endif()
+
+add_executable(coordinator_budget_test tests/coordinator/budget.cpp)
+target_include_directories(coordinator_budget_test PRIVATE src/storage src/coordinator)
+target_link_libraries(coordinator_budget_test PRIVATE keyhunt_coordination)
+keyhunt_configure_target(coordinator_budget_test)
+add_test(NAME coordinator_budget COMMAND coordinator_budget_test)
+set_tests_properties(coordinator_budget PROPERTIES TIMEOUT 120 LABELS "cpu;coordinator;budget")

@@ -7,6 +7,8 @@ import json
 import os
 from pathlib import Path
 import socket
+import signal
+import time
 import ssl
 import sys
 import tempfile
@@ -88,6 +90,24 @@ def test(env):
     assert (env.api.stat().st_mode & 0o777) == 0o660
     assert (env.admin_socket.stat().st_mode & 0o777) == 0o600
     env.admin("check")
+    # Renew only the server leaf under the same test CA, then reload Apache.
+    # A fresh client must verify the new certificate with the unchanged hostname.
+    old_leaf = (env.directory / "server.pem").read_text()
+    env.certificate("server", "server-ca", server=True)
+    new_leaf = (env.directory / "server.pem").read_text()
+    assert old_leaf != new_leaf
+    expected = ssl.PEM_cert_to_DER_cert(new_leaf)
+    env.processes[-1].send_signal(signal.SIGUSR1)
+    for _ in range(100):
+        with env.client("bob") as client:
+            client.connect()
+            changed = client.sock.getpeercert(binary_form=True) == expected
+            if changed:
+                assert request(client)[0] == 200
+                break
+        time.sleep(.05)
+    else:
+        raise AssertionError("Apache did not serve the renewed server certificate")
 
 
 def main():

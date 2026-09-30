@@ -95,10 +95,13 @@ class Environment:
         self.processes.append(process)
         return process
 
-    def start(self, proxy_uid=None):
-        with socket.socket() as probe:
-            probe.bind(("127.0.0.1", 0))
-            self.port = probe.getsockname()[1]
+    def start(self, proxy_uid=None, port=None):
+        if port is None:
+            with socket.socket() as probe:
+                probe.bind(("127.0.0.1", 0))
+                self.port = probe.getsockname()[1]
+        else:
+            self.port = port
         self.authority = f"{HOST}:{self.port}"
         self.api = self.directory / "api.sock"
         self.admin_socket = self.directory / "admin.sock"
@@ -163,3 +166,90 @@ class Environment:
         for log in self.logs:
             log.close()
         self.logs.clear()
+
+
+def main():
+    import argparse
+    import signal
+    from coordinator_worker import private_write
+    parser = argparse.ArgumentParser(description="Run an isolated localhost coordinator with real mTLS and two test identities")
+    parser.add_argument("--directory", type=Path, required=True)
+    parser.add_argument("--coordinator", required=True)
+    parser.add_argument("--worker", help="also configure two independent native worker journals")
+    parser.add_argument("--apache-root", default="/")
+    parser.add_argument("--port", type=int, default=8443)
+    parser.add_argument("--check", action="store_true", help="validate startup and stop, retaining private state")
+    args = parser.parse_args()
+    root = args.directory.resolve()
+    if root == REPO or REPO in root.parents or not 1024 <= args.port <= 65535:
+        parser.error("use an external private directory and an unprivileged loopback port")
+    manifest = root / "local.json"
+    if root.exists() and (root.stat().st_uid != os.getuid() or root.stat().st_mode & 0o077):
+        parser.error("existing local environment directory must be owned and private (0700)")
+    if root.exists() and not manifest.exists() and any(root.iterdir()):
+        parser.error("new environment needs an empty directory; incomplete setups are never silently overwritten")
+    root.mkdir(mode=0o700, parents=True, exist_ok=True)
+    env = Environment(root / "server", args.coordinator, args.apache_root)
+    saved = json.loads(manifest.read_text()) if manifest.exists() else None
+    if saved and saved["port"] != args.port:
+        parser.error("restart with the saved port; worker endpoint configuration is immutable")
+    stop = False
+
+    def finish(_signal, _frame):
+        nonlocal stop
+        stop = True
+
+    signal.signal(signal.SIGINT, finish)
+    signal.signal(signal.SIGTERM, finish)
+    try:
+        if saved is None:
+            env.initialize()
+        env.start(port=args.port)
+        if saved is None:
+            alice = env.admin("bootstrap", name="localhost operator", certificate=(env.directory / "alice.pem").read_text())
+            bob = env.admin("client-add", name="localhost worker", certificate=(env.directory / "bob.pem").read_text())
+            project = env.admin("project-create", name="localhost synthetic demo", owner=alice["client"])["project"]
+            env.admin("membership-set", project=project, client=bob["client"], role="worker")
+            body = dict(mode="xpoint", begin=f"0x{1:064x}", end_exclusive=f"0x{1048577:064x}",
+                        block_width=f"0x{262144:064x}", configuration=(b"khsearch\x01\x01" + bytes(40)).hex(),
+                        targets="79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798")
+            with env.client("alice") as client:
+                client.request("POST", f"/api/v1/projects/{project}/jobs", json.dumps(body), {"Content-Type": "application/json"})
+                response = client.getresponse()
+                value = json.loads(response.read())
+                if response.status != 200:
+                    raise RuntimeError(value)
+                job = value["value"]["job"]
+            saved = dict(port=args.port, endpoint="https://" + env.authority, project=project, job=job,
+                         ca=str(env.directory / "server-ca.pem"), admin_socket=str(env.admin_socket), workers={})
+            for name in ("alice", "bob"):
+                state = root / (name + "-worker")
+                config = dict(endpoint=saved["endpoint"], ca=saved["ca"],
+                              certificate=str(env.directory / (name + ".pem")), key=str(env.directory / (name + ".key")),
+                              resolve=f"{HOST}:{args.port}:127.0.0.1",
+                              jobs=[dict(project=project, job=job, devices=["0"], spares=0, policy="sequential")])
+                file = root / (name + "-worker.json")
+                private_write(file, json.dumps(config) + "\n")
+                if args.worker:
+                    subprocess.run([str(Path(args.worker).resolve()), "configure", "--state-dir", str(state), "--config", str(file)],
+                                   check=True, stdout=subprocess.DEVNULL)
+                saved["workers"][name] = dict(state=str(state), configuration=str(file))
+            private_write(manifest, json.dumps(saved, indent=2) + "\n")
+        # A registered read verifies the complete CA/hostname/header/registry path.
+        with env.client("alice") as client:
+            client.request("GET", "/api/v1/projects")
+            response = client.getresponse()
+            response.read()
+            if response.status != 200:
+                raise RuntimeError("local authenticated readiness check failed")
+        print(json.dumps(dict(ready=True, manifest=str(manifest), **saved)), flush=True)
+        while not args.check and not stop:
+            if any(process.poll() is not None for process in env.processes):
+                raise RuntimeError("a local service exited; inspect private server logs")
+            time.sleep(.5)
+    finally:
+        env.stop()
+
+
+if __name__ == "__main__":
+    main()

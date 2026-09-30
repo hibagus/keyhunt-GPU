@@ -1,11 +1,11 @@
 # Authenticated coordination (C15)
 
-C15 is in progress. S02 enrollment and project authorization are implemented;
-the HTTP/mTLS boundary, machine sync, worker outbox and packaging follow as
-separate changes. GPU kernels and checkpoint cadence are unchanged.
+C15 implements authenticated coordination, durable machine sync, a worker
+outbox, process supervision and recovery. The accepted deployment scope is
+isolated localhost. GPU kernels and checkpoint cadence are unchanged.
 
 The operator selected **isolated localhost validation** for this milestone.
-The deployment hostname `dbkeyprogress.rumahsimanis.bagus.my.id` will resolve to
+The deployment hostname `dbkeyprogress.rumahsimanis.bagus.my.id` resolves to
 `127.0.0.1` in the test client, with real hostname verification and a dedicated
 test CA. System DNS and `/etc/hosts` are not modified. Public ingress and a
 physical second host remain explicitly deferred.
@@ -292,3 +292,71 @@ fragmented checkpoint, old-backup quarantine, revoked-access reconciliation,
 expired partial transfer, stale-generation rejection and resumption without
 recomputing the accepted prefix. Dedicated test binaries contain failure hooks;
 the production executables do not.
+
+## S06: isolated localhost operation
+
+The user replaced the physical-second-host/public-ingress gate with isolated
+localhost validation. Apache and the coordinator run as separate processes;
+two workers have separate journals and enrolled credentials. All listeners bind
+to loopback, with Unix sockets between Apache and the database service. This
+is process and state isolation, not a VM/container or a boundary against another
+process running as the same trusted Unix user.
+
+From the repository, with Apache installed (or `--apache-root` pointing to an
+extracted package root), start the reproducible environment:
+
+```sh
+python3 tools/coordinator_local.py \
+  --directory /home/bagus/.local/state/keyhunt-coordinator-demo \
+  --coordinator build/coordinator-release/keyhunt-coordinator \
+  --worker build/hip-release/keyhunt-worker \
+  --port 8443
+```
+
+The launcher prints readiness after a real authenticated HTTPS read. It creates
+a tiny synthetic xpoint job, two approved test identities, and worker JSON
+configurations pointing at
+`https://dbkeyprogress.rumahsimanis.bagus.my.id:8443`. Each configuration uses a
+client-local `resolve` override to `127.0.0.1`; hostname and CA verification remain
+on. Existing identities/state are preserved across restarts. `--check` performs
+startup/readiness and stops. Ctrl-C stops both services, retaining private state.
+
+On this machine, append `--apache-root /tmp/keyhunt-c15-deps/root` to use the
+already-extracted Apache packages. These temporary dependencies and the validated
+`/tmp/keyhunt-c15-local-demo` environment are disposable; they are not system
+installations. Install normal dependencies or retain a private package prefix for
+long-lived use. Test CA private keys and sixty-day test certificates stay outside
+Git and are intended for this isolated environment only.
+
+In a second terminal, while the launcher is running:
+
+```sh
+build/hip-release/keyhunt-worker sync \
+  --state-dir /home/bagus/.local/state/keyhunt-coordinator-demo/alice-worker
+python3 tools/coordinator_worker.py \
+  --state-dir /home/bagus/.local/state/keyhunt-coordinator-demo/alice-worker \
+  --worker build/hip-release/keyhunt-worker --keyhunt build/hip-release/keyhunt --once
+build/hip-release/keyhunt-worker status \
+  --state-dir /home/bagus/.local/state/keyhunt-coordinator-demo/alice-worker
+```
+
+After execution, status shows local completion awaiting sync. A subsequent manual
+`sync` uploads the durable outbox; the supervisor otherwise waits for its regular
+two-hour contact. The `bob-worker` configuration provides the second independent
+client. This demo's small blocks are for validation, not twelve-hour production
+calibration. Public DNS, TCP 443 ingress, ACME issuance/renewal and a physical
+second host remain explicitly untested/deferred.
+
+The localhost gate also renews the server leaf under the test CA, gracefully
+reloads Apache and verifies the new leaf on a fresh hostname-checked connection.
+This validates local certificate replacement/reload; it is not an ACME or public
+network renewal test. The launcher gate checks identity-preserving restart,
+private key/configuration permissions and rejection of a checkout state path.
+
+A native repository burst with 32 authenticated machines/64 device queues reserved
+128 distinct blocks and committed 4,096 fragmented intervals. Median/p95 claim
+latency was 2.01/2.17 ms; progress plus renewal was 130.08/130.43 ms. Database/WAL
+sizes were 1,802,240/4,202,432 bytes at capture. These are local CPU/storage samples,
+excluding HTTPS, WAN latency and GPU computation. Rate-limit rejection and exact
+receipt retries were checked in the same fixture. See the final
+[validation record](COORDINATOR_VALIDATION.md) for scope and regression results.
