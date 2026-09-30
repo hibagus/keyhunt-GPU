@@ -169,7 +169,7 @@ GPU modes remain planned.
 - [x] C19: [opt-in gfx942 carry/borrow intrinsics, portable fallback and paired ISA evidence](docs/GFX942_SPECIALIZATIONS.md).
 - [x] C20: [concurrent HIP/CUDA scheduling, balancing and recovery](docs/MULTI_GPU.md); [H200 acceptance](docs/C20_CUDA_VALIDATION.md).
 - [x] C21: [validated GPU build/operations guides and executable quickstarts](docs/C21_VALIDATION.md).
-- [ ] C22: portable offline assignment export and reconciliation.
+- [x] C22: [offline assignment export, trusted courier exchange and reconciliation](docs/C22_VALIDATION.md).
 - [ ] C23: further GPU modes with algorithm and recovery parity.
 
 See [implementation status](docs/IMPLEMENTATION_STATUS.md) for evidence and

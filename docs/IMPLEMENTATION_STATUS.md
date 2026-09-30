@@ -28,7 +28,8 @@ change is committed separately. Analysis and validation evidence live under
 | C19: gfx942 arithmetic specializations | Completed (opt-in) | [Carry/borrow intrinsics, rejected experiments and ISA evidence](GFX942_SPECIALIZATIONS.md); small-target stepped xpoint kernels 1.051–1.060× faster, portable fallback; 33 CPU / 61 HIP / 4 debug / 4 sanitizer checks pass |
 | C20: concurrent GPU scheduling | Completed (HIP and CUDA / localhost) | [Ownership and operations](MULTI_GPU.md); persistent owners, balancing, calibrated widths and bounded recovery. HIP: 66 HIP / 47 CPU / 9 debug / 7 sanitizer gates and [manifest](baselines/C20_VALIDATION.json). [H200 acceptance](C20_CUDA_VALIDATION.md): 64 CUDA-build tests, three GPU memory/leak checks; each backend has 48 validated 1/2/4/8-GPU runs and calibrated lifecycle recovery. |
 | C21: validated GPU build and operations guides | Completed | [Findings and acceptance](C21_VALIDATION.md); tested build/mode matrices, executable HIP/CUDA quickstarts, CPU CI preparation, localhost worker operations, recovery/performance limits and checked documentation links |
-| C22–C23 | Planned | Offline assignment export/reconciliation and further GPU modes; acceptance gates remain in the redesign plan |
+| C22: offline assignment export and reconciliation | Completed (trusted courier / localhost) | [Workflow and recovery](OFFLINE_ASSIGNMENTS.md), [acceptance](C22_VALIDATION.md); schema-v7 transfer receipts, exclusive files, duplicate/fencing/deadline checks, exact unions, bounded reconciliation and disconnected HIP/CUDA xpoint/BSGS |
+| C23 | Planned | Further GPU modes; acceptance gates remain in the redesign plan |
 
 C01 records the original CPU boundary/stride defects. C06 fixes modular/point
 arithmetic and the tested BSGS start miss; tail overrun and stride defects remain.

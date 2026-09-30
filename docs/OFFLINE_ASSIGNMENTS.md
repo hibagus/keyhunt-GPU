@@ -1,6 +1,6 @@
 # C22 offline assignment files
 
-Status: implementation in progress. The existing authenticated sync protocol is
+Status: complete within the [recorded acceptance scope](C22_VALIDATION.md). The existing authenticated sync protocol is
 the authority for reservations, verified result reconciliation and fenced leases.
 C22 adds a manual file transport for a disconnected GPU worker and a connected
 courier. It does not add a second allocator or permit standalone grants to be
@@ -50,7 +50,7 @@ revocation without another exchange; the coordinator rechecks current credential
 roles, epochs and grant generations when relaying requests. Backup restore remains
 quarantined under the existing stopped-authority and access-review procedure.
 
-## Acceptance plan
+## Acceptance checks
 
 - Native CPU tests: reservations exclude other workers; idempotent and conflicting
   imports; canonical manifests; exact union and verified results; outbox paging;
@@ -62,11 +62,11 @@ quarantined under the existing stopped-authority and access-review procedure.
 - Existing storage/coordinator recovery and supervised worker regressions, focused
   host sanitizer checks, documentation and artifact validation.
 
-Commands, raw evidence and final acceptance will be added with the implementation.
+The [acceptance record](C22_VALIDATION.md) links raw results and reproduction details.
 
 ## File codec validation
 
-The first native gate, `coordinator_offline_files`, passes on the CPU release
+The native gate, `coordinator_offline_files`, passes on the CPU release
 build. It checks exact JSON/checksum round trips, preservation of an existing
 destination, invalid checksums, duplicate JSON fields, size bounds, public
 permissions, symlinks, hardlinks and nonblocking rejection of a FIFO. Failed
@@ -88,9 +88,8 @@ receipt. Definite denials pause imported work without deleting pending results.
 The file-only configuration can omit credential paths; keys remain on the courier.
 It rejects the direct HTTPS sync interface.
 
-CPU release validation passes all three new offline gates and 26 focused
-storage/coordinator regression gates, including actual localhost TLS. The new
-cases cover disjoint reservations during file transit, complete ten-block union
+The [final validation](C22_VALIDATION.md#validation) includes CPU release, debug,
+sanitizer and native HIP/CUDA gates with actual localhost TLS. Native cases cover disjoint reservations during file transit, complete ten-block union
 and four verified matches, foreign/conflicting/duplicate imports, invalid manifests,
 elapsed delivery time, superseded attempts, reboot, 130-checkpoint paging,
 checkpoints arriving after export, credential revocation, recovered generations

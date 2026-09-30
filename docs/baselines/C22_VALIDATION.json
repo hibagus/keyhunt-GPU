@@ -1,0 +1,196 @@
+{
+  "milestone": "C22",
+  "recorded_utc": "2026-09-30T23:47:56.978865+00:00",
+  "passed": true,
+  "source_commit": "403fd61bea101f8e210992794dd25c1e33d8da31",
+  "production_last_changed_commit": "cc9da27",
+  "schema_version": 7,
+  "scope": "Trusted courier file transport over existing mTLS machine sync; localhost transport and disconnected HIP/CUDA execution",
+  "checks": {
+    "plain_cpu_release": {
+      "passed": 34,
+      "failed": 0,
+      "log": "keyhunt-c22-cpu-tests.log"
+    },
+    "coordinator_cpu_release": {
+      "passed": 51,
+      "failed": 0,
+      "log": "keyhunt-c22-release-tests.log"
+    },
+    "file_status_followup": {
+      "passed": 4,
+      "failed": 0,
+      "log": "keyhunt-c22-file-status-tests.log"
+    },
+    "clock_release_followup": {
+      "passed": 2,
+      "failed": 0,
+      "log": "keyhunt-c22-clock-tests.log"
+    },
+    "debug_final": {
+      "passed": 6,
+      "failed": 0,
+      "log": "keyhunt-c22-debug-final-tests.log"
+    },
+    "asan_ubsan_final": {
+      "passed": 5,
+      "failed": 0,
+      "log": "keyhunt-c22-sanitizers-final-tests.log"
+    },
+    "hip_regressions": {
+      "passed": 29,
+      "failed": 0,
+      "log": "keyhunt-c22-hip-regressions.log"
+    },
+    "hip_clock_followup": {
+      "passed": 2,
+      "failed": 0,
+      "log": "keyhunt-c22-hip-clock-tests.log"
+    },
+    "cuda_cpu-tests": {
+      "passed": 20,
+      "failed": 0,
+      "log": "cuda/cpu-tests.log"
+    },
+    "cuda_clock-tests": {
+      "passed": 2,
+      "failed": 0,
+      "log": "cuda/clock-tests.log"
+    },
+    "cuda_fleet-retry": {
+      "passed": 1,
+      "failed": 0,
+      "log": "cuda/fleet-retry.log"
+    },
+    "cuda_hardware": {
+      "passed": 5,
+      "failed": 0,
+      "initial_log": "cuda/hardware-tests.log",
+      "initial_result": "4/5 passed; fleet metadata required Git history missing from the extracted archive",
+      "resolution": "Installed the matching Git history without changing source files; the failed fleet gate then passed",
+      "followup_log": "cuda/fleet-retry.log"
+    }
+  },
+  "source_sha256": {
+    "CMakeLists.txt": "579aec168af8ebc88d10d90fa96b42ec4c3533eed973e8a2de2cc7424d3788ee",
+    "cmake/CoordinatorTests.cmake": "d388842a94fb070ca88d0c31cd119cb87da59442fecb0f6aafac75eac925c2d4",
+    "include/keyhunt/coordinator/offline.h": "5170addbcb98372910f9564680bce5ebe61ca3f14db0bc50b10b6c18b21ad1ef",
+    "include/keyhunt/coordinator/worker.h": "ffa524f47db54f111253abfcd61a505ce31cef12bde0750c5d8f476a259abc17",
+    "src/coordinator/offline.cpp": "644444752411229fe313194b2d3cc0b08f2739a866b693a1b486ac3b4c511b67",
+    "src/coordinator/repository.cpp": "fcc8736732bd2c7d41a2e6a06da30f354506f3a6ac8c641071d373c09e218fae",
+    "src/coordinator/worker.cpp": "5c3af3f457761bb2ae1c2a0b8a078cc4aad15025a7e739bd110cc8a1a4019d45",
+    "src/coordinator/worker_main.cpp": "dc8bf7bd2384303f84be48d1192677719b068ea49381a6ae7f661649c2f84b77",
+    "src/storage/schema_v7.h.in": "c9ef7b7408a109f238e9f984572d2d3a34febcf621c349a188a670bc34796988",
+    "src/storage/schema_v7.sql": "26f79fb6a1ca37a8b8be9c80a5a4a60645916770cf883fb6c17e8a00d70fd0c1",
+    "src/storage/sqlite.cpp": "eff1c86b80b40c79f2f7acae1fcad3f3f80d2495b31a9453b2907050d4e6f52e",
+    "tests/coordinator/offline.cpp": "5655a6cb024abff8684c5296a042066c8c13e348a2cb8e999d35724d29d5b8a0",
+    "tests/coordinator/offline_cli.py": "d8b17445084370634ba186fba7181d4f07f2435ac2cdd880af7810cbe119e630",
+    "tests/coordinator/offline_files.cpp": "9ff34d6016340573ba9e8d909a4aedfcb16d3fb6c19c2128a5b926cc3bb58907",
+    "tests/coordinator/supervisor.py": "1027aecb3b40e3051af314912ef32980fffdc823f600482c82cafdf409414eb4",
+    "tests/integration/checkpoint_cli.py": "14faed2b7cbb0ab75398202af9a53a7a48f53ba121f1f44ac0cfbd2eed813049",
+    "tests/storage/checkpoint.cpp": "938dce560c687d12b4ce4a61b97808e7f38511622f175a6cf5c57c63c78a0ebc",
+    "tools/coordinator_worker.py": "e0ad7b60b9834398e8ac043f1092f7d79b35a0875132a54cf4e3ff0aaaaaae2c"
+  },
+  "publication_sha256": {
+    "README.md": "073cb6f639f378abef692a968347252e845837cb2965390c7be10345b9eedfbe",
+    "docs/C22_VALIDATION.md": "5ce93a12b06761b8c32e6ac58ad341eb38b8cee505c619722aa709d31eee43ce",
+    "docs/OFFLINE_ASSIGNMENTS.md": "91369fbbb989352ade26d57a3b3c9ad724637cbc313c95a568427b942d37c767",
+    "docs/COORDINATOR.md": "00000793bac6b2dc3a69dc31b170d0f54ecb805c675eb1e6a014193cc04a642d",
+    "docs/STORAGE.md": "91af8c29dfc0d0cd2bd82c3de380a7fb11cee1d8fd66b3e6dec92c89ff11abf4",
+    "docs/CHECKPOINTS.md": "01f6d6df700bdcfda0b7a15b7a149ffe45d2f0ffeb1558675d25c3323fc56c06",
+    "docs/OPERATIONS.md": "dc1bd27f5e2e81661782371fb7cc456d65a6a83fe324fe9991100f210aa92692",
+    "docs/MULTI_GPU.md": "fbd07335f58e1f10dac237042c387c00d07eebab4a486f4448cf143c900496d6",
+    "docs/MODES.md": "a42f78b8465cca900133c8cb47702368ee535b6b3eda61083b470819fef54aaa",
+    "docs/GPU_QUICKSTART.md": "fa61d6a1f47ca298654b57b0bb81d7d47d9af0297578a1578f07b69254f94d53",
+    "docs/GPU_REDESIGN_PLAN.md": "31e18fcacf29a47d6db35217ebb618c326449bdb8949303f39d71c3388cd1207",
+    "docs/IMPLEMENTATION_STATUS.md": "726ac461b9ddbf7a89956ae2da32c4cec56cc1331ed3498b169f0964dceb3360"
+  },
+  "binary_sha256": {
+    "cpu": {
+      "/home/bagus/keyhunt-GPU/build/coordinator-release/keyhunt-coordinator": "5f3962efe52598227508968595e971d0805c7823a1a154de4d8bca3df6e43119",
+      "/home/bagus/keyhunt-GPU/build/coordinator-release/keyhunt-worker": "1ffbeb1daa4a1e86eef8c1a6789f32887fa0b60aca4daec228fcdc55178f6110",
+      "/home/bagus/keyhunt-GPU/build/coordinator-release/keyhunt": "dafb567d31a8a39291c95eff92f6516074efb99cd2ecf2f0090414a7c6b96a94"
+    },
+    "hip": {
+      "/home/bagus/keyhunt-GPU/build/hip-release/keyhunt-coordinator": "5f3962efe52598227508968595e971d0805c7823a1a154de4d8bca3df6e43119",
+      "/home/bagus/keyhunt-GPU/build/hip-release/keyhunt-worker": "b7ecb4645ba67c801b20d2c78644ff46c60f0b746df970f95e56782253e9615d",
+      "/home/bagus/keyhunt-GPU/build/hip-release/keyhunt": "f4c31776988942ff847a6e2e0319754af5465ca4dd241b6bd0183f632cb7a8e2"
+    },
+    "cuda": {
+      "/var/tmp/keyhunt-c22-dc31a34/build/keyhunt-coordinator": "ff01971cae97fd67a62cff263ecd60927302e3f8302852676b554b16c020eba4",
+      "/var/tmp/keyhunt-c22-dc31a34/build/keyhunt-worker": "e2976795dcf63bb37d27adfad5020dca07cdf7a0c89aac8a67241261ebc75cab",
+      "/var/tmp/keyhunt-c22-dc31a34/build/keyhunt": "3420995e50711dcacf44f7d2be125a14cb50020190d64bbf1b98a04dd077ad8a"
+    }
+  },
+  "log_members": {
+    "keyhunt-c22-cpu-tests.log": "be3be753498fbc4ebba33703073844af946a60a4ddbc0a50a2ca572b4e09bd83",
+    "keyhunt-c22-release-tests.log": "6da3ccf04dbfa758bd5bede90988fa398a0a0afe8e8d09b3e5131008a9746532",
+    "keyhunt-c22-file-status-tests.log": "b838db4e8a54a3c099ed30b259ef1bceef839ba7ff59b811cc2eaf2dfd9536b6",
+    "keyhunt-c22-clock-tests.log": "9ef34875f28ce626b582effa31d195c84dc75fd04697174959bca5f7512ab520",
+    "keyhunt-c22-debug-final-tests.log": "a0539dabd75f5eac58a6cc236b7edf927810a5f835105d856f6893c26f06d780",
+    "keyhunt-c22-sanitizers-final-tests.log": "fbe8c440d972d8f9ab7bc913cf6dc22da0b5840e0c95a7eb4fa17dbb9bfd723e",
+    "keyhunt-c22-hip-regressions.log": "68790aa93af231bfde38984e7fe77ee142d184da4c19df31b45762a6afb90636",
+    "keyhunt-c22-hip-clock-tests.log": "3679930d6b299ce0bdc640cebce9002b540d3442ed6f02a12634e63693ecbc89",
+    "keyhunt-c22-cpu-configure.log": "24e3a46bc4afe9f9552f431dfa666d9b2e60ab282ca6f654075aebc9cbf2c506",
+    "keyhunt-c22-cpu-build.log": "c617a08b5f99728787068987385d279abb0988b0bc82c851cd438b3afd18724b",
+    "keyhunt-c22-release-build.log": "e7f577964af6ae867f15707f769f886ca742bb4b3d897841659a4092ae8b5b40",
+    "keyhunt-c22-file-status-build.log": "7308e9b60dd039cfde0570691bb5c361966acb2638117991c0a8dace83f1a21b",
+    "keyhunt-c22-clock-build.log": "03e70f4bb3094e2f1e2993752fd6f23b7e6881c9a00b45ac1cb6e2e74f57bd8d",
+    "keyhunt-c22-debug-configure.log": "c85abb15f0c42fb9e66f898f578a2ec50665c011af7ba5b6fca743b1b39d56f8",
+    "keyhunt-c22-debug-final-build.log": "2b210056c9a2bd3e4e524009b48599cf00d61afb6ef48cee45f56241224c77c5",
+    "keyhunt-c22-sanitizers-configure.log": "f4c645f2cd6d1aefdfe2aadd50f116f43232d494806b24353eaaad492d4416a0",
+    "keyhunt-c22-sanitizers-final-build.log": "85bdaa604e782db71559b517cac875e6f08e54a0cca1a2a36fc59ba6deb9b84e",
+    "keyhunt-c22-hip-configure.log": "0ad38179821e35c759ce78da6833c18087479ce57d3882e3485c90cb7f944896",
+    "keyhunt-c22-hip-build.log": "ef61d288a3c928675306f427eea4ac5afe25a481e23047eda751b05c42d9faea",
+    "keyhunt-c22-hip-clock-build.log": "634d70b3c318b79a2cecbe69a4449539bb52b740473dacde7e4d7685f60c119c",
+    "keyhunt-c22-documentation.log": "6f649ca0aff26c9d15073fc677980e1a88a1e93e111dea50d5ec42c6d99635d7",
+    "hip/checkpoint-cli-results.json": "411116e4759f0d5414fbcc9c8d9a779aaecfe6fe8c041802c1942317c2bf40a3",
+    "hip/checkpoint-controls-results.json": "cb746e39c4486901dc3dfc9f254c774a77ae9278f86cd52fd05f9a5ca1f00fc5",
+    "hip/checkpoint-pause-hip-results.json": "8ec15d7525ebf9149a8cb5fcaa87a4af87b5b3013fe81c3ce554c0dd2629a635",
+    "hip/coordinator-fleet-results.json": "11079d2855c39eac3944e7a71436043c68139720ae14dca4bcfecb899c84289c",
+    "hip/environment.json": "ab80979bc6f6b1374f195b98255356633670f8ad44767e1ccf1a064530a14900",
+    "cuda/build-final.log": "6d454b3bedc67dd2a44c3fb12481e1a7cfad15bcbbacf2a385d74b316a18d7f9",
+    "cuda/build.log": "d80b9da6abd218770304ba42298c3df728ae31e9193cd8ad422f1ad74f32c1a4",
+    "cuda/checkpoint-cli-results.json": "64278f154e04b92b978ae1a01443758967acd7ae50f1ab1e8cf9c38eae4d148c",
+    "cuda/checkpoint-pause-cuda-results.json": "9f7dc6d7fd52b456a3efecd3f1e739771027bf5fe759e6bd1a265fea3f3c00a4",
+    "cuda/clock-build.log": "be56b26462ec26337601ef4d2c5ded7fec3b76dd652241b99b2468f325d0f7e0",
+    "cuda/clock-tests.log": "ce0e070ee9d371943e6e7388cba1095f1cb97b7e590d1ba08cc28ce180a22724",
+    "cuda/configure.log": "1d5afe6d6548b292e73f30099c2fa80aabb3211b90f006eb914534554d91b8b3",
+    "cuda/coordinator-fleet-results.json": "f4947333c0c723aa43600a7ad9579afcfdbdd9345f17ae319049c7ef59f645fd",
+    "cuda/coordinator-offline-cli.json": "cf133c0078301d2de8693598744e3e9fb04e803a0de9e5fcd5ab5adca7d7cc58",
+    "cuda/cpu-tests.log": "670fbbbbf58b1bc980bad27de8968dca92250943d3b648eb6e028c74943f6035",
+    "cuda/environment.json": "2619ef5f4265cdd8aa78d7552137a19bce4ba091b70124b614b926251affcd74",
+    "cuda/fleet-retry.log": "12b1bcc0e600f38e426bbe03cddcf76cc9a66c4202bde2c12791a4ecdd0fe5ab",
+    "cuda/hardware-tests.log": "6ccb3c7c415bef8b132b086448fbce4352f4bea09291b8ac755e717936a3f3ea",
+    "keyhunt-c22-record.py": "a026236d40774ceefe9754a5e53ec8eefebe023c1399ca2f1174cd083454ee17",
+    "keyhunt-c22-remote-validation.py": "eb62c06845653f73005fb90ef3445c7c6a4c0446f6f3526fcda41a658530b6a6"
+  },
+  "artifacts": {
+    "C22_OFFLINE.json": {
+      "sha256": "b03e29cb5853039173dff618efff7cb2d1091a5877d343c5f5b20a2a57ad7504",
+      "bytes": 196229
+    },
+    "C22_LOGS.tar.gz": {
+      "sha256": "5dd93ca3d25957390477ae6347d59f66cd7863cbd28eb5b5395939dbf99b676c",
+      "bytes": 48075
+    }
+  },
+  "limits": [
+    "Trusted-channel checksum pinning, no new file signing/encryption authority",
+    "Coordinator cannot interrupt already disconnected GPUs; stopped-owner recovery remains required",
+    "Localhost mTLS on each host; physical cross-host file delivery and public ingress unvalidated",
+    "Two tiny blocks per mode on one selected GPU per backend; no performance or endurance claim",
+    "No kernel changes; prior broad arithmetic/search/scale evidence retained",
+    "No hosted CI run; MIG/QPX search and genuine driver-hang recovery unvalidated",
+    "Transfer history retained outside bounded outbox; no automatic history archival"
+  ],
+  "published_migrations_unchanged": {
+    "src/storage/schema_v1.sql": "e7a263fff29b737f58cc377fc8826f1db855da0b09390ab35ae384f433c6ee9a",
+    "src/storage/schema_v2.sql": "3f955b4ea6d03c70894a1f0fc4106fecc518d5b98cea23e755e9338df93e5192",
+    "src/storage/schema_v3.sql": "3fcccc8eebbb91ca5d2d8ebf4136854bb35096df061f81abd9484fad98fe7889",
+    "src/storage/schema_v4.sql": "c5e40bad088ef5e03afc982c7da53f8b629ec3a584d6bc0613d048a1723cc758",
+    "src/storage/schema_v5.sql": "fa1bfe59c3964b0815c8c82b3ae12610e5016daf002e681adae8902698f97c5c",
+    "src/storage/schema_v6.sql": "717fce78e53f20ea43b5f9ba8ab0e793f26607e29e03ec48b9870b3e0e7831e7"
+  },
+  "gpu_backend_changes": []
+}
