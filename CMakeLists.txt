@@ -91,7 +91,9 @@ add_library(keyhunt_core STATIC
     src/core/cpu_targets.cpp
     src/core/result_verifier.cpp
     src/core/xpoint_search.cpp
-    src/core/bsgs_table.cpp)
+    src/core/bsgs_table.cpp
+    src/core/bsgs_search.cpp)
+target_include_directories(keyhunt_core PRIVATE kernels)
 target_link_libraries(keyhunt_core PUBLIC keyhunt_cpu_crypto keyhunt_ranges)
 keyhunt_configure_target(keyhunt_core)
 
@@ -155,6 +157,7 @@ if(BUILD_TESTING)
     include(cmake/GpuArithmeticTests.cmake)
     include(cmake/XPointTests.cmake)
     include(cmake/BsgsTableTests.cmake)
+    include(cmake/BsgsSearchTests.cmake)
     # This discovery contract test uses a private, minimal API double. It needs
     # no GPU SDK; actual HIP compilation and hardware tests remain separate.
     add_executable(hip_discovery_test tests/unit/hip_discovery.cpp)

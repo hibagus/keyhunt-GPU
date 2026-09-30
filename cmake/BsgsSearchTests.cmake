@@ -1,0 +1,5 @@
+add_executable(bsgs_search_test tests/unit/bsgs_search.cpp)
+target_link_libraries(bsgs_search_test PRIVATE keyhunt_core)
+keyhunt_configure_target(bsgs_search_test)
+add_test(NAME bsgs_search_contract COMMAND bsgs_search_test)
+set_tests_properties(bsgs_search_contract PROPERTIES TIMEOUT 60 LABELS "cpu;bsgs;core")
