@@ -1,0 +1,356 @@
+{
+  "recorded_utc": "2026-09-30T14:58:54.087586+00:00",
+  "binary_sha256": "4770706b7106700fcc09220a9069c1fb654e3293b122f93c3427b6c81a52a8ea",
+  "oracle_commit": "0cdc758a56360bf58a851fe91085a327ec97685a",
+  "inventory": {
+    "backend": "hip",
+    "runtime_version": 71526333,
+    "driver_version": 71526333,
+    "devices": [
+      {
+        "ordinal": 0,
+        "name": "AMD Instinct MI300X",
+        "architecture": "gfx942:sramecc+:xnack-",
+        "uuid": "30646366333934386337333264313231",
+        "pci_bus_id": "0000:1b:00.0",
+        "physical_id": "0dcf3948c732d121",
+        "physical_id_source": "sysfs.unique_id",
+        "compute_partition": "SPX",
+        "memory_partition": "NPS1",
+        "memory_allocation_mode": "CAPPING",
+        "numa_node": 0,
+        "compute_units": 304,
+        "warp_size": 64,
+        "property_memory_bytes": 206141652992,
+        "total_memory_bytes": 206141652992,
+        "free_memory_bytes": 205533478912,
+        "warnings": []
+      },
+      {
+        "ordinal": 1,
+        "name": "AMD Instinct MI300X",
+        "architecture": "gfx942:sramecc+:xnack-",
+        "uuid": "30393337633864376335303031303365",
+        "pci_bus_id": "0000:3d:00.0",
+        "physical_id": "0937c8d7c500103e",
+        "physical_id_source": "sysfs.unique_id",
+        "compute_partition": "SPX",
+        "memory_partition": "NPS1",
+        "memory_allocation_mode": "CAPPING",
+        "numa_node": 0,
+        "compute_units": 304,
+        "warp_size": 64,
+        "property_memory_bytes": 206141652992,
+        "total_memory_bytes": 206141652992,
+        "free_memory_bytes": 205533478912,
+        "warnings": []
+      },
+      {
+        "ordinal": 2,
+        "name": "AMD Instinct MI300X",
+        "architecture": "gfx942:sramecc+:xnack-",
+        "uuid": "34616433376163376162633937306666",
+        "pci_bus_id": "0000:4e:00.0",
+        "physical_id": "4ad37ac7abc970ff",
+        "physical_id_source": "sysfs.unique_id",
+        "compute_partition": "SPX",
+        "memory_partition": "NPS1",
+        "memory_allocation_mode": "CAPPING",
+        "numa_node": 0,
+        "compute_units": 304,
+        "warp_size": 64,
+        "property_memory_bytes": 206141652992,
+        "total_memory_bytes": 206141652992,
+        "free_memory_bytes": 205533478912,
+        "warnings": []
+      },
+      {
+        "ordinal": 3,
+        "name": "AMD Instinct MI300X",
+        "architecture": "gfx942:sramecc+:xnack-",
+        "uuid": "64636438643565303832323137646663",
+        "pci_bus_id": "0000:5f:00.0",
+        "physical_id": "dcd8d5e082217dfc",
+        "physical_id_source": "sysfs.unique_id",
+        "compute_partition": "SPX",
+        "memory_partition": "NPS1",
+        "memory_allocation_mode": "CAPPING",
+        "numa_node": 0,
+        "compute_units": 304,
+        "warp_size": 64,
+        "property_memory_bytes": 206141652992,
+        "total_memory_bytes": 206141652992,
+        "free_memory_bytes": 205533478912,
+        "warnings": []
+      },
+      {
+        "ordinal": 4,
+        "name": "AMD Instinct MI300X",
+        "architecture": "gfx942:sramecc+:xnack-",
+        "uuid": "63613033303464653334643962636639",
+        "pci_bus_id": "0000:9d:00.0",
+        "physical_id": "ca0304de34d9bcf9",
+        "physical_id_source": "sysfs.unique_id",
+        "compute_partition": "SPX",
+        "memory_partition": "NPS1",
+        "memory_allocation_mode": "CAPPING",
+        "numa_node": 1,
+        "compute_units": 304,
+        "warp_size": 64,
+        "property_memory_bytes": 206141652992,
+        "total_memory_bytes": 206141652992,
+        "free_memory_bytes": 205533478912,
+        "warnings": []
+      },
+      {
+        "ordinal": 5,
+        "name": "AMD Instinct MI300X",
+        "architecture": "gfx942:sramecc+:xnack-",
+        "uuid": "66366665356431386461333065623431",
+        "pci_bus_id": "0000:bd:00.0",
+        "physical_id": "f6fe5d18da30eb41",
+        "physical_id_source": "sysfs.unique_id",
+        "compute_partition": "SPX",
+        "memory_partition": "NPS1",
+        "memory_allocation_mode": "CAPPING",
+        "numa_node": 1,
+        "compute_units": 304,
+        "warp_size": 64,
+        "property_memory_bytes": 206141652992,
+        "total_memory_bytes": 206141652992,
+        "free_memory_bytes": 205533478912,
+        "warnings": []
+      },
+      {
+        "ordinal": 6,
+        "name": "AMD Instinct MI300X",
+        "architecture": "gfx942:sramecc+:xnack-",
+        "uuid": "32333266393737383136343134663766",
+        "pci_bus_id": "0000:cd:00.0",
+        "physical_id": "232f977816414f7f",
+        "physical_id_source": "sysfs.unique_id",
+        "compute_partition": "SPX",
+        "memory_partition": "NPS1",
+        "memory_allocation_mode": "CAPPING",
+        "numa_node": 1,
+        "compute_units": 304,
+        "warp_size": 64,
+        "property_memory_bytes": 206141652992,
+        "total_memory_bytes": 206141652992,
+        "free_memory_bytes": 205533478912,
+        "warnings": []
+      },
+      {
+        "ordinal": 7,
+        "name": "AMD Instinct MI300X",
+        "architecture": "gfx942:sramecc+:xnack-",
+        "uuid": "37386338613437353837623036353233",
+        "pci_bus_id": "0000:dd:00.0",
+        "physical_id": "78c8a47587b06523",
+        "physical_id_source": "sysfs.unique_id",
+        "compute_partition": "SPX",
+        "memory_partition": "NPS1",
+        "memory_allocation_mode": "CAPPING",
+        "numa_node": 1,
+        "compute_units": 304,
+        "warp_size": 64,
+        "property_memory_bytes": 206141652992,
+        "total_memory_bytes": 206141652992,
+        "free_memory_bytes": 205533478912,
+        "warnings": []
+      }
+    ]
+  },
+  "samples": [
+    {
+      "mode": "xpoint",
+      "geometry": "small",
+      "options": [
+        "--batch-size",
+        "128"
+      ],
+      "targets": 4,
+      "bsgs_m": null,
+      "samples": [
+        {
+          "request_to_paused_ms": 0.625578,
+          "owner_observation_to_paused_ms": 0.351542
+        },
+        {
+          "request_to_paused_ms": 0.609036,
+          "owner_observation_to_paused_ms": 0.339955
+        },
+        {
+          "request_to_paused_ms": 0.654356,
+          "owner_observation_to_paused_ms": 0.329242
+        },
+        {
+          "request_to_paused_ms": 0.634309,
+          "owner_observation_to_paused_ms": 0.324272
+        },
+        {
+          "request_to_paused_ms": 0.69791,
+          "owner_observation_to_paused_ms": 0.377127
+        }
+      ],
+      "median_ms": 0.634309,
+      "maximum_ms": 0.69791,
+      "summary": {
+        "type": "summary",
+        "complete": false,
+        "durability": "local",
+        "durable_coverage": true,
+        "resumed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "computed_scalars": "0x000000000000000000000000000000000000000000000000000000000001e880",
+        "device_steps": "0x000000000000000000000000000000000000000000000000000000000001e880",
+        "match_observations": 0,
+        "batches": 977,
+        "overflow_replays": 0,
+        "checkpoints": 6,
+        "checkpoint_ms": 1.84599
+      }
+    },
+    {
+      "mode": "xpoint",
+      "geometry": "default",
+      "options": [],
+      "targets": 4,
+      "bsgs_m": null,
+      "samples": [
+        {
+          "request_to_paused_ms": 0.74287,
+          "owner_observation_to_paused_ms": 0.339543
+        },
+        {
+          "request_to_paused_ms": 0.685715,
+          "owner_observation_to_paused_ms": 0.310335
+        },
+        {
+          "request_to_paused_ms": 0.647261,
+          "owner_observation_to_paused_ms": 0.318471
+        },
+        {
+          "request_to_paused_ms": 0.918372,
+          "owner_observation_to_paused_ms": 0.310085
+        },
+        {
+          "request_to_paused_ms": 0.737777,
+          "owner_observation_to_paused_ms": 0.342674
+        }
+      ],
+      "median_ms": 0.737777,
+      "maximum_ms": 0.918372,
+      "summary": {
+        "type": "summary",
+        "complete": false,
+        "durability": "local",
+        "durable_coverage": true,
+        "resumed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000019200000",
+        "device_steps": "0x0000000000000000000000000000000000000000000000000000000019200000",
+        "match_observations": 0,
+        "batches": 402,
+        "overflow_replays": 0,
+        "checkpoints": 6,
+        "checkpoint_ms": 1.73948
+      }
+    },
+    {
+      "mode": "bsgs",
+      "geometry": "small",
+      "options": [
+        "--giant-batch",
+        "1",
+        "--target-batch",
+        "1"
+      ],
+      "targets": 4,
+      "bsgs_m": 257,
+      "samples": [
+        {
+          "request_to_paused_ms": 0.817296,
+          "owner_observation_to_paused_ms": 0.367072
+        },
+        {
+          "request_to_paused_ms": 0.771507,
+          "owner_observation_to_paused_ms": 0.319922
+        },
+        {
+          "request_to_paused_ms": 0.804059,
+          "owner_observation_to_paused_ms": 0.338971
+        },
+        {
+          "request_to_paused_ms": 0.763942,
+          "owner_observation_to_paused_ms": 0.327439
+        },
+        {
+          "request_to_paused_ms": 0.833699,
+          "owner_observation_to_paused_ms": 0.363313
+        }
+      ],
+      "median_ms": 0.804059,
+      "maximum_ms": 0.833699,
+      "summary": {
+        "type": "summary",
+        "complete": false,
+        "durability": "local",
+        "durable_coverage": true,
+        "resumed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "computed_scalars": "0x000000000000000000000000000000000000000000000000000000000000a3a3",
+        "device_steps": "0x000000000000000000000000000000000000000000000000000000000000028e",
+        "match_observations": 0,
+        "batches": 654,
+        "overflow_replays": 0,
+        "checkpoints": 6,
+        "checkpoint_ms": 1.80776
+      }
+    },
+    {
+      "mode": "bsgs",
+      "geometry": "default",
+      "options": [],
+      "targets": 4,
+      "bsgs_m": 257,
+      "samples": [
+        {
+          "request_to_paused_ms": 0.579754,
+          "owner_observation_to_paused_ms": 0.346525
+        },
+        {
+          "request_to_paused_ms": 0.552802,
+          "owner_observation_to_paused_ms": 0.33023
+        },
+        {
+          "request_to_paused_ms": 0.491721,
+          "owner_observation_to_paused_ms": 0.329415
+        },
+        {
+          "request_to_paused_ms": 0.494095,
+          "owner_observation_to_paused_ms": 0.322692
+        },
+        {
+          "request_to_paused_ms": 0.534704,
+          "owner_observation_to_paused_ms": 0.364161
+        }
+      ],
+      "median_ms": 0.534704,
+      "maximum_ms": 0.579754,
+      "summary": {
+        "type": "summary",
+        "complete": false,
+        "durability": "local",
+        "durable_coverage": true,
+        "resumed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "computed_scalars": "0x000000000000000000000000000000000000000000000000000000005d5d0000",
+        "device_steps": "0x0000000000000000000000000000000000000000000000000000000001740000",
+        "match_observations": 0,
+        "batches": 372,
+        "overflow_replays": 0,
+        "checkpoints": 6,
+        "checkpoint_ms": 1.80103
+      }
+    }
+  ],
+  "scope": "warm single HIP device; external local-socket pause request through durably-paused status; one startup pause excluded; no universal latency bound",
+  "passed": true
+}

@@ -156,3 +156,51 @@ moves from visible devices `0,1` (ordinal 1), to `1` (ordinal 0), to `0,1,2`
 without changing logical job identity. Restricted or single-device environments
 retain their caller's visibility and record that count-change coverage was not
 exercised. Partition modes are not changed by this test.
+
+## Measured pause latency
+
+The [measurement tool](../tools/measure_c14_pause.py) ran after all GPU tests on
+MI300X gfx942, SPX/NPS1, using one logical GPU and four synthetic targets outside
+the measured interval. Each configuration excludes one startup pause and retains
+five warm samples. Device allocations stay alive across resume. No partition,
+clock or power setting changed. [Raw samples](baselines/C14_PAUSE_TIMING.json)
+include the binary hash, inventory, options and verified work counts.
+
+| Mode | Batch configuration | Median request-to-paused ms | Maximum observed ms |
+| --- | --- | ---: | ---: |
+| xpoint | 128 scalars | 0.634 | 0.698 |
+| xpoint | 1,048,576 scalars (default) | 0.738 | 0.918 |
+| bsgs | 1 giant × 1 target | 0.804 | 0.834 |
+| bsgs | 16,384 giants; target limit 64 (default), 4 actual targets | 0.535 | 0.580 |
+
+BSGS uses m=257. These are external Unix-socket request-to-durable-status
+measurements, including the remainder of an admitted batch, commit and control
+polling. The request phase relative to a launch affects the result. Five samples
+do not establish a worst-case bound, and match-heavy verification, cold startup,
+larger tables, I/O contention or driver faults can take longer. The real signal
+and changed-device integration samples are retained separately in the acceptance
+report; SIGUSR1 polling can add the 20 ms idle interval.
+
+## Checkpoint cost with controls enabled
+
+The existing [C13 measurement](../tools/measure_c13_checkpoints.py) was repeated
+with this binary: one warm-up round excluded, three fresh-process samples per
+variant, rotating order, one no-match target and 2^20 scalars. Xpoint uses
+65,536-scalar batches; BSGS uses m=257 and 256 giants × 1 target.
+
+| Mode | Persistence | Median process wall ms | Median checkpoint transaction ms |
+| --- | --- | ---: | ---: |
+| xpoint | volatile | 573.264 | 0.000 |
+| xpoint | timed | 621.381 | 0.472 |
+| xpoint | every-batch | 625.000 | 3.717 |
+| bsgs | volatile | 880.782 | 0.000 |
+| bsgs | timed | 679.374 | 0.478 |
+| bsgs | every-batch | 666.343 | 3.841 |
+
+[Raw checkpoint samples](baselines/C14_CHECKPOINT_TIMING.json) retain all counts.
+Timed runs still coalesce sixteen no-match batches into one final commit;
+every-batch mode commits sixteen times. These process times include startup,
+preparation, execution, output and cleanup. The volatile BSGS median being above
+the durable variants illustrates the startup/scheduling noise: do not infer a
+kernel speedup or regression from these short process samples. C16 provides the
+broader profiling baseline; C14 changes no kernels or arithmetic.
