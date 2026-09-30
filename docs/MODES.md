@@ -36,8 +36,9 @@ to exact GPU coverage; those flags are not accepted by the HIP command.
 ## BSGS
 
 C10 adds separate [portable table preparation and HIP lookup validation](BSGS_TABLES.md)
-commands. They do not run a BSGS range search; HIP search follows in C11. The
-legacy commands below continue using their original CPU caches.
+commands. C11 adds [bounded HIP BSGS range search](HIP_BSGS.md), with exact tails,
+all-target completion and CPU verification. The legacy commands below continue
+using their original CPU caches.
 
 Baby-step giant-step search takes full public-key targets and trades table
 memory for search work. `-n` must have an exact square root divisible by 1024;

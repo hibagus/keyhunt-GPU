@@ -5,7 +5,7 @@ implement a GPU search or mark any interval as searched. C08 supplies
 [portable field/point arithmetic](GPU_ARITHMETIC.md), and C09 implements the separate
 [bounded xpoint search](HIP_XPOINT.md). The diagnostic commands retain their
 transport-only meaning. C10 adds [immutable BSGS table uploads and lookup
-validation](BSGS_TABLES.md); the BSGS range search remains C11.
+validation](BSGS_TABLES.md), and C11 implements [bounded BSGS range searches](HIP_BSGS.md).
 
 ## Build and discovery
 

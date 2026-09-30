@@ -4,7 +4,8 @@ Run these commands from the repository root after following [BUILD.md](BUILD.md)
 The legacy `-m` search commands use the preserved CPU engine. HIP provides device
 discovery, bounded diagnostics and the separate [bounded xpoint search](HIP_XPOINT.md).
 C10 adds [versioned BSGS table preparation](BSGS_TABLES.md), including HIP lookup
-validation. HIP BSGS range search, job, checkpoint and coordinator commands remain planned.
+validation, and C11 implements [bounded HIP BSGS range search](HIP_BSGS.md).
+Job, checkpoint and coordinator commands remain planned.
 
 ## A finite address search
 

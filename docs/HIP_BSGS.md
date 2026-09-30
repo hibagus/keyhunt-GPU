@@ -194,8 +194,8 @@ separate fault binary passes 35 constructor, runtime and downloaded-result
 corruption boundaries, rejecting reuse after a failure and recovering with a
 fresh executor. C10's independent cache/filter/collision tests remain in the gate.
 
-Final acceptance passes 37/37 HIP release, 22/22 CPU release, 22/22 CPU debug and
-20/20 focused ASan/UBSan tests. The sanitizer gate excludes the previously
+[Final acceptance evidence](baselines/C11_VALIDATION.json) records 37/37 HIP release, 22/22 CPU release, 22/22 CPU debug and
+20/20 focused ASan/UBSan tests passing. The sanitizer gate excludes the previously
 documented `cpu_baseline` and `target_loading` legacy tests; whole-application
 sanitizer cleanliness is not claimed. Actual C11 execution currently covers
 SPX/NPS1; CPX/QPX/SPX discovery contracts pass without partition changes, while

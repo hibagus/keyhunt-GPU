@@ -1,8 +1,8 @@
 # Build and test
 
 The preserved CPU engine requires Linux x86-64 and SSSE3 for its assembly and
-hashes. Optional HIP discovery, diagnostics, bounded xpoint searches and BSGS
-table preparation/lookup are implemented. `KEYHUNT_ENABLE_CUDA` still fails configuration with an explicit C18
+hashes. Optional HIP discovery, diagnostics, bounded xpoint and BSGS searches,
+and table preparation/lookup are implemented. `KEYHUNT_ENABLE_CUDA` still fails configuration with an explicit C18
 message. CPU builds never probe or download
 either GPU SDK.
 
@@ -41,7 +41,7 @@ cmake --build --preset cpu-sanitizers --parallel 4
 | `KEYHUNT_BUILD_LEGACY` | OFF | Separate GMP/OpenSSL executable |
 | `KEYHUNT_BUILD_BSGSD` | OFF | Original local BSGS daemon |
 | `BUILD_TESTING` | ON | Python/CTest regression checks |
-| `KEYHUNT_ENABLE_HIP` | OFF | AMD HIP discovery, diagnostics, xpoint search and BSGS tables; requires ROCm AMD clang/runtime |
+| `KEYHUNT_ENABLE_HIP` | OFF | AMD HIP discovery, diagnostics, xpoint/BSGS searches and tables; requires ROCm AMD clang/runtime |
 | `KEYHUNT_ENABLE_CUDA` | OFF | Explicitly rejected until C18 |
 
 Changing tuning does not make the existing x86 engine portable to ARM. Release
@@ -199,7 +199,7 @@ one logical device with volatile coverage, not durable or multi-device throughpu
 C10 supplies a portable CPU builder/validator and an immutable HIP upload with
 shared exact/filter lookup. The [format and operations guide](BSGS_TABLES.md)
 defines memory budgets, checksum/semantic validation and the explicit legacy
-cache rebuild policy. Actual HIP BSGS search is C11.
+cache rebuild policy. C11 implements [bounded HIP BSGS searches](HIP_BSGS.md).
 
 ```sh
 ./build/cpu-release/keyhunt bsgs-table build --m 4097 --output /tmp/babies.khb
@@ -211,3 +211,19 @@ ctest --preset hip-release -R bsgs
 The benchmark checks positive/negative queries after warm-up and reports CPU
 construction, upload, kernel, transfer and host validation times. It does not
 measure giant-step or effective scalar-range search throughput.
+
+
+## Bounded HIP BSGS search
+
+The [C11 guide](HIP_BSGS.md) provides the command, target format, exact mapping,
+replay/ownership rules and measured kernel selection. CPU-only builds retain
+parser/mapping/verification tests and explicitly reject GPU execution.
+
+```sh
+ctest --preset hip-release -R 'bsgs_cli|hip_bsgs_search|bsgs_search_contract'
+./build/hip-release/hip_bsgs_search_benchmark 0 65537 32768 > /tmp/keyhunt-bsgs-search.json
+```
+
+The search benchmark compares one/eight/automatic giant grouping with fixed m
+and target sets. Actual target giant steps/s and effective scalar-range coverage/s
+must be reported separately. Current search receipts are volatile.

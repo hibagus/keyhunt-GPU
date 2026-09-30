@@ -188,5 +188,6 @@ search validation is pending. Partition settings remain unchanged.
 17/17 CPU release, 17/17 CPU debug and 15/15 focused sanitizer tests, together with
 build output and the documentation check. The sanitizer run retains the existing
 `cpu_baseline|target_loading` exclusions for known legacy application defects.
-C09 is complete; C10's versioned BSGS tables are next. Durable coverage, multi-GPU
+C09 is complete. [C10 tables](BSGS_TABLES.md) and [C11 BSGS search](HIP_BSGS.md)
+are implemented separately. Durable coverage, multi-GPU
 scheduling and later ISA/occupancy tuning remain separate milestones.

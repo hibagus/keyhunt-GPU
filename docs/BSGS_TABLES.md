@@ -1,6 +1,6 @@
 # Versioned BSGS table preparation (C10)
 
-C10 prepares immutable baby-step tables for C11's HIP BSGS search. It does not run
+C10 prepares immutable baby-step tables for [C11's HIP BSGS search](HIP_BSGS.md). It does not run
 a BSGS range search or report search coverage. CPU generation and semantic cache
 validation supply the reference; the HIP preparation/lookup layer uses the same
 portable format, hash and filter contract. Existing legacy `-m bsgs` and `-S`
@@ -233,8 +233,8 @@ exclusions; it does not establish whole-application sanitizer cleanliness.
 The complete HIP gate includes existing arithmetic, xpoint, ownership and
 partition-discovery regressions as well as the new table checks.
 
-C10 is complete. C11 will consume the immutable device table to implement the
-bounded BSGS range search, including exact residual/scalar reconstruction, all
+C10 is complete. [C11](HIP_BSGS.md) now consumes the immutable device table for
+bounded BSGS range searches, including exact residual/scalar reconstruction, all
 targets, giant-step tails, candidate overflow/replay and independent CPU/oracle
 verification. GPU table generation and lookup-policy tuning require measurement
 against that complete search workload.

@@ -7,9 +7,9 @@ correctness checks, resumable searches, and coordinated work across machines.
 
 **Current status:** the CPU engine has been characterized and reorganized.
 HIP discovery, arithmetic and bounded xpoint searches pass on MI300X, with CPU
-verification and candidate overflow replay. Versioned BSGS table preparation and
-HIP lookup validation are implemented; BSGS range searches, checkpoints and the
-coordinator remain planned.
+verification and candidate overflow replay. Versioned BSGS tables and bounded
+HIP BSGS range searches are implemented, including all targets and exact tails.
+Checkpoints and the coordinator remain planned.
 
 [Build guide](docs/BUILD.md) · [Usage](docs/USAGE.md) ·
 [Implementation status](docs/IMPLEMENTATION_STATUS.md) ·
@@ -20,7 +20,7 @@ coordinator remain planned.
 | Linux x86-64 CPU | Release and debug builds tested; 38 characterization checks pass |
 | CPU modes | Bitcoin address/HASH160, xpoint, BSGS, Ethereum address, vanity and minikeys; limitations documented |
 | Optional GMP legacy / bsgsd | Builds and selected compatibility checks pass; separate from the future coordinator |
-| AMD HIP / MI300X | C07–C10 discovery, arithmetic, xpoint search and BSGS table upload/lookup validated on gfx942 |
+| AMD HIP / MI300X | C07–C11 discovery, arithmetic, xpoint and BSGS searches validated on gfx942 |
 | NVIDIA CUDA | Planned at C18; NVIDIA compiler/device validation remains outstanding |
 | Pause/resume and distributed blocks | Planned at C12–C15 and C20; no durable progress tracking yet |
 
@@ -123,7 +123,7 @@ process exit as proof of saved search progress or exact coverage.
 - [x] C08: portable GPU field/point arithmetic with independent oracle validation.
 - [x] C09: bounded HIP xpoint search, CPU verification and overflow replay.
 - [x] C10: versioned BSGS tables, validated caches and HIP filter/exact lookup.
-- [ ] C11: complete bounded HIP BSGS range searches.
+- [x] C11: bounded HIP BSGS searches, all targets, exact tails and overflow replay.
 - [ ] C12–C15: durable coverage, local pause/resume and authenticated coordination.
 - [ ] C16–C20: measured tuning, native CUDA, validated assembly and multiple GPUs.
 - [ ] C21–C23: operations guides, offline assignments and further GPU modes.
