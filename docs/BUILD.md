@@ -26,6 +26,14 @@ runtime loader after installation (for example through `CMAKE_INSTALL_RPATH` or
 the deployment's library path); the default system development package avoids
 that custom-prefix requirement.
 
+The [CPU and documentation workflow](../.github/workflows/cpu.yml) runs on
+Ubuntu 22.04, whose system SQLite is older than the required version. CI downloads
+the pinned SQLite 3.51.3 source archive, verifies its SHA-256 checksum, and installs
+a static library under the runner's temporary directory before configuring CMake
+with explicit header and library paths. This also keeps runtime tests on the same
+SQLite version without changing the runner's system packages. Dependency setup
+is a separate workflow step; normal CMake builds still perform no downloads.
+
 The existing `-h` command returns status 1 after displaying help.
 `cpu-debug` and `cpu-sanitizers` provide separate build directories. Sanitizers
 currently expose known problems in the original engine; that preset is a
