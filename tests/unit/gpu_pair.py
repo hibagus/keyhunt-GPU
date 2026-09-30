@@ -25,6 +25,10 @@ class PairTest(unittest.TestCase):
                        download_ms=.1,download_bytes=64,device_allocation_bytes=128) for i in range(5)]
             record['workloads'].append(dict(name=name,targets=targets,samples=rows))
         self.assertEqual(len(warm_samples(record,'xpoint',17,17,1)),3)
+        direct=copy.deepcopy(record)
+        for case in direct['workloads']:
+            for row in case['samples']:row['kernel']='direct'
+        self.assertEqual(len(warm_samples(direct,'xpoint',17,17,1,'direct')),3)
         for key,value in [('device_steps',16),('matches',1),('kernel_ms',float('nan')),('sample',-1)]:
             bad=copy.deepcopy(record);bad['workloads'][0]['samples'][0][key]=value
             with self.assertRaises(InvalidSample):warm_samples(bad,'xpoint',17,17,1)

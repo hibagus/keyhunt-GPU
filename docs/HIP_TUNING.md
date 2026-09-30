@@ -12,7 +12,8 @@ Build the HIP targets before freezing each version. Snapshots retain exact
 executables, source and binary hashes, compile commands, device/topology and tool
 metadata; later edits cannot replace the baseline silently. The warm benchmark
 uses known outside-range targets and CPU-verifies every emitted match. It can
-select stepped xpoint alone and vary candidate capacity. End-to-end trials reuse
+select either xpoint kernel alone (`--kernel stepped|direct`) and vary candidate
+capacity. End-to-end trials reuse
 C16's independent oracle, exact receipts and post-run durable journal audit.
 
 ```sh

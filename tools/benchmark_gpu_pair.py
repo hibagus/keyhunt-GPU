@@ -37,7 +37,7 @@ def load_snapshot(path):
     return result
 
 
-def warm_samples(record, mode, count, m, giants):
+def warm_samples(record, mode, count, m, giants, kernel='stepped'):
     """Keep process medians independent: five samples in one process are not five pairs."""
     require(len(record['workloads']) == 3, 'warm benchmark workload set differs')
     expected_width = count if mode == 'xpoint' else m*giants
@@ -46,7 +46,7 @@ def warm_samples(record, mode, count, m, giants):
         require(record['m'] == m and record['giants_per_target'] == giants, 'warm BSGS geometry mismatch')
     result = {}
     for case in record['workloads']:
-        kinds = ('stepped',) if mode == 'xpoint' else (0, 1, 8)
+        kinds = (kernel,) if mode == 'xpoint' else (0, 1, 8)
         for kind in kinds:
             rows = [s for s in case['samples'] if s['sample'] >= 0 and
                     (s['kernel'] if mode == 'xpoint' else s['group_size']) == kind]
@@ -113,12 +113,12 @@ def compare(args, output):
                 if args.suite in ('warm','both'):
                     for name in order:
                         path = roots[name]
-                        words = ([path/'hip_xpoint_benchmark',args.device,args.batch_size,'stepped',args.candidate_capacity]
+                        words = ([path/'hip_xpoint_benchmark',args.device,args.batch_size,args.kernel,args.candidate_capacity]
                                  if mode == 'xpoint' else [path/'hip_bsgs_search_benchmark',args.device,args.m,args.giant_batch,args.candidate_capacity])
                         rows, command = runner.run(words)
                         require(len(rows) == 1, 'unexpected benchmark output')
                         report['warm_records'].append({'round':repeat,'variant':name,'mode':mode,'record':rows[0],'command':command})
-                        pair[name].update(warm_samples(rows[0],mode,args.batch_size,args.m,args.giant_batch))
+                        pair[name].update(warm_samples(rows[0],mode,args.batch_size,args.m,args.giant_batch,args.kernel))
                 for case in (c for c in cases if c['mode'] == mode):
                     for variant in args.variants:
                         for name in order:
@@ -168,7 +168,8 @@ def main():
     trial.add_argument('--target-batch',type=int,default=32)
     trial.add_argument('--candidate-capacity',type=int,default=1024)
     trial.add_argument('--timeout',type=int,default=300)
-    trial.set_defaults(kernel='stepped',group_size='auto')
+    trial.add_argument('--kernel',choices=('stepped','direct'),default='stepped')
+    trial.set_defaults(group_size='auto')
     args = parser.parse_args()
     output = args.output_dir.resolve()
     if output.exists() or output == ROOT or ROOT in output.parents:
