@@ -63,8 +63,14 @@ struct Fd {
     ~Fd(){if(value>=0)::close(value);}
     Fd(const Fd&)=delete;
 };
-sockaddr_un address(const std::string& directory){
-    sockaddr_un out{};out.sun_family=AF_UNIX;const auto path=directory+"/control.sock";
+std::string socket_path(const std::string& directory,const std::string& slot){
+    if(slot.size()>128)throw std::invalid_argument("control slot is too long");
+    for(unsigned char c:slot)if(!((c>='a'&&c<='z')||(c>='A'&&c<='Z')||(c>='0'&&c<='9')||c=='-'||c=='_'||c=='.'||c=='@'))
+        throw std::invalid_argument("invalid control slot");
+    return directory+(slot.empty()?"/control.sock":"/control-"+slot+".sock");
+}
+sockaddr_un address(const std::string& directory,const std::string& slot){
+    sockaddr_un out{};out.sun_family=AF_UNIX;const auto path=socket_path(directory,slot);
     if(path.size()>=sizeof(out.sun_path))throw std::invalid_argument("checkpoint control socket path is too long");
     std::memcpy(out.sun_path,path.c_str(),path.size()+1);return out;
 }
@@ -78,7 +84,7 @@ const char* request_name(CheckpointRequest request){
 }
 
 struct LocalCheckpointControl::Impl {
-    std::string directory,path,identity;
+    std::string directory,path,identity,base_identity,slot;
     Signals signals;
     Fd listener;
     struct Client {int fd;Clock::time_point opened;};
@@ -90,12 +96,18 @@ struct LocalCheckpointControl::Impl {
     bool published=false;
     dev_t socket_device{};ino_t socket_inode{};
 
-    Impl(const std::string& dir,const Grant& grant,int device,size_t visible):directory(dir),path(dir+"/control.sock"){
+    Impl(const std::string& dir,const Grant* grant,int device,size_t visible,const std::string& name)
+        :directory(dir),path(socket_path(dir,name)),slot(name){
+        base_identity=",\"pid\":"+std::to_string(getpid())+",\"device\":"+std::to_string(device)+
+            ",\"visible_devices\":"+std::to_string(visible);
+        bind(grant);
+    }
+    void bind(const Grant* grant){
         using namespace state_detail;
-        identity=",\"pid\":"+std::to_string(getpid())+",\"project\":"+quote(grant.scope.project)+
-            ",\"job\":"+quote(hex(grant.scope.job.data(),32))+",\"block\":"+quote(grant.block.hex())+
-            ",\"assignment_generation\":"+quote(std::to_string(grant.generation))+
-            ",\"device\":"+std::to_string(device)+",\"visible_devices\":"+std::to_string(visible);
+        identity=base_identity;
+        if(grant)identity+=",\"project\":"+quote(grant->scope.project)+
+            ",\"job\":"+quote(hex(grant->scope.job.data(),32))+",\"block\":"+quote(grant->block.hex())+
+            ",\"assignment_generation\":"+quote(std::to_string(grant->generation));
     }
     ~Impl(){close();}
     void close() noexcept{
@@ -109,7 +121,7 @@ struct LocalCheckpointControl::Impl {
     }
     void open(){
         if(listener.value>=0)return;
-        const auto addr=address(directory);
+        const auto addr=address(directory,slot);
         struct stat st{};
         if(lstat(path.c_str(),&st)==0){
             // executor.lock is held: any prior socket is an abandoned endpoint.
@@ -119,7 +131,7 @@ struct LocalCheckpointControl::Impl {
             if(::unlink(path.c_str()))throw std::runtime_error("cannot remove stale checkpoint control socket");
         }else if(errno!=ENOENT)throw std::runtime_error("cannot inspect checkpoint control socket");
         listener.value=socket(AF_UNIX,SOCK_SEQPACKET|SOCK_NONBLOCK|SOCK_CLOEXEC,0);
-        if(listener.value<0 || bind(listener.value,reinterpret_cast<const sockaddr*>(&addr),sizeof(addr)))
+        if(listener.value<0 || ::bind(listener.value,reinterpret_cast<const sockaddr*>(&addr),sizeof(addr)))
             throw std::runtime_error("cannot bind checkpoint control socket");
         // The containing journal directory is already private (0700).
         if(lstat(path.c_str(),&st))throw std::runtime_error("cannot inspect new checkpoint control socket");
@@ -137,7 +149,7 @@ struct LocalCheckpointControl::Impl {
         if(command=='R'){
             if(requested==CheckpointRequest::Stop)return false;
             if(activity=="running")return true; // idempotent resume
-            if(activity!="paused" && activity!="resuming")return false;
+            if(activity!="paused" && activity!="resuming" && activity!="idle" && activity!="completed")return false;
             requested=CheckpointRequest::Run;activity="resuming";return true;
         }
         if(command!='P' && command!='T')return false;
@@ -191,6 +203,7 @@ struct LocalCheckpointControl::Impl {
     }
     void notify(CheckpointActivity value){
         switch(value){
+        case CheckpointActivity::Idle:activity="idle";break;
         case CheckpointActivity::Draining:activity="draining";break;
         case CheckpointActivity::Paused:
             activity="paused";pause_ms=std::chrono::duration<double,std::milli>(Clock::now()-pause_start).count();break;
@@ -203,16 +216,19 @@ struct LocalCheckpointControl::Impl {
     }
 };
 LocalCheckpointControl::LocalCheckpointControl(const std::string& dir,const Grant& grant,int device,size_t visible)
-    :impl_(std::make_unique<Impl>(dir,grant,device,visible)){}
+    :impl_(std::make_unique<Impl>(dir,&grant,device,visible,"")){}
+LocalCheckpointControl::LocalCheckpointControl(const std::string& dir,int device,size_t visible,const std::string& slot)
+    :impl_(std::make_unique<Impl>(dir,nullptr,device,visible,slot)){}
+void LocalCheckpointControl::bind(const Grant* grant){impl_->bind(grant);}
 LocalCheckpointControl::~LocalCheckpointControl()=default;
 CheckpointControl LocalCheckpointControl::callbacks(){
     return {[this]{return impl_->poll();},[this](auto a){impl_->notify(a);},
         []{std::this_thread::sleep_for(std::chrono::milliseconds(20));}};
 }
 void LocalCheckpointControl::close() noexcept{impl_->close();}
-std::string LocalCheckpointControl::command(const std::string& directory,const std::string& action){
+std::string LocalCheckpointControl::command(const std::string& directory,const std::string& action,const std::string& slot){
     const char code=action=="pause"?'P':action=="resume"?'R':action=="stop"?'T':'?';
-    const auto addr=address(directory);
+    const auto addr=address(directory,slot);
     Fd fd(socket(AF_UNIX,SOCK_SEQPACKET|SOCK_CLOEXEC,0));
     if(fd.value<0)throw std::runtime_error("cannot create checkpoint control client");
     timeval timeout{5,0};

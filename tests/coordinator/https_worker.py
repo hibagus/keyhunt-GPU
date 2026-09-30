@@ -126,6 +126,27 @@ def main():
                 bpath = f"/api/v1/projects/{projects[1]}/jobs/{bjob['job']}"
                 assert api("bob", "GET", bpath + "/status")["finished"] == f"0x{1:064x}"
                 assert len(api("bob", "GET", bpath + "/results")) == 1
+                # Persistent device ownership must retain its table upload over
+                # multiple short grants. Both leases stay pending until a later
+                # explicit machine sync, independent of block completion.
+                body.update(end_exclusive=f"0x{1001:064x}", block_width=f"0x{500:064x}")
+                persistent_job = api("bob", "POST", f"/api/v1/projects/{projects[1]}/jobs", body)
+                state = root / "persistent-worker"
+                configure(state, "bob", projects[1], persistent_job["job"], jobs=[dict(
+                    project=projects[1], job=persistent_job["job"], devices=["0"], spares=1, policy="sequential")])
+                invoke(state, "sync")
+                result = subprocess.run([worker, "run-device", "--state-dir", str(state), "--device", "0",
+                    "--backend", args.backend, "--table", str(table), "--once", "yes"], capture_output=True, text=True, timeout=120)
+                assert result.returncode == 0, (result.stdout, result.stderr)
+                events = [json.loads(line) for line in result.stdout.splitlines()]
+                assert events[-1]["completed"] == 2 and events[-1]["executor_setups"] == 1, events
+                assert len([row for row in events if row["type"] == "ready"]) == 1
+                assert invoke(state, "status")["outbox_bytes"] > 0
+                assert not invoke(state, "scheduled-sync")["sent"]
+                invoke(state, "sync")
+                ppath = f"/api/v1/projects/{projects[1]}/jobs/{persistent_job['job']}"
+                assert api("bob", "GET", ppath + "/status")["finished"] == f"0x{2:064x}"
+                assert len(api("bob", "GET", ppath + "/results")) == 1
             env.admin("check")
         except BaseException:
             for file in env.directory.glob("*.log"):

@@ -35,7 +35,7 @@ int checkpoint_command(int argc,char** argv){
         {"run",{"backend","grant","targets","table","device","batch-size","kernel","giant-batch",
                 "target-batch","candidate-capacity","group-size","host-memory","reserve-bytes","checkpoint-seconds"}},
         {"results",{"project","job","after","limit"}},
-        {"pause",{}},{"resume",{}},{"stop",{}},{"status",{}}};
+        {"pause",{"slot"}},{"resume",{"slot"}},{"stop",{"slot"}},{"status",{"slot"}}};
     if(argc<3)throw std::invalid_argument("usage: keyhunt checkpoint create|run|results|pause|resume|stop|status [--state-dir DIR] ...; see docs/CHECKPOINTS.md");
     const std::string action=argv[2];const auto spec=allowed.find(action);
     if(spec==allowed.end())throw std::invalid_argument("unknown checkpoint action");
@@ -53,7 +53,7 @@ int checkpoint_command(int argc,char** argv){
     std::cout<<std::setprecision(12);
     Journal journal(optional(args,"state-dir"));
     if(action=="pause" || action=="resume" || action=="stop" || action=="status"){
-        const auto response=LocalCheckpointControl::command(journal.state_directory(),action);
+        const auto response=LocalCheckpointControl::command(journal.state_directory(),action,optional(args,"slot"));
         std::cout<<response;flush();
         return response.find("\"accepted\":false")==std::string::npos?0:2;
     }

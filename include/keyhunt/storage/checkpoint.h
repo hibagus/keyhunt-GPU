@@ -35,12 +35,13 @@ struct CheckpointSummary {
 // Called only after COMMIT. Throwing (e.g. a broken stdout) stops submissions;
 // the accepted state is still durable and discoverable on the next invocation.
 using CheckpointObserver=std::function<void(const std::vector<ScalarInterval>&,size_t,double)>;
-// Cleanup must stop/drain and destroy the executor. It runs before the local
-// owner lock is released, including exceptions from submission or output.
+// Cleanup must drain outstanding GPU work before releasing the block lock,
+// including exceptions. Standalone callers destroy their executor; a supervised
+// device may retain drained allocations while its process owner lock stays held.
 using CheckpointCleanup=std::function<void()>;
 using XPointRunner=std::function<backend::XPointResult(const scheduler::KernelBatch&)>;
 enum class CheckpointRequest { Run, Pause, Stop };
-enum class CheckpointActivity { Draining, Paused, Running, Stopped, Completed };
+enum class CheckpointActivity { Idle, Draining, Paused, Running, Stopped, Completed };
 // Only the owner thread calls these callbacks, outside SQL transactions and GPU
 // submissions. poll is nonblocking; wait must wake periodically to observe stop.
 // A paused owner retains its lock and BSGS subgroup cursor in memory.

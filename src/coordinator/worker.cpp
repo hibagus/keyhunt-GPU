@@ -227,6 +227,9 @@ void Worker::acquire_device(const std::string& device,const std::string& identit
     }
     try{
         Transaction tx(s.db);s.db.writable();
+        Statement duplicate(s.db.handle(),"SELECT device FROM worker_dispatch WHERE uuid=? AND device!=?");
+        duplicate.bind(1,identity);duplicate.bind(2,device);
+        if(duplicate.step())throw std::runtime_error("UUID already belongs to another device queue");
         Statement previous(s.db.handle(),"SELECT uuid FROM worker_dispatch WHERE device=?");previous.bind(1,device);
         if(previous.step()&&previous.text(0)!=identity&&!rebind)
             throw std::runtime_error("device UUID changed; explicit stopped-device rebind required");

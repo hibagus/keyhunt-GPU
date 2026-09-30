@@ -50,3 +50,26 @@ Schema migration retains the normal sealed pre-upgrade backup and checksum audit
 schema v6. Tests cover fast-device queue stealing beside a held slow-device
 block, duplicate process exclusion, idempotent claims, stopped-device UUID
 replacement, pause/expiry gates, retained outbox data and migration recovery.
+
+## Persistent execution and local controls
+
+`keyhunt-worker run-device` owns one device slot for its lifetime and performs a
+fresh GPU self-test in that process. Immutable targets, the verifier, host table
+and drained GPU allocations survive normal block handoffs. Each new grant still
+passes the journal audit, binding checks, offline deadline and executor generation
+allocation. An exception during submission destroys/drains the affected executor
+before releasing the block guard. Expected lease/control exceptions emit a typed
+`blocked` event and retain the process while waiting for revalidation.
+
+The persistent endpoint is `control-QUEUE.sock`. Use
+`keyhunt checkpoint pause|resume|stop|status --state-dir DIR --slot QUEUE`.
+Signals retain their previous meanings. Standalone execution still uses
+`control.sock`. A queue's process lock protects its persistent endpoint; a block
+lock protects each individual checkpoint run. Control intent survives handoff.
+
+The live `coordinator_https_worker` HIP/mTLS test passes: two short BSGS grants
+complete with exactly one executor setup/table upload and one fresh self-test.
+Their outbox stays pending until explicit synchronization. Existing
+`checkpoint_controls` socket, signal, durability and recovery tests also pass.
+This addresses the repeated initialization mechanism identified by audit A17;
+end-to-end fleet measurements are recorded separately below.

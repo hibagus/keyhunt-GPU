@@ -1,5 +1,6 @@
 #include "keyhunt/coordinator/worker.h"
 #include "self_test.h"
+#include "device_worker.h"
 #include "protocol.h"
 #include <charconv>
 #include <fstream>
@@ -21,7 +22,8 @@ int main(int argc,char** argv){
     try{
         if(argc<2)throw std::invalid_argument("usage: keyhunt-worker configure|configuration|sync|scheduled-sync|status|next|api|self-test --name VALUE ...; see docs/COORDINATOR.md");
         const std::string action=argv[1];std::set<std::string> allowed{"state-dir"};
-        if(action=="configure")allowed.insert("config");
+        if(action=="run-device")allowed.insert({"device","queue","backend","once","rebind","table","kernel","group-size","batch-size","giant-batch","target-batch","host-memory"});
+        else if(action=="configure")allowed.insert("config");
         else if(action=="next"||action=="self-test")allowed.insert("device");
         else if(action=="api")allowed.insert("request");
         else if(action!="configuration"&&action!="sync"&&action!="scheduled-sync"&&action!="status")throw std::invalid_argument("unknown worker action");
@@ -30,6 +32,7 @@ int main(int argc,char** argv){
             if(i+1>=argc||flag.rfind("--",0)!=0||!allowed.count(flag.substr(2))||!args.emplace(flag.substr(2),argv[i+1]).second)
                 throw std::invalid_argument("invalid or duplicate worker option");
         }
+        if(action=="run-device")return run_device(args);
         if(action=="self-test"){
             const auto value=option(args,"device");int device=-1;const auto result=std::from_chars(value.data(),value.data()+value.size(),device);
             if(result.ec!=std::errc{}||result.ptr!=value.data()+value.size()||device<0)throw std::invalid_argument("invalid device ordinal");
