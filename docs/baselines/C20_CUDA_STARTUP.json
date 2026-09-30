@@ -1,0 +1,218 @@
+{
+  "binary_sha256": "74daea7fdce141afa1f25e963219bffef451f63ab4e06cb52a888830dd80f481",
+  "runs": [
+    {
+      "variant": "default",
+      "repetition": 0,
+      "measured": false,
+      "wall_ns": 3476807401,
+      "self_test": {
+        "compute_partition": "",
+        "compute_units": 132,
+        "driver": 13030,
+        "memory_partition": "",
+        "ordinal": 7,
+        "passed": true,
+        "pci_bus_id": "0000:dc:00.0",
+        "runtime": 13030,
+        "uuid": "ab387e304af7aaf1ece8575af15045ba"
+      }
+    },
+    {
+      "variant": "lazy",
+      "repetition": 0,
+      "measured": false,
+      "wall_ns": 3427917445,
+      "self_test": {
+        "compute_partition": "",
+        "compute_units": 132,
+        "driver": 13030,
+        "memory_partition": "",
+        "ordinal": 7,
+        "passed": true,
+        "pci_bus_id": "0000:dc:00.0",
+        "runtime": 13030,
+        "uuid": "ab387e304af7aaf1ece8575af15045ba"
+      }
+    },
+    {
+      "variant": "lazy",
+      "repetition": 1,
+      "measured": true,
+      "wall_ns": 3442159877,
+      "self_test": {
+        "compute_partition": "",
+        "compute_units": 132,
+        "driver": 13030,
+        "memory_partition": "",
+        "ordinal": 7,
+        "passed": true,
+        "pci_bus_id": "0000:dc:00.0",
+        "runtime": 13030,
+        "uuid": "ab387e304af7aaf1ece8575af15045ba"
+      }
+    },
+    {
+      "variant": "default",
+      "repetition": 1,
+      "measured": true,
+      "wall_ns": 3427268045,
+      "self_test": {
+        "compute_partition": "",
+        "compute_units": 132,
+        "driver": 13030,
+        "memory_partition": "",
+        "ordinal": 7,
+        "passed": true,
+        "pci_bus_id": "0000:dc:00.0",
+        "runtime": 13030,
+        "uuid": "ab387e304af7aaf1ece8575af15045ba"
+      }
+    },
+    {
+      "variant": "default",
+      "repetition": 2,
+      "measured": true,
+      "wall_ns": 3406058306,
+      "self_test": {
+        "compute_partition": "",
+        "compute_units": 132,
+        "driver": 13030,
+        "memory_partition": "",
+        "ordinal": 7,
+        "passed": true,
+        "pci_bus_id": "0000:dc:00.0",
+        "runtime": 13030,
+        "uuid": "ab387e304af7aaf1ece8575af15045ba"
+      }
+    },
+    {
+      "variant": "lazy",
+      "repetition": 2,
+      "measured": true,
+      "wall_ns": 3423722066,
+      "self_test": {
+        "compute_partition": "",
+        "compute_units": 132,
+        "driver": 13030,
+        "memory_partition": "",
+        "ordinal": 7,
+        "passed": true,
+        "pci_bus_id": "0000:dc:00.0",
+        "runtime": 13030,
+        "uuid": "ab387e304af7aaf1ece8575af15045ba"
+      }
+    },
+    {
+      "variant": "lazy",
+      "repetition": 3,
+      "measured": true,
+      "wall_ns": 3418550572,
+      "self_test": {
+        "compute_partition": "",
+        "compute_units": 132,
+        "driver": 13030,
+        "memory_partition": "",
+        "ordinal": 7,
+        "passed": true,
+        "pci_bus_id": "0000:dc:00.0",
+        "runtime": 13030,
+        "uuid": "ab387e304af7aaf1ece8575af15045ba"
+      }
+    },
+    {
+      "variant": "default",
+      "repetition": 3,
+      "measured": true,
+      "wall_ns": 3382715276,
+      "self_test": {
+        "compute_partition": "",
+        "compute_units": 132,
+        "driver": 13030,
+        "memory_partition": "",
+        "ordinal": 7,
+        "passed": true,
+        "pci_bus_id": "0000:dc:00.0",
+        "runtime": 13030,
+        "uuid": "ab387e304af7aaf1ece8575af15045ba"
+      }
+    },
+    {
+      "variant": "default",
+      "repetition": 4,
+      "measured": true,
+      "wall_ns": 3411912013,
+      "self_test": {
+        "compute_partition": "",
+        "compute_units": 132,
+        "driver": 13030,
+        "memory_partition": "",
+        "ordinal": 7,
+        "passed": true,
+        "pci_bus_id": "0000:dc:00.0",
+        "runtime": 13030,
+        "uuid": "ab387e304af7aaf1ece8575af15045ba"
+      }
+    },
+    {
+      "variant": "lazy",
+      "repetition": 4,
+      "measured": true,
+      "wall_ns": 3463498378,
+      "self_test": {
+        "compute_partition": "",
+        "compute_units": 132,
+        "driver": 13030,
+        "memory_partition": "",
+        "ordinal": 7,
+        "passed": true,
+        "pci_bus_id": "0000:dc:00.0",
+        "runtime": 13030,
+        "uuid": "ab387e304af7aaf1ece8575af15045ba"
+      }
+    },
+    {
+      "variant": "lazy",
+      "repetition": 5,
+      "measured": true,
+      "wall_ns": 3377551564,
+      "self_test": {
+        "compute_partition": "",
+        "compute_units": 132,
+        "driver": 13030,
+        "memory_partition": "",
+        "ordinal": 7,
+        "passed": true,
+        "pci_bus_id": "0000:dc:00.0",
+        "runtime": 13030,
+        "uuid": "ab387e304af7aaf1ece8575af15045ba"
+      }
+    },
+    {
+      "variant": "default",
+      "repetition": 5,
+      "measured": true,
+      "wall_ns": 3400282275,
+      "self_test": {
+        "compute_partition": "",
+        "compute_units": 132,
+        "driver": 13030,
+        "memory_partition": "",
+        "ordinal": 7,
+        "passed": true,
+        "pci_bus_id": "0000:dc:00.0",
+        "runtime": 13030,
+        "uuid": "ab387e304af7aaf1ece8575af15045ba"
+      }
+    }
+  ],
+  "passed": true,
+  "variable": "CUDA_FORCE_PRELOAD_LIBRARIES",
+  "selected_ordinal": 7,
+  "note": "Fresh-process wall time for the production xpoint/BSGS worker self-test, not kernel time.",
+  "medians_seconds": {
+    "default": 3.406058306,
+    "lazy": 3.423722066
+  },
+  "speedup": 0.9948407728023797
+}

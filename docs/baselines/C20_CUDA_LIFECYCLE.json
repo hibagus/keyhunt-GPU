@@ -1,0 +1,237 @@
+{
+  "inventory": {
+    "backend": "cuda",
+    "runtime_version": 13030,
+    "driver_version": 13030,
+    "devices": [
+      {
+        "ordinal": 0,
+        "name": "NVIDIA H200",
+        "architecture": "sm_90",
+        "uuid": "9fdcd9f2c45469a881b044d5f5e92bb8",
+        "pci_bus_id": "0000:1b:00.0",
+        "physical_id": "",
+        "physical_id_source": "",
+        "compute_partition": "",
+        "memory_partition": "",
+        "memory_allocation_mode": "",
+        "numa_node": 0,
+        "compute_units": 132,
+        "warp_size": 32,
+        "property_memory_bytes": 150101688320,
+        "total_memory_bytes": 150101688320,
+        "free_memory_bytes": 149545025536,
+        "warnings": [
+          "physical package identity unavailable",
+          "partition metadata unavailable"
+        ]
+      },
+      {
+        "ordinal": 1,
+        "name": "NVIDIA H200",
+        "architecture": "sm_90",
+        "uuid": "35e9b3332fcc91c7740d9dada8981391",
+        "pci_bus_id": "0000:3c:00.0",
+        "physical_id": "",
+        "physical_id_source": "",
+        "compute_partition": "",
+        "memory_partition": "",
+        "memory_allocation_mode": "",
+        "numa_node": 0,
+        "compute_units": 132,
+        "warp_size": 32,
+        "property_memory_bytes": 150101688320,
+        "total_memory_bytes": 150101688320,
+        "free_memory_bytes": 149545025536,
+        "warnings": [
+          "physical package identity unavailable",
+          "partition metadata unavailable"
+        ]
+      },
+      {
+        "ordinal": 2,
+        "name": "NVIDIA H200",
+        "architecture": "sm_90",
+        "uuid": "b9015ed612d65c7141653ab970cc5d89",
+        "pci_bus_id": "0000:4b:00.0",
+        "physical_id": "",
+        "physical_id_source": "",
+        "compute_partition": "",
+        "memory_partition": "",
+        "memory_allocation_mode": "",
+        "numa_node": 0,
+        "compute_units": 132,
+        "warp_size": 32,
+        "property_memory_bytes": 150101688320,
+        "total_memory_bytes": 150101688320,
+        "free_memory_bytes": 149545025536,
+        "warnings": [
+          "physical package identity unavailable",
+          "partition metadata unavailable"
+        ]
+      },
+      {
+        "ordinal": 3,
+        "name": "NVIDIA H200",
+        "architecture": "sm_90",
+        "uuid": "139f1dc5c1d8dd058d4c9b2ef33c966c",
+        "pci_bus_id": "0000:5c:00.0",
+        "physical_id": "",
+        "physical_id_source": "",
+        "compute_partition": "",
+        "memory_partition": "",
+        "memory_allocation_mode": "",
+        "numa_node": 0,
+        "compute_units": 132,
+        "warp_size": 32,
+        "property_memory_bytes": 150101688320,
+        "total_memory_bytes": 150101688320,
+        "free_memory_bytes": 149545025536,
+        "warnings": [
+          "physical package identity unavailable",
+          "partition metadata unavailable"
+        ]
+      },
+      {
+        "ordinal": 4,
+        "name": "NVIDIA H200",
+        "architecture": "sm_90",
+        "uuid": "8793d79f350ec5010a954ce29deee8a0",
+        "pci_bus_id": "0000:9a:00.0",
+        "physical_id": "",
+        "physical_id_source": "",
+        "compute_partition": "",
+        "memory_partition": "",
+        "memory_allocation_mode": "",
+        "numa_node": 1,
+        "compute_units": 132,
+        "warp_size": 32,
+        "property_memory_bytes": 150101688320,
+        "total_memory_bytes": 150101688320,
+        "free_memory_bytes": 149545025536,
+        "warnings": [
+          "physical package identity unavailable",
+          "partition metadata unavailable"
+        ]
+      },
+      {
+        "ordinal": 5,
+        "name": "NVIDIA H200",
+        "architecture": "sm_90",
+        "uuid": "0be674d0f3a86c060cebfb936d2e1cc0",
+        "pci_bus_id": "0000:bb:00.0",
+        "physical_id": "",
+        "physical_id_source": "",
+        "compute_partition": "",
+        "memory_partition": "",
+        "memory_allocation_mode": "",
+        "numa_node": 1,
+        "compute_units": 132,
+        "warp_size": 32,
+        "property_memory_bytes": 150101688320,
+        "total_memory_bytes": 150101688320,
+        "free_memory_bytes": 149545025536,
+        "warnings": [
+          "physical package identity unavailable",
+          "partition metadata unavailable"
+        ]
+      },
+      {
+        "ordinal": 6,
+        "name": "NVIDIA H200",
+        "architecture": "sm_90",
+        "uuid": "77df1e71e8323ccdd09eaa03ab3a2d7d",
+        "pci_bus_id": "0000:cd:00.0",
+        "physical_id": "",
+        "physical_id_source": "",
+        "compute_partition": "",
+        "memory_partition": "",
+        "memory_allocation_mode": "",
+        "numa_node": 1,
+        "compute_units": 132,
+        "warp_size": 32,
+        "property_memory_bytes": 150101688320,
+        "total_memory_bytes": 150101688320,
+        "free_memory_bytes": 149545025536,
+        "warnings": [
+          "physical package identity unavailable",
+          "partition metadata unavailable"
+        ]
+      },
+      {
+        "ordinal": 7,
+        "name": "NVIDIA H200",
+        "architecture": "sm_90",
+        "uuid": "ab387e304af7aaf1ece8575af15045ba",
+        "pci_bus_id": "0000:dc:00.0",
+        "physical_id": "",
+        "physical_id_source": "",
+        "compute_partition": "",
+        "memory_partition": "",
+        "memory_allocation_mode": "",
+        "numa_node": 1,
+        "compute_units": 132,
+        "warp_size": 32,
+        "property_memory_bytes": 150101688320,
+        "total_memory_bytes": 150101688320,
+        "free_memory_bytes": 149545025536,
+        "warnings": [
+          "physical package identity unavailable",
+          "partition metadata unavailable"
+        ]
+      }
+    ]
+  },
+  "runs": [],
+  "lifecycle": {
+    "block_calibration": {
+      "mode": "xpoint",
+      "reference_queue": "0",
+      "reference_uuid": "9fdcd9f2c45469a881b044d5f5e92bb8",
+      "samples": 5,
+      "target_count": 1,
+      "m": 1,
+      "configuration": "6b68736561726368010100000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "targets": "79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+      "effective_scalars_per_second": {
+        "numerator": "4294967289000000000",
+        "denominator": "4201279541"
+      },
+      "device_steps_per_second": {
+        "numerator": "4294967289000000000",
+        "denominator": "4201279541"
+      },
+      "block_target_seconds": 43200,
+      "work_unit_target_seconds": 180,
+      "alignment": "1",
+      "block_width": "0x0000000000000000000000000000000000000000000000000000282a94e73ebb",
+      "initial_work_unit_width": "0x0000000000000000000000000000000000000000000000000000002ad8164bfe",
+      "note": "Prediction from measured complete-target wall time; pauses excluded. New jobs only."
+    },
+    "server_pause_cycles_same_process": 3,
+    "socket_pause_seconds": 65.04360240796814,
+    "stopped_owner_quarantined_healthy_progress_and_sync": true,
+    "changed_device_count_resume": true,
+    "visibility_remap": "queue 1 retained its UUID at visible ordinal 0",
+    "memory_pressure_isolated": true
+  },
+  "passed": true,
+  "source_commit": "29fbf635c7702f218656ab5ef1a462930a8ca1d9",
+  "source_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "binaries": {
+    "keyhunt-worker": "74daea7fdce141afa1f25e963219bffef451f63ab4e06cb52a888830dd80f481",
+    "keyhunt": "1a6f332c2569b487f497778cece2e04554c95752419887161deef2589eb452e4",
+    "keyhunt-coordinator": "f033922c9c41914aacb0f02c0614544e240474d990a4942804506b2431ad69d9"
+  },
+  "source_sha256": {
+    "tools/validate_fleet.py": "a56f5837d8862b7e927b1bb3aa9b2714eb07978752e2d44db3b8a20d1d7b7470",
+    "tools/coordinator_worker.py": "ace2372fbe20243f4cbd42a94522fabb1103dcd9b340e22c0ac4a383c94d9859",
+    "src/coordinator/device_worker.cpp": "dbe4f92f8ed69a2d04a241a73510a3b5492973543391b45ad6ede0353cc73e5d",
+    "src/coordinator/worker.cpp": "a519425a4a7be91a02119bd36af1fc52b70e5debebd6baa07057271c932cd777",
+    "src/storage/checkpoint.cpp": "5d0b84a33effb41d1f0f3bb9eff144a34859e0b45eb82543a91a8dfabe93a765",
+    "src/coordinator/self_test.cpp": "5600eed18fdf5aae706d834965f41c2650152ce42e067cf1dd9b9726c598a174",
+    "src/backend/hip/discovery.hip": "354ab7713613f7bb0388c8cef83ca2164b8a3fbdd2ded40e9a182b873831ebbb",
+    "src/backend/cuda/discovery.cu": "f2d9f94496333805923935f833f37876303031fcb7e970f0c24d3b7a9b8bf95d"
+  },
+  "other_load": "No additional GPU workload launched by this validation; unrelated host load is uncontrolled."
+}
