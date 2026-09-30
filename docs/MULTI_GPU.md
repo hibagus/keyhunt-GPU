@@ -73,3 +73,35 @@ Their outbox stays pending until explicit synchronization. Existing
 `checkpoint_controls` socket, signal, durability and recovery tests also pass.
 This addresses the repeated initialization mechanism identified by audit A17;
 end-to-end fleet measurements are recorded separately below.
+
+## Fleet supervision
+
+The Python supervisor starts one persistent native child per selected queue and
+one independent scheduled-sync child. `--devices 0,1` selects a subset;
+`--device-map QUEUE=ORDINAL` preserves queue identity after visibility changes.
+`--rebind-device QUEUE` explicitly permits replacement with a different UUID only
+after the prior process stops. One UUID cannot belong to two queue slots.
+Unselected queues retain active ownership; their unstarted grants remain eligible
+for same-job balancing. No process termination or completion triggers a sync.
+
+`--host-memory` caps each device's table/target preparation budget, while
+`--host-memory-total` divides an aggregate cap among selected devices. These are
+allocation budgets, not total process RSS guarantees; runtime contexts, SQLite
+and Python add overhead. Device table allocation also retains the backend's
+free-memory and reserve checks. The supervisor never multiplies package HBM by
+the number of logical partitions or changes partition modes.
+
+Progress is a monotonically increasing completed-batch/checkpoint event, not log
+file growth. Confirmed `paused` and `idle` states exclude the execution watchdog.
+A draining or running child still has a deadline. A stalled device gets a bounded
+30-second drain, then SIGKILL and quarantine; healthy devices and sync continue.
+Ordinary device failures receive bounded retries and quarantine after three
+failures. Typed coordinator/lease blocks do not increment that counter (A16).
+Socket and signal pauses share the same authoritative state (A18). Fleet shutdown
+signals all children before sharing one drain deadline. A surviving kernel-held
+process retains its owner locks and cannot be replaced unsafely.
+
+`coordinator_supervisor` passes deterministic watchdog deadline tests and actual
+multi-process tests for simultaneous startup, one isolated memory failure,
+bounded retries/quarantine, healthy completion, and one machine sync check.
+The live HTTPS/HIP regression also passes with the concurrent supervisor.

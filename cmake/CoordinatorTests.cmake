@@ -97,3 +97,7 @@ target_link_libraries(coordinator_dispatch_test PRIVATE keyhunt_coordination)
 keyhunt_configure_target(coordinator_dispatch_test)
 add_test(NAME coordinator_dispatch COMMAND coordinator_dispatch_test)
 set_tests_properties(coordinator_dispatch PROPERTIES TIMEOUT 120 LABELS "cpu;coordinator;recovery")
+
+add_test(NAME coordinator_supervisor COMMAND ${Python3_EXECUTABLE}
+    ${PROJECT_SOURCE_DIR}/tests/coordinator/supervisor.py)
+set_tests_properties(coordinator_supervisor PROPERTIES TIMEOUT 60 LABELS "cpu;coordinator;recovery")
