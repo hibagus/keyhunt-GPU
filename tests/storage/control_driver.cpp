@@ -4,13 +4,15 @@
 #include "checkpoint_control.h"
 #include "state_helpers.h"
 #include <chrono>
+#include <csignal>
 #include <iostream>
 #include <thread>
 using namespace fixture;
 int main(int argc,char** argv){
     try{
         require(argc==3,"driver requires directory and delay in ms");
-        const unsigned delay=std::stoul(argv[2]);
+        const bool threaded=std::string(argv[2])=="threaded";
+        const unsigned delay=threaded?0:std::stoul(argv[2]);
         Journal journal(argv[1]);core::XPointVerifier verifier;
         const auto targets=x_targets(verifier,{100000});
         const auto project=journal.create_project("C14 process fixture");
@@ -22,11 +24,24 @@ int main(int argc,char** argv){
         backend::LocalCheckpointControl control(journal.state_directory(),grant,0,1);
         CheckpointOptions options;options.xpoint_steps=4;options.checkpoint_seconds=60;
         unsigned launches=0;
+        auto callbacks=control.callbacks();
+        if(threaded){
+            auto notify=callbacks.notify;
+            callbacks.notify=[&,notify](auto activity){
+                notify(activity);
+                if(activity==CheckpointActivity::Paused){
+                    // raise targets this worker thread, modeling HIP helpers;
+                    // the owner consumes the same lock-free flag on its thread.
+                    std::thread([]{std::raise(SIGUSR2);}).join();
+                }
+            };
+        }
         const auto result=CheckpointRun::xpoint(journal,grant,targets,verifier,[&](const auto& batch){
             if(!launches++)std::cout<<"{\"type\":\"submitted\"}\n"<<std::flush;
+            if(threaded)std::thread([&]{std::raise(launches==1?SIGUSR1:SIGTERM);}).join();
             std::this_thread::sleep_for(std::chrono::milliseconds(delay));
             return execute(batch,targets,verifier,1024);
-        },options,{},[&]{control.close();},control.callbacks());
+        },options,{},[&]{control.close();},callbacks);
         std::cout<<"{\"type\":\"summary\",\"complete\":"<<(result.complete?"true":"false")
             <<",\"launches\":"<<launches<<",\"checkpoints\":"<<result.checkpoints<<"}\n"<<std::flush;
     }catch(const std::exception& e){std::cerr<<e.what()<<'\n';return 2;}

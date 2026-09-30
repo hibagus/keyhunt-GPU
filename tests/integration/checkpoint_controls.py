@@ -163,6 +163,18 @@ with tempfile.TemporaryDirectory(prefix="kh-c14-control-") as temporary:
     finally:
         cleanup(process)
 
+    # Signals can be delivered on a HIP helper thread rather than the owner.
+    process, output, error = start("worker-thread-signals", "threaded")
+    try:
+        assert process.wait(timeout=10) == 0, error.read_text()
+        notices = rows(output)
+        assert [r["state"] for r in notices if r["type"] == "control"] == ["draining", "paused", "running", "draining", "stopped"]
+        assert notices[-1]["launches"] == 2 and notices[-1]["checkpoints"] == 2
+        cli("state", "check")
+        report["cases"].append({"case": "worker-thread-signals", "summary": notices[-1]})
+    finally:
+        cleanup(process)
+
     # Never overwrite an unexpected regular file at the endpoint.
     (state / "control.sock").write_text("keep me")
     process, output, error = start("unsafe")

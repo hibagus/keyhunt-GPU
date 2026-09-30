@@ -1,6 +1,7 @@
 #include "checkpoint_control.h"
 #include "state_helpers.h"
 #include <array>
+#include <atomic>
 #include <cerrno>
 #include <chrono>
 #include <csignal>
@@ -17,23 +18,29 @@ namespace keyhunt::backend {
 namespace {
 using namespace storage;
 using Clock=std::chrono::steady_clock;
-volatile sig_atomic_t signal_command=0,signal_stops=0,force_signal=0;
+// HIP may already have background threads when handlers are installed. A
+// current-thread signal mask cannot protect a read/clear from a handler on
+// another thread. Lock-free exchange consumes flags without losing that race.
+static_assert(std::atomic<sig_atomic_t>::is_always_lock_free,"signal flags must never take a lock");
+std::atomic<sig_atomic_t> signal_command{0},signal_stops{0},force_signal{0};
 bool signals_owned=false;
 constexpr std::array<int,4> control_signals{SIGINT,SIGTERM,SIGUSR1,SIGUSR2};
 
 void handler(int signal){
     // No SQL, allocation, output, GPU call or process teardown in a handler.
     if(signal==SIGINT || signal==SIGTERM){
-        if(signal_stops)force_signal=signal;
-        signal_stops=1;
-    }else signal_command=signal==SIGUSR1?1:2;
+        if(signal_stops.exchange(1,std::memory_order_relaxed))
+            force_signal.store(signal,std::memory_order_relaxed);
+    }else signal_command.store(signal==SIGUSR1?1:2,std::memory_order_relaxed);
 }
 struct Signals {
     std::array<struct sigaction,4> previous{};
     size_t installed=0;
     Signals(){
         if(signals_owned)throw std::logic_error("checkpoint signal owner already exists");
-        signal_command=signal_stops=force_signal=0;
+        signal_command.store(0,std::memory_order_relaxed);
+        signal_stops.store(0,std::memory_order_relaxed);
+        force_signal.store(0,std::memory_order_relaxed);
         struct sigaction action{};action.sa_handler=handler;sigemptyset(&action.sa_mask);
         for(int s:control_signals)sigaddset(&action.sa_mask,s);
         for(int s:control_signals){
@@ -147,15 +154,13 @@ struct LocalCheckpointControl::Impl {
     CheckpointRequest poll(){
         // Force exit is deliberately outside the handler. It is observed at the
         // next bounded owner boundary; a hung driver still requires SIGKILL.
-        if(force_signal)::_exit(128+force_signal);
-        if(signal_stops)change('T');
-        if(signal_command){
-            sigset_t mask,previous;sigemptyset(&mask);
-            for(int s:control_signals)sigaddset(&mask,s);
-            if(sigprocmask(SIG_BLOCK,&mask,&previous))throw std::runtime_error("cannot block checkpoint signals");
-            const auto command=signal_command;signal_command=0;
-            if(sigprocmask(SIG_SETMASK,&previous,nullptr))throw std::runtime_error("cannot restore checkpoint signal mask");
-            change(command==1?'P':'R');
+        const auto forced=force_signal.load(std::memory_order_relaxed);
+        if(forced)::_exit(128+forced);
+        if(signal_stops.load(std::memory_order_relaxed))change('T');
+        // Keep the normal hot path read-only; exchange only a pending request.
+        if(signal_command.load(std::memory_order_relaxed)){
+            const auto command=signal_command.exchange(0,std::memory_order_relaxed);
+            if(command)change(command==1?'P':'R');
         }
         open();
         // Fixed client/batch limits keep a stalled or noisy local client from
