@@ -17,6 +17,7 @@
 namespace keyhunt::backend {
 int xpoint_command(int argc, char** argv);
 int bsgs_table_command(int argc, char** argv);
+int bsgs_command(int argc, char** argv);
 namespace {
 // Escape runtime-provided names as JSON, including control characters.
 std::string quoted(const std::string& text) {
@@ -121,10 +122,11 @@ int smoke(int argc, char** argv) {
 int dispatch_command(int argc, char** argv) {
     if (argc < 2) return -1;
     const std::string command = argv[1];
-    if (command != "devices" && command != "gpu-smoke" && command != "xpoint" && command != "bsgs-table") return -1;
+    if (command != "devices" && command != "gpu-smoke" && command != "xpoint" && command != "bsgs-table" && command != "bsgs") return -1;
     try {
         if (command == "gpu-smoke") return smoke(argc, argv);
         if (command == "xpoint") return xpoint_command(argc, argv);
+        if (command == "bsgs") return bsgs_command(argc, argv);
         if (command == "bsgs-table") return bsgs_table_command(argc, argv);
         if (argc != 4 || std::string(argv[2]) != "--backend" || std::string(argv[3]) != "hip")
             throw std::invalid_argument("usage: keyhunt devices --backend hip (JSON output)");
