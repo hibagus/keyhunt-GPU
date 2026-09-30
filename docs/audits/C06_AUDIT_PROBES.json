@@ -1,0 +1,463 @@
+{
+  "schema_version": 1,
+  "oracle_commit": "0cdc758a56360bf58a851fe91085a327ec97685a",
+  "oracle_binary_sha256": "38e8d5b053888c6273d90ddb6bde9f4dc1e316d67bf57a127a3e15b7e073bcf4",
+  "scope": "Synthetic CPU search and arithmetic audit; no GPU validation",
+  "current_search": {
+    "binary_sha256": "d6ada9c18bb457f18cf217e32895332a7395eee942e8b5d709fbbdb525aec6cb",
+    "cases": [
+      {
+        "name": "xpoint_zero_denominator",
+        "argv": [
+          "-m",
+          "xpoint",
+          "-f",
+          "targets.txt",
+          "-r",
+          "200:600",
+          "-n",
+          "1024",
+          "-t",
+          "1",
+          "-q",
+          "-s",
+          "0"
+        ],
+        "targets": "465370b287a79ff3905a857a9cf918d50adbc968d9e159d0926e2c00ef34a24d\n5cc24a6d4c5b24f914542f91e5fa937fffa0855151b8b8428729b06a9178a263\nc7a363246aeb7c8c991b2aa710abdf5cfff2991230b3a69fbe2dd4817c7c3e0a\n241febb8e23cbd77d664a18f66ad6240aaec6ecdc813b088d5b901b2e285131f\n635cd7a05064d3bc066535a04dbf563a640d2464c7fe0ac48304214fe4985a86\n6645a1bd4eab02be45884ffd288955fe3f5a68ca9ae431bccd3967c712295b96\n",
+        "expected": [
+          "200",
+          "201",
+          "3ff",
+          "400",
+          "401",
+          "5ff"
+        ],
+        "found": [
+          "400"
+        ],
+        "missing": [
+          "200",
+          "201",
+          "3ff",
+          "401",
+          "5ff"
+        ],
+        "unexpected": [],
+        "passed": false,
+        "expected_exit": 0,
+        "exit_code": 0,
+        "timed_out": false,
+        "stdout": "[+] Version 0.2.230519 Satoshi Quest, developed by AlbertoBSD\n[+] Mode xpoint\n[+] Thread : 1\n[+] Quiet thread output\n[+] Turn off stats output\n[+] N = 0x400\n[+] Range \n[+] -- from : 0x200\n[+] -- to   : 0x600\n[+] Allocating memory for 6 elements: 0.00 MB\n[+] Bloom filter for 6 elements.\n[+] Loading data to the bloomfilter total: 0.03 MB\n[+] Sorting data ... done! 6 values were loaded and sorted\n\nHit! Private Key: 400\npubkey: 04241febb8e23cbd77d664a18f66ad6240aaec6ecdc813b088d5b901b2e285131f513378d9ff94f8d3d6c420bd13981df8cd50fd0fbd0cb5afabb3e66f2750026d\nAddress 17imJe7o4mpq2MMfZ328evDJQfbt6ShvxA\nrmd160 49b6cad893a578037227a9a82b60a92d580817fa\n\nEnd\n",
+        "stderr": "",
+        "result_file": "Private Key: 400\npubkey: 04241febb8e23cbd77d664a18f66ad6240aaec6ecdc813b088d5b901b2e285131f513378d9ff94f8d3d6c420bd13981df8cd50fd0fbd0cb5afabb3e66f2750026d\nAddress 17imJe7o4mpq2MMfZ328evDJQfbt6ShvxA\nrmd160 49b6cad893a578037227a9a82b60a92d580817fa\n"
+      },
+      {
+        "name": "xpoint_short_order_tail",
+        "argv": [
+          "-m",
+          "xpoint",
+          "-f",
+          "targets.txt",
+          "-r",
+          "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd036412e:fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141",
+          "-n",
+          "1024",
+          "-t",
+          "1",
+          "-q",
+          "-s",
+          "0"
+        ],
+        "targets": "2b4ea0a797a443d293ef5cff444f4979f06acfebd7e86d277475656138385b6c\nc6047f9441ed7d6d3045406e95c07cd85c778e4b8cef3ca7abac09b95c709ee5\n79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798\n",
+        "expected": [
+          "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd036412e",
+          "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd036413f",
+          "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364140"
+        ],
+        "found": [],
+        "missing": [
+          "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd036412e",
+          "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd036413f",
+          "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364140"
+        ],
+        "unexpected": [],
+        "passed": false,
+        "expected_exit": 0,
+        "exit_code": 0,
+        "timed_out": false,
+        "stdout": "[+] Version 0.2.230519 Satoshi Quest, developed by AlbertoBSD\n[+] Mode xpoint\n[+] Thread : 1\n[+] Quiet thread output\n[+] Turn off stats output\n[+] N = 0x400\n[+] Range \n[+] -- from : 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd036412e\n[+] -- to   : 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141\n[+] Allocating memory for 3 elements: 0.00 MB\n[+] Bloom filter for 3 elements.\n[+] Loading data to the bloomfilter total: 0.03 MB\n[+] Sorting data ... done! 3 values were loaded and sorted\n\nEnd\n",
+        "stderr": "",
+        "result_file": ""
+      },
+      {
+        "name": "xpoint_aligned_order_tail",
+        "argv": [
+          "-m",
+          "xpoint",
+          "-f",
+          "targets.txt",
+          "-r",
+          "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0363d41:fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141",
+          "-n",
+          "1024",
+          "-t",
+          "1",
+          "-q",
+          "-s",
+          "0"
+        ],
+        "targets": "241febb8e23cbd77d664a18f66ad6240aaec6ecdc813b088d5b901b2e285131f\n2b4ea0a797a443d293ef5cff444f4979f06acfebd7e86d277475656138385b6c\nc6047f9441ed7d6d3045406e95c07cd85c778e4b8cef3ca7abac09b95c709ee5\n79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798\n",
+        "expected": [
+          "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0363d41",
+          "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd036412e",
+          "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd036413f",
+          "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364140"
+        ],
+        "found": [],
+        "missing": [
+          "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0363d41",
+          "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd036412e",
+          "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd036413f",
+          "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364140"
+        ],
+        "unexpected": [],
+        "passed": false,
+        "expected_exit": 0,
+        "exit_code": 0,
+        "timed_out": false,
+        "stdout": "[+] Version 0.2.230519 Satoshi Quest, developed by AlbertoBSD\n[+] Mode xpoint\n[+] Thread : 1\n[+] Quiet thread output\n[+] Turn off stats output\n[+] N = 0x400\n[+] Range \n[+] -- from : 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0363d41\n[+] -- to   : 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141\n[+] Allocating memory for 4 elements: 0.00 MB\n[+] Bloom filter for 4 elements.\n[+] Loading data to the bloomfilter total: 0.03 MB\n[+] Sorting data ... done! 4 values were loaded and sorted\n\nEnd\n",
+        "stderr": "",
+        "result_file": ""
+      },
+      {
+        "name": "xpoint_partial_order_tail",
+        "argv": [
+          "-m",
+          "xpoint",
+          "-f",
+          "targets.txt",
+          "-r",
+          "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0363d40:fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141",
+          "-n",
+          "1024",
+          "-t",
+          "1",
+          "-q",
+          "-s",
+          "0"
+        ],
+        "targets": "635cd7a05064d3bc066535a04dbf563a640d2464c7fe0ac48304214fe4985a86\nc6047f9441ed7d6d3045406e95c07cd85c778e4b8cef3ca7abac09b95c709ee5\n79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798\n",
+        "expected": [
+          "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0363d40",
+          "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd036413f",
+          "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364140"
+        ],
+        "found": [
+          "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0363d40",
+          "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd036413f"
+        ],
+        "missing": [
+          "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364140"
+        ],
+        "unexpected": [],
+        "passed": false,
+        "expected_exit": 0,
+        "exit_code": 0,
+        "timed_out": false,
+        "stdout": "[+] Version 0.2.230519 Satoshi Quest, developed by AlbertoBSD\n[+] Mode xpoint\n[+] Thread : 1\n[+] Quiet thread output\n[+] Turn off stats output\n[+] N = 0x400\n[+] Range \n[+] -- from : 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0363d40\n[+] -- to   : 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141\n[+] Allocating memory for 3 elements: 0.00 MB\n[+] Bloom filter for 3 elements.\n[+] Loading data to the bloomfilter total: 0.03 MB\n[+] Sorting data ... done! 3 values were loaded and sorted\n\nHit! Private Key: fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0363d40\npubkey: 04635cd7a05064d3bc066535a04dbf563a640d2464c7fe0ac48304214fe4985a86ff1bfd9a6ec18809b98ca3035061d0cf172a0fb80cd7e5b31fbac1d7161c4e10\nAddress 1CVNbmdQrPu98kGyGY3hxbgsNqXEmzVDxo\nrmd160 7e070f9615ba5ba3205e2389c0a36873b71c4021\n\nHit! Private Key: fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd036413f\npubkey: 04c6047f9441ed7d6d3045406e95c07cd85c778e4b8cef3ca7abac09b95c709ee5e51e970159c23cc65c3a7be6b99315110809cd9acd992f1edc9bce55af301705\nAddress 1Knh2eFMtzMEtmvGHW14ELG8F9Ny6jV4s3\nrmd160 ce166576ade341dbac8057e56cd8479890b4bc15\n\nEnd\n",
+        "stderr": "",
+        "result_file": "Private Key: fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0363d40\npubkey: 04635cd7a05064d3bc066535a04dbf563a640d2464c7fe0ac48304214fe4985a86ff1bfd9a6ec18809b98ca3035061d0cf172a0fb80cd7e5b31fbac1d7161c4e10\nAddress 1CVNbmdQrPu98kGyGY3hxbgsNqXEmzVDxo\nrmd160 7e070f9615ba5ba3205e2389c0a36873b71c4021\nPrivate Key: fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd036413f\npubkey: 04c6047f9441ed7d6d3045406e95c07cd85c778e4b8cef3ca7abac09b95c709ee5e51e970159c23cc65c3a7be6b99315110809cd9acd992f1edc9bce55af301705\nAddress 1Knh2eFMtzMEtmvGHW14ELG8F9Ny6jV4s3\nrmd160 ce166576ade341dbac8057e56cd8479890b4bc15\n"
+      },
+      {
+        "name": "bsgs_step_boundaries",
+        "argv": [
+          "-m",
+          "bsgs",
+          "-f",
+          "targets.txt",
+          "-r",
+          "100000:300000",
+          "-n",
+          "1048576",
+          "-t",
+          "1",
+          "-q",
+          "-s",
+          "0"
+        ],
+        "targets": "048b4b5f165df3c2be8c6244b5b745638843e4a781a15bcd1b69f79a55dffdf80c4aad0a6f68d308b4b3fbd7813ab0da04f9e336546162ee56b3eff0c65fd4fd36\n049fb8987e3cb30a1174b7d64de26347166841051854696930396502714f6bcf4b3ff105599a722e18607f2791c5ad8adfa429640898821df1a4b479674a67db73\n048f5c7ade65f1ff1dee0278e225abb657785344e71f8e69d07fa5cf1320cb641a1ec2b4cc2b5ffca704bb9847b0ac957d3863daeac102769f2668a300a9ef19f0\n04a4b1c794c4982058e63958e1f0293e57909fe702f633a8e9b5f84d46679dbf358ffb9bb7667242ac1bbd71bf3c24faf431db18b99b131013dc5191a429225e5c\n04760196342d13fcbab52f1ef9f41636faecaef5457427c5703f47c80f895331da73e17024e893a6b3a155cef450b180e2e19771f45a0a9e027e1c3fabea136d13\n04ea342511c2ec15685aad210ba65e6c1bd99928c44f47032d189861271cf8bbae67206684aaf32da4a68d8c23ea9a5c901de75dfd8da308d02147af5d446c1653\n04993443d48f1304ed93d22fd808d5e50645a8b3ca8d622489718fa6025b4b72e7bd0506c9b719ffe697bb4149bfd9b1a37eb842d685d0a243967dec4757e2055c\n0453b348e6b838200b309d4c18fb737caf78e232a33ae9876861000d765757fbacec62142ed473fe66196f849caebab40e9a8e79559f82cdca0db6d67dbb443b78\n0454f3f2dfc717abb9c88bef6a84429b1319d64e2fa662d647dd80baf39192c54f8d35b85fe8508876c9f382e72d02328832019cb58254803761ea8e3f1a4cf4ce\n046a735a7b095ac938cc593efccfc3594d684853d27783ecbf577d54300501d7117872988d7d23b2765e0d273672ce2b3c7d9335d7fab149456566117d9223c518\n0446c185d4012c4a31a053e8f1890183384722f80d190478b87019555030c95064303c208aa1091b4b29ddb7950cb417bfcd31c9d97d8c983ed4cb2ed182b1e3ca\n0476cea7574d258798117e7d6c94941c468703c0fef712fdd06f6a75ce792c22e597eb1721b854e250e84844fa879debb717bad79b0ae88cf4bec3a5ed035fd327\n",
+        "expected": [
+          "100000",
+          "100001",
+          "1003ff",
+          "100400",
+          "100401",
+          "1007ff",
+          "100800",
+          "100801",
+          "100c00",
+          "2003ff",
+          "200400",
+          "200401"
+        ],
+        "found": [
+          "100000",
+          "100001",
+          "1003ff",
+          "100401",
+          "1007ff",
+          "100800",
+          "100801",
+          "2003ff",
+          "200401"
+        ],
+        "missing": [
+          "100400",
+          "100c00",
+          "200400"
+        ],
+        "unexpected": [],
+        "passed": false,
+        "expected_exit": 1,
+        "exit_code": 0,
+        "timed_out": false,
+        "stdout": "[+] Version 0.2.230519 Satoshi Quest, developed by AlbertoBSD\n[+] Thread : 1\n[+] Quiet thread output\n[+] Turn off stats output\n[+] Mode BSGS sequential\n[+] Opening file targets.txt\n[+] Added 12 points from file\n[+] Range \n[+] -- from : 0x100000\n[+] -- to   : 0x300000\n[+] N = 0x100000\n[+] Bloom filter for 1024 elements : 0.88 MB\n[+] Bloom filter for 32 elements : 0.88 MB\n[+] Bloom filter for 1 elements : 0.88 MB\n[+] Allocating 0.00 MB for 1 bP Points\n\n[+] processing 0/1024 bP points : 0%\n\n[+] processing 0/1024 bP points : 0%\n\n[+] processing 1024/1024 bP points : 100%     \n[+] Making checkums .. ... done\n[+] Sorting 1 elements... Done!\n[+] Thread Key found privkey 100000   \n[+] Publickey 048b4b5f165df3c2be8c6244b5b745638843e4a781a15bcd1b69f79a55dffdf80c4aad0a6f68d308b4b3fbd7813ab0da04f9e336546162ee56b3eff0c65fd4fd36\n[+] Thread Key found privkey 100001   \n[+] Publickey 049fb8987e3cb30a1174b7d64de26347166841051854696930396502714f6bcf4b3ff105599a722e18607f2791c5ad8adfa429640898821df1a4b479674a67db73\n[+] Thread Key found privkey 1003ff   \n[+] Publickey 048f5c7ade65f1ff1dee0278e225abb657785344e71f8e69d07fa5cf1320cb641a1ec2b4cc2b5ffca704bb9847b0ac957d3863daeac102769f2668a300a9ef19f0\n[+] Thread Key found privkey 100401   \n[+] Publickey 04760196342d13fcbab52f1ef9f41636faecaef5457427c5703f47c80f895331da73e17024e893a6b3a155cef450b180e2e19771f45a0a9e027e1c3fabea136d13\n[+] Thread Key found privkey 1007ff   \n[+] Publickey 04ea342511c2ec15685aad210ba65e6c1bd99928c44f47032d189861271cf8bbae67206684aaf32da4a68d8c23ea9a5c901de75dfd8da308d02147af5d446c1653\n[+] Thread Key found privkey 100800   \n[+] Publickey 04993443d48f1304ed93d22fd808d5e50645a8b3ca8d622489718fa6025b4b72e7bd0506c9b719ffe697bb4149bfd9b1a37eb842d685d0a243967dec4757e2055c\n[+] Thread Key found privkey 100801   \n[+] Publickey 0453b348e6b838200b309d4c18fb737caf78e232a33ae9876861000d765757fbacec62142ed473fe66196f849caebab40e9a8e79559f82cdca0db6d67dbb443b78\n[+] Thread Key found privkey 2003ff   \n[+] Publickey 046a735a7b095ac938cc593efccfc3594d684853d27783ecbf577d54300501d7117872988d7d23b2765e0d273672ce2b3c7d9335d7fab149456566117d9223c518\n[+] Thread Key found privkey 200401   \n[+] Publickey 0476cea7574d258798117e7d6c94941c468703c0fef712fdd06f6a75ce792c22e597eb1721b854e250e84844fa879debb717bad79b0ae88cf4bec3a5ed035fd327\n\nEnd\n",
+        "stderr": "",
+        "result_file": "Key found privkey 100000\nPublickey 048b4b5f165df3c2be8c6244b5b745638843e4a781a15bcd1b69f79a55dffdf80c4aad0a6f68d308b4b3fbd7813ab0da04f9e336546162ee56b3eff0c65fd4fd36\nKey found privkey 100001\nPublickey 049fb8987e3cb30a1174b7d64de26347166841051854696930396502714f6bcf4b3ff105599a722e18607f2791c5ad8adfa429640898821df1a4b479674a67db73\nKey found privkey 1003ff\nPublickey 048f5c7ade65f1ff1dee0278e225abb657785344e71f8e69d07fa5cf1320cb641a1ec2b4cc2b5ffca704bb9847b0ac957d3863daeac102769f2668a300a9ef19f0\nKey found privkey 100401\nPublickey 04760196342d13fcbab52f1ef9f41636faecaef5457427c5703f47c80f895331da73e17024e893a6b3a155cef450b180e2e19771f45a0a9e027e1c3fabea136d13\nKey found privkey 1007ff\nPublickey 04ea342511c2ec15685aad210ba65e6c1bd99928c44f47032d189861271cf8bbae67206684aaf32da4a68d8c23ea9a5c901de75dfd8da308d02147af5d446c1653\nKey found privkey 100800\nPublickey 04993443d48f1304ed93d22fd808d5e50645a8b3ca8d622489718fa6025b4b72e7bd0506c9b719ffe697bb4149bfd9b1a37eb842d685d0a243967dec4757e2055c\nKey found privkey 100801\nPublickey 0453b348e6b838200b309d4c18fb737caf78e232a33ae9876861000d765757fbacec62142ed473fe66196f849caebab40e9a8e79559f82cdca0db6d67dbb443b78\nKey found privkey 2003ff\nPublickey 046a735a7b095ac938cc593efccfc3594d684853d27783ecbf577d54300501d7117872988d7d23b2765e0d273672ce2b3c7d9335d7fab149456566117d9223c518\nKey found privkey 200401\nPublickey 0476cea7574d258798117e7d6c94941c468703c0fef712fdd06f6a75ce792c22e597eb1721b854e250e84844fa879debb717bad79b0ae88cf4bec3a5ed035fd327\n"
+      }
+    ]
+  },
+  "extended_points": {
+    "seed": 168219135,
+    "distinct_random_points": 128,
+    "random_pair_count": 256,
+    "cases": 1152,
+    "failure_count": 0,
+    "failures": [],
+    "binary_sha256": "1ed107bf92e9a57c8e7335489766280e297aca692be3714b95fb5c84d6e36bf1"
+  },
+  "previous_search": {
+    "binary_sha256": "ad4ef332b2148e6baa3b88491d53be4a0dcfba53914ddfbd17e6eaee3531522c",
+    "cases": [
+      {
+        "name": "xpoint_zero_denominator",
+        "argv": [
+          "-m",
+          "xpoint",
+          "-f",
+          "targets.txt",
+          "-r",
+          "200:600",
+          "-n",
+          "1024",
+          "-t",
+          "1",
+          "-q",
+          "-s",
+          "0"
+        ],
+        "targets": "465370b287a79ff3905a857a9cf918d50adbc968d9e159d0926e2c00ef34a24d\n5cc24a6d4c5b24f914542f91e5fa937fffa0855151b8b8428729b06a9178a263\nc7a363246aeb7c8c991b2aa710abdf5cfff2991230b3a69fbe2dd4817c7c3e0a\n241febb8e23cbd77d664a18f66ad6240aaec6ecdc813b088d5b901b2e285131f\n635cd7a05064d3bc066535a04dbf563a640d2464c7fe0ac48304214fe4985a86\n6645a1bd4eab02be45884ffd288955fe3f5a68ca9ae431bccd3967c712295b96\n",
+        "expected": [
+          "200",
+          "201",
+          "3ff",
+          "400",
+          "401",
+          "5ff"
+        ],
+        "found": [
+          "400"
+        ],
+        "missing": [
+          "200",
+          "201",
+          "3ff",
+          "401",
+          "5ff"
+        ],
+        "unexpected": [],
+        "passed": false,
+        "expected_exit": 0,
+        "exit_code": 0,
+        "timed_out": false,
+        "stdout": "[+] Version 0.2.230519 Satoshi Quest, developed by AlbertoBSD\n[+] Mode xpoint\n[+] Thread : 1\n[+] Quiet thread output\n[+] Turn off stats output\n[+] N = 0x400\n[+] Range \n[+] -- from : 0x200\n[+] -- to   : 0x600\n[+] Allocating memory for 6 elements: 0.00 MB\n[+] Bloom filter for 6 elements.\n[+] Loading data to the bloomfilter total: 0.03 MB\n[+] Sorting data ... done! 6 values were loaded and sorted\n\nHit! Private Key: 400\npubkey: 04241febb8e23cbd77d664a18f66ad6240aaec6ecdc813b088d5b901b2e285131f513378d9ff94f8d3d6c420bd13981df8cd50fd0fbd0cb5afabb3e66f2750026d\nAddress 17imJe7o4mpq2MMfZ328evDJQfbt6ShvxA\nrmd160 49b6cad893a578037227a9a82b60a92d580817fa\n\nEnd\n",
+        "stderr": "",
+        "result_file": "Private Key: 400\npubkey: 04241febb8e23cbd77d664a18f66ad6240aaec6ecdc813b088d5b901b2e285131f513378d9ff94f8d3d6c420bd13981df8cd50fd0fbd0cb5afabb3e66f2750026d\nAddress 17imJe7o4mpq2MMfZ328evDJQfbt6ShvxA\nrmd160 49b6cad893a578037227a9a82b60a92d580817fa\n"
+      },
+      {
+        "name": "xpoint_short_order_tail",
+        "argv": [
+          "-m",
+          "xpoint",
+          "-f",
+          "targets.txt",
+          "-r",
+          "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd036412e:fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141",
+          "-n",
+          "1024",
+          "-t",
+          "1",
+          "-q",
+          "-s",
+          "0"
+        ],
+        "targets": "2b4ea0a797a443d293ef5cff444f4979f06acfebd7e86d277475656138385b6c\nc6047f9441ed7d6d3045406e95c07cd85c778e4b8cef3ca7abac09b95c709ee5\n79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798\n",
+        "expected": [
+          "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd036412e",
+          "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd036413f",
+          "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364140"
+        ],
+        "found": [],
+        "missing": [
+          "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd036412e",
+          "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd036413f",
+          "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364140"
+        ],
+        "unexpected": [],
+        "passed": false,
+        "expected_exit": 0,
+        "exit_code": 0,
+        "timed_out": false,
+        "stdout": "[+] Version 0.2.230519 Satoshi Quest, developed by AlbertoBSD\n[+] Mode xpoint\n[+] Thread : 1\n[+] Quiet thread output\n[+] Turn off stats output\n[+] N = 0x400\n[+] Range \n[+] -- from : 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd036412e\n[+] -- to   : 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141\n[+] Allocating memory for 3 elements: 0.00 MB\n[+] Bloom filter for 3 elements.\n[+] Loading data to the bloomfilter total: 0.03 MB\n[+] Sorting data ... done! 3 values were loaded and sorted\n\nEnd\n",
+        "stderr": "",
+        "result_file": ""
+      },
+      {
+        "name": "xpoint_aligned_order_tail",
+        "argv": [
+          "-m",
+          "xpoint",
+          "-f",
+          "targets.txt",
+          "-r",
+          "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0363d41:fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141",
+          "-n",
+          "1024",
+          "-t",
+          "1",
+          "-q",
+          "-s",
+          "0"
+        ],
+        "targets": "241febb8e23cbd77d664a18f66ad6240aaec6ecdc813b088d5b901b2e285131f\n2b4ea0a797a443d293ef5cff444f4979f06acfebd7e86d277475656138385b6c\nc6047f9441ed7d6d3045406e95c07cd85c778e4b8cef3ca7abac09b95c709ee5\n79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798\n",
+        "expected": [
+          "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0363d41",
+          "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd036412e",
+          "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd036413f",
+          "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364140"
+        ],
+        "found": [],
+        "missing": [
+          "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0363d41",
+          "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd036412e",
+          "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd036413f",
+          "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364140"
+        ],
+        "unexpected": [],
+        "passed": false,
+        "expected_exit": 0,
+        "exit_code": 0,
+        "timed_out": false,
+        "stdout": "[+] Version 0.2.230519 Satoshi Quest, developed by AlbertoBSD\n[+] Mode xpoint\n[+] Thread : 1\n[+] Quiet thread output\n[+] Turn off stats output\n[+] N = 0x400\n[+] Range \n[+] -- from : 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0363d41\n[+] -- to   : 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141\n[+] Allocating memory for 4 elements: 0.00 MB\n[+] Bloom filter for 4 elements.\n[+] Loading data to the bloomfilter total: 0.03 MB\n[+] Sorting data ... done! 4 values were loaded and sorted\n\nEnd\n",
+        "stderr": "",
+        "result_file": ""
+      },
+      {
+        "name": "xpoint_partial_order_tail",
+        "argv": [
+          "-m",
+          "xpoint",
+          "-f",
+          "targets.txt",
+          "-r",
+          "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0363d40:fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141",
+          "-n",
+          "1024",
+          "-t",
+          "1",
+          "-q",
+          "-s",
+          "0"
+        ],
+        "targets": "635cd7a05064d3bc066535a04dbf563a640d2464c7fe0ac48304214fe4985a86\nc6047f9441ed7d6d3045406e95c07cd85c778e4b8cef3ca7abac09b95c709ee5\n79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798\n",
+        "expected": [
+          "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0363d40",
+          "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd036413f",
+          "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364140"
+        ],
+        "found": [
+          "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0363d40",
+          "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd036413f"
+        ],
+        "missing": [
+          "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364140"
+        ],
+        "unexpected": [],
+        "passed": false,
+        "expected_exit": 0,
+        "exit_code": 0,
+        "timed_out": false,
+        "stdout": "[+] Version 0.2.230519 Satoshi Quest, developed by AlbertoBSD\n[+] Mode xpoint\n[+] Thread : 1\n[+] Quiet thread output\n[+] Turn off stats output\n[+] N = 0x400\n[+] Range \n[+] -- from : 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0363d40\n[+] -- to   : 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141\n[+] Allocating memory for 3 elements: 0.00 MB\n[+] Bloom filter for 3 elements.\n[+] Loading data to the bloomfilter total: 0.03 MB\n[+] Sorting data ... done! 3 values were loaded and sorted\n\nHit! Private Key: fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0363d40\npubkey: 04635cd7a05064d3bc066535a04dbf563a640d2464c7fe0ac48304214fe4985a86ff1bfd9a6ec18809b98ca3035061d0cf172a0fb80cd7e5b31fbac1d7161c4e10\nAddress 1CVNbmdQrPu98kGyGY3hxbgsNqXEmzVDxo\nrmd160 7e070f9615ba5ba3205e2389c0a36873b71c4021\n\nHit! Private Key: fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd036413f\npubkey: 04c6047f9441ed7d6d3045406e95c07cd85c778e4b8cef3ca7abac09b95c709ee5e51e970159c23cc65c3a7be6b99315110809cd9acd992f1edc9bce55af301705\nAddress 1Knh2eFMtzMEtmvGHW14ELG8F9Ny6jV4s3\nrmd160 ce166576ade341dbac8057e56cd8479890b4bc15\n\nEnd\n",
+        "stderr": "",
+        "result_file": "Private Key: fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0363d40\npubkey: 04635cd7a05064d3bc066535a04dbf563a640d2464c7fe0ac48304214fe4985a86ff1bfd9a6ec18809b98ca3035061d0cf172a0fb80cd7e5b31fbac1d7161c4e10\nAddress 1CVNbmdQrPu98kGyGY3hxbgsNqXEmzVDxo\nrmd160 7e070f9615ba5ba3205e2389c0a36873b71c4021\nPrivate Key: fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd036413f\npubkey: 04c6047f9441ed7d6d3045406e95c07cd85c778e4b8cef3ca7abac09b95c709ee5e51e970159c23cc65c3a7be6b99315110809cd9acd992f1edc9bce55af301705\nAddress 1Knh2eFMtzMEtmvGHW14ELG8F9Ny6jV4s3\nrmd160 ce166576ade341dbac8057e56cd8479890b4bc15\n"
+      },
+      {
+        "name": "bsgs_step_boundaries",
+        "argv": [
+          "-m",
+          "bsgs",
+          "-f",
+          "targets.txt",
+          "-r",
+          "100000:300000",
+          "-n",
+          "1048576",
+          "-t",
+          "1",
+          "-q",
+          "-s",
+          "0"
+        ],
+        "targets": "048b4b5f165df3c2be8c6244b5b745638843e4a781a15bcd1b69f79a55dffdf80c4aad0a6f68d308b4b3fbd7813ab0da04f9e336546162ee56b3eff0c65fd4fd36\n049fb8987e3cb30a1174b7d64de26347166841051854696930396502714f6bcf4b3ff105599a722e18607f2791c5ad8adfa429640898821df1a4b479674a67db73\n048f5c7ade65f1ff1dee0278e225abb657785344e71f8e69d07fa5cf1320cb641a1ec2b4cc2b5ffca704bb9847b0ac957d3863daeac102769f2668a300a9ef19f0\n04a4b1c794c4982058e63958e1f0293e57909fe702f633a8e9b5f84d46679dbf358ffb9bb7667242ac1bbd71bf3c24faf431db18b99b131013dc5191a429225e5c\n04760196342d13fcbab52f1ef9f41636faecaef5457427c5703f47c80f895331da73e17024e893a6b3a155cef450b180e2e19771f45a0a9e027e1c3fabea136d13\n04ea342511c2ec15685aad210ba65e6c1bd99928c44f47032d189861271cf8bbae67206684aaf32da4a68d8c23ea9a5c901de75dfd8da308d02147af5d446c1653\n04993443d48f1304ed93d22fd808d5e50645a8b3ca8d622489718fa6025b4b72e7bd0506c9b719ffe697bb4149bfd9b1a37eb842d685d0a243967dec4757e2055c\n0453b348e6b838200b309d4c18fb737caf78e232a33ae9876861000d765757fbacec62142ed473fe66196f849caebab40e9a8e79559f82cdca0db6d67dbb443b78\n0454f3f2dfc717abb9c88bef6a84429b1319d64e2fa662d647dd80baf39192c54f8d35b85fe8508876c9f382e72d02328832019cb58254803761ea8e3f1a4cf4ce\n046a735a7b095ac938cc593efccfc3594d684853d27783ecbf577d54300501d7117872988d7d23b2765e0d273672ce2b3c7d9335d7fab149456566117d9223c518\n0446c185d4012c4a31a053e8f1890183384722f80d190478b87019555030c95064303c208aa1091b4b29ddb7950cb417bfcd31c9d97d8c983ed4cb2ed182b1e3ca\n0476cea7574d258798117e7d6c94941c468703c0fef712fdd06f6a75ce792c22e597eb1721b854e250e84844fa879debb717bad79b0ae88cf4bec3a5ed035fd327\n",
+        "expected": [
+          "100000",
+          "100001",
+          "1003ff",
+          "100400",
+          "100401",
+          "1007ff",
+          "100800",
+          "100801",
+          "100c00",
+          "2003ff",
+          "200400",
+          "200401"
+        ],
+        "found": [
+          "100001",
+          "1003ff",
+          "100401",
+          "1007ff",
+          "100800",
+          "100801",
+          "2003ff",
+          "200401"
+        ],
+        "missing": [
+          "100000",
+          "100400",
+          "100c00",
+          "200400"
+        ],
+        "unexpected": [],
+        "passed": false,
+        "expected_exit": 1,
+        "exit_code": 0,
+        "timed_out": false,
+        "stdout": "[+] Version 0.2.230519 Satoshi Quest, developed by AlbertoBSD\n[+] Thread : 1\n[+] Quiet thread output\n[+] Turn off stats output\n[+] Mode BSGS sequential\n[+] Opening file targets.txt\n[+] Added 12 points from file\n[+] Range \n[+] -- from : 0x100000\n[+] -- to   : 0x300000\n[+] N = 0x100000\n[+] Bloom filter for 1024 elements : 0.88 MB\n[+] Bloom filter for 32 elements : 0.88 MB\n[+] Bloom filter for 1 elements : 0.88 MB\n[+] Allocating 0.00 MB for 1 bP Points\n\n[+] processing 0/1024 bP points : 0%\n\n[+] processing 0/1024 bP points : 0%\n\n[+] processing 1024/1024 bP points : 100%     \n[+] Making checkums .. ... done\n[+] Sorting 1 elements... Done!\n[+] Thread Key found privkey 100001   \n[+] Publickey 049fb8987e3cb30a1174b7d64de26347166841051854696930396502714f6bcf4b3ff105599a722e18607f2791c5ad8adfa429640898821df1a4b479674a67db73\n[+] Thread Key found privkey 1003ff   \n[+] Publickey 048f5c7ade65f1ff1dee0278e225abb657785344e71f8e69d07fa5cf1320cb641a1ec2b4cc2b5ffca704bb9847b0ac957d3863daeac102769f2668a300a9ef19f0\n[+] Thread Key found privkey 100401   \n[+] Publickey 04760196342d13fcbab52f1ef9f41636faecaef5457427c5703f47c80f895331da73e17024e893a6b3a155cef450b180e2e19771f45a0a9e027e1c3fabea136d13\n[+] Thread Key found privkey 1007ff   \n[+] Publickey 04ea342511c2ec15685aad210ba65e6c1bd99928c44f47032d189861271cf8bbae67206684aaf32da4a68d8c23ea9a5c901de75dfd8da308d02147af5d446c1653\n[+] Thread Key found privkey 100800   \n[+] Publickey 04993443d48f1304ed93d22fd808d5e50645a8b3ca8d622489718fa6025b4b72e7bd0506c9b719ffe697bb4149bfd9b1a37eb842d685d0a243967dec4757e2055c\n[+] Thread Key found privkey 100801   \n[+] Publickey 0453b348e6b838200b309d4c18fb737caf78e232a33ae9876861000d765757fbacec62142ed473fe66196f849caebab40e9a8e79559f82cdca0db6d67dbb443b78\n[+] Thread Key found privkey 2003ff   \n[+] Publickey 046a735a7b095ac938cc593efccfc3594d684853d27783ecbf577d54300501d7117872988d7d23b2765e0d273672ce2b3c7d9335d7fab149456566117d9223c518\n[+] Thread Key found privkey 200401   \n[+] Publickey 0476cea7574d258798117e7d6c94941c468703c0fef712fdd06f6a75ce792c22e597eb1721b854e250e84844fa879debb717bad79b0ae88cf4bec3a5ed035fd327\n\nEnd\n",
+        "stderr": "",
+        "result_file": "Key found privkey 100001\nPublickey 049fb8987e3cb30a1174b7d64de26347166841051854696930396502714f6bcf4b3ff105599a722e18607f2791c5ad8adfa429640898821df1a4b479674a67db73\nKey found privkey 1003ff\nPublickey 048f5c7ade65f1ff1dee0278e225abb657785344e71f8e69d07fa5cf1320cb641a1ec2b4cc2b5ffca704bb9847b0ac957d3863daeac102769f2668a300a9ef19f0\nKey found privkey 100401\nPublickey 04760196342d13fcbab52f1ef9f41636faecaef5457427c5703f47c80f895331da73e17024e893a6b3a155cef450b180e2e19771f45a0a9e027e1c3fabea136d13\nKey found privkey 1007ff\nPublickey 04ea342511c2ec15685aad210ba65e6c1bd99928c44f47032d189861271cf8bbae67206684aaf32da4a68d8c23ea9a5c901de75dfd8da308d02147af5d446c1653\nKey found privkey 100800\nPublickey 04993443d48f1304ed93d22fd808d5e50645a8b3ca8d622489718fa6025b4b72e7bd0506c9b719ffe697bb4149bfd9b1a37eb842d685d0a243967dec4757e2055c\nKey found privkey 100801\nPublickey 0453b348e6b838200b309d4c18fb737caf78e232a33ae9876861000d765757fbacec62142ed473fe66196f849caebab40e9a8e79559f82cdca0db6d67dbb443b78\nKey found privkey 2003ff\nPublickey 046a735a7b095ac938cc593efccfc3594d684853d27783ecbf577d54300501d7117872988d7d23b2765e0d273672ce2b3c7d9335d7fab149456566117d9223c518\nKey found privkey 200401\nPublickey 0476cea7574d258798117e7d6c94941c468703c0fef712fdd06f6a75ce792c22e597eb1721b854e250e84844fa879debb717bad79b0ae88cf4bec3a5ed035fd327\n"
+      }
+    ]
+  }
+}
