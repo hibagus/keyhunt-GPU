@@ -1,15 +1,17 @@
 # Coordinator server, authentication, and project storage
 
-Status: proposed design; no server, DNS, firewall, or certificates have been
-configured. This document refines sections 7–8 and C12/C15 of the
-[GPU redesign plan](GPU_REDESIGN_PLAN.md).
+Status: C15 implemented and validated for the user-selected isolated localhost
+scope. See [current operations](COORDINATOR.md) and [validation](COORDINATOR_VALIDATION.md).
+The broader home-server/public-ingress design below remains the deployment target;
+public DNS, firewall, TCP 443, ACME and a physical second host are deferred.
 
 S01/C12's [local storage foundation](STORAGE.md) is implemented: external private
 directories, a versioned project-scoped schema, sparse transactional allocation,
-fencing and quarantined backup/restore. Authentication, remote membership,
-reconciled restore activation and the coordinator service remain C15 work.
+fencing and quarantined backup/restore. C15 implements authentication, project
+membership, the coordinator service and stopped-executor restore activation.
 C13 adds [verified standalone checkpoints](CHECKPOINTS.md); their acknowledgments
-are local durability, not evidence of server acceptance or a synchronized outbox.
+are local durability. C15 adds an atomic outbox; only an acknowledged machine
+sync is evidence of server acceptance.
 
 Current scheduling defaults: one distinct active block per GPU, about twelve hours
 of computation per block on a calibrated reference GPU, local checkpoints every
@@ -214,6 +216,11 @@ in-progress on the server. Stop-on-match may leave a partial block; job success 
 separate from exhaustive block completion.
 
 ### Proposed endpoints
+
+The implemented C15 API is documented in [COORDINATOR.md](COORDINATOR.md).
+The unexplored preview and full reset routes below remain design proposals.
+C15 uses owner-authorized recovery and a fresh destination worker journal; it
+does not silently replace an active local generation or pending request.
 
 | Method and path | Action |
 | --- | --- |
@@ -432,7 +439,7 @@ commit (split further when necessary); documentation and tests travel with it.
 | S03 / C15 | Apache mTLS boundary and private socket integration | Required certificates; forged/duplicate headers, wrong CA, Host/SNI mismatch, and socket bypass tests fail closed |
 | S04 / C15 | Batched machine sync and HTTPS worker supervisor | Atomic unexplored claims, three-state transitions, replay-safe retries, 30-day renewals, ownership/generation checks, one schedule for all GPUs |
 | S05 / C15 | Service packaging, backups, and assignment recovery | Multi-day pause, expiry before resume, lost renewal response, safe transfer, disk-full, and old-backup quarantine tested |
-| S06 / C15 | Two-host and public-ingress validation | Registered clients can read/claim/update only permitted projects; unauthenticated requests read/write nothing; TCP 443 and renewal verified |
+| S06 / C15 | Isolated localhost validation (user-approved scope change) | Separate Apache/coordinator processes and two independent native worker states; project isolation, real mTLS, HIP xpoint/BSGS, server-leaf renewal/reload and restart passed. Physical second host, public TCP 443 and ACME deferred. |
 
 The acceptance suite must include two projects with identical job manifests, two
 clients with different roles, concurrent batch claims for the same blocks, and

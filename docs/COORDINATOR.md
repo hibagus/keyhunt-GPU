@@ -45,6 +45,24 @@ It needs the BSGS configuration and table checksum, but does not load a resident
 worker BSGS table. Authenticated workers are trusted to report exhaustive
 no-match coverage; mTLS is identity, not proof of GPU computation.
 
+The local admin operation names and required fields are:
+
+| Operation | Fields in addition to `operation` |
+| --- | --- |
+| `bootstrap`, `client-add` | `name`, `certificate` (public PEM leaf) |
+| `credential-add` | `client`, `certificate` |
+| `credential-set` | `fingerprint`, `enabled` |
+| `client-set` | `client`, `enabled` |
+| `project-create` | `name`, `owner` (registered client UUID) |
+| `membership-set` | `project`, `client`, `role` (`reader`, `worker`, `owner`, `none`) |
+| `clients`, `check` | None |
+| `backup` | `destination` (new external directory) |
+| `activate-restore` | Three required stopped/review assertions, described under S05 |
+
+Private keys are never enrollment fields. Worker configuration contains file
+paths to credentials, not private-key content. The service does not expose
+administrative enrollment over HTTPS.
+
 ## S02 validation
 
 `coordinator_registry` uses real generated EC certificates without writing
@@ -56,7 +74,7 @@ rotation, membership removal, client disable and transactional rollback.
 The coordinator release build passed this gate plus the existing database,
 state CLI, checkpoint, checkpoint-failure, control and checkpoint CLI gates:
 **7/7**. Existing fourteen checkpoint process-exit cases continue to pass.
-The HTTP boundary will independently test CA and TLS authentication.
+The S03 HTTP boundary independently tests CA and TLS authentication.
 
 ## S03: private HTTP and real mTLS
 
@@ -124,8 +142,8 @@ C13 audit representation; no second implementation of the coverage union or
 allocator was introduced. Jobs and progress remain scoped by project even when
 their immutable manifest hashes are identical.
 
-The worker's durable import, bounded outbox and scheduler are the next S04 slice;
-this server transaction alone does not yet provide offline worker operation.
+The S04b worker slice below supplies durable import, a bounded outbox and the
+persisted scheduler needed for offline operation.
 
 S04a validation passed `coordinator_sync` and `coordinator_sync_failures`:
 concurrent two-client claims, two mock device queues, identical jobs in separate

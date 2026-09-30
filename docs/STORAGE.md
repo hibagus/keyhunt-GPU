@@ -3,8 +3,9 @@
 C12 supplies local storage primitives for project-scoped jobs, sparse block
 selection, assignments and exact accepted coverage. C13 now adds
 [verified GPU checkpoint integration](CHECKPOINTS.md), committing matches with
-accepted coverage through a separate durable command. This library is not the authenticated coordinator;
-C15 must enforce project membership and derive owner identity from credentials.
+accepted coverage through a separate durable command. The [C15 coordinator](COORDINATOR.md)
+enforces project membership and derives remote ownership from enrolled credentials;
+the raw journal remains a trusted local library.
 
 ## Database and deployment boundary
 
@@ -20,7 +21,7 @@ Accidental journal files are also ignored by Git.
 Connections enable foreign keys, WAL, a five-second busy timeout and
 `synchronous=FULL`. Selection and writes use `BEGIN IMMEDIATE`, so contention
 cannot produce two owners for the same block. The deployment boundary is local
-storage on one host; remote workers must eventually use the coordinator API.
+storage on one host; remote workers use the coordinator HTTPS API.
 SQLite documents these [WAL concurrency/durability rules](https://www.sqlite.org/wal.html)
 and [transaction behavior](https://www.sqlite.org/lang_transaction.html).
 
@@ -42,7 +43,10 @@ cmake --preset cpu-release \
 
 The immutable initial migration is `src/storage/schema_v1.sql`. C13 upgrades to
 [schema version 2](CHECKPOINTS.md#schema-version-2-and-migration) with an automatic
-sealed pre-migration backup; the v1 contract below records the C12 foundation. A private application ID,
+sealed pre-migration backup. C15 adds immutable migrations 3 (registry/roles),
+4 (machine receipts/device queues) and 5 (worker leases/outbox); the current schema
+is **5**, with one sealed `pre-v5-*` backup of the committed source version on
+upgrade. The v1 contract below records the C12 foundation. A private application ID,
 `user_version=1`, and SHA256 of the exact migration text identify the schema.
 Only an empty, unowned database is initialized. Foreign databases, unknown
 versions and changed migration checksums fail without reinterpreting state.
@@ -69,8 +73,10 @@ database file or delete its WAL manually.
 Restoring validates the source and creates another exclusive snapshot with a
 new epoch. Restored/backup databases permit inspection but reject allocation and
 coverage writes. They cannot silently reactivate grants that a newer live journal
-may already have reassigned. Reconciled activation and old-backup recovery policy
-belong to C15; quarantine is not a claim that an offline GPU has been stopped.
+may already have reassigned. [C15 recovery](COORDINATOR.md#s05-recovery-and-coordinator-only-installation)
+requires stopped-authority/executor assertions and renewed access review. Remote
+API reads are also blocked during quarantine; inspection is local. Quarantine
+is not a claim that an offline GPU has been stopped.
 
 ## Sparse selection and identity
 

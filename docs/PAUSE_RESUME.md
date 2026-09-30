@@ -228,8 +228,8 @@ searches were not run on this configuration.
 C14 is complete for standalone checkpoint execution. One journal still permits
 one active owner, block and logical GPU at a time. The changed-inventory tests
 prove compatible sequential restart; simultaneous multi-GPU supervision remains
-C20. C15 is next for authenticated coordination, local outbox, remote acceptance
-and restore reconciliation.
+C20. [C15 now supplies](COORDINATOR.md) authenticated coordination, a local outbox,
+remote acceptance and restore reconciliation under the localhost validation scope.
 
 
 ## Signal-thread review finding

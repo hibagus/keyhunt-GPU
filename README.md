@@ -11,7 +11,8 @@ verification and candidate overflow replay. Versioned BSGS tables and bounded
 HIP BSGS range searches are implemented, including all targets and exact tails.
 The local journal now supports transactional assignments and CPU-verified durable
 HIP checkpoints, graceful local pause/resume and checkpoint-on-signal shutdown.
-The authenticated coordinator remains planned.
+Authenticated coordination now adds mTLS, project roles, durable machine sync,
+an offline outbox and fenced recovery, validated in an isolated localhost setup.
 
 [Build guide](docs/BUILD.md) · [Usage](docs/USAGE.md) ·
 [Implementation status](docs/IMPLEMENTATION_STATUS.md) ·
@@ -21,13 +22,13 @@ The authenticated coordinator remains planned.
 | --- | --- |
 | Linux x86-64 CPU | Release and debug builds tested; 38 characterization checks pass |
 | CPU modes | Bitcoin address/HASH160, xpoint, BSGS, Ethereum address, vanity and minikeys; limitations documented |
-| Optional GMP legacy / bsgsd | Builds and selected compatibility checks pass; separate from the future coordinator |
+| Optional GMP legacy / bsgsd | Builds and selected compatibility checks pass; separate from the authenticated coordinator |
 | AMD HIP / MI300X | C07–C11 discovery, arithmetic, xpoint and BSGS searches validated on gfx942 |
 | NVIDIA CUDA | Planned at C18; NVIDIA compiler/device validation remains outstanding |
 | Local state | C12 project-scoped SQLite journal, sparse allocation, fenced assignments and sealed backups; [operations guide](docs/STORAGE.md) |
 | Durable HIP searches | C13 verified local checkpoints and replay for xpoint/BSGS; [commands and recovery](docs/CHECKPOINTS.md) |
 | Pause/resume | C14 local commands, graceful signals, exact restart and live inspection; [operations guide](docs/PAUSE_RESUME.md) |
-| Distributed blocks | Authenticated coordination and multi-device supervision remain C15 and C20 |
+| Distributed blocks | C15 authenticated coordination and supervised workers; [localhost setup](docs/COORDINATOR.md#s06-isolated-localhost-operation). Simultaneous multi-GPU execution remains C20 |
 
 The CPU engine still has range, stride and whole-application sanitizer defects.
 C06 corrected arithmetic and the tested BSGS start-boundary miss. See
@@ -58,8 +59,10 @@ arithmetic and search contracts are validated.
 
 The distribution design gives each selected GPU its own block, sized for roughly
 12 hours on a reference device, with local checkpoints and a 30-day renewable
-assignment. A machine supervisor will batch synchronization with an authenticated
-HTTPS coordinator. These are design decisions, not current CLI features. See the
+assignment. The C15 supervisor batches synchronization with an authenticated
+HTTPS coordinator every two hours. Block width remains an explicit calibration
+input; production execution is one GPU at a time until C20. Public ingress and a
+physical second host are deferred from the user-approved localhost gate. See the
 [GPU plan](docs/GPU_REDESIGN_PLAN.md) and [coordinator plan](docs/COORDINATOR_SERVER_PLAN.md).
 
 ## Built with
@@ -69,7 +72,9 @@ HTTPS coordinator. These are design decisions, not current CLI features. See the
   [source provenance and notices](THIRD_PARTY_NOTICES.md) are retained.
 - Python's standard library for the regression and benchmark harnesses.
 - SQLite 3.51.3+ development headers/library for durable local state.
-- GMP and OpenSSL for the optional legacy executable only.
+- GMP and OpenSSL for the optional legacy executable.
+- OpenSSL 3 and nlohmann JSON for optional coordination; libcurl for HTTPS
+  workers and Apache for the mTLS deployment boundary.
 
 ROCm/HIP is optional for [device diagnostics](docs/HIP_BACKEND.md) and
 [bounded xpoint searches](docs/HIP_XPOINT.md). CUDA remains planned.
@@ -136,7 +141,7 @@ process exit as proof of saved search progress or exact coverage.
 - [x] C12: sparse local coverage repository, transactional assignments and state commands.
 - [x] C13: CPU-verified durable HIP checkpoints and exact replay after interruption.
 - [x] C14: graceful local pause/resume, signals, inspection and device-independent restart.
-- [ ] C15: authenticated coordination.
+- [x] C15: authenticated coordination, durable machine sync, offline leases and localhost validation.
 - [ ] C16–C20: measured tuning, native CUDA, validated assembly and multiple GPUs.
 - [ ] C21–C23: operations guides, offline assignments and further GPU modes.
 

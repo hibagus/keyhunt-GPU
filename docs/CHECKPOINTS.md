@@ -334,5 +334,5 @@ Documentation link/anchor/fence and whitespace checks also pass.
 Real hardware validation uses MI300X SPX/NPS1. CPX/QPX/SPX discovery contracts
 remain supported; live CPX/QPX searches were not performed on this configuration.
 This section records C13 acceptance. C14 subsequently adds
-[graceful controls, bounded drain and resume](PAUSE_RESUME.md); authenticated
-coordination and remote acceptance remain C15.
+[graceful controls, bounded drain and resume](PAUSE_RESUME.md). C15 now provides
+[authenticated coordination, the atomic outbox and remote acceptance](COORDINATOR.md).

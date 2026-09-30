@@ -1,0 +1,494 @@
+{
+  "milestone": "C15",
+  "recorded_utc": "2026-09-30T16:59:14.211110+00:00",
+  "implementation_head": "e383a77384ecebc16f30e599cb29c244aebe53a5",
+  "implementation_commits": [
+    "b6eb397 feat: add C15 credential enrollment and transactional project authorization",
+    "d5200b9 feat: isolate coordinator sockets behind required Apache mutual TLS",
+    "0fea4b9 feat: commit machine sync progress leases and exact retry receipts atomically",
+    "fcabb72 feat: persist worker grants checkpoint outbox and offline lease deadlines",
+    "be512e2 feat: supervise HIP workers with verified HTTPS and runtime self-tests",
+    "482e07c feat: recover fenced assignments and package quarantined coordinator restores",
+    "d2ebd5f test: construct recovery envelopes after successful transport calls",
+    "4957d5e test: validate isolated localhost deployment renewal and coordinator budgets",
+    "28e89cb perf: initialize sync curve verification only for submitted matches",
+    "e383a77 build: retain coordinator dependency notices and deployment documentation"
+  ],
+  "accepted_scope": "Isolated localhost: real hostname/SNI and mTLS, separate Apache/coordinator processes and independent worker states; user deferred public ingress and a physical second host.",
+  "schema": {
+    "version": 5,
+    "sha256": {
+      "1": "e7a263fff29b737f58cc377fc8826f1db855da0b09390ab35ae384f433c6ee9a",
+      "2": "3f955b4ea6d03c70894a1f0fc4106fecc518d5b98cea23e755e9338df93e5192",
+      "3": "3fcccc8eebbb91ca5d2d8ebf4136854bb35096df061f81abd9484fad98fe7889",
+      "4": "c5e40bad088ef5e03afc982c7da53f8b629ec3a584d6bc0613d048a1723cc758",
+      "5": "fa1bfe59c3964b0815c8c82b3ae12610e5016daf002e681adae8902698f97c5c"
+    }
+  },
+  "tests": {
+    "coordinator-release": {
+      "distinct_tests_passed": 41,
+      "failed": 0,
+      "runs": [
+        {
+          "command": "ctest --preset coordinator-release",
+          "tests": {
+            "oracle_selftest": "Passed",
+            "cpu_field_oracle": "Passed",
+            "cpu_point_oracle": "Passed",
+            "bounded_search_oracle": "Passed",
+            "portable_field_oracle": "Passed",
+            "portable_point_oracle": "Passed",
+            "xpoint_search_contract": "Passed",
+            "xpoint_cli": "Passed",
+            "bsgs_table_contract": "Passed",
+            "bsgs_table_oracle": "Passed",
+            "bsgs_table_devices": "Passed",
+            "bsgs_search_contract": "Passed",
+            "bsgs_cli": "Passed",
+            "storage_database": "Passed",
+            "storage_journal": "Passed",
+            "storage_concurrency": "Passed",
+            "state_cli": "Passed",
+            "storage_checkpoint": "Passed",
+            "storage_checkpoint_failures": "Passed",
+            "checkpoint_cli": "Passed",
+            "storage_checkpoint_control": "Passed",
+            "checkpoint_controls": "Passed",
+            "coordinator_registry": "Passed",
+            "coordinator_tls": "Passed",
+            "coordinator_sync": "Passed",
+            "coordinator_sync_failures": "Passed",
+            "coordinator_worker": "Passed",
+            "coordinator_worker_failures": "Passed",
+            "coordinator_https_worker": "Passed",
+            "coordinator_recovery": "Passed",
+            "hip_discovery_contract": "Passed",
+            "backend_cli": "Passed",
+            "exact_range": "Passed",
+            "block_grid": "Passed",
+            "work_unit": "Passed",
+            "range_oracle": "Passed",
+            "result_verifier": "Passed",
+            "cpu_baseline": "Passed",
+            "target_loading": "Passed"
+          },
+          "stdout": "Test project /home/bagus/keyhunt-GPU/build/coordinator-release\n      Start  1: oracle_selftest\n 1/39 Test  #1: oracle_selftest ..................   Passed    0.99 sec\n      Start  2: cpu_field_oracle\n 2/39 Test  #2: cpu_field_oracle .................   Passed    0.49 sec\n      Start  3: cpu_point_oracle\n 3/39 Test  #3: cpu_point_oracle .................   Passed    0.75 sec\n      Start  4: bounded_search_oracle\n 4/39 Test  #4: bounded_search_oracle ............   Passed    2.98 sec\n      Start  5: portable_field_oracle\n 5/39 Test  #5: portable_field_oracle ............   Passed    0.99 sec\n      Start  6: portable_point_oracle\n 6/39 Test  #6: portable_point_oracle ............   Passed    1.53 sec\n      Start  7: xpoint_search_contract\n 7/39 Test  #7: xpoint_search_contract ...........   Passed    0.25 sec\n      Start  8: xpoint_cli\n 8/39 Test  #8: xpoint_cli .......................   Passed    0.15 sec\n      Start  9: bsgs_table_contract\n 9/39 Test  #9: bsgs_table_contract ..............   Passed    0.39 sec\n      Start 10: bsgs_table_oracle\n10/39 Test #10: bsgs_table_oracle ................   Passed    2.85 sec\n      Start 11: bsgs_table_devices\n11/39 Test #11: bsgs_table_devices ...............   Passed    0.57 sec\n      Start 12: bsgs_search_contract\n12/39 Test #12: bsgs_search_contract .............   Passed    0.48 sec\n      Start 13: bsgs_cli\n13/39 Test #13: bsgs_cli .........................   Passed    0.33 sec\n      Start 14: storage_database\n14/39 Test #14: storage_database .................   Passed    0.06 sec\n      Start 15: storage_journal\n15/39 Test #15: storage_journal ..................   Passed    0.64 sec\n      Start 16: storage_concurrency\n16/39 Test #16: storage_concurrency ..............   Passed    0.29 sec\n      Start 17: state_cli\n17/39 Test #17: state_cli ........................   Passed    1.70 sec\n      Start 18: storage_checkpoint\n18/39 Test #18: storage_checkpoint ...............   Passed    2.23 sec\n      Start 19: storage_checkpoint_failures\n19/39 Test #19: storage_checkpoint_failures ......   Passed    3.07 sec\n      Start 20: checkpoint_cli\n20/39 Test #20: checkpoint_cli ...................   Passed    0.73 sec\n      Start 21: storage_checkpoint_control\n21/39 Test #21: storage_checkpoint_control .......   Passed    2.55 sec\n      Start 22: checkpoint_controls\n22/39 Test #22: checkpoint_controls ..............   Passed    5.79 sec\n      Start 23: coordinator_registry\n23/39 Test #23: coordinator_registry .............   Passed    0.12 sec\n      Start 24: coordinator_tls\n24/39 Test #24: coordinator_tls ..................   Passed    0.59 sec\n      Start 25: coordinator_sync\n25/39 Test #25: coordinator_sync .................   Passed    0.40 sec\n      Start 26: coordinator_sync_failures\n26/39 Test #26: coordinator_sync_failures ........   Passed    0.95 sec\n      Start 27: coordinator_worker\n27/39 Test #27: coordinator_worker ...............   Passed    1.32 sec\n      Start 28: coordinator_worker_failures\n28/39 Test #28: coordinator_worker_failures ......   Passed    1.21 sec\n      Start 29: coordinator_https_worker\n29/39 Test #29: coordinator_https_worker .........   Passed    0.54 sec\n      Start 30: coordinator_recovery\n30/39 Test #30: coordinator_recovery .............   Passed    0.50 sec\n      Start 31: hip_discovery_contract\n31/39 Test #31: hip_discovery_contract ...........   Passed    0.21 sec\n      Start 32: backend_cli\n32/39 Test #32: backend_cli ......................   Passed    0.09 sec\n      Start 33: exact_range\n33/39 Test #33: exact_range ......................   Passed    0.05 sec\n      Start 34: block_grid\n34/39 Test #34: block_grid .......................   Passed    0.14 sec\n      Start 35: work_unit\n35/39 Test #35: work_unit ........................   Passed    0.09 sec\n      Start 36: range_oracle\n36/39 Test #36: range_oracle .....................   Passed    1.98 sec\n      Start 37: result_verifier\n37/39 Test #37: result_verifier ..................   Passed    0.08 sec\n      Start 38: cpu_baseline\n38/39 Test #38: cpu_baseline .....................   Passed   28.46 sec\n      Start 39: target_loading\n39/39 Test #39: target_loading ...................   Passed    8.58 sec\n\n100% tests passed, 0 tests failed out of 39\n\nLabel Time Summary:\narithmetic     =   2.52 sec*proc (2 tests)\nbackend        =   1.36 sec*proc (5 tests)\nbaseline       =  28.46 sec*proc (1 test)\nbsgs           =   4.62 sec*proc (5 tests)\ncli            =   8.22 sec*proc (3 tests)\ncoordinator    =   5.62 sec*proc (8 tests)\ncore           =  11.65 sec*proc (8 tests)\ncpu            =  74.58 sec*proc (38 tests)\nintegration    =   1.12 sec*proc (2 tests)\noracle         =  10.58 sec*proc (7 tests)\nranges         =   2.26 sec*proc (4 tests)\nrecovery       =  18.32 sec*proc (10 tests)\nscheduler      =   0.93 sec*proc (2 tests)\nsecurity       =   1.24 sec*proc (3 tests)\nstorage        =  17.06 sec*proc (9 tests)\ntables         =   3.24 sec*proc (2 tests)\nxpoint         =   0.39 sec*proc (2 tests)\n\nTotal Test time (real) =  75.15 sec\n"
+        },
+        {
+          "command": "ctest --preset coordinator-release -R 'coordinator_local_launcher|coordinator_budget'",
+          "tests": {
+            "coordinator_local_launcher": "Passed",
+            "coordinator_budget": "Passed"
+          },
+          "stdout": "Test project /home/bagus/keyhunt-GPU/build/coordinator-release\n    Start 31: coordinator_local_launcher\n1/2 Test #31: coordinator_local_launcher .......   Passed    0.63 sec\n    Start 32: coordinator_budget\n2/2 Test #32: coordinator_budget ...............   Passed    4.42 sec\n\n100% tests passed, 0 tests failed out of 2\n\nLabel Time Summary:\nbudget         =   4.42 sec*proc (1 test)\ncoordinator    =   5.05 sec*proc (2 tests)\ncpu            =   5.05 sec*proc (2 tests)\nintegration    =   0.63 sec*proc (1 test)\n\nTotal Test time (real) =   5.06 sec\n"
+        },
+        {
+          "command": "ctest --preset coordinator-release -R 'coordinator_recovery|coordinator_tls'",
+          "tests": {
+            "coordinator_tls": "Passed",
+            "coordinator_recovery": "Passed"
+          },
+          "stdout": "Test project /home/bagus/keyhunt-GPU/build/coordinator-release\n    Start 24: coordinator_tls\n1/2 Test #24: coordinator_tls ..................   Passed    0.61 sec\n    Start 30: coordinator_recovery\n2/2 Test #30: coordinator_recovery .............   Passed    0.50 sec\n\n100% tests passed, 0 tests failed out of 2\n\nLabel Time Summary:\ncoordinator    =   1.12 sec*proc (2 tests)\ncpu            =   1.12 sec*proc (2 tests)\nintegration    =   0.61 sec*proc (1 test)\nrecovery       =   0.50 sec*proc (1 test)\nsecurity       =   0.61 sec*proc (1 test)\n\nTotal Test time (real) =   1.12 sec\n"
+        },
+        {
+          "command": "ctest --preset coordinator-release -R 'coordinator_sync|coordinator_worker|coordinator_recovery|coordinator_budget|coordinator_https_worker'",
+          "tests": {
+            "coordinator_sync": "Passed",
+            "coordinator_sync_failures": "Passed",
+            "coordinator_worker": "Passed",
+            "coordinator_worker_failures": "Passed",
+            "coordinator_https_worker": "Passed",
+            "coordinator_recovery": "Passed",
+            "coordinator_budget": "Passed"
+          },
+          "stdout": "Test project /home/bagus/keyhunt-GPU/build/coordinator-release\n    Start 25: coordinator_sync\n1/7 Test #25: coordinator_sync .................   Passed    0.32 sec\n    Start 26: coordinator_sync_failures\n2/7 Test #26: coordinator_sync_failures ........   Passed    0.67 sec\n    Start 27: coordinator_worker\n3/7 Test #27: coordinator_worker ...............   Passed    0.38 sec\n    Start 28: coordinator_worker_failures\n4/7 Test #28: coordinator_worker_failures ......   Passed    1.20 sec\n    Start 29: coordinator_https_worker\n5/7 Test #29: coordinator_https_worker .........   Passed    0.53 sec\n    Start 30: coordinator_recovery\n6/7 Test #30: coordinator_recovery .............   Passed    0.41 sec\n    Start 32: coordinator_budget\n7/7 Test #32: coordinator_budget ...............   Passed    0.35 sec\n\n100% tests passed, 0 tests failed out of 7\n\nLabel Time Summary:\nbudget         =   0.35 sec*proc (1 test)\ncoordinator    =   3.87 sec*proc (7 tests)\ncpu            =   3.33 sec*proc (6 tests)\nintegration    =   0.53 sec*proc (1 test)\nrecovery       =   2.98 sec*proc (5 tests)\nsecurity       =   0.53 sec*proc (1 test)\n\nTotal Test time (real) =   3.87 sec\n"
+        }
+      ],
+      "binary_sha256": {
+        "keyhunt": "1d67d44dcecd9e2240fc74067d8b7555345e90dc35e116788caf26eb6590fc60",
+        "keyhunt-coordinator": "4592cdde72f665275723301c216c7e6ce380182ae4696122532c14977cb81f51",
+        "keyhunt-worker": "f3036dd63a234d009263f79d52b0052dd071d2f83cd176241e8286090bd9e2be"
+      }
+    },
+    "coordinator-debug": {
+      "distinct_tests_passed": 41,
+      "failed": 0,
+      "runs": [
+        {
+          "command": "ctest --preset coordinator-debug",
+          "tests": {
+            "oracle_selftest": "Passed",
+            "cpu_field_oracle": "Passed",
+            "cpu_point_oracle": "Passed",
+            "bounded_search_oracle": "Passed",
+            "portable_field_oracle": "Passed",
+            "portable_point_oracle": "Passed",
+            "xpoint_search_contract": "Passed",
+            "xpoint_cli": "Passed",
+            "bsgs_table_contract": "Passed",
+            "bsgs_table_oracle": "Passed",
+            "bsgs_table_devices": "Passed",
+            "bsgs_search_contract": "Passed",
+            "bsgs_cli": "Passed",
+            "storage_database": "Passed",
+            "storage_journal": "Passed",
+            "storage_concurrency": "Passed",
+            "state_cli": "Passed",
+            "storage_checkpoint": "Passed",
+            "storage_checkpoint_failures": "Passed",
+            "checkpoint_cli": "Passed",
+            "storage_checkpoint_control": "Passed",
+            "checkpoint_controls": "Passed",
+            "coordinator_registry": "Passed",
+            "coordinator_tls": "Passed",
+            "coordinator_sync": "Passed",
+            "coordinator_sync_failures": "Passed",
+            "coordinator_worker": "Passed",
+            "coordinator_worker_failures": "Passed",
+            "coordinator_https_worker": "Passed",
+            "coordinator_recovery": "Passed",
+            "hip_discovery_contract": "Passed",
+            "backend_cli": "Passed",
+            "exact_range": "Passed",
+            "block_grid": "Passed",
+            "work_unit": "Passed",
+            "range_oracle": "Passed",
+            "result_verifier": "Passed",
+            "cpu_baseline": "Passed",
+            "target_loading": "Passed"
+          },
+          "stdout": "Test project /home/bagus/keyhunt-GPU/build/coordinator-debug\n      Start  1: oracle_selftest\n 1/39 Test  #1: oracle_selftest ..................   Passed    0.91 sec\n      Start  2: cpu_field_oracle\n 2/39 Test  #2: cpu_field_oracle .................   Passed    0.76 sec\n      Start  3: cpu_point_oracle\n 3/39 Test  #3: cpu_point_oracle .................   Passed    1.08 sec\n      Start  4: bounded_search_oracle\n 4/39 Test  #4: bounded_search_oracle ............   Passed    1.73 sec\n      Start  5: portable_field_oracle\n 5/39 Test  #5: portable_field_oracle ............   Passed    0.79 sec\n      Start  6: portable_point_oracle\n 6/39 Test  #6: portable_point_oracle ............   Passed    2.50 sec\n      Start  7: xpoint_search_contract\n 7/39 Test  #7: xpoint_search_contract ...........   Passed    0.14 sec\n      Start  8: xpoint_cli\n 8/39 Test  #8: xpoint_cli .......................   Passed    0.09 sec\n      Start  9: bsgs_table_contract\n 9/39 Test  #9: bsgs_table_contract ..............   Passed    0.78 sec\n      Start 10: bsgs_table_oracle\n10/39 Test #10: bsgs_table_oracle ................   Passed    3.68 sec\n      Start 11: bsgs_table_devices\n11/39 Test #11: bsgs_table_devices ...............   Passed    0.13 sec\n      Start 12: bsgs_search_contract\n12/39 Test #12: bsgs_search_contract .............   Passed    0.23 sec\n      Start 13: bsgs_cli\n13/39 Test #13: bsgs_cli .........................   Passed    0.09 sec\n      Start 14: storage_database\n14/39 Test #14: storage_database .................   Passed    0.05 sec\n      Start 15: storage_journal\n15/39 Test #15: storage_journal ..................   Passed    8.31 sec\n      Start 16: storage_concurrency\n16/39 Test #16: storage_concurrency ..............   Passed    0.27 sec\n      Start 17: state_cli\n17/39 Test #17: state_cli ........................   Passed    2.01 sec\n      Start 18: storage_checkpoint\n18/39 Test #18: storage_checkpoint ...............   Passed    5.37 sec\n      Start 19: storage_checkpoint_failures\n19/39 Test #19: storage_checkpoint_failures ......   Passed    6.77 sec\n      Start 20: checkpoint_cli\n20/39 Test #20: checkpoint_cli ...................   Passed    1.29 sec\n      Start 21: storage_checkpoint_control\n21/39 Test #21: storage_checkpoint_control .......   Passed    6.18 sec\n      Start 22: checkpoint_controls\n22/39 Test #22: checkpoint_controls ..............   Passed    7.12 sec\n      Start 23: coordinator_registry\n23/39 Test #23: coordinator_registry .............   Passed    0.26 sec\n      Start 24: coordinator_tls\n24/39 Test #24: coordinator_tls ..................   Passed    0.56 sec\n      Start 25: coordinator_sync\n25/39 Test #25: coordinator_sync .................   Passed    0.92 sec\n      Start 26: coordinator_sync_failures\n26/39 Test #26: coordinator_sync_failures ........   Passed    2.17 sec\n      Start 27: coordinator_worker\n27/39 Test #27: coordinator_worker ...............   Passed    3.22 sec\n      Start 28: coordinator_worker_failures\n28/39 Test #28: coordinator_worker_failures ......   Passed    2.78 sec\n      Start 29: coordinator_https_worker\n29/39 Test #29: coordinator_https_worker .........   Passed    0.65 sec\n      Start 30: coordinator_recovery\n30/39 Test #30: coordinator_recovery .............   Passed    1.22 sec\n      Start 31: hip_discovery_contract\n31/39 Test #31: hip_discovery_contract ...........   Passed    0.12 sec\n      Start 32: backend_cli\n32/39 Test #32: backend_cli ......................   Passed    0.05 sec\n      Start 33: exact_range\n33/39 Test #33: exact_range ......................   Passed    0.00 sec\n      Start 34: block_grid\n34/39 Test #34: block_grid .......................   Passed    2.09 sec\n      Start 35: work_unit\n35/39 Test #35: work_unit ........................   Passed    0.33 sec\n      Start 36: range_oracle\n36/39 Test #36: range_oracle .....................   Passed    6.15 sec\n      Start 37: result_verifier\n37/39 Test #37: result_verifier ..................   Passed    0.08 sec\n      Start 38: cpu_baseline\n38/39 Test #38: cpu_baseline .....................   Passed   30.37 sec\n      Start 39: target_loading\n39/39 Test #39: target_loading ...................   Passed    9.21 sec\n\n100% tests passed, 0 tests failed out of 39\n\nLabel Time Summary:\narithmetic     =   3.29 sec*proc (2 tests)\nbackend        =   0.48 sec*proc (5 tests)\nbaseline       =  30.37 sec*proc (1 test)\nbsgs           =   4.91 sec*proc (5 tests)\ncli            =  10.42 sec*proc (3 tests)\ncoordinator    =  11.78 sec*proc (8 tests)\ncore           =  18.23 sec*proc (8 tests)\ncpu            = 109.82 sec*proc (38 tests)\nintegration    =   1.21 sec*proc (2 tests)\noracle         =  11.46 sec*proc (7 tests)\nranges         =   8.57 sec*proc (4 tests)\nrecovery       =  36.02 sec*proc (10 tests)\nscheduler      =   8.57 sec*proc (2 tests)\nsecurity       =   1.47 sec*proc (3 tests)\nstorage        =  37.37 sec*proc (9 tests)\ntables         =   4.46 sec*proc (2 tests)\nxpoint         =   0.23 sec*proc (2 tests)\n\nTotal Test time (real) = 110.49 sec\n"
+        },
+        {
+          "command": "ctest --preset coordinator-debug -R 'coordinator_recovery|coordinator_local_launcher|coordinator_budget'",
+          "tests": {
+            "coordinator_recovery": "Passed",
+            "coordinator_local_launcher": "Passed",
+            "coordinator_budget": "Passed"
+          },
+          "stdout": "Test project /home/bagus/keyhunt-GPU/build/coordinator-debug\n    Start 30: coordinator_recovery\n1/3 Test #30: coordinator_recovery .............   Passed    1.23 sec\n    Start 31: coordinator_local_launcher\n2/3 Test #31: coordinator_local_launcher .......   Passed    0.63 sec\n    Start 32: coordinator_budget\n3/3 Test #32: coordinator_budget ...............   Passed   10.98 sec\n\n100% tests passed, 0 tests failed out of 3\n\nLabel Time Summary:\nbudget         =  10.98 sec*proc (1 test)\ncoordinator    =  12.85 sec*proc (3 tests)\ncpu            =  12.85 sec*proc (3 tests)\nintegration    =   0.63 sec*proc (1 test)\nrecovery       =   1.23 sec*proc (1 test)\n\nTotal Test time (real) =  12.86 sec\n"
+        },
+        {
+          "command": "ctest --preset coordinator-debug -R coordinator_",
+          "tests": {
+            "coordinator_registry": "Passed",
+            "coordinator_tls": "Passed",
+            "coordinator_sync": "Passed",
+            "coordinator_sync_failures": "Passed",
+            "coordinator_worker": "Passed",
+            "coordinator_worker_failures": "Passed",
+            "coordinator_https_worker": "Passed",
+            "coordinator_recovery": "Passed",
+            "coordinator_local_launcher": "Passed",
+            "coordinator_budget": "Passed"
+          },
+          "stdout": "Test project /home/bagus/keyhunt-GPU/build/coordinator-debug\n      Start 23: coordinator_registry\n 1/10 Test #23: coordinator_registry .............   Passed    1.11 sec\n      Start 24: coordinator_tls\n 2/10 Test #24: coordinator_tls ..................   Passed    0.61 sec\n      Start 25: coordinator_sync\n 3/10 Test #25: coordinator_sync .................   Passed    0.76 sec\n      Start 26: coordinator_sync_failures\n 4/10 Test #26: coordinator_sync_failures ........   Passed    1.52 sec\n      Start 27: coordinator_worker\n 5/10 Test #27: coordinator_worker ...............   Passed    0.93 sec\n      Start 28: coordinator_worker_failures\n 6/10 Test #28: coordinator_worker_failures ......   Passed    2.71 sec\n      Start 29: coordinator_https_worker\n 7/10 Test #29: coordinator_https_worker .........   Passed    0.65 sec\n      Start 30: coordinator_recovery\n 8/10 Test #30: coordinator_recovery .............   Passed    0.98 sec\n      Start 31: coordinator_local_launcher\n 9/10 Test #31: coordinator_local_launcher .......   Passed    0.63 sec\n      Start 32: coordinator_budget\n10/10 Test #32: coordinator_budget ...............   Passed    1.19 sec\n\n100% tests passed, 0 tests failed out of 10\n\nLabel Time Summary:\nbudget         =   1.19 sec*proc (1 test)\ncoordinator    =  11.09 sec*proc (10 tests)\ncpu            =  10.44 sec*proc (9 tests)\nintegration    =   1.89 sec*proc (3 tests)\nrecovery       =   6.90 sec*proc (5 tests)\nsecurity       =   2.37 sec*proc (3 tests)\n\nTotal Test time (real) =  11.10 sec\n"
+        }
+      ],
+      "binary_sha256": {
+        "keyhunt": "a7bc30d9c6187120b4fb024533e4e41651e4d02567f9db082e7c96d1f5c0389e",
+        "keyhunt-coordinator": "9f56d91603263a16ad5a415c3a9bf193160b28bf7fbf60449eb3de5c2d923b1c",
+        "keyhunt-worker": "e8721c4296e7534e846c209c5c7cb67d653ba1897e5a6b55cb5da8a0b17ba5e4"
+      }
+    },
+    "coordinator-sanitizers": {
+      "distinct_tests_passed": 39,
+      "failed": 0,
+      "runs": [
+        {
+          "command": "ASAN_OPTIONS=detect_leaks=1:halt_on_error=1 UBSAN_OPTIONS=halt_on_error=1 ctest --preset coordinator-sanitizers -E 'cpu_baseline|target_loading'",
+          "tests": {
+            "oracle_selftest": "Passed",
+            "cpu_field_oracle": "Passed",
+            "cpu_point_oracle": "Passed",
+            "bounded_search_oracle": "Passed",
+            "portable_field_oracle": "Passed",
+            "portable_point_oracle": "Passed",
+            "xpoint_search_contract": "Passed",
+            "xpoint_cli": "Passed",
+            "bsgs_table_contract": "Passed",
+            "bsgs_table_oracle": "Passed",
+            "bsgs_table_devices": "Passed",
+            "bsgs_search_contract": "Passed",
+            "bsgs_cli": "Passed",
+            "storage_database": "Passed",
+            "storage_journal": "Passed",
+            "storage_concurrency": "Passed",
+            "state_cli": "Passed",
+            "storage_checkpoint": "Passed",
+            "storage_checkpoint_failures": "Passed",
+            "checkpoint_cli": "Passed",
+            "storage_checkpoint_control": "Passed",
+            "checkpoint_controls": "Passed",
+            "coordinator_registry": "Passed",
+            "coordinator_tls": "Passed",
+            "coordinator_sync": "Passed",
+            "coordinator_sync_failures": "Passed",
+            "coordinator_worker": "Passed",
+            "coordinator_worker_failures": "Passed",
+            "coordinator_https_worker": "Passed",
+            "coordinator_recovery": "Passed",
+            "coordinator_local_launcher": "Passed",
+            "coordinator_budget": "Passed",
+            "hip_discovery_contract": "Passed",
+            "backend_cli": "Passed",
+            "exact_range": "Passed",
+            "block_grid": "Passed",
+            "work_unit": "Passed",
+            "range_oracle": "Passed",
+            "result_verifier": "Passed"
+          },
+          "stdout": "Test project /home/bagus/keyhunt-GPU/build/coordinator-sanitizers\n      Start  1: oracle_selftest\n 1/39 Test  #1: oracle_selftest ..................   Passed    0.96 sec\n      Start  2: cpu_field_oracle\n 2/39 Test  #2: cpu_field_oracle .................   Passed    1.29 sec\n      Start  3: cpu_point_oracle\n 3/39 Test  #3: cpu_point_oracle .................   Passed    1.63 sec\n      Start  4: bounded_search_oracle\n 4/39 Test  #4: bounded_search_oracle ............   Passed    1.97 sec\n      Start  5: portable_field_oracle\n 5/39 Test  #5: portable_field_oracle ............   Passed    1.55 sec\n      Start  6: portable_point_oracle\n 6/39 Test  #6: portable_point_oracle ............   Passed    5.28 sec\n      Start  7: xpoint_search_contract\n 7/39 Test  #7: xpoint_search_contract ...........   Passed    0.20 sec\n      Start  8: xpoint_cli\n 8/39 Test  #8: xpoint_cli .......................   Passed    0.34 sec\n      Start  9: bsgs_table_contract\n 9/39 Test  #9: bsgs_table_contract ..............   Passed    1.31 sec\n      Start 10: bsgs_table_oracle\n10/39 Test #10: bsgs_table_oracle ................   Passed    7.09 sec\n      Start 11: bsgs_table_devices\n11/39 Test #11: bsgs_table_devices ...............   Passed    0.30 sec\n      Start 12: bsgs_search_contract\n12/39 Test #12: bsgs_search_contract .............   Passed    0.35 sec\n      Start 13: bsgs_cli\n13/39 Test #13: bsgs_cli .........................   Passed    0.37 sec\n      Start 14: storage_database\n14/39 Test #14: storage_database .................   Passed    0.07 sec\n      Start 15: storage_journal\n15/39 Test #15: storage_journal ..................   Passed   18.55 sec\n      Start 16: storage_concurrency\n16/39 Test #16: storage_concurrency ..............   Passed    0.59 sec\n      Start 17: state_cli\n17/39 Test #17: state_cli ........................   Passed    4.81 sec\n      Start 18: storage_checkpoint\n18/39 Test #18: storage_checkpoint ...............   Passed    9.26 sec\n      Start 19: storage_checkpoint_failures\n19/39 Test #19: storage_checkpoint_failures ......   Passed   11.80 sec\n      Start 20: checkpoint_cli\n20/39 Test #20: checkpoint_cli ...................   Passed    2.24 sec\n      Start 21: storage_checkpoint_control\n21/39 Test #21: storage_checkpoint_control .......   Passed   10.77 sec\n      Start 22: checkpoint_controls\n22/39 Test #22: checkpoint_controls ..............   Passed   10.69 sec\n      Start 23: coordinator_registry\n23/39 Test #23: coordinator_registry .............   Passed    0.45 sec\n      Start 24: coordinator_tls\n24/39 Test #24: coordinator_tls ..................   Passed    0.65 sec\n      Start 25: coordinator_sync\n25/39 Test #25: coordinator_sync .................   Passed    1.38 sec\n      Start 26: coordinator_sync_failures\n26/39 Test #26: coordinator_sync_failures ........   Passed    2.64 sec\n      Start 27: coordinator_worker\n27/39 Test #27: coordinator_worker ...............   Passed    1.69 sec\n      Start 28: coordinator_worker_failures\n28/39 Test #28: coordinator_worker_failures ......   Passed    4.95 sec\n      Start 29: coordinator_https_worker\n29/39 Test #29: coordinator_https_worker .........   Passed    1.02 sec\n      Start 30: coordinator_recovery\n30/39 Test #30: coordinator_recovery .............   Passed    1.84 sec\n      Start 31: coordinator_local_launcher\n31/39 Test #31: coordinator_local_launcher .......   Passed    0.71 sec\n      Start 32: coordinator_budget\n32/39 Test #32: coordinator_budget ...............   Passed    2.93 sec\n      Start 33: hip_discovery_contract\n33/39 Test #33: hip_discovery_contract ...........   Passed    0.13 sec\n      Start 34: backend_cli\n34/39 Test #34: backend_cli ......................   Passed    0.21 sec\n      Start 35: exact_range\n35/39 Test #35: exact_range ......................   Passed    0.01 sec\n      Start 36: block_grid\n36/39 Test #36: block_grid .......................   Passed    5.70 sec\n      Start 37: work_unit\n37/39 Test #37: work_unit ........................   Passed    0.84 sec\n      Start 38: range_oracle\n38/39 Test #38: range_oracle .....................   Passed   13.72 sec\n      Start 39: result_verifier\n39/39 Test #39: result_verifier ..................   Passed    0.14 sec\n\n100% tests passed, 0 tests failed out of 39\n\nLabel Time Summary:\narithmetic     =   6.83 sec*proc (2 tests)\nbackend        =   1.35 sec*proc (5 tests)\nbsgs           =   9.42 sec*proc (5 tests)\nbudget         =   2.93 sec*proc (1 test)\ncli            =  17.74 sec*proc (3 tests)\ncoordinator    =  18.26 sec*proc (10 tests)\ncore           =  20.96 sec*proc (7 tests)\ncpu            = 129.41 sec*proc (38 tests)\nintegration    =   2.39 sec*proc (3 tests)\noracle         =  19.78 sec*proc (7 tests)\nranges         =  20.27 sec*proc (4 tests)\nrecovery       =  55.60 sec*proc (10 tests)\nscheduler      =  19.14 sec*proc (2 tests)\nsecurity       =   2.12 sec*proc (3 tests)\nstorage        =  68.77 sec*proc (9 tests)\ntables         =   8.41 sec*proc (2 tests)\nxpoint         =   0.54 sec*proc (2 tests)\n\nTotal Test time (real) = 130.44 sec\n"
+        }
+      ],
+      "binary_sha256": {
+        "keyhunt": "b069a5e6fa4686b9f30936143200d6cc59c6a8d1f991dc68973971db8cc1cad1",
+        "keyhunt-coordinator": "94461880300fa3111ba2ae4f3c71610840aaf05ab89c95cecf948d11a208b06b",
+        "keyhunt-worker": "60b55ce4206e5015e9a13e8a09f4a65150a42a30d260eaf9574f1986f26a2df4"
+      }
+    },
+    "hip-release": {
+      "distinct_tests_passed": 57,
+      "failed": 0,
+      "runs": [
+        {
+          "command": "ctest --preset hip-release",
+          "tests": {
+            "oracle_selftest": "Passed",
+            "cpu_field_oracle": "Passed",
+            "cpu_point_oracle": "Passed",
+            "bounded_search_oracle": "Passed",
+            "portable_field_oracle": "Passed",
+            "hip_field_oracle": "Passed",
+            "portable_point_oracle": "Passed",
+            "hip_point_oracle": "Passed",
+            "hip_arithmetic_devices": "Passed",
+            "xpoint_search_contract": "Passed",
+            "hip_xpoint_failures": "Passed",
+            "hip_xpoint_executor": "Passed",
+            "xpoint_cli": "Passed",
+            "xpoint_cli_direct": "Passed",
+            "bsgs_table_contract": "Passed",
+            "bsgs_table_oracle": "Passed",
+            "hip_bsgs_table": "Passed",
+            "bsgs_table_devices": "Passed",
+            "hip_bsgs_failures": "Passed",
+            "bsgs_search_contract": "Passed",
+            "hip_bsgs_search": "Passed",
+            "hip_bsgs_search_failures": "Passed",
+            "bsgs_cli": "Passed",
+            "bsgs_cli_single": "Passed",
+            "bsgs_cli_grouped": "Passed",
+            "storage_database": "Passed",
+            "storage_journal": "Passed",
+            "storage_concurrency": "Passed",
+            "state_cli": "Passed",
+            "storage_checkpoint": "Passed",
+            "storage_checkpoint_failures": "Passed",
+            "checkpoint_cli": "Passed",
+            "storage_checkpoint_control": "Passed",
+            "checkpoint_controls": "Passed",
+            "checkpoint_pause_hip": "Passed",
+            "coordinator_registry": "Passed",
+            "coordinator_tls": "Passed",
+            "coordinator_sync": "Passed",
+            "coordinator_sync_failures": "Passed",
+            "coordinator_worker": "Passed",
+            "coordinator_worker_failures": "Passed",
+            "coordinator_https_worker": "Passed",
+            "coordinator_recovery": "Passed",
+            "hip_discovery_contract": "Passed",
+            "hip_failures": "Passed",
+            "hip_executor": "Passed",
+            "hip_partitions": "Passed",
+            "backend_cli": "Passed",
+            "exact_range": "Passed",
+            "block_grid": "Passed",
+            "work_unit": "Passed",
+            "range_oracle": "Passed",
+            "result_verifier": "Passed",
+            "cpu_baseline": "Passed",
+            "target_loading": "Passed"
+          },
+          "stdout": "Test project /home/bagus/keyhunt-GPU/build/hip-release\n      Start  1: oracle_selftest\n 1/55 Test  #1: oracle_selftest ..................   Passed    1.05 sec\n      Start  2: cpu_field_oracle\n 2/55 Test  #2: cpu_field_oracle .................   Passed    0.36 sec\n      Start  3: cpu_point_oracle\n 3/55 Test  #3: cpu_point_oracle .................   Passed    0.69 sec\n      Start  4: bounded_search_oracle\n 4/55 Test  #4: bounded_search_oracle ............   Passed    1.75 sec\n      Start  5: portable_field_oracle\n 5/55 Test  #5: portable_field_oracle ............   Passed    0.41 sec\n      Start  6: hip_field_oracle\n 6/55 Test  #6: hip_field_oracle .................   Passed    4.82 sec\n      Start  7: portable_point_oracle\n 7/55 Test  #7: portable_point_oracle ............   Passed    1.35 sec\n      Start  8: hip_point_oracle\n 8/55 Test  #8: hip_point_oracle .................   Passed    4.51 sec\n      Start  9: hip_arithmetic_devices\n 9/55 Test  #9: hip_arithmetic_devices ...........   Passed    5.85 sec\n      Start 10: xpoint_search_contract\n10/55 Test #10: xpoint_search_contract ...........   Passed    0.20 sec\n      Start 11: hip_xpoint_failures\n11/55 Test #11: hip_xpoint_failures ..............   Passed    0.84 sec\n      Start 12: hip_xpoint_executor\n12/55 Test #12: hip_xpoint_executor ..............   Passed    0.80 sec\n      Start 13: xpoint_cli\n13/55 Test #13: xpoint_cli .......................   Passed   30.63 sec\n      Start 14: xpoint_cli_direct\n14/55 Test #14: xpoint_cli_direct ................   Passed   29.82 sec\n      Start 15: bsgs_table_contract\n15/55 Test #15: bsgs_table_contract ..............   Passed    0.36 sec\n      Start 16: bsgs_table_oracle\n16/55 Test #16: bsgs_table_oracle ................   Passed    2.88 sec\n      Start 17: hip_bsgs_table\n17/55 Test #17: hip_bsgs_table ...................   Passed    0.78 sec\n      Start 18: bsgs_table_devices\n18/55 Test #18: bsgs_table_devices ...............   Passed    5.84 sec\n      Start 19: hip_bsgs_failures\n19/55 Test #19: hip_bsgs_failures ................   Passed    1.05 sec\n      Start 20: bsgs_search_contract\n20/55 Test #20: bsgs_search_contract .............   Passed    0.25 sec\n      Start 21: hip_bsgs_search\n21/55 Test #21: hip_bsgs_search ..................   Passed    0.96 sec\n      Start 22: hip_bsgs_search_failures\n22/55 Test #22: hip_bsgs_search_failures .........   Passed    0.96 sec\n      Start 23: bsgs_cli\n23/55 Test #23: bsgs_cli .........................   Passed   60.68 sec\n      Start 24: bsgs_cli_single\n24/55 Test #24: bsgs_cli_single ..................   Passed   63.89 sec\n      Start 25: bsgs_cli_grouped\n25/55 Test #25: bsgs_cli_grouped .................   Passed   63.59 sec\n      Start 26: storage_database\n26/55 Test #26: storage_database .................   Passed    0.05 sec\n      Start 27: storage_journal\n27/55 Test #27: storage_journal ..................   Passed    0.62 sec\n      Start 28: storage_concurrency\n28/55 Test #28: storage_concurrency ..............   Passed    0.16 sec\n      Start 29: state_cli\n29/55 Test #29: state_cli ........................   Passed    1.54 sec\n      Start 30: storage_checkpoint\n30/55 Test #30: storage_checkpoint ...............   Passed    2.20 sec\n      Start 31: storage_checkpoint_failures\n31/55 Test #31: storage_checkpoint_failures ......   Passed    2.93 sec\n      Start 32: checkpoint_cli\n32/55 Test #32: checkpoint_cli ...................   Passed   15.83 sec\n      Start 33: storage_checkpoint_control\n33/55 Test #33: storage_checkpoint_control .......   Passed    2.54 sec\n      Start 34: checkpoint_controls\n34/55 Test #34: checkpoint_controls ..............   Passed    4.55 sec\n      Start 35: checkpoint_pause_hip\n35/55 Test #35: checkpoint_pause_hip .............   Passed    7.48 sec\n      Start 36: coordinator_registry\n36/55 Test #36: coordinator_registry .............   Passed    0.11 sec\n      Start 37: coordinator_tls\n37/55 Test #37: coordinator_tls ..................   Passed    0.56 sec\n      Start 38: coordinator_sync\n38/55 Test #38: coordinator_sync .................   Passed    0.39 sec\n      Start 39: coordinator_sync_failures\n39/55 Test #39: coordinator_sync_failures ........   Passed    0.95 sec\n      Start 40: coordinator_worker\n40/55 Test #40: coordinator_worker ...............   Passed    1.32 sec\n      Start 41: coordinator_worker_failures\n41/55 Test #41: coordinator_worker_failures ......   Passed    1.20 sec\n      Start 42: coordinator_https_worker\n42/55 Test #42: coordinator_https_worker .........   Passed    6.52 sec\n      Start 43: coordinator_recovery\n43/55 Test #43: coordinator_recovery .............   Passed    0.50 sec\n      Start 44: hip_discovery_contract\n44/55 Test #44: hip_discovery_contract ...........   Passed    0.21 sec\n      Start 45: hip_failures\n45/55 Test #45: hip_failures .....................   Passed    0.67 sec\n      Start 46: hip_executor\n46/55 Test #46: hip_executor .....................   Passed    0.66 sec\n      Start 47: hip_partitions\n47/55 Test #47: hip_partitions ...................   Passed    9.83 sec\n      Start 48: backend_cli\n48/55 Test #48: backend_cli ......................   Passed    1.45 sec\n      Start 49: exact_range\n49/55 Test #49: exact_range ......................   Passed    0.05 sec\n      Start 50: block_grid\n50/55 Test #50: block_grid .......................   Passed    0.14 sec\n      Start 51: work_unit\n51/55 Test #51: work_unit ........................   Passed    0.09 sec\n      Start 52: range_oracle\n52/55 Test #52: range_oracle .....................   Passed    1.96 sec\n      Start 53: result_verifier\n53/55 Test #53: result_verifier ..................   Passed    0.08 sec\n      Start 54: cpu_baseline\n54/55 Test #54: cpu_baseline .....................   Passed   29.09 sec\n      Start 55: target_loading\n55/55 Test #55: target_loading ...................   Passed    8.77 sec\n\n100% tests passed, 0 tests failed out of 55\n\nLabel Time Summary:\narithmetic     =  16.94 sec*proc (5 tests)\nbackend        =   1.66 sec*proc (2 tests)\nbaseline       =  29.09 sec*proc (1 test)\nbsgs           = 201.22 sec*proc (11 tests)\ncli            =  29.41 sec*proc (4 tests)\ncoordinator    =  11.56 sec*proc (8 tests)\ncore           =  11.53 sec*proc (8 tests)\ncpu            =  69.31 sec*proc (33 tests)\nhardware       = 317.45 sec*proc (22 tests)\nhip            = 317.45 sec*proc (22 tests)\nintegration    =   7.08 sec*proc (2 tests)\noracle         = 272.27 sec*proc (15 tests)\npartitions     =   9.83 sec*proc (1 test)\nranges         =   2.23 sec*proc (4 tests)\nrecovery       =  40.06 sec*proc (12 tests)\nscheduler      =   0.78 sec*proc (2 tests)\nsecurity       =   0.67 sec*proc (2 tests)\nstorage        =  37.91 sec*proc (10 tests)\ntables         =  10.90 sec*proc (5 tests)\nxpoint         =  62.29 sec*proc (5 tests)\n\nTotal Test time (real) = 386.79 sec\n"
+        },
+        {
+          "command": "ctest --preset hip-release -R 'coordinator_recovery|coordinator_local_launcher|coordinator_budget|coordinator_tls'",
+          "tests": {
+            "coordinator_tls": "Passed",
+            "coordinator_recovery": "Passed",
+            "coordinator_local_launcher": "Passed",
+            "coordinator_budget": "Passed"
+          },
+          "stdout": "Test project /home/bagus/keyhunt-GPU/build/hip-release\n    Start 37: coordinator_tls\n1/4 Test #37: coordinator_tls ..................   Passed    0.60 sec\n    Start 43: coordinator_recovery\n2/4 Test #43: coordinator_recovery .............   Passed    0.50 sec\n    Start 44: coordinator_local_launcher\n3/4 Test #44: coordinator_local_launcher .......   Passed    0.68 sec\n    Start 45: coordinator_budget\n4/4 Test #45: coordinator_budget ...............   Passed    4.43 sec\n\n100% tests passed, 0 tests failed out of 4\n\nLabel Time Summary:\nbudget         =   4.43 sec*proc (1 test)\ncoordinator    =   6.21 sec*proc (4 tests)\ncpu            =   6.21 sec*proc (4 tests)\nintegration    =   1.28 sec*proc (2 tests)\nrecovery       =   0.50 sec*proc (1 test)\nsecurity       =   0.60 sec*proc (1 test)\n\nTotal Test time (real) =   6.23 sec\n"
+        },
+        {
+          "command": "ctest --preset hip-release -R coordinator_",
+          "tests": {
+            "coordinator_registry": "Passed",
+            "coordinator_tls": "Passed",
+            "coordinator_sync": "Passed",
+            "coordinator_sync_failures": "Passed",
+            "coordinator_worker": "Passed",
+            "coordinator_worker_failures": "Passed",
+            "coordinator_https_worker": "Passed",
+            "coordinator_recovery": "Passed",
+            "coordinator_local_launcher": "Passed",
+            "coordinator_budget": "Passed"
+          },
+          "stdout": "Test project /home/bagus/keyhunt-GPU/build/hip-release\n      Start 36: coordinator_registry\n 1/10 Test #36: coordinator_registry .............   Passed    0.11 sec\n      Start 37: coordinator_tls\n 2/10 Test #37: coordinator_tls ..................   Passed    0.60 sec\n      Start 38: coordinator_sync\n 3/10 Test #38: coordinator_sync .................   Passed    0.32 sec\n      Start 39: coordinator_sync_failures\n 4/10 Test #39: coordinator_sync_failures ........   Passed    0.68 sec\n      Start 40: coordinator_worker\n 5/10 Test #40: coordinator_worker ...............   Passed    0.38 sec\n      Start 41: coordinator_worker_failures\n 6/10 Test #41: coordinator_worker_failures ......   Passed    1.22 sec\n      Start 42: coordinator_https_worker\n 7/10 Test #42: coordinator_https_worker .........   Passed    6.68 sec\n      Start 43: coordinator_recovery\n 8/10 Test #43: coordinator_recovery .............   Passed    0.41 sec\n      Start 44: coordinator_local_launcher\n 9/10 Test #44: coordinator_local_launcher .......   Passed    0.68 sec\n      Start 45: coordinator_budget\n10/10 Test #45: coordinator_budget ...............   Passed    0.36 sec\n\n100% tests passed, 0 tests failed out of 10\n\nLabel Time Summary:\nbudget         =   0.36 sec*proc (1 test)\ncoordinator    =  11.44 sec*proc (10 tests)\ncpu            =   4.75 sec*proc (9 tests)\nhardware       =   6.68 sec*proc (1 test)\nhip            =   6.68 sec*proc (1 test)\nintegration    =   7.96 sec*proc (3 tests)\nrecovery       =   3.01 sec*proc (5 tests)\nsecurity       =   0.71 sec*proc (2 tests)\n\nTotal Test time (real) =  11.44 sec\n"
+        }
+      ],
+      "binary_sha256": {
+        "keyhunt": "259c1825b6915d2e7dc9067d7cef6d647a7dfa2c488a92965fbe4c7a7c8366a9",
+        "keyhunt-coordinator": "4592cdde72f665275723301c216c7e6ce380182ae4696122532c14977cb81f51",
+        "keyhunt-worker": "cbf08e229d1089f7f0de5f6332a03151032687c48d236afa1102b8c9f7597b4a"
+      }
+    }
+  },
+  "source_sha256": {
+    "CMakeLists.txt": "5f470a06dc0654a45a4ca7167a231f3ec15260020c3cb022139209c70e4be3d3",
+    "CMakePresets.json": "1e76839bb2e0d2082fac6a25d8abd9ec38db42e76a3160530638828052b605fb",
+    "cmake/CoordinatorTests.cmake": "98d69512d1b29a978b65e6b9591385c5b05aca383da31eeed84132de7c826b49",
+    "deploy/apache/keyhunt.conf.in": "b496e032c06414462264b12b2a9644defd21111c87ba8ce5adcbc53f68e4a2bd",
+    "deploy/systemd/keyhunt-coordinator.service.in": "d8a2d13a0eb3aceba9d39c0f0f2e4c1851e24cde1b5096e0b830e0a6cbc71487",
+    "include/keyhunt/coordinator/repository.h": "00c186a92250ba7b639ba87ef9b22402982234019e692866a3914627db9d4b6e",
+    "include/keyhunt/coordinator/worker.h": "6f4837c14f036ce35b194c210574dbf3e2ccf816712424c8e4780a4bb250a038",
+    "include/keyhunt/storage/journal.h": "cd861774352934d8c7a5956097c89b600353571a76f8b1af69562b6aad510983",
+    "src/backend/state_command.cpp": "ea10bfd97ef52f99c8ad54a9c217b61ee27110f0fe9a2c1df37823caa37b5c5f",
+    "src/coordinator/certificate.cpp": "b576b6d1fc75872b8b2c8c0685461d05cb56391edaa592f0cfa57d14360a1b6b",
+    "src/coordinator/http.cpp": "6f71acebaa01b122b04aa944887955f030538e1ebf2362705249080a2a104096",
+    "src/coordinator/http.h": "ec82e2a171146dc5827eb420dafde1fe6e8bff225ca54962d193e324531ef81e",
+    "src/coordinator/https.cpp": "f1dc8ae3c10e218a44bc29b511c0c6ccf7b98ffc87351d10b4d0b21bcd672a11",
+    "src/coordinator/main.cpp": "8b4d23582273c390ee92928e4749de6a89640b82e789377d93be2f5b8b739d3f",
+    "src/coordinator/protocol.h": "f1d948d5c9c6f96fdf6066205864acc57527a3c55a88516d64aecb242a3caf5b",
+    "src/coordinator/repository.cpp": "8f4f714ec69f31bf534af98f413be48aad2d91f6990e3ff5049173ae9f32d2d9",
+    "src/coordinator/self_test.cpp": "995d3f47e8ac009c32b9ec8e9f964718c38436a9359c3c87309a3c7a95a52eb7",
+    "src/coordinator/self_test.h": "a9a19fa7fd5fbb7c2476aee00cede21d2a825946fc154bd4242c54368b4aabab",
+    "src/coordinator/worker.cpp": "6f369739fa44a7d0919455a443a9e483a5269c7c681af5e15746d3c0371d96b4",
+    "src/coordinator/worker_main.cpp": "52d95c25bdefa91302d4f8f71e50bcc0f98a3e4d98f5cfa3a31c411e5b5afd47",
+    "src/storage/journal.cpp": "f6aa6ed035e766915336b01cd82b4245aa6106893e4917b96e4ae68763c6bd3a",
+    "src/storage/schema_v3.h.in": "448b5b8c8f2af805641594021b9086ff8fc957468f0e41be99d57337cb9e29be",
+    "src/storage/schema_v3.sql": "3fcccc8eebbb91ca5d2d8ebf4136854bb35096df061f81abd9484fad98fe7889",
+    "src/storage/schema_v4.h.in": "4104b430a8a00cc9918653b8d8e1858dc5fb5051a6fb6479da80093c85975bb9",
+    "src/storage/schema_v4.sql": "c5e40bad088ef5e03afc982c7da53f8b629ec3a584d6bc0613d048a1723cc758",
+    "src/storage/schema_v5.h.in": "663287a577e952a938b94da8a031ccd9cb15ec405980b623ec4a416e05be23b0",
+    "src/storage/schema_v5.sql": "fa1bfe59c3964b0815c8c82b3ae12610e5016daf002e681adae8902698f97c5c",
+    "src/storage/sqlite.cpp": "51f23dc48df8614fc79370141604d93f20397e6d2c8eeca0e5b9b17b7e24ddd4",
+    "src/storage/sqlite.h": "1fa86f8779dfeb05a8ec2fc00c10ab63b523f33412ea10c494b8715b743d6a09",
+    "tests/coordinator/budget.cpp": "070b68870a0f7d1b0b16740200d9d5131d00ca9df5cdc4e162a72f0d1a31fbc0",
+    "tests/coordinator/fixture.h": "8d7b98fddf0ba8caf38bcf87119b27cf75ee02ba11e14edc4c9255c13026f288",
+    "tests/coordinator/https_worker.py": "10e29d12435dc6b1dc949ee1cdbb43f96109819113695728bcab978bdd5d1f47",
+    "tests/coordinator/local_launcher.py": "4726e1619c31fc35a378bd5f1dfeadd6acffdeb585d88f74de51c290419beaec",
+    "tests/coordinator/recovery.cpp": "8d9518902c31014d0ea5582cd6353a0ff1f46304e1a9799edea96d27ecb893f2",
+    "tests/coordinator/registry.cpp": "e3f55836e89dcaa8ace9641a93dee800c0570b63949117c9d8372b94bb5085bb",
+    "tests/coordinator/sync.cpp": "689c928c7e59a180e72cc3b0a9be2ae441eb4d185354637bb06ea1033e4cd116",
+    "tests/coordinator/tls.py": "8315b232846d17bf759567c6d790fdb1928175a20d51f0b34b1f5d5a9d4ca646",
+    "tests/coordinator/worker.cpp": "d3f7ff8e0e0596a70d8ad31bbc1d22f1ff2a9ad98e8741894aca47a42e62fca9",
+    "tests/coordinator/worker_failures.cpp": "9c6ff1c9d0a4561b416ed148ee370b1ba160f8d0bbe97108278902dabb453c99",
+    "tests/integration/checkpoint_cli.py": "9b43095411779e6f52512bdd2e8404a7c7fa04e899fd7cc817724c0f68465459",
+    "tests/storage/checkpoint.cpp": "e4b04abd25fe229ee6fb4f68925fa2a0428e4114855a57d65c09ef1e51387f6d",
+    "tests/storage/database.cpp": "3d8a2709f5f714d63d12b43055151a68d718ccc4042b7e51fd92a1299fdca83e",
+    "tools/coordinator_local.py": "747da03e4ac09e813e74786886b11da2f13756a11fad63a09367e94f51695c32",
+    "tools/coordinator_worker.py": "be3e04faf850c3ab8fb3e6e9149777177e78ac2333a306cbed95fbe5b0be641d"
+  },
+  "toolchain": {
+    "compiler": "g++ (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0",
+    "cmake": "cmake version 3.22.1",
+    "openssl": "OpenSSL 3.0.2 15 Mar 2022 (Library: OpenSSL 3.0.2 15 Mar 2022)",
+    "nlohmann_json": "3.10.5",
+    "curl": "7.81.0",
+    "apache": "2.4.52-1ubuntu4.23",
+    "sqlite": "3.51.3"
+  },
+  "device_self_test": {
+    "compute_partition": "SPX",
+    "compute_units": 304,
+    "driver": 71526333,
+    "memory_partition": "NPS1",
+    "ordinal": 0,
+    "passed": true,
+    "pci_bus_id": "0000:1b:00.0",
+    "runtime": 71526333,
+    "uuid": "30646366333934386337333264313231"
+  },
+  "coordinator_budget_before": {
+    "claim": {
+      "max_ms": 2.1852389999999997,
+      "median_ms": 2.014455,
+      "p95_ms": 2.1677299999999997,
+      "samples": 32
+    },
+    "database_bytes": 1802240,
+    "device_queues": 64,
+    "fragmented_intervals": 4096,
+    "machines": 32,
+    "progress_renewal": {
+      "max_ms": 132.068894,
+      "median_ms": 130.083259,
+      "p95_ms": 130.42727,
+      "samples": 32
+    },
+    "reserved_blocks": 128,
+    "scope": "native CPU repository burst; TLS and GPU execution excluded",
+    "wal_bytes": 4202432
+  },
+  "coordinator_budget_after": {
+    "claim": {
+      "max_ms": 2.838371,
+      "median_ms": 1.975471,
+      "p95_ms": 2.178328,
+      "samples": 32
+    },
+    "database_bytes": 1896448,
+    "device_queues": 64,
+    "fragmented_intervals": 4096,
+    "machines": 32,
+    "progress_renewal": {
+      "max_ms": 4.999645,
+      "median_ms": 2.876268,
+      "p95_ms": 3.1934799999999997,
+      "samples": 32
+    },
+    "reserved_blocks": 128,
+    "scope": "native CPU repository burst; TLS and GPU execution excluded",
+    "wal_bytes": 4260112
+  },
+  "package": {
+    "prefix": "/tmp/keyhunt-c15-package",
+    "preset": "coordinator-server",
+    "component": "coordinator",
+    "gpu_sdk_enabled": false,
+    "https_worker_enabled": false,
+    "ldd": "\tlinux-vdso.so.1 (0x00007ffdded30000)\n\tlibrocm_sysdeps_sqlite3.so => /opt/rocm/core-10.0/lib/rocm_sysdeps/lib/librocm_sysdeps_sqlite3.so (0x00007fe43a819000)\n\tlibcrypto.so.3 => /lib/x86_64-linux-gnu/libcrypto.so.3 (0x00007fe43a3c9000)\n\tlibstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007fe43a19d000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007fe43a17d000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fe439f54000)\n\tlibdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007fe439f4d000)\n\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007fe439f48000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007fe439e61000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007fe43aa44000)\n",
+    "mtls_gate": "Apache mTLS, header replacement, socket peer policy and persistent-connection revocation passed",
+    "restore_gate": "Installed coordinator CLI: authenticated startup, sealed backup, quarantined restore and overwrite rejection passed.",
+    "sqlite_runtime_note": "Uses this host's CPU-only ROCm sysdeps SQLite library through an explicit test-install RPATH; not a portable binary distribution."
+  },
+  "findings": [
+    {
+      "initial_gate": "coordinator_recovery under ASAN/UBSAN",
+      "diagnostic": "416 bytes in 14 allocations; recovery fixture nested JSON initializer construction when embedded request throws",
+      "fix_commit": "d2ebd5f",
+      "final_gate": "passes; no new sanitizer exclusion"
+    },
+    {
+      "area": "coordinator progress/renewal transaction cost",
+      "finding": "curve verifier initialized once per grant even for lease-only/no-match updates",
+      "fix_commit": "28e89cb",
+      "validation": "Same burst fixture; matches still CPU verified, no GPU kernel change."
+    }
+  ],
+  "limits": [
+    "Public DNS/TCP 443 and ACME not configured or tested; local server leaf replacement and Apache reload are tested.",
+    "No physical second host; local environments share one trusted Unix user and are not VM/container security isolation.",
+    "C15 preserves one active checkpoint executor per journal; simultaneous multi-GPU execution remains C20.",
+    "Current hardware SPX/NPS1; CPX/QPX/SPX discovery contracts pass, no new live CPX/QPX partition run.",
+    "Sanitizer excludes only pre-existing cpu_baseline and target_loading legacy gates.",
+    "Restore activation requires all previous executors and authority stopped plus access review; all restored credentials/clients disabled.",
+    "Trusted workers assert exhaustive no-match coverage. Client identity is not a proof of computation.",
+    "Full request/audit receipt history is retained; the bounded outbox is not a whole-database disk quota."
+  ],
+  "gpu_kernel_paths_changed": []
+}

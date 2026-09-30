@@ -52,6 +52,9 @@ cmake --build --preset cpu-sanitizers --parallel 4
 | `BUILD_TESTING` | ON | Python/CTest regression checks |
 | `KEYHUNT_ENABLE_HIP` | OFF | AMD HIP discovery, diagnostics, xpoint/BSGS searches and tables; requires ROCm AMD clang/runtime |
 | `KEYHUNT_ENABLE_CUDA` | OFF | Explicitly rejected until C18 |
+| `KEYHUNT_ENABLE_COORDINATOR` | OFF | Registry, coordinator and durable HTTPS worker support; needs OpenSSL 3 and nlohmann JSON >=3.10 |
+| `KEYHUNT_ENABLE_HTTPS_WORKER` | ON | With coordination enabled, build the libcurl HTTPS worker and Python supervisor; disable for server-only builds |
+| `KEYHUNT_TEST_APACHE_ROOT` | Empty | Enable real Apache/mTLS integration tests using `/` or an extracted package root |
 
 Changing tuning does not make the existing x86 engine portable to ARM. Release
 uses C++17, GNU extensions, SSSE3, and the original `-Ofast`/vectorization flags.
@@ -291,3 +294,30 @@ Run timing tools after hardware tests finish. The opt-in measurement excludes a
 startup pause and retains five warm request-to-paused samples for each mode at
 small and default launch sizes. [The operations guide](PAUSE_RESUME.md) records
 the timing scope, hardware, recovery behavior and acceptance results.
+
+## Authenticated coordination (C15)
+
+`coordinator-release`, `coordinator-debug` and `coordinator-sanitizers` add the
+optional coordinator and HTTPS worker without enabling HIP. `coordinator-server`
+builds only the CPU service, disables worker/libcurl requirements and tests, and
+installs with `--component coordinator`. All presets also require the existing
+SQLite >=3.51.3 dependency; no build downloads dependencies.
+
+```sh
+cmake --preset coordinator-release -DKEYHUNT_TEST_APACHE_ROOT=/
+cmake --build --preset coordinator-release -j12
+ctest --preset coordinator-release
+cmake --preset hip-release -DKEYHUNT_ENABLE_COORDINATOR=ON -DKEYHUNT_TEST_APACHE_ROOT=/
+cmake --build --preset hip-release -j12
+```
+
+Supply `CMAKE_PREFIX_PATH` for custom JSON development packages and
+`CURL_INCLUDE_DIR` / `CURL_LIBRARY` for a custom libcurl prefix. Apache is needed
+only for live TLS integration and deployment, not to compile the service.
+The normal CPU/HIP presets keep coordination disabled unless explicitly enabled.
+
+[The coordinator guide](COORDINATOR.md) includes the private localhost launcher,
+worker configuration, deployment templates, backup/restore rules and boundaries.
+[Validation](COORDINATOR_VALIDATION.md) records the combined regression evidence.
+The focused sanitizer selector continues to exclude only the pre-existing
+`cpu_baseline` and `target_loading` legacy gates.
