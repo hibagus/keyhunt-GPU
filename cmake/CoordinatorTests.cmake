@@ -50,3 +50,18 @@ target_link_libraries(coordinator_worker_failures_test PRIVATE keyhunt_core SQLi
 keyhunt_configure_target(coordinator_worker_failures_test)
 add_test(NAME coordinator_worker_failures COMMAND coordinator_worker_failures_test)
 set_tests_properties(coordinator_worker_failures PROPERTIES TIMEOUT 120 LABELS "cpu;coordinator;recovery")
+
+if(KEYHUNT_TEST_APACHE_ROOT)
+    set(coordinator_worker_options "")
+    if(KEYHUNT_ENABLE_HIP)
+        list(APPEND coordinator_worker_options --hip)
+    endif()
+    add_test(NAME coordinator_https_worker COMMAND ${Python3_EXECUTABLE}
+        ${PROJECT_SOURCE_DIR}/tests/coordinator/https_worker.py
+        --coordinator $<TARGET_FILE:keyhunt-coordinator> --worker $<TARGET_FILE:keyhunt-worker>
+        --keyhunt $<TARGET_FILE:keyhunt> --apache-root ${KEYHUNT_TEST_APACHE_ROOT} ${coordinator_worker_options})
+    set_tests_properties(coordinator_https_worker PROPERTIES TIMEOUT 300 LABELS "coordinator;security;integration")
+    if(KEYHUNT_ENABLE_HIP)
+        set_tests_properties(coordinator_https_worker PROPERTIES LABELS "hip;hardware;coordinator;integration")
+    endif()
+endif()

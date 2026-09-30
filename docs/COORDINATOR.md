@@ -173,3 +173,46 @@ restart scheduling. Four worker process-exit points cover saved snapshot,
 received response, pre-acknowledgment COMMIT and post-COMMIT. A hundred-checkpoint
 fixture verifies bounded multi-page upload and that results arrive before full
 coverage can finish a block. Existing C13/C14 storage/control gates still pass.
+
+## S04c: HTTPS and process supervision
+
+`keyhunt-worker` provides `configure`, `configuration`, `status`, `sync`,
+`scheduled-sync`, `next`, `api` and `self-test`. Use `--state-dir DIR` for local
+state, `--config FILE` for initial configuration, `--request FILE` for an API
+request, and `--device N` for dispatch/self-test. `sync` is explicitly manual;
+`scheduled-sync` sends nothing before the persisted due time.
+
+The libcurl transport requires HTTPS, client PEM credentials, a private owned
+key file, server CA validation and hostname verification. Redirects, proxy
+inheritance, HTTP fallback and insecure modes are disabled. Optional `resolve`
+uses `HOST:PORT:127.0.0.1` while retaining the real Host/SNI. Connect/total deadlines
+are 10/30 seconds; responses remain bounded to 8 MiB. The coordinator executable
+has no libcurl or GPU runtime dependency; the HTTPS worker is a separate target.
+
+`tools/coordinator_worker.py` (installed as `keyhunt-supervise`) owns a stable
+supervisor lock and starts separate network and GPU child processes. It runs
+fresh HIP self-tests before requesting work, covering hit/miss/boundary/tail
+vectors through both xpoint kernels and BSGS groups 1/8. Device visibility and
+partition discovery use the existing backend; no partition mode is hardcoded.
+It records the observed UUID, partition, CU count, runtime and driver privately.
+
+The supervisor keeps C14's one-executor-per-journal guard. Multiple device queues
+are supported and exercised with mocks, but production execution is serial
+across those queues until C20. Use one selected device for C15 production work.
+Default stepped xpoint and automatic BSGS group selection are retained. BSGS
+requires an explicit local `--table`; the service never loads that table.
+
+SIGUSR1/SIGUSR2 pause/resume the GPU child, and SIGINT/SIGTERM request a bounded
+drain. Three failed launches or a 300-second progress stall quarantine the device
+queue; `--retry-failed` explicitly clears saved failure counts after repair.
+No GPU reset is attempted. `--once` consumes saved queues and exits without an
+extra final sync. `supervisor.json`, `self-tests.json`, `execution.log` and
+`sync.log` live in the private worker state directory.
+
+Native two-worker HTTPS tests passed with separate state/certificates, wrong-CA
+and hostname rejection, cross-project denial and persisted no-contact intervals.
+The HIP gate additionally passed supervisor-driven xpoint and BSGS execution,
+CPU-verified result upload, and local-complete/server-in-progress separation.
+Hardware: existing MI300X SPX/NPS1; no partition settings changed. CPX/QPX retain
+the same visible-device/CU-aware execution paths, without claiming a new live
+CPX/QPX hardware test in this milestone.

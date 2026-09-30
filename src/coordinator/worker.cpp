@@ -175,6 +175,17 @@ std::optional<Grant> Worker::next(const std::string& device)const{
     }
     tx.commit();return {};
 }
+Json Worker::execution(const std::string& device)const{
+    const auto selected=next(device);if(!selected)return nullptr;
+    const auto& g=*selected;auto& s=*impl_;
+    Statement inputs(s.db.handle(),"SELECT configuration,targets FROM search_bindings WHERE project=? AND job=?");bind_scope(inputs,g.scope);
+    if(!inputs.step())throw std::runtime_error("imported grant missing inputs");
+    const auto manifest=s.journal.manifest(g.scope);
+    const auto token="v1:"+g.scope.project+":"+hex(bytes(g.scope.job))+":"+g.owner+":"+hex(g.epoch)+":"+
+        std::to_string(g.generation)+":"+std::to_string(g.expires)+":"+g.block.hex();
+    return {{"grant",wire::grant(g)},{"token",token},{"mode",manifest.mode==Mode::XPoint?"xpoint":"bsgs"},
+        {"configuration",hex(inputs.blob(0))},{"targets",hex(inputs.blob(1))}};
+}
 Json Worker::status()const{
     auto& s=*impl_;Transaction tx(s.db,false);
     Statement q(s.db.handle(),"SELECT instance,client,last_ack,next_sync,schedule_boot,outbox_bytes,outbox_limit FROM worker_settings WHERE singleton=1");

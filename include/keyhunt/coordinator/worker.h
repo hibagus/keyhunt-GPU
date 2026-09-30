@@ -14,6 +14,7 @@ public:
     bool synchronize(const Transport&,bool manual=false);
     std::optional<storage::Grant> next(const std::string& device) const;
     Json status() const;
+    Json execution(const std::string& device) const;
     storage::Journal& journal();
 private:
     struct Impl;
