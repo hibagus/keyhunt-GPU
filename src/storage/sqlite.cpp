@@ -3,6 +3,9 @@
 #include "schema_v2.h"
 #include "schema_v3.h"
 #include "schema_v4.h"
+#include "schema_v5.h"
+#include <fstream>
+#include <time.h>
 #include "keyhunt/crypto/hash/sha256.h"
 #include <algorithm>
 #include <cerrno>
@@ -130,6 +133,21 @@ Bytes Statement::blob(int i)const{if(sqlite3_column_type(stmt_,i)!=SQLITE_BLOB)t
 std::string Statement::text(int i)const{if(sqlite3_column_type(stmt_,i)!=SQLITE_TEXT)throw std::runtime_error("expected TEXT column");auto* p=sqlite3_column_text(stmt_,i);return std::string(reinterpret_cast<const char*>(p),size_t(sqlite3_column_bytes(stmt_,i)));}
 int64_t Statement::integer(int i)const{if(sqlite3_column_type(stmt_,i)!=SQLITE_INTEGER)throw std::runtime_error("expected INTEGER column");return sqlite3_column_int64(stmt_,i);}
 core::UInt256 Statement::wide(int i)const{auto b=blob(i);if(b.size()!=32)throw std::runtime_error("invalid wide integer encoding");core::UInt256::Bytes a{};std::copy(b.begin(),b.end(),a.begin());return core::UInt256::from_bytes(a);}
+// CLOCK_BOOTTIME includes suspend. A changed boot UUID invalidates saved
+// offline deadlines instead of guessing elapsed time after reboot.
+std::string boot_id(){
+    static const std::string id=[] {
+        std::ifstream file("/proc/sys/kernel/random/boot_id");std::string value;
+        if(!(file>>value)||value.size()!=36)throw std::runtime_error("cannot establish Linux boot identity");
+        return value;
+    }();
+    return id;
+}
+int64_t boot_seconds(){
+    timespec value{};
+    if(clock_gettime(CLOCK_BOOTTIME,&value)||value.tv_sec<0)throw std::runtime_error("cannot establish offline deadline clock");
+    return value.tv_sec;
+}
 Database::Database(const std::string& directory){
     if(sqlite3_libversion_number()<3051003)throw std::runtime_error("journal requires SQLite >= 3.51.3 (WAL-reset fix)");
     directory_=prepare(directory);const auto file=directory_/"progress.sqlite";
@@ -139,7 +157,7 @@ Database::Database(const std::string& directory){
         {
             Transaction tx(*this);
             auto version=scalar(db_,"PRAGMA user_version");const auto app=scalar(db_,"PRAGMA application_id");
-            const std::vector<const char*> schemas{schema_v1,schema_v2,schema_v3,schema_v4};
+            const std::vector<const char*> schemas{schema_v1,schema_v2,schema_v3,schema_v4,schema_v5};
             const int64_t latest=int64_t(schemas.size());
             const bool fresh=version==0 && app==0 &&
                 scalar(db_,"SELECT count(*) FROM sqlite_schema WHERE name NOT LIKE 'sqlite_%'")==0;
@@ -194,7 +212,7 @@ void Database::restore(const std::string& source,const std::string& destination)
     sqlite3* check=nullptr;
     try {
         open(&check,file,SQLITE_OPEN_READONLY);
-        if(scalar(check,"PRAGMA application_id")!=application_id || (scalar(check,"PRAGMA user_version")<1 || scalar(check,"PRAGMA user_version")>4))
+        if(scalar(check,"PRAGMA application_id")!=application_id || (scalar(check,"PRAGMA user_version")<1 || scalar(check,"PRAGMA user_version")>5))
             throw std::runtime_error("restore source is not a supported journal");
         sqlite3_close(check);check=nullptr;
     }catch(...){if(check)sqlite3_close(check);throw;}

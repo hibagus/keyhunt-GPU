@@ -18,6 +18,8 @@ inline std::function<void(const char*)> transaction_test_hook;
 Bytes digest(Bytes data);
 Bytes random_bytes(size_t count);
 std::string uuid();
+std::string boot_id();
+int64_t boot_seconds();
 std::filesystem::path state_path(const std::string& explicit_directory={});
 
 // All SQL values are bound. A statement owns its SQLite handle and its column

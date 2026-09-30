@@ -104,10 +104,23 @@ struct Journal::Impl {
         auto current=assignment(g.scope,job,g.block,started);
         if(!current || current->owner!=g.owner || current->generation!=g.generation || current->interval.begin()!=g.interval.begin() || current->interval.end()!=g.interval.end())throw std::invalid_argument("stale or foreign assignment");
         if(current->expires<=now())throw std::invalid_argument("assignment expired; explicit recovery required");
+        if(remote(g.scope)){
+            Statement q(db.handle(),"SELECT generation,boot,deadline,paused FROM worker_grants WHERE project=? AND job=? AND block=?");
+            scope_bind(q,g.scope);q.bind(3,g.block);
+            if(!q.step()||q.integer(0)!=g.generation||q.text(1)!=boot_id()||q.integer(2)<=boot_seconds())
+                throw std::invalid_argument("offline deadline uncertain or expired; synchronize before execution");
+            if(q.integer(3))throw std::invalid_argument("coordinator paused this job");
+        }
         return *current;
     }
     std::vector<ScalarInterval> coverage(const Scope& scope,const UInt256& id)const{
         Statement s(db.handle(),"SELECT begin,end FROM coverage WHERE project=? AND job=? AND block=? ORDER BY begin");scope_bind(s,scope);s.bind(3,id);std::vector<ScalarInterval> out;while(s.step())out.emplace_back(s.wide(0),s.wide(1));return out;
+    }
+    bool remote(const Scope& scope)const{
+        Statement q(db.handle(),"SELECT 1 FROM worker_jobs WHERE project=? AND job=?");scope_bind(q,scope);return q.step();
+    }
+    void local_only(const Scope& scope)const{
+        if(remote(scope))throw std::invalid_argument("remote jobs require coordinator allocation and lease control");
     }
     bool bound(const Scope& scope)const{
         Statement q(db.handle(),"SELECT 1 FROM search_bindings WHERE project=? AND job=?");scope_bind(q,scope);return q.step();
@@ -160,7 +173,7 @@ std::vector<Grant> Journal::claim(const Scope& scope,const std::string& owner,co
     if(choice.policy!=Policy::Sequential && choice.policy!=Policy::Random && choice.policy!=Policy::RandomWindow && choice.policy!=Policy::Manual)throw std::invalid_argument("unknown selection policy");
     if((choice.policy==Policy::Manual)!=(bool(choice.block)) || (choice.block && choice.count!=1))throw std::invalid_argument("manual selection needs exactly one explicit block");
     Bytes payload;number(payload,uint64_t(choice.policy));number(payload,choice.count);append(payload,choice.block.value_or(UInt256()));append(payload,choice.window);number(payload,uint64_t(lifetime));
-    auto& s=*impl_;Transaction tx(s.db);s.db.writable();auto job=s.job(scope);const auto expires=s.expiry(lifetime);
+    auto& s=*impl_;Transaction tx(s.db);s.db.writable();s.local_only(scope);auto job=s.job(scope);const auto expires=s.expiry(lifetime);
     if(auto old=s.retry(scope,owner,"claim",request,payload)){auto grants=s.response(scope,owner,job,*old);tx.commit();return grants;}
     FreeTree tree(s.db,scope,job.grid.count());UInt256 begin,end=job.grid.count();
     if(choice.block){job.grid.block(*choice.block);if(tree.count(*choice.block,choice.block->add(UInt256(1))).is_zero())throw std::invalid_argument("block is already in_progress or finished");}
@@ -188,14 +201,14 @@ void Journal::start(const Grant& grant,const std::string& request){
     s.receipt(grant.scope,grant.owner,"start",request,payload,{});tx.commit();
 }
 Grant Journal::renew(const Grant& grant,const std::string& request,int64_t lifetime){
-    auto& s=*impl_;auto payload=grant_payload(grant);number(payload,uint64_t(lifetime));Transaction tx(s.db);s.db.writable();auto job=s.job(grant.scope);auto expires=s.expiry(lifetime);
+    auto& s=*impl_;auto payload=grant_payload(grant);number(payload,uint64_t(lifetime));Transaction tx(s.db);s.db.writable();s.local_only(grant.scope);auto job=s.job(grant.scope);auto expires=s.expiry(lifetime);
     if(auto old=s.retry(grant.scope,grant.owner,"renew",request,payload)){auto result=s.response(grant.scope,grant.owner,job,*old).at(0);tx.commit();return result;}
     auto current=s.authorized(grant,job);current.expires=std::max(current.expires,expires);
     Statement q(s.db.handle(),"UPDATE assignments SET expires=? WHERE project=? AND job=? AND block=?");q.bind(1,current.expires);q.bind(2,grant.scope.project);q.bind(3,bytes(grant.scope.job));q.bind(4,grant.block);q.step();
     s.receipt(grant.scope,grant.owner,"renew",request,payload,s.response({current}));tx.commit();return current;
 }
 Grant Journal::recover(const Scope& scope,const UInt256& block,const std::string& owner,const std::string& request,bool stopped,int64_t lifetime){
-    auto& s=*impl_;Bytes payload;append(payload,block);number(payload,stopped);number(payload,uint64_t(lifetime));Transaction tx(s.db);s.db.writable();auto job=s.job(scope);const auto expires=s.expiry(lifetime);
+    auto& s=*impl_;Bytes payload;append(payload,block);number(payload,stopped);number(payload,uint64_t(lifetime));Transaction tx(s.db);s.db.writable();s.local_only(scope);auto job=s.job(scope);const auto expires=s.expiry(lifetime);
     if(auto old=s.retry(scope,owner,"recover",request,payload)){auto result=s.response(scope,owner,job,*old).at(0);tx.commit();return result;}
     auto current=s.assignment(scope,job,block);if(!current)throw std::invalid_argument("recovery needs an in_progress block");
     if(current->expires>s.now() && !stopped)throw std::invalid_argument("confirm the previous executor stopped before live transfer");
@@ -206,7 +219,7 @@ Grant Journal::recover(const Scope& scope,const UInt256& block,const std::string
     s.scheduler(scope,job);s.receipt(scope,owner,"recover",request,payload,s.response({*current}));tx.commit();return *current;
 }
 void Journal::return_unstarted(const Grant& grant,const std::string& request){
-    auto& s=*impl_;const auto payload=grant_payload(grant);Transaction tx(s.db);s.db.writable();auto job=s.job(grant.scope);
+    auto& s=*impl_;const auto payload=grant_payload(grant);Transaction tx(s.db);s.db.writable();s.local_only(grant.scope);auto job=s.job(grant.scope);
     if(s.retry(grant.scope,grant.owner,"return",request,payload)){tx.commit();return;}
     bool started=false;s.authorized(grant,job,&started);
     if(started || !s.coverage(grant.scope,grant.block).empty())throw std::invalid_argument("only an unstarted spare may be returned");
@@ -222,6 +235,39 @@ void Journal::record_coverage(const Grant& grant,const std::vector<ScalarInterva
     s.receipt(grant.scope,grant.owner,"coverage",request,payload,{});tx.commit();
 }
 
+Grant Journal::import_remote(const Grant& remote,const Manifest& manifest,const Binding& input,
+    const std::string& encoded,const std::string& device,int64_t deadline,int64_t local_expiry,bool paused){
+    auto& s=*impl_;Transaction tx(s.db);s.db.writable();
+    project_id(remote.scope.project);token(remote.owner);token(device);
+    if(remote.generation==INT64_MAX || fixed(digest(encode(manifest)))!=remote.scope.job ||
+       deadline<0 || local_expiry<=0)throw std::invalid_argument("invalid remote assignment manifest/deadline");
+    const scheduler::BlockGrid grid(manifest.root,manifest.block_width);
+    const auto interval=grid.block(remote.block);
+    if(interval.begin()!=remote.interval.begin()||interval.end()!=remote.interval.end())throw std::invalid_argument("remote assignment bounds changed");
+    Statement exists(s.db.handle(),"SELECT 1 FROM jobs WHERE project=? AND job=?");scope_bind(exists,remote.scope);
+    if(exists.step()&&!s.remote(remote.scope))throw std::invalid_argument("cannot mix standalone allocation with a remote job");
+    Statement project(s.db.handle(),"INSERT INTO projects VALUES(?,'coordinator import') ON CONFLICT(project) DO NOTHING");project.bind(1,remote.scope.project);project.step();
+    create_job(remote.scope.project,manifest);bind_search(remote.scope,input);
+    Statement job(s.db.handle(),"INSERT INTO worker_jobs VALUES(?,?) ON CONFLICT DO NOTHING");scope_bind(job,remote.scope);job.step();
+    Statement previous(s.db.handle(),"SELECT generation FROM worker_grants WHERE project=? AND job=? AND block=?");scope_bind(previous,remote.scope);previous.bind(3,remote.block);
+    if(previous.step()&&previous.integer(0)!=remote.generation)
+        throw std::invalid_argument("recovered generation needs explicit stopped-worker reconciliation");
+    Grant local=remote;local.epoch=s.db.metadata("epoch");local.expires=local_expiry;
+    const auto state=block(remote.scope,remote.block);
+    if(state.state!="finished"){
+        if(!state.assignment)FreeTree(s.db,remote.scope,grid.count()).occupy(remote.block);
+        else if(state.assignment->generation!=remote.generation||state.assignment->owner!=remote.owner)
+            throw std::invalid_argument("remote grant conflicts with local owner");
+        Statement grant(s.db.handle(),"INSERT INTO assignments VALUES(?,?,?,?,?,?,0) ON CONFLICT(project,job,block) DO UPDATE SET expires=excluded.expires");
+        scope_bind(grant,remote.scope);grant.bind(3,remote.block);grant.bind(4,remote.owner);grant.bind(5,remote.generation);grant.bind(6,local_expiry);grant.step();
+    }
+    Statement generation(s.db.handle(),"UPDATE jobs SET next_generation=MAX(next_generation,?) WHERE project=? AND job=?");
+    generation.bind(1,remote.generation+1);generation.bind(2,remote.scope.project);generation.bind(3,bytes(remote.scope.job));generation.step();
+    Statement mapping(s.db.handle(),"INSERT INTO worker_grants VALUES(?,?,?,?,?,?,?,?,?,0) ON CONFLICT(project,job,block) DO UPDATE SET remote=excluded.remote,device=excluded.device,boot=excluded.boot,deadline=excluded.deadline,paused=excluded.paused");
+    scope_bind(mapping,remote.scope);mapping.bind(3,remote.block);mapping.bind(4,remote.generation);mapping.bind(5,encoded);mapping.bind(6,device);
+    mapping.bind(7,boot_id());mapping.bind(8,deadline);mapping.bind(9,int64_t(paused));mapping.step();
+    tx.commit();return local;
+}
 void Journal::bind_search(const Scope& scope,const Binding& binding){
     auto& s=*impl_;Transaction tx(s.db);s.db.writable();const auto job=s.job(scope);
     if(job.manifest.mode!=binding.mode || job.manifest.targets!=binding.target_digest || job.manifest.algorithm!=binding.algorithm_digest)
@@ -283,6 +329,25 @@ void Journal::commit_search(const Grant& grant,int64_t executor,const std::vecto
     s.receipt(grant.scope,grant.owner,"checkpoint",request,payload,{});
     Statement record(s.db.handle(),"INSERT INTO checkpoints VALUES(?,?,?,'checkpoint',?,?)");
     scope_bind(record,grant.scope);record.bind(3,grant.owner);record.bind(4,request);record.bind(5,payload);record.step();
+    if(s.remote(grant.scope)){
+        // Coverage, results, audit receipt and upload pages share this commit.
+        // Coverage goes on the last page so paged upload cannot finish a block
+        // before all results from that checkpoint have reached the coordinator.
+        int64_t added=0;
+        const size_t count=std::max(size_t(1),(matches.size()+511)/512);
+        for(size_t i=0;i<count;++i){
+            const auto begin=std::min(i*512,matches.size()),end=std::min(begin+512,matches.size());
+            CheckpointData page{grant.block,uint64_t(grant.generation),uint64_t(executor),grant.epoch,
+                i+1==count?coverage:std::vector<ScalarInterval>{},
+                std::vector<core::XPointMatch>(matches.begin()+begin,matches.begin()+end)};
+            const auto encoded=encode_checkpoint(page);added+=int64_t(encoded.size());
+            Statement out(s.db.handle(),"INSERT INTO worker_outbox(project,job,block,generation,payload,checksum) VALUES(?,?,?,?,?,?)");
+            scope_bind(out,grant.scope);out.bind(3,grant.block);out.bind(4,grant.generation);out.bind(5,encoded);out.bind(6,digest(encoded));out.step();
+        }
+        Statement capacity(s.db.handle(),"UPDATE worker_settings SET outbox_bytes=outbox_bytes+? WHERE singleton=1 AND outbox_bytes+?<=outbox_limit");
+        capacity.bind(1,added);capacity.bind(2,added);capacity.step();
+        if(sqlite3_changes(s.db.handle())!=1)throw std::runtime_error("worker outbox full; checkpoint rolled back; synchronize before continuing");
+    }
     tx.commit();
 }
 std::vector<StoredMatch> Journal::results(const Scope& scope,int64_t after,uint32_t limit)const{
@@ -404,6 +469,18 @@ void Journal::check()const{
                 const auto mid=lo.add(hi.subtract(lo).divmod(UInt256(2)).first);if(key<mid)hi=mid;else lo=mid;
             }
             if(key!=lo || nodes.wide(2)!=hi.subtract(lo).subtract(before(hi).subtract(before(lo))))throw std::runtime_error("free-tree subtree disagrees with ownership");
+        }
+    }
+    Statement worker(s.db.handle(),"SELECT outbox_bytes FROM worker_settings WHERE singleton=1");
+    if(worker.step()){
+        Statement total(s.db.handle(),"SELECT COALESCE(sum(length(payload)),0) FROM worker_outbox");total.step();
+        if(worker.integer(0)!=total.integer(0))throw std::runtime_error("worker outbox byte accounting mismatch");
+        Statement pages(s.db.handle(),"SELECT block,generation,payload,checksum FROM worker_outbox");
+        while(pages.step()){
+            const auto payload=pages.blob(2);
+            if(digest(payload)!=pages.blob(3))throw std::runtime_error("worker outbox checksum mismatch");
+            const auto page=decode_checkpoint(payload);
+            if(page.block!=pages.wide(0)||page.generation!=uint64_t(pages.integer(1)))throw std::runtime_error("worker outbox identity mismatch");
         }
     }
     tx.commit();

@@ -136,3 +136,40 @@ Four additional child-process exit points cover results, coverage, pre-COMMIT
 and post-COMMIT; reopening and retrying preserves one replacement assignment.
 The existing database, migration, checkpoint CLI, registry and live TLS gates
 also passed after the schema upgrade.
+
+## S04b: durable worker state and offline leases
+
+Schema 5 adds worker settings, imported grants, a checksummed upload outbox and
+one immutable pending machine request. Local checkpoint results, coverage,
+receipts and upload pages commit together. Pages contain at most 512 matches;
+coverage is placed on the last page of each checkpoint. A sync uploads at most
+64 pages/4,096 matches, and deletes only the acknowledged snapshot's pages.
+Checkpoints committed during HTTPS remain pending for the next sync.
+
+The default outbox budget is 64 MiB (configurable from 1 MiB to 1 GiB). Exhaustion
+rolls back the whole checkpoint and stops further execution; it never discards
+unacknowledged results or credits lost coverage. Receipt history remains retained
+for recovery/audit and consumes additional disk space; the outbox limit is not a
+whole-database quota. Disk monitoring and backup retention remain necessary.
+
+Grant import commits before dispatch. Local claim, renew, recover and return
+commands cannot mint or extend remote work. Checkpoint authorization checks both
+the local assignment fence and a saved Linux boot UUID/CLOCK_BOOTTIME deadline.
+A reboot forces revalidation. Fresh authenticated server time and the request's
+send time determine the deadline, with a 60-second drain margin; cached receipts
+cannot extend it. A wall-clock rollback does not extend monotonic validity.
+
+The persisted machine schedule is 7,200 seconds. Lost replies retain the exact
+pending payload. Restart, block completion, matches, an empty queue and remaining
+upload backlog do not trigger early contacts. An explicit manual sync can send
+or retry a page. Status distinguishes local completion awaiting sync from server
+acknowledgment, and reports outbox usage, last acknowledgment, expiry, pause and
+revalidation requirements. Simultaneous execution on multiple GPUs remains C20;
+these tests exercise distinct device queues with the existing bounded CPU runner.
+
+S04b passed **11/11** focused gates, including two mock GPUs, lost replies,
+checkpoints arriving during HTTPS, boot/deadline fencing, outbox exhaustion and
+restart scheduling. Four worker process-exit points cover saved snapshot,
+received response, pre-acknowledgment COMMIT and post-COMMIT. A hundred-checkpoint
+fixture verifies bounded multi-page upload and that results arrive before full
+coverage can finish a block. Existing C13/C14 storage/control gates still pass.

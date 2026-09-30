@@ -84,6 +84,8 @@ private:
     friend class coordination::Worker;
     detail::Database& database() const;
     int64_t timestamp() const;
+    Grant import_remote(const Grant&,const Manifest&,const detail::Binding&,const std::string& remote,
+        const std::string& device,int64_t deadline,int64_t local_expiry,bool paused);
     void bind_search(const Scope&,const detail::Binding&);
     int64_t begin_search(const Grant&);
     void validate_search(const Grant&,int64_t executor) const;
