@@ -69,7 +69,7 @@ __global__ void xpoint_stepped(Point base, uint64_t count, const Point* powers,
     const unsigned steps = unsigned(count-first < xpoint_group ? count-first : xpoint_group);
     Point current = base;
     for (unsigned bit=0;bit<20;++bit)
-        if ((first >> bit)&1) point_add(current,current,powers[bit]);
+        if ((first >> bit)&1) point_add_cached(current,current,powers[bit]);
     Field xs[xpoint_group], zs[xpoint_group];
     for (unsigned i=0;i<steps;++i) {
         if (is_infinity(current)) { atomicExch(&counters->invalid,1U); return; }
@@ -85,7 +85,7 @@ __global__ void xpoint_stepped(Point base, uint64_t count, const Point* powers,
         } else {
             xs[i] = current.x; zs[i] = current.z;
         }
-        if (i+1 < steps) point_add(current,current,powers[0]);
+        if (i+1 < steps) point_add_cached(current,current,powers[0]);
     }
     if constexpr (!SmallTargets) {
         // One Fermat inversion for the whole lane group. Only X and Z are kept;

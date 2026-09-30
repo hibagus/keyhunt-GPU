@@ -160,3 +160,20 @@ expected for this change. The independent field and point suites pass, including
 carry boundaries, normalization, aliasing, zero, and exceptional curve points.
 SASS contains native `IADD3.X` carry operations. Full raw samples, resource counts
 and oracle reports are in [C18_PTX_CARRY.json](baselines/C18_PTX_CARRY.json).
+
+## Mixed-coordinate stepping
+
+CUDA search steps now use a complete mixed Jacobian/affine formula. The executor
+has already verified and uploaded finite affine points with `Z=1` for the cached
+powers and negative tile start, so the kernel can omit the second Z square and
+four multiplications involving that Z. General points still use the complete
+Jacobian path; doubling, inverse points, infinity and aliases remain explicit.
+CPU/HIP retain the previous dispatch. Define `KEYHUNT_CUDA_PORTABLE_MIXED` in
+CUDA compiler flags to reproduce the previous search path.
+
+Against PTX carry chains alone, stepped xpoint improved 1.41–1.55x and the BSGS
+cases 1.19–1.43x. Direct xpoint is unaffected. Independent point/field oracles pass;
+matched boundary keys and exact coverage are checked in every benchmark sample.
+The optional worker's production self-test source also compiled and passed its
+xpoint and BSGS variants with the CUDA library; this did not start an HTTPS server.
+[C18_MIXED.json](baselines/C18_MIXED.json) records timings, oracles and resources.

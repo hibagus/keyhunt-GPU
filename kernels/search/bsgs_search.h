@@ -22,13 +22,13 @@ static __global__ __launch_bounds__(128) void bsgs_search(Point negative_start,u
     const uint32_t target=first_target+blockIdx.y;
     const unsigned count=unsigned(giants-first<Group?giants-first:Group);
     Point current;
-    point_add(current,targets[target],negative_start);
+    point_add_cached(current,targets[target],negative_start);
     for (unsigned bit=0;bit<20;++bit)
-        if ((first>>bit)&1) point_add(current,current,powers[bit]);
+        if ((first>>bit)&1) point_add_cached(current,current,powers[bit]);
     Field xs[Group],ys[Group],zs[Group];
     for (unsigned i=0;i<count;++i) {
         xs[i]=current.x; ys[i]=current.y; zs[i]=current.z;
-        if (i+1<count) point_add(current,current,powers[0]);
+        if (i+1<count) point_add_cached(current,current,powers[0]);
     }
     if constexpr (Group==1) inverse(zs[0],zs[0]);
     else batch_inverse<Group>(zs,zs,count);
