@@ -287,6 +287,9 @@ The observer does not retain contexts or select devices. Only the chosen ordinal
 may be active, catching both full-inventory initialization and accidental
 restoration of the untouched default device. Fewer than two visible devices
 explicitly skips this isolation gate; it cannot prove isolation on one GPU.
+An empty visibility mask may return `CUDA_ERROR_NO_DEVICE` from `cuInit` before
+count enumeration; the gate treats that as the same explicit skip, preserving
+other driver initialization failures as errors.
 
 On the eight-H200 host with CUDA 13.3 / driver 610.57.04, the fresh process
 reported eight visible devices and exactly `[7]` active after all four worker

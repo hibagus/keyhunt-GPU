@@ -31,7 +31,14 @@ std::vector<int> active_devices(int count) {
 
 int main() {
     try {
-        check(cuInit(0), "cuInit");
+        const auto initialized = cuInit(0);
+        // An empty visibility mask can fail driver initialization before a
+        // device count is available. It has the same skip contract as one GPU.
+        if (initialized == CUDA_ERROR_NO_DEVICE) {
+            std::cout << "Context isolation requires at least two visible CUDA devices\n";
+            return 77;
+        }
+        check(initialized, "cuInit");
         int count = 0;
         check(cuDeviceGetCount(&count), "cuDeviceGetCount");
         if (count < 2) {
