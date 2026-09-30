@@ -133,6 +133,151 @@ rejection, exclusive file publication, duplicate imports, credential revocation
 and reviewed reactivation for both xpoint and BSGS jobs. The supervisor fixture
 also verifies two concurrent file-only owners without a network child.
 
-File-only status reports `sync_due_in:null`, making the lack of automatic contacts
-explicit. The supervisor handles that value without creating a network child.
-Native offline, fault, live CLI and two-owner supervisor gates pass this contract.
+## Run a disconnected worker
+
+Build with `KEYHUNT_ENABLE_COORDINATOR=ON` on the GPU host and use the native
+HIP or CUDA binaries. A CPU coordinator build with the HTTPS worker enabled is
+sufficient on the connected courier. Both still need their normal linked runtime
+dependencies; file mode disables contacts, not the libcurl build dependency.
+Prepare an authorized job and worker certificate using
+[the coordinator setup](COORDINATOR.md#s06-isolated-localhost-operation). That demo
+prints the project/job identifiers and generates a usable courier configuration
+in `alice-worker.json`; keep its CA confined to the localhost environment.
+
+On the disconnected GPU machine, create a new private directory outside Git and
+save this configuration with the actual authority, project and job values:
+
+```json
+{
+  "transport": "file",
+  "endpoint": "https://COORDINATOR_HOST:443",
+  "jobs": [{
+    "project": "PROJECT_UUID",
+    "job": "JOB_SHA256",
+    "devices": ["0", "1"],
+    "spares": 1,
+    "policy": "sequential"
+  }]
+}
+```
+
+Use only the device queues you intend to run. `random` and `random-window` select
+unexplored blocks; their ranges and widths remain immutable. Use a fresh journal
+for this file-only worker, rather than copying another machine's active journal.
+The worker instance is generated and persisted locally during configuration.
+
+With installed binaries on PATH, set `offline_state` to that new private journal
+directory, `offline_config` to the configuration file, and `exchange_dir` to an
+existing private exchange directory. Then run on the GPU machine:
+
+```sh
+keyhunt-worker configure --state-dir "$offline_state" --config "$offline_config"
+keyhunt-worker file-export --state-dir "$offline_state" \
+  --output "$exchange_dir/request-001.json"
+```
+
+Transfer the request file to the connected courier and obtain its printed digest
+through the trusted transfer channel. The courier configuration holds the normal
+`endpoint`, `ca`, `certificate` and `key` paths for the enrolled worker credential.
+Set `courier_config` and `exchange_dir` for that machine, then substitute the
+trusted request digest below:
+
+```sh
+keyhunt-worker file-relay --config "$courier_config" \
+  --input "$exchange_dir/request-001.json" --sha256 REQUEST_SHA256 \
+  --output "$exchange_dir/response-001.json"
+```
+
+The relay's printed `status` is 200 for an assignment/acknowledgment response.
+The coordinator has already committed its reservations before this file is
+published. A lost file or stdout message does not undo that transaction. Relay
+the same saved request to a **new output filename** if delivery was uncertain.
+Reusing its machine request does not reserve another set of blocks.
+
+Transfer the response and its trusted printed digest back to the GPU machine:
+
+```sh
+keyhunt-worker file-import --state-dir "$offline_state" \
+  --input "$exchange_dir/response-001.json" --sha256 RESPONSE_SHA256
+keyhunt-worker status --state-dir "$offline_state"
+```
+
+Inspect `status` and any `pause_reason` before executing. With acknowledged,
+unexpired grants, set `backend=hip` or `backend=cuda` and run:
+
+```sh
+keyhunt-supervise --state-dir "$offline_state" --backend "$backend" \
+  --worker "$(command -v keyhunt-worker)" --keyhunt "$(command -v keyhunt)" \
+  --devices 0,1 --once
+```
+
+From a checkout use `python3 tools/coordinator_worker.py` and explicit build
+binary paths instead of installed names. For BSGS also pass `--table FILE` with
+the canonical versioned table used to create the job. File responses contain its
+configuration/checksum and canonical targets, not the potentially large table.
+After visibility changes use `--device-map QUEUE=ORDINAL`; normal UUID rebind,
+local pause controls and stopped-owner requirements remain in force.
+
+Export again to a new filename after checkpoints or local completion:
+
+```sh
+keyhunt-worker file-export --state-dir "$offline_state" \
+  --output "$exchange_dir/request-002.json"
+```
+
+Repeat relay and import. The same exchange carries checkpoint pages, results,
+lease renewals and replacement reservations. Only imported acknowledgments clear
+the exported outbox page; local completion alone leaves the server block in
+progress. One request carries at most 64 checkpoints/4,096 match observations;
+repeat exchanges until `outbox_bytes` is zero. New local checkpoints can arrive
+during file transit and remain pending for the following exchange.
+
+## Recovery and operational limits
+
+- Re-exporting a pending attempt on the same boot reproduces its exact contents.
+  If a response is delayed, its lease still runs from the original export origin;
+  importing it later never grants a fresh thirty days.
+- `file-export --refresh yes` starts a new delivery attempt and invalidates older
+  response files. The pending machine payload and exported outbox page are retained.
+  A changed Linux boot automatically starts a fresh attempt. Send that new request
+  to the coordinator before resuming uncertain grants.
+- An exact already-imported response is a no-op, even after later exchanges or a
+  reboot. A conflicting response for that transfer is rejected. Retired files and
+  transfer history are retained for audit; no automatic history archival is added.
+- Current revocation or stale-generation refusals pause work when their denial
+  file is imported. They cannot stop a disconnected GPU before delivery. Stop the
+  old owner and withdraw its old journals/outstanding files before handing work to
+  a replacement; do not resume them after transfer. Cached relay responses are
+  rechecked against current assignment generations and expiry at the coordinator.
+- Expired work needs explicit [coordinator recovery](COORDINATOR.md#s05-recovery-and-coordinator-only-installation).
+  Files cannot extend leases locally or activate a quarantined backup. A stale
+  immutable request may remain refused; recover into a fresh worker instance after
+  stopping the old one, rather than editing grants or SQLite rows.
+- Pending results consume the existing bounded outbox. If it fills, execution
+  stops without discarding data. Exchange and import pages to free space. Keep
+  exchange artifacts private: result files can contain found private scalars.
+
+This implementation uses trusted manual transfer plus digest pinning, not a new
+signing-key infrastructure or encrypted file format. Live integration validates
+localhost mTLS; physically moving files between separate hosts and public ingress
+remain deployment follow-up checks. Normal HTTPS workers retain their two-hour
+schedule. File-only workers report `sync_due_in:null`, contact no server automatically,
+and require the operator to arrange exchange before their saved deadlines expire.
+
+## Reproduce the integration gate
+
+Use the build's explicit Apache root and choose `--backend cuda` for NVIDIA:
+
+```sh
+python3 tests/coordinator/offline_cli.py \
+  --coordinator build/hip-release/keyhunt-coordinator \
+  --worker build/hip-release/keyhunt-worker --keyhunt build/hip-release/keyhunt \
+  --apache-root / --hardware --backend hip --device 0 \
+  --report /var/tmp/keyhunt-offline-hip.json
+```
+
+Omit `--hardware` for the CPU transport gate. The hardware gate reserves two blocks
+per mode, stops both services during execution, checks exact local coverage and
+scalar-1 matches, then restarts the services and verifies final acknowledgment.
+It also checks retained executors across grants and absence of a network child.
+Run these correctness checks independently of performance measurements.
