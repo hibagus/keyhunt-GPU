@@ -187,3 +187,55 @@ matched boundary keys and exact coverage are checked in every benchmark sample.
 The optional worker's production self-test source also compiled and passed its
 xpoint and BSGS variants with the CUDA library; this did not start an HTTPS server.
 [C18_MIXED.json](baselines/C18_MIXED.json) records timings, oracles and resources.
+
+## Larger batches and durability
+
+The final comparison uses the saved initial native port (`e980c3d`) and optimized
+execution sources (`cc32365`), with identical workloads on physical H200 7. Each
+variant has one warm-up and five checked samples. Xpoint uses 1,048,576 scalars;
+BSGS uses `m=65537`, 32,768 giants per target, and automatic grouping in this table.
+The host was unreserved, with a functional corpus running primarily on GPU 0.
+
+| Search / targets | Initial CUDA median kernel ms | Optimized median kernel ms | Speedup |
+| --- | ---: | ---: | ---: |
+| Stepped xpoint / 1 | 1.994 | 0.969 | 2.06x |
+| Stepped xpoint / 3 boundary matches | 1.991 | 0.922 | 2.16x |
+| Stepped xpoint / 32 | 3.659 | 2.190 | 1.67x |
+| BSGS auto / 1 | 0.540 | 0.314 | 1.72x |
+| BSGS auto / 3 boundary matches | 0.586 | 0.333 | 1.76x |
+| BSGS auto / 32 | 3.766 | 2.154 | 1.75x |
+
+[C18_H200_LARGE_BATCH.json](baselines/C18_H200_LARGE_BATCH.json) contains raw samples,
+binary hashes, direct-reference timings and explicit BSGS group 1/8 comparisons.
+Automatic grouping is a heuristic: explicit group 8 is about 5% faster in the
+one-target case above, while group 1 wins for smaller one-target batches. Profile
+the intended geometry before overriding `--group-size`. The xpoint microbenchmark
+uses synthetic no-match X values; the following CLI benchmark uses real points.
+
+The pulled C16 harness passed all 108 processes (90 measured and 18 warm-ups):
+both modes, one-target no-match, three boundary matches, and 32-target no-match,
+each with volatile, timed, and every-batch checkpoints. Every run verifies exact
+matches/coverage; durable variants also audit the resulting journal. The run uses
+128 batches, up to 1,048,576 xpoint scalars or 32,768 BSGS giants per target per batch.
+[C18_DURABILITY.json](baselines/C18_DURABILITY.json) preserves the full report,
+compiler flags, device identity, process logs' hashes and concurrency notes.
+
+Preparation dominates these short processes. For example, the one-target xpoint
+case spends about 126 ms in kernels and 2.66 s in preparation, with median process
+time 3.23 s. Committing each of 128 batches costs about 55 ms in checkpoint calls.
+Process variation can exceed that difference; the samples do not establish that
+one durability policy has lower steady-state overhead. Timed runs finish before
+the 10-second interval, so they primarily measure the final commit. Kernel rates
+exclude startup and storage; BSGS giant operations and equivalent scalar coverage
+are separate counters. No multi-GPU throughput or long-duration stability claim
+is inferred from these bounded runs.
+
+```sh
+CUDA_VISIBLE_DEVICES=7 TMPDIR=/var/tmp python3 tools/benchmark_gpu.py \
+  --build-dir build/cuda-h200 --output-dir /var/tmp/keyhunt-cuda-benchmark \
+  --backend cuda --repeats 5 --batches 128 \
+  --batch-size 1048576 --giant-batch 32768 --target-batch 32 --m 65537
+```
+
+Choose a new output directory outside all checkouts. Runtime journals and target
+files remain there; only measurement reports are committed under `docs/`.
