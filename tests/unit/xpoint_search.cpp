@@ -1,6 +1,8 @@
 #include "keyhunt/core/xpoint_search.h"
 #include <algorithm>
 #include <iostream>
+#include <fstream>
+#include <unistd.h>
 #include <stdexcept>
 using namespace keyhunt;
 using core::UInt256;
@@ -8,6 +10,22 @@ void require(bool value,const char* text) { if (!value) throw std::runtime_error
 template<class F> void rejects(F fn) { try { fn(); } catch (const std::exception&) { return; } throw std::runtime_error("expected rejection"); }
 int main() {
     try {
+        // A private temporary file exercises the bounded binary-safe parser under
+        // ASan/UBSan too; malformed data must never be accepted as a truncated X.
+        struct Temporary {
+            char path[32] = "/tmp/keyhunt-xpoint-XXXXXX";
+            Temporary() { const int fd=mkstemp(path); if (fd<0) throw std::runtime_error("mkstemp failed"); close(fd); }
+            ~Temporary() { unlink(path); }
+            void write(const std::string& data) { std::ofstream out(path,std::ios::binary); out.write(data.data(),data.size()); }
+        } file;
+        for (const std::string ending : {"", "\n", "\r\n"}) {
+            file.write(std::string(64,'0')+ending);
+            require(core::XPointTargets::load(file.path).values().size()==1,"valid target file rejected");
+        }
+        for (const auto& data : {std::string(),std::string(63,'0'),std::string(65,'0'),std::string(64,'g'),
+            std::string(64,'0')+std::string(1,'\0')+"\n",std::string(100000,'0')}) {
+            file.write(data); rejects([&] { core::XPointTargets::load(file.path); });
+        }
         core::XPointVerifier verifier;
         const auto pub = verifier.derive(UInt256(1));
         core::XPointBytes x{}; std::copy_n(pub.begin()+1,32,x.begin());

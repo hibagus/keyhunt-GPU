@@ -36,13 +36,13 @@ void flush_record() {
 #endif
 }
 int xpoint_command(int argc, char** argv) {
-    const char* usage = "usage: keyhunt xpoint --backend hip --range START:END --targets FILE [--device N] [--batch-size 1..1048576] [--candidate-capacity 1..1048576] (END is exclusive; NDJSON output)";
+    const char* usage = "usage: keyhunt xpoint --backend hip --range START:END --targets FILE [--device N] [--batch-size 1..1048576] [--candidate-capacity 1..1048576] [--kernel stepped|direct] (END is exclusive; NDJSON output)";
     std::map<std::string,std::string> args;
     for (int i=2;i<argc;i+=2) {
         if (i+1 == argc) throw std::invalid_argument(usage);
         const std::string key = argv[i];
         if (key != "--backend" && key != "--range" && key != "--targets" && key != "--device" &&
-            key != "--batch-size" && key != "--candidate-capacity") throw std::invalid_argument(usage);
+            key != "--batch-size" && key != "--candidate-capacity" && key != "--kernel") throw std::invalid_argument(usage);
         if (!args.emplace(key,argv[i+1]).second) throw std::invalid_argument("duplicate xpoint option: "+key);
     }
     if (args["--backend"] != "hip" || args["--range"].empty() || args["--targets"].empty())
@@ -53,10 +53,12 @@ int xpoint_command(int argc, char** argv) {
     using core::UInt256;
     const core::ScalarInterval interval(UInt256::from_hex(range.substr(0,colon)),UInt256::from_hex(range.substr(colon+1)));
     const uint64_t device = args.count("--device") ? decimal(args["--device"]) : 0;
-    const uint64_t batch_size = args.count("--batch-size") ? decimal(args["--batch-size"]) : 65536;
+    const uint64_t batch_size = args.count("--batch-size") ? decimal(args["--batch-size"]) : 1048576;
     const uint64_t capacity = args.count("--candidate-capacity") ? decimal(args["--candidate-capacity"]) : 1024;
     if (device > std::numeric_limits<int>::max() || !batch_size || batch_size > 1048576 || !capacity || capacity > 1048576)
         throw std::invalid_argument(usage);
+    const std::string kernel = args.count("--kernel") ? args["--kernel"] : "stepped";
+    if (kernel != "direct" && kernel != "stepped") throw std::invalid_argument(usage);
 #ifndef KEYHUNT_HAS_HIP
     discover_hip(); // explicit error; a GPU request never falls back to CPU
     return 2;
@@ -68,6 +70,7 @@ int xpoint_command(int argc, char** argv) {
     core::XPointVerifier verifier;
     XPointOptions options;
     options.max_steps = batch_size; options.candidate_capacity = uint32_t(capacity);
+    options.kernel = kernel == "direct" ? XPointKernel::Direct : XPointKernel::Stepped;
     HipXPointExecutor executor(int(device),targets,verifier,options);
     const double preparation_ms = std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-wall_start).count();
     // This standalone owner uses one lazy block, preserving C05 exact arithmetic.
@@ -81,12 +84,12 @@ int xpoint_command(int argc, char** argv) {
               << ",\"uuid\":\"" << inventory.devices[device].uuid << "\",\"target_count\":" << targets.values().size()
               << ",\"target_digest\":\"" << hex_bytes(targets.digest().data(),targets.digest().size())
               << "\",\"begin\":\"" << interval.begin().hex() << "\",\"end_exclusive\":\"" << interval.end().hex()
-              << "\",\"durable_coverage\":false,\"preparation_ms\":" << preparation_ms << '}';
+              << "\",\"kernel\":\"" << kernel << "\",\"durable_coverage\":false,\"preparation_ms\":" << preparation_ms << '}';
     flush_record();
     auto cursor = interval.begin();
     UInt256 verified, attempts, match_count;
     uint64_t launches = 0, overflows = 0, attempt_limit = batch_size;
-    double kernel_ms = 0, download_ms = 0, verification_ms = 0;
+    double kernel_ms = 0, download_ms = 0, verification_ms = 0, seed_ms = 0;
     while (auto work = scheduler::WorkUnit::plan(grid,UInt256(0),cursor,batch_size,identity)) {
         while (auto batch = scheduler::KernelBatch::plan(*work,cursor,attempt_limit)) {
             const auto ticket = executor.submit(*batch);
@@ -94,14 +97,14 @@ int xpoint_command(int argc, char** argv) {
             const auto result = executor.take(ticket);
             ++launches;
             attempts = attempts.add(UInt256(result.device_steps));
-            kernel_ms += result.kernel_ms; download_ms += result.download_ms; verification_ms += result.verification_ms;
+            seed_ms += result.seed_ms; kernel_ms += result.kernel_ms; download_ms += result.download_ms; verification_ms += result.verification_ms;
             std::cout << "{\"type\":\"batch\",\"begin\":\"" << batch->interval().begin().hex()
                       << "\",\"end_exclusive\":\"" << batch->interval().end().hex()
                       << "\",\"overflow\":" << (result.overflow ? "true" : "false")
                       << ",\"verified_steps\":" << result.verified_steps << ",\"device_steps\":" << result.device_steps
                       << ",\"candidate_count\":" << result.candidate_count << ",\"kernel_ms\":" << result.kernel_ms
                       << ",\"download_ms\":" << result.download_ms << ",\"verification_ms\":" << result.verification_ms
-                      << ",\"wall_ms\":" << result.wall_ms << ",\"device_allocation_bytes\":" << result.device_allocation_bytes
+                      << ",\"seed_ms\":" << result.seed_ms << ",\"wall_ms\":" << result.wall_ms << ",\"device_allocation_bytes\":" << result.device_allocation_bytes
                       << ",\"pinned_allocation_bytes\":" << result.pinned_allocation_bytes
                       << ",\"download_bytes\":" << result.download_bytes << ",\"matches\":[";
             for (size_t i=0;i<result.matches.size();++i) {
@@ -130,7 +133,7 @@ int xpoint_command(int argc, char** argv) {
               << "\",\"device_steps\":\"" << attempts.hex() << "\",\"matches\":\"" << match_count.hex()
               << "\",\"launch_count\":" << launches << ",\"overflow_replays\":" << overflows
               << ",\"kernel_ms\":" << kernel_ms << ",\"download_ms\":" << download_ms
-              << ",\"verification_ms\":" << verification_ms << ",\"wall_ms\":" << wall_ms << '}';
+              << ",\"verification_ms\":" << verification_ms << ",\"seed_ms\":" << seed_ms << ",\"wall_ms\":" << wall_ms << '}';
     flush_record();
     return 0;
 #endif

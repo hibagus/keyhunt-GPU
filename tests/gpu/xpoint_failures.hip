@@ -25,7 +25,7 @@ int main() {
         unsigned tested=0;
         for (const char* operation : {"hipStreamCreateWithFlags","hipEventCreate(start)","hipEventCreate(kernel_done)",
             "hipEventCreate(done)","hipMalloc(targets)","hipMalloc(output)","hipMalloc(count)",
-            "hipHostMalloc(output)","hipHostMalloc(count)","hipMemcpy(targets)"}) {
+            "hipHostMalloc(output)","hipHostMalloc(count)","hipMemcpy(targets)","hipMalloc(powers)","hipMemcpy(powers)"}) {
             backend::injected_failure=operation;
             expect_error([&] { backend::HipXPointExecutor e(0,targets,verifier); },operation);
             ++tested;

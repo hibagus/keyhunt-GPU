@@ -22,6 +22,9 @@ struct HipXPointExecutor::Impl {
     hipStream_t stream = nullptr;
     hipEvent_t start = nullptr, kernel_done = nullptr, done = nullptr;
     gpu::Field* device_targets = nullptr;
+    gpu::Point* device_powers = nullptr;
+    size_t powers_bytes = 0;
+    double seed_ms = 0;
     core::XPointCandidate *device_output = nullptr, *host_output = nullptr;
     gpu::XPointCounters *device_count = nullptr, *host_count = nullptr;
     size_t output_bytes = 0, target_bytes = 0;
@@ -33,6 +36,9 @@ struct HipXPointExecutor::Impl {
             throw std::invalid_argument("xpoint max_steps must be in [1, 1048576]");
         if (!options.candidate_capacity || options.candidate_capacity > 1048576)
             throw std::invalid_argument("xpoint candidate capacity must be in [1, 1048576]");
+        if (options.kernel != XPointKernel::Direct && options.kernel != XPointKernel::Stepped)
+            throw std::invalid_argument("unsupported HIP xpoint kernel");
+        powers_bytes = options.kernel == XPointKernel::Stepped ? 20*sizeof(gpu::Point) : 0;
         output_bytes = (uint64_t(options.candidate_capacity)+1)*sizeof(*device_output);
         target_bytes = targets.values().size()*sizeof(gpu::Field);
         DeviceScope selected(device);
@@ -41,7 +47,7 @@ struct HipXPointExecutor::Impl {
         // Query the selected logical device, never multiply by a package/partition
         // count. Concurrent owners can still consume memory; each allocation checks.
         if (options.memory_reserve_bytes > free ||
-            output_bytes+target_bytes+sizeof(*device_count) > free-options.memory_reserve_bytes)
+            output_bytes+target_bytes+powers_bytes+sizeof(*device_count) > free-options.memory_reserve_bytes)
             throw std::runtime_error("insufficient HIP memory after reserved headroom");
         try {
             hip_check(hipStreamCreateWithFlags(&stream,hipStreamNonBlocking),"hipStreamCreateWithFlags");
@@ -63,7 +69,21 @@ struct HipXPointExecutor::Impl {
             // Preparation is synchronous once per immutable target set. Submitted
             // batches use only this executor's nonblocking stream and pinned buffers.
             hip_check(hipMemcpy(device_targets,upload.data(),target_bytes,hipMemcpyHostToDevice),"hipMemcpy(targets)");
+            if (powers_bytes) {
+                gpu::Point powers[20];
+                for (unsigned bit=0;bit<20;++bit) powers[bit] = seed(core::UInt256::power_of_two(bit));
+                hip_check(hipMalloc(&device_powers,powers_bytes),"hipMalloc(powers)");
+                hip_check(hipMemcpy(device_powers,powers,powers_bytes,hipMemcpyHostToDevice),"hipMemcpy(powers)");
+            }
         } catch (...) { release(); throw; }
+    }
+    gpu::Point seed(const core::UInt256& scalar) const {
+        const auto pub = verifier.derive(scalar);
+        gpu::Point result;
+        if (!gpu::from_bytes_checked(result.x,pub.data()+1) || !gpu::from_bytes_checked(result.y,pub.data()+33))
+            throw std::runtime_error("noncanonical CPU seed point");
+        result.z = gpu::one();
+        return result;
     }
     ~Impl() {
         int previous = 0;
@@ -78,6 +98,7 @@ struct HipXPointExecutor::Impl {
         if (device_count) (void)hipFree(device_count);
         if (device_output) (void)hipFree(device_output);
         if (device_targets) (void)hipFree(device_targets);
+        if (device_powers) (void)hipFree(device_powers);
         if (done) (void)hipEventDestroy(done);
         if (kernel_done) (void)hipEventDestroy(kernel_done);
         if (start) (void)hipEventDestroy(start);
@@ -111,13 +132,30 @@ Ticket HipXPointExecutor::submit(const scheduler::KernelBatch& batch) {
         DeviceScope selected(s.device);
         const auto bytes = batch.interval().begin().bytes();
         const auto begin = gpu::scalar_from_bytes(bytes.data());
+        const auto seed_start = Clock::now();
+        const auto base = s.options.kernel == XPointKernel::Stepped ? s.seed(batch.interval().begin()) : gpu::Point{};
+        s.seed_ms = milliseconds(Clock::now()-seed_start);
         hip_check(hipMemsetAsync(s.device_output,0xa5,s.output_bytes,s.stream),"hipMemsetAsync(output)");
         hip_check(hipMemsetAsync(s.device_count,0,sizeof(*s.device_count),s.stream),"hipMemsetAsync(count)");
         hip_check(hipEventRecord(s.start,s.stream),"hipEventRecord(start)");
         (void)hipGetLastError();
-        hipLaunchKernelGGL(gpu::xpoint_direct,dim3((batch.step_count()+127)/128),dim3(128),0,s.stream,
-            begin,batch.step_count(),s.device_targets,uint32_t(s.targets.values().size()),
-            s.device_output,s.options.candidate_capacity,s.device_count);
+        if (s.options.kernel == XPointKernel::Direct) {
+            hipLaunchKernelGGL(gpu::xpoint_direct,dim3((batch.step_count()+127)/128),dim3(128),0,s.stream,
+                begin,batch.step_count(),s.device_targets,uint32_t(s.targets.values().size()),
+                s.device_output,s.options.candidate_capacity,s.device_count);
+        } else {
+            const auto lanes = (batch.step_count()+gpu::xpoint_group-1)/gpu::xpoint_group;
+            const dim3 blocks((lanes+127)/128);
+            if (s.targets.values().size() <= 4) {
+                hipLaunchKernelGGL(gpu::xpoint_stepped<true>,blocks,dim3(128),0,s.stream,
+                    base,batch.step_count(),s.device_powers,s.device_targets,uint32_t(s.targets.values().size()),
+                    s.device_output,s.options.candidate_capacity,s.device_count);
+            } else {
+                hipLaunchKernelGGL(gpu::xpoint_stepped<false>,blocks,dim3(128),0,s.stream,
+                    base,batch.step_count(),s.device_powers,s.device_targets,uint32_t(s.targets.values().size()),
+                    s.device_output,s.options.candidate_capacity,s.device_count);
+            }
+        }
         hip_check(hipGetLastError(),"xpoint launch");
         hip_check(hipEventRecord(s.kernel_done,s.stream),"hipEventRecord(kernel_done)");
         hip_check(hipMemcpyAsync(s.host_output,s.device_output,s.output_bytes,hipMemcpyDeviceToHost,s.stream),"hipMemcpyAsync(output)");
@@ -161,7 +199,7 @@ XPointResult HipXPointExecutor::take(Ticket ticket) {
         result.device_steps = counters.steps;
         result.candidate_count = counters.candidates;
         result.overflow = counters.overflow != 0;
-        result.device_allocation_bytes = s.output_bytes+s.target_bytes+sizeof(counters);
+        result.device_allocation_bytes = s.output_bytes+s.target_bytes+s.powers_bytes+sizeof(counters);
         result.pinned_allocation_bytes = s.output_bytes+sizeof(counters);
         result.download_bytes = result.pinned_allocation_bytes;
         hip_check(hipEventElapsedTime(&result.kernel_ms,s.start,s.kernel_done),"hipEventElapsedTime(kernel)");
@@ -180,6 +218,7 @@ XPointResult HipXPointExecutor::take(Ticket ticket) {
         }
         // Discard the entire overflowing attempt, including its retained prefix.
         // The caller must replay smaller batches before advancing its cursor.
+        result.seed_ms = s.seed_ms;
         result.verification_ms = milliseconds(Clock::now()-verify_start);
         result.wall_ms = milliseconds(Clock::now()-s.submitted);
         s.batch.reset();

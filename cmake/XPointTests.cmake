@@ -31,3 +31,15 @@ set_tests_properties(xpoint_cli PROPERTIES TIMEOUT 300 LABELS "cpu;backend;xpoin
 if(KEYHUNT_ENABLE_HIP)
     set_tests_properties(xpoint_cli PROPERTIES LABELS "hip;hardware;xpoint;oracle" RESOURCE_LOCK hip_device)
 endif()
+
+if(KEYHUNT_ENABLE_HIP)
+    add_test(NAME xpoint_cli_direct COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/xpoint_cli.py"
+        --binary $<TARGET_FILE:keyhunt> --oracle $<TARGET_FILE:secp256k1_oracle>
+        --report "${CMAKE_CURRENT_BINARY_DIR}/xpoint-cli-direct-results.json" --hip --kernel direct)
+    set_tests_properties(xpoint_cli_direct PROPERTIES TIMEOUT 300
+        LABELS "hip;hardware;xpoint;oracle" RESOURCE_LOCK hip_device)
+    add_executable(hip_xpoint_benchmark tests/gpu/xpoint_benchmark.cpp)
+    target_link_libraries(hip_xpoint_benchmark PRIVATE keyhunt_backend)
+    set_target_properties(hip_xpoint_benchmark PROPERTIES LINKER_LANGUAGE CXX)
+endif()

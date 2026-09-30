@@ -20,9 +20,10 @@ def main():
     parser.add_argument('--oracle', type=Path, required=True)
     parser.add_argument('--report', type=Path, required=True)
     parser.add_argument('--hip', action='store_true')
+    parser.add_argument('--kernel', choices=['direct','stepped'], default='stepped')
     args = parser.parse_args()
     binary = str(args.binary.resolve())
-    report = {'oracle_commit': check_source(), 'seed': 0xC09, 'cases': [], 'rejections': 0}
+    report = {'oracle_commit': check_source(), 'seed': 0xC09, 'kernel': args.kernel, 'cases': [], 'rejections': 0}
 
     def run(words, env=None):
         return subprocess.run([binary, 'xpoint', *words], text=True, capture_output=True, timeout=90, env=env)
@@ -36,7 +37,7 @@ def main():
                    base+['--device', '2147483648'], base+['--device', '0', '--device', '0'],
                    base+['--batch-size', '0'], base+['--batch-size', '1048577'],
                    base+['--batch-size', '12junk'], base+['--candidate-capacity', '0'],
-                   base+['--candidate-capacity', '1048577'], base+['--device']]
+                   base+['--candidate-capacity', '1048577'], base+['--kernel','unknown'], base+['--device']]
         invalid += [['--backend','hip','--range',r,'--targets',str(target_file)]
                     for r in ['0:2','2:2','3:2','1','1:2:3',f'1:{N+1:x}',f'{N:x}:{N+1:x}']]
         for words in invalid:
@@ -63,8 +64,8 @@ def main():
             assert inventory['devices'], 'real HIP hardware required'
             report['inventory'] = inventory
             cases = []
-            for count in [1,2,7,8,9,31,32,33,127,128,129,255,256,257]:
-                cases.append((f'dense_{count}',(1<<80)-3,count,'dense',257,257,0))
+            for count in [1,2,3,4,5,7,8,9,31,32,33,127,128,129,255,256,257,1023,1024,1025]:
+                cases.append((f'dense_{count}',(1<<80)-3,count,'dense',2049,2049,0))
             for bit in [32,64,128,192,255]:
                 cases.append((f'carry_{bit}',(1<<bit)-5,19,'boundary',7,2,0))
             cases += [('low',1,19,'boundary',8,2,0), ('order',N-33,33,'dense',33,4,0),
@@ -76,14 +77,15 @@ def main():
             for i in range(8):
                 cases.append((f'random_{i}',rng.randrange(2,N-257),rng.randrange(1,65),'boundary',17,2,0))
             for device in inventory['devices']:
-                cases.append((f"device_{device['ordinal']}",(1<<160)-7,129,'boundary',129,3,device['ordinal']))
+                cases.append((f"device_{device['ordinal']}",(1<<160)-7,129,'small',129,3,device['ordinal']))
             # Every searched scalar, plus external boundary targets, comes from the
             # independent pinned native oracle. Python only compares exact strings.
             scalars = sorted({k for _,begin,count,_,_,_,_ in cases for k in range(max(1,begin-1),min(N,begin+count+1))})
             public = dict(zip(scalars,oracle_run(args.oracle,[f'pub {k:064x}' for k in scalars])))
             xs = {k:pub[2:66] for k,pub in public.items()}
             for name,begin,count,kind,batch,capacity,device in cases:
-                if kind == 'dense': targets=[xs[k] for k in range(begin,begin+count)]
+                if kind == 'small': targets=[xs[k] for k in [begin,begin+count//2,begin+count-1]]
+                elif kind == 'dense': targets=[xs[k] for k in range(begin,begin+count)]
                 elif kind == 'none': targets=['00'*32]
                 elif kind == 'near': targets=[f'{int(xs[begin],16)^1:064x}']
                 else: targets=[xs[k] for k in [begin,begin+count//2,begin+count-1,max(1,begin-1),min(N-1,begin+count)]]
@@ -92,7 +94,7 @@ def main():
                 unique=sorted(set(targets))
                 expected=[(k,xs[k],unique.index(xs[k])) for k in range(begin,begin+count) if xs[k] in unique]
                 result=run(['--backend','hip','--range',f'{begin:x}:{begin+count:x}','--targets',str(target_file),
-                            '--batch-size',str(batch),'--candidate-capacity',str(capacity),'--device',str(device)])
+                            '--batch-size',str(batch),'--candidate-capacity',str(capacity),'--device',str(device),'--kernel',args.kernel])
                 assert result.returncode == 0 and not result.stderr, (name,result)
                 records=[json.loads(line) for line in result.stdout.splitlines()]
                 assert records[0]['type']=='start' and records[-1]['type']=='summary'
@@ -119,6 +121,23 @@ def main():
                 if name in ('dense_replay','order'): assert overflows>0
                 report['cases'].append({'name':name,'device':device,'begin':hex(begin),'count':count,
                     'targets':len(unique),'expected_matches':len(expected),'summary':summary})
+            # Exercise every local-offset table bit at the maximum batch size.
+            # For these known Xs, the only other scalar is n-k, outside this job;
+            # this proves the expected hit set without materializing a million keys.
+            begin=1<<200; count=1048576
+            offsets=sorted({0,count-1,*[d for bit in range(20) for d in [(1<<bit)-1,1<<bit,(1<<bit)+1] if d<count]})
+            pubs=oracle_run(args.oracle,[f'pub {begin+d:064x}' for d in offsets])
+            targets=[pub[2:66] for pub in pubs]
+            target_file.write_text('\n'.join(targets)) # also check no final newline
+            result=run(['--backend','hip','--range',f'{begin:x}:{begin+count:x}','--targets',str(target_file),
+                        '--batch-size',str(count),'--candidate-capacity',str(len(targets)),'--kernel',args.kernel])
+            assert result.returncode==0 and not result.stderr, result
+            records=[json.loads(line) for line in result.stdout.splitlines()]
+            assert len(records)==3 and records[1]['verified_steps']==count and not records[1]['overflow']
+            assert [(int(m['scalar'],16),m['x']) for m in records[1]['matches']]==list(zip([begin+d for d in offsets],targets))
+            assert int(records[-1]['verified_steps'],16)==count and records[-1]['complete']
+            report['cases'].append({'name':'maximum_batch_offset_bits','device':0,'begin':hex(begin),
+                'count':count,'targets':len(targets),'expected_matches':len(targets),'summary':records[-1]})
     report['binary_sha256']=hashlib.sha256(args.binary.read_bytes()).hexdigest()
     args.report.write_text(json.dumps(report,indent=2)+'\n')
     print(f"Xpoint CLI: {len(report['cases'])} independent search cases, {report['rejections']} rejections")

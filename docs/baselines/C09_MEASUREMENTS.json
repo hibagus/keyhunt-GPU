@@ -1,0 +1,1489 @@
+{
+  "recorded_utc": "2026-09-30T03:56:53.314073+00:00",
+  "base_commit": "ab0edca0f2c7b8bab1ae8a3ab60b631ec21ce532",
+  "source_state": "Final C09 source before the optimization commit; identified by source hashes.",
+  "source_sha256": {
+    "kernels/common/field.h": "91be102a7437cd475e2a5e7831ffe6128a4039cf240c5ca841bcc8e2676899bf",
+    "kernels/common/point.h": "34289c51a5188fc098e01f9c13e0c3b13642c15c10544d2d058cad3e2ff29f10",
+    "kernels/hip/xpoint.h": "c0e7bbb838d4c2aaa0822a2ae29c4703dce35baa99567089c84e6628da4a4ce8",
+    "src/backend/hip/xpoint.hip": "e072942da7bb8aa9e9c0589e00706117d546ea240cfb72baa321f3dee0902796",
+    "src/backend/hip/runtime.h": "2ac4b9db99a442bbc62f43d29e34f1801ab5d4f9fa8011db9e6c857659f5d91a",
+    "src/backend/xpoint_command.cpp": "073829fdc64e0732eedb1951b9688303550921860da44246a52185f24536c855",
+    "src/core/xpoint_search.cpp": "82908d746ddaf183d6ffdcbc8cfd2891a79378ffb8bc78bbd81766cdc48fa63d",
+    "include/keyhunt/backend/hip_xpoint.h": "beb9849d7a53a327d459de28dccbfa459fe6c14cf29d6dcbc1fa5bd910daceaf",
+    "include/keyhunt/core/xpoint_search.h": "848d462d0c374f2613e33a0bbc2e18cf1d64fbc95bec3a3ed92c20b7f3f2578e",
+    "tests/gpu/xpoint_benchmark.cpp": "362702509e7a2c95ebbea986f6cf20d9aa614f874b5c14c84acd884a9e4ca8ee",
+    "tests/gpu/xpoint_executor.cpp": "c2efebc15e23d5354f43d58d30fd5f5e0adef20e6a3fef47a05419c95ec073df",
+    "tests/gpu/xpoint_failures.hip": "7a07ae7d37ef87f8584c1e8f1d185f0cc1ac8533c23e390b29bfe00aac62f95b",
+    "tests/integration/xpoint_cli.py": "a48ce67df94a7a577292ee9e4738b709c638a35e9b9a051f1f8dc7b9d4c85eef",
+    "tests/unit/xpoint_search.cpp": "59d8af037beeffd4e4fda87ab04633dbded7d3cac0750712858d8a32fd8a9302",
+    "CMakeLists.txt": "b036560d95a5d4cc1a89623a8fc6563c09e554ebe4838cd3695a31479037d899",
+    "cmake/XPointTests.cmake": "9704c083ccaa410d31e07ad5d0dc1981eb22c02e0abe731f7bd9863fae269f7f"
+  },
+  "binary_sha256": {
+    "build/hip-release/keyhunt": "7fdfb03612a56cd3b5f2042f5a0dd4b12ea48ea4e913d047cde0e627d64b3385",
+    "build/hip-release/hip_xpoint_benchmark": "a45bc279f9ba8c799f016b6fed2fc803fdf624bcde4e5065ba8b5d53be3002a1"
+  },
+  "metadata": {
+    "recorded_utc": "2026-09-30T03:55:52.237069+00:00",
+    "cpu_affinity": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63,
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      71,
+      72,
+      73,
+      74,
+      75,
+      76,
+      77,
+      78,
+      79,
+      80,
+      81,
+      82,
+      83,
+      84,
+      85,
+      86,
+      87,
+      88,
+      89,
+      90,
+      91,
+      92,
+      93,
+      94,
+      95
+    ],
+    "kernel": {
+      "system": "Linux",
+      "node": "xe9680-waco4",
+      "release": "5.15.0-191-generic",
+      "version": "#201-Ubuntu SMP Fri Aug 7 18:39:04 UTC 2026",
+      "machine": "x86_64",
+      "processor": "x86_64"
+    },
+    "amd_smi_version": {
+      "command": [
+        "amd-smi",
+        "version",
+        "--json"
+      ],
+      "exit_code": 0,
+      "stdout": "[\n    {\n        \"tool\": \"AMDSMI Tool\",\n        \"version\": \"27.0.0+6b0e43f3\",\n        \"amdsmi_library_version\": \"27.0.0\",\n        \"rocm_version\": \"10.0.0\",\n        \"amdgpu_version\": \"7.1.3.31500000\",\n        \"nic_driver_version\": \"N/A\"\n    }\n]\n",
+      "stderr": ""
+    },
+    "profiler_version": {
+      "command": [
+        "rocprofv3",
+        "--version"
+      ],
+      "exit_code": 0,
+      "stdout": "             version: 1.3.5\n        git_revision: 6b0e43f341195e203754e08f850e437ff2fc09f9\n        library_arch: x86_64-unknown-linux-gnu\n         system_name: Linux\n    system_processor: x86_64\n      system_version: 6.12.73-95.123.amzn2023.x86_64\n         compiler_id: Clang\n    compiler_version: 23.0.0\n        rocm_version: 10.0.0\n",
+      "stderr": ""
+    },
+    "inventory": {
+      "backend": "hip",
+      "runtime_version": 71526333,
+      "driver_version": 71526333,
+      "devices": [
+        {
+          "ordinal": 0,
+          "name": "AMD Instinct MI300X",
+          "architecture": "gfx942:sramecc+:xnack-",
+          "uuid": "30646366333934386337333264313231",
+          "pci_bus_id": "0000:1b:00.0",
+          "physical_id": "0dcf3948c732d121",
+          "physical_id_source": "sysfs.unique_id",
+          "compute_partition": "SPX",
+          "memory_partition": "NPS1",
+          "memory_allocation_mode": "CAPPING",
+          "numa_node": 0,
+          "compute_units": 304,
+          "warp_size": 64,
+          "property_memory_bytes": 206141652992,
+          "total_memory_bytes": 206141652992,
+          "free_memory_bytes": 205533478912,
+          "warnings": []
+        },
+        {
+          "ordinal": 1,
+          "name": "AMD Instinct MI300X",
+          "architecture": "gfx942:sramecc+:xnack-",
+          "uuid": "30393337633864376335303031303365",
+          "pci_bus_id": "0000:3d:00.0",
+          "physical_id": "0937c8d7c500103e",
+          "physical_id_source": "sysfs.unique_id",
+          "compute_partition": "SPX",
+          "memory_partition": "NPS1",
+          "memory_allocation_mode": "CAPPING",
+          "numa_node": 0,
+          "compute_units": 304,
+          "warp_size": 64,
+          "property_memory_bytes": 206141652992,
+          "total_memory_bytes": 206141652992,
+          "free_memory_bytes": 205533478912,
+          "warnings": []
+        },
+        {
+          "ordinal": 2,
+          "name": "AMD Instinct MI300X",
+          "architecture": "gfx942:sramecc+:xnack-",
+          "uuid": "34616433376163376162633937306666",
+          "pci_bus_id": "0000:4e:00.0",
+          "physical_id": "4ad37ac7abc970ff",
+          "physical_id_source": "sysfs.unique_id",
+          "compute_partition": "SPX",
+          "memory_partition": "NPS1",
+          "memory_allocation_mode": "CAPPING",
+          "numa_node": 0,
+          "compute_units": 304,
+          "warp_size": 64,
+          "property_memory_bytes": 206141652992,
+          "total_memory_bytes": 206141652992,
+          "free_memory_bytes": 205533478912,
+          "warnings": []
+        },
+        {
+          "ordinal": 3,
+          "name": "AMD Instinct MI300X",
+          "architecture": "gfx942:sramecc+:xnack-",
+          "uuid": "64636438643565303832323137646663",
+          "pci_bus_id": "0000:5f:00.0",
+          "physical_id": "dcd8d5e082217dfc",
+          "physical_id_source": "sysfs.unique_id",
+          "compute_partition": "SPX",
+          "memory_partition": "NPS1",
+          "memory_allocation_mode": "CAPPING",
+          "numa_node": 0,
+          "compute_units": 304,
+          "warp_size": 64,
+          "property_memory_bytes": 206141652992,
+          "total_memory_bytes": 206141652992,
+          "free_memory_bytes": 205533478912,
+          "warnings": []
+        },
+        {
+          "ordinal": 4,
+          "name": "AMD Instinct MI300X",
+          "architecture": "gfx942:sramecc+:xnack-",
+          "uuid": "63613033303464653334643962636639",
+          "pci_bus_id": "0000:9d:00.0",
+          "physical_id": "ca0304de34d9bcf9",
+          "physical_id_source": "sysfs.unique_id",
+          "compute_partition": "SPX",
+          "memory_partition": "NPS1",
+          "memory_allocation_mode": "CAPPING",
+          "numa_node": 1,
+          "compute_units": 304,
+          "warp_size": 64,
+          "property_memory_bytes": 206141652992,
+          "total_memory_bytes": 206141652992,
+          "free_memory_bytes": 205533478912,
+          "warnings": []
+        },
+        {
+          "ordinal": 5,
+          "name": "AMD Instinct MI300X",
+          "architecture": "gfx942:sramecc+:xnack-",
+          "uuid": "66366665356431386461333065623431",
+          "pci_bus_id": "0000:bd:00.0",
+          "physical_id": "f6fe5d18da30eb41",
+          "physical_id_source": "sysfs.unique_id",
+          "compute_partition": "SPX",
+          "memory_partition": "NPS1",
+          "memory_allocation_mode": "CAPPING",
+          "numa_node": 1,
+          "compute_units": 304,
+          "warp_size": 64,
+          "property_memory_bytes": 206141652992,
+          "total_memory_bytes": 206141652992,
+          "free_memory_bytes": 205533478912,
+          "warnings": []
+        },
+        {
+          "ordinal": 6,
+          "name": "AMD Instinct MI300X",
+          "architecture": "gfx942:sramecc+:xnack-",
+          "uuid": "32333266393737383136343134663766",
+          "pci_bus_id": "0000:cd:00.0",
+          "physical_id": "232f977816414f7f",
+          "physical_id_source": "sysfs.unique_id",
+          "compute_partition": "SPX",
+          "memory_partition": "NPS1",
+          "memory_allocation_mode": "CAPPING",
+          "numa_node": 1,
+          "compute_units": 304,
+          "warp_size": 64,
+          "property_memory_bytes": 206141652992,
+          "total_memory_bytes": 206141652992,
+          "free_memory_bytes": 205533478912,
+          "warnings": []
+        },
+        {
+          "ordinal": 7,
+          "name": "AMD Instinct MI300X",
+          "architecture": "gfx942:sramecc+:xnack-",
+          "uuid": "37386338613437353837623036353233",
+          "pci_bus_id": "0000:dd:00.0",
+          "physical_id": "78c8a47587b06523",
+          "physical_id_source": "sysfs.unique_id",
+          "compute_partition": "SPX",
+          "memory_partition": "NPS1",
+          "memory_allocation_mode": "CAPPING",
+          "numa_node": 1,
+          "compute_units": 304,
+          "warp_size": 64,
+          "property_memory_bytes": 206141652992,
+          "total_memory_bytes": 206141652992,
+          "free_memory_bytes": 205533478912,
+          "warnings": []
+        }
+      ]
+    },
+    "metric_before": {
+      "command": [
+        "amd-smi",
+        "metric",
+        "--gpu",
+        "0000:1b:00.0",
+        "--clock",
+        "--power",
+        "--temperature",
+        "--perf-level",
+        "--json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\n    \"gpu_data\": [\n        {\n            \"gpu\": 0,\n            \"power\": {\n                \"socket_power\": {\n                    \"value\": 178,\n                    \"unit\": \"W\"\n                },\n                \"gfx_voltage\": \"N/A\",\n                \"soc_voltage\": \"N/A\",\n                \"mem_voltage\": \"N/A\",\n                \"throttle_status\": \"N/A\",\n                \"power_management\": \"ENABLED\",\n                \"ubb_power\": \"N/A\"\n            },\n            \"clock\": {\n                \"gfx_0\": {\n                    \"clk\": {\n                        \"value\": 163,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 500,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 2100,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"DISABLED\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"gfx_1\": {\n                    \"clk\": {\n                        \"value\": 163,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 500,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 2100,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"DISABLED\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"gfx_2\": {\n                    \"clk\": {\n                        \"value\": 163,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 500,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 2100,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"DISABLED\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"gfx_3\": {\n                    \"clk\": {\n                        \"value\": 162,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 500,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 2100,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"DISABLED\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"gfx_4\": {\n                    \"clk\": {\n                        \"value\": 161,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 500,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 2100,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"DISABLED\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"gfx_5\": {\n                    \"clk\": {\n                        \"value\": 161,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 500,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 2100,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"DISABLED\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"gfx_6\": {\n                    \"clk\": {\n                        \"value\": 161,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 500,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 2100,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"DISABLED\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"gfx_7\": {\n                    \"clk\": {\n                        \"value\": 161,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 500,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 2100,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"DISABLED\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"mem_0\": {\n                    \"clk\": {\n                        \"value\": 1028,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 900,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 1300,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"N/A\",\n                    \"deep_sleep\": \"DISABLED\"\n                },\n                \"vclk_0\": {\n                    \"clk\": {\n                        \"value\": 33,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 914,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 1333,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"N/A\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"vclk_1\": {\n                    \"clk\": {\n                        \"value\": 33,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 914,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 1333,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"N/A\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"vclk_2\": {\n                    \"clk\": {\n                        \"value\": 33,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 914,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 1333,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"N/A\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"vclk_3\": {\n                    \"clk\": {\n                        \"value\": 33,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 914,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 1333,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"N/A\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"dclk_0\": {\n                    \"clk\": {\n                        \"value\": 27,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 711,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 1143,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"N/A\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"dclk_1\": {\n                    \"clk\": {\n                        \"value\": 27,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 711,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 1143,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"N/A\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"dclk_2\": {\n                    \"clk\": {\n                        \"value\": 27,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 711,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 1143,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"N/A\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"dclk_3\": {\n                    \"clk\": {\n                        \"value\": 27,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 711,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 1143,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"N/A\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"fclk_0\": {\n                    \"clk\": \"N/A\",\n                    \"min_clk\": \"N/A\",\n                    \"max_clk\": \"N/A\",\n                    \"clk_locked\": \"N/A\",\n                    \"deep_sleep\": \"N/A\"\n                },\n                \"socclk_0\": {\n                    \"clk\": {\n                        \"value\": 33,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 889,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 1143,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"N/A\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"uclk_aid\": {\n                    \"aid_0\": \"N/A\",\n                    \"aid_1\": \"N/A\"\n                },\n                \"socclks_mid\": {\n                    \"mid_0\": \"N/A\",\n                    \"mid_1\": \"N/A\"\n                }\n            },\n            \"temperature\": {\n                \"edge\": \"N/A\",\n                \"hotspot\": {\n                    \"value\": 53,\n                    \"unit\": \"C\"\n                },\n                \"mem\": {\n                    \"value\": 49,\n                    \"unit\": \"C\"\n                },\n                \"hbm_stacks\": [\n                    \"N/A\",\n                    \"N/A\",\n                    \"N/A\",\n                    \"N/A\",\n                    \"N/A\",\n                    \"N/A\",\n                    \"N/A\",\n                    \"N/A\",\n                    \"N/A\",\n                    \"N/A\",\n                    \"N/A\",\n                    \"N/A\"\n                ],\n                \"mid\": [\n                    \"N/A\",\n                    \"N/A\"\n                ],\n                \"aid\": [\n                    \"N/A\",\n                    \"N/A\"\n                ],\n                \"xcd\": {\n                    \"xcp_0\": [\n                        \"N/A\",\n                        \"N/A\",\n                        \"N/A\",\n                        \"N/A\",\n                        \"N/A\",\n                        \"N/A\",\n                        \"N/A\",\n                        \"N/A\"\n                    ]\n                }\n            },\n            \"perf_level\": \"AMDSMI_DEV_PERF_LEVEL_AUTO\"\n        }\n    ]\n}\n",
+      "stderr": ""
+    },
+    "metric_after": {
+      "command": [
+        "amd-smi",
+        "metric",
+        "--gpu",
+        "0000:1b:00.0",
+        "--clock",
+        "--power",
+        "--temperature",
+        "--perf-level",
+        "--json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\n    \"gpu_data\": [\n        {\n            \"gpu\": 0,\n            \"power\": {\n                \"socket_power\": {\n                    \"value\": 235,\n                    \"unit\": \"W\"\n                },\n                \"gfx_voltage\": \"N/A\",\n                \"soc_voltage\": \"N/A\",\n                \"mem_voltage\": \"N/A\",\n                \"throttle_status\": \"N/A\",\n                \"power_management\": \"ENABLED\",\n                \"ubb_power\": \"N/A\"\n            },\n            \"clock\": {\n                \"gfx_0\": {\n                    \"clk\": {\n                        \"value\": 375,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 500,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 2100,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"DISABLED\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"gfx_1\": {\n                    \"clk\": {\n                        \"value\": 373,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 500,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 2100,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"DISABLED\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"gfx_2\": {\n                    \"clk\": {\n                        \"value\": 376,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 500,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 2100,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"DISABLED\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"gfx_3\": {\n                    \"clk\": {\n                        \"value\": 374,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 500,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 2100,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"DISABLED\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"gfx_4\": {\n                    \"clk\": {\n                        \"value\": 375,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 500,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 2100,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"DISABLED\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"gfx_5\": {\n                    \"clk\": {\n                        \"value\": 374,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 500,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 2100,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"DISABLED\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"gfx_6\": {\n                    \"clk\": {\n                        \"value\": 376,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 500,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 2100,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"DISABLED\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"gfx_7\": {\n                    \"clk\": {\n                        \"value\": 377,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 500,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 2100,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"DISABLED\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"mem_0\": {\n                    \"clk\": {\n                        \"value\": 1095,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 900,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 1300,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"N/A\",\n                    \"deep_sleep\": \"DISABLED\"\n                },\n                \"vclk_0\": {\n                    \"clk\": {\n                        \"value\": 35,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 914,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 1333,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"N/A\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"vclk_1\": {\n                    \"clk\": {\n                        \"value\": 35,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 914,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 1333,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"N/A\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"vclk_2\": {\n                    \"clk\": {\n                        \"value\": 35,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 914,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 1333,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"N/A\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"vclk_3\": {\n                    \"clk\": {\n                        \"value\": 35,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 914,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 1333,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"N/A\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"dclk_0\": {\n                    \"clk\": {\n                        \"value\": 29,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 711,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 1143,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"N/A\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"dclk_1\": {\n                    \"clk\": {\n                        \"value\": 29,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 711,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 1143,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"N/A\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"dclk_2\": {\n                    \"clk\": {\n                        \"value\": 29,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 711,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 1143,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"N/A\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"dclk_3\": {\n                    \"clk\": {\n                        \"value\": 29,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 711,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 1143,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"N/A\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"fclk_0\": {\n                    \"clk\": {\n                        \"value\": 1550,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 1300,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 1800,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"N/A\",\n                    \"deep_sleep\": \"DISABLED\"\n                },\n                \"socclk_0\": {\n                    \"clk\": {\n                        \"value\": 184,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 889,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 1143,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"N/A\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"uclk_aid\": {\n                    \"aid_0\": \"N/A\",\n                    \"aid_1\": \"N/A\"\n                },\n                \"socclks_mid\": {\n                    \"mid_0\": \"N/A\",\n                    \"mid_1\": \"N/A\"\n                }\n            },\n            \"temperature\": {\n                \"edge\": \"N/A\",\n                \"hotspot\": {\n                    \"value\": 62,\n                    \"unit\": \"C\"\n                },\n                \"mem\": {\n                    \"value\": 50,\n                    \"unit\": \"C\"\n                },\n                \"hbm_stacks\": [\n                    \"N/A\",\n                    \"N/A\",\n                    \"N/A\",\n                    \"N/A\",\n                    \"N/A\",\n                    \"N/A\",\n                    \"N/A\",\n                    \"N/A\",\n                    \"N/A\",\n                    \"N/A\",\n                    \"N/A\",\n                    \"N/A\"\n                ],\n                \"mid\": [\n                    \"N/A\",\n                    \"N/A\"\n                ],\n                \"aid\": [\n                    \"N/A\",\n                    \"N/A\"\n                ],\n                \"xcd\": {\n                    \"xcp_0\": [\n                        \"N/A\",\n                        \"N/A\",\n                        \"N/A\",\n                        \"N/A\",\n                        \"N/A\",\n                        \"N/A\",\n                        \"N/A\",\n                        \"N/A\"\n                    ]\n                }\n            },\n            \"perf_level\": \"AMDSMI_DEV_PERF_LEVEL_AUTO\"\n        }\n    ]\n}\n",
+      "stderr": ""
+    },
+    "finished_utc": "2026-09-30T03:55:55.066187+00:00"
+  },
+  "methodology": {
+    "warmups_per_kernel_per_workload": 1,
+    "samples_per_kernel_per_workload": 5,
+    "order": "alternating",
+    "partition_changes": false,
+    "clocks_controlled": false,
+    "host_reserved": false,
+    "timing_scope": "Warm single-device executor submit-to-take includes seed, download and CPU verification. Excludes CLI startup, NDJSON output and durable storage.",
+    "preparation": "Reported separately; first owner can pay lazy runtime initialization. Not used in speedup comparisons."
+  },
+  "benchmarks": [
+    {
+      "device": 0,
+      "count": 65536,
+      "begin": "0x800000000000000000000000000000000000000000000000fffffffffffffff1",
+      "workloads": [
+        {
+          "name": "no_match_1",
+          "targets": 1,
+          "prepare_direct_ms": 396.497701,
+          "prepare_stepped_ms": 16.899061,
+          "samples": [
+            {
+              "kernel": "direct",
+              "sample": 0,
+              "kernel_ms": 3.26068497,
+              "download_ms": 0.0202060007,
+              "seed_ms": 4.2e-05,
+              "verification_ms": 6.8e-05,
+              "wall_ms": 3.307939,
+              "device_steps": 65536,
+              "matches": 0
+            },
+            {
+              "kernel": "stepped",
+              "sample": 0,
+              "kernel_ms": 0.385435998,
+              "download_ms": 0.0185620002,
+              "seed_ms": 0.006186,
+              "verification_ms": 0.000105,
+              "wall_ms": 0.429919,
+              "device_steps": 65536,
+              "matches": 0
+            },
+            {
+              "kernel": "stepped",
+              "sample": 1,
+              "kernel_ms": 0.385596007,
+              "download_ms": 0.0188820008,
+              "seed_ms": 0.005261,
+              "verification_ms": 0.000105,
+              "wall_ms": 0.428945,
+              "device_steps": 65536,
+              "matches": 0
+            },
+            {
+              "kernel": "direct",
+              "sample": 1,
+              "kernel_ms": 3.23534799,
+              "download_ms": 0.0197650008,
+              "seed_ms": 3.2e-05,
+              "verification_ms": 9.4e-05,
+              "wall_ms": 3.273747,
+              "device_steps": 65536,
+              "matches": 0
+            },
+            {
+              "kernel": "direct",
+              "sample": 2,
+              "kernel_ms": 3.23454595,
+              "download_ms": 0.0204869993,
+              "seed_ms": 3.4e-05,
+              "verification_ms": 9.2e-05,
+              "wall_ms": 3.273851,
+              "device_steps": 65536,
+              "matches": 0
+            },
+            {
+              "kernel": "stepped",
+              "sample": 2,
+              "kernel_ms": 0.364827991,
+              "download_ms": 0.0191639997,
+              "seed_ms": 0.004857,
+              "verification_ms": 0.000104,
+              "wall_ms": 0.408086,
+              "device_steps": 65536,
+              "matches": 0
+            },
+            {
+              "kernel": "stepped",
+              "sample": 3,
+              "kernel_ms": 0.359777004,
+              "download_ms": 0.0187219996,
+              "seed_ms": 0.004461,
+              "verification_ms": 0.000104,
+              "wall_ms": 0.401769,
+              "device_steps": 65536,
+              "matches": 0
+            },
+            {
+              "kernel": "direct",
+              "sample": 3,
+              "kernel_ms": 3.22368097,
+              "download_ms": 0.0208069999,
+              "seed_ms": 3.1e-05,
+              "verification_ms": 6.5e-05,
+              "wall_ms": 3.26351,
+              "device_steps": 65536,
+              "matches": 0
+            },
+            {
+              "kernel": "direct",
+              "sample": 4,
+              "kernel_ms": 3.193573,
+              "download_ms": 0.0207669996,
+              "seed_ms": 3.2e-05,
+              "verification_ms": 9.2e-05,
+              "wall_ms": 3.23301,
+              "device_steps": 65536,
+              "matches": 0
+            },
+            {
+              "kernel": "stepped",
+              "sample": 4,
+              "kernel_ms": 0.359856993,
+              "download_ms": 0.0191639997,
+              "seed_ms": 0.004438,
+              "verification_ms": 0.000105,
+              "wall_ms": 0.403229,
+              "device_steps": 65536,
+              "matches": 0
+            }
+          ],
+          "statistics": {
+            "direct": {
+              "kernel_ms": {
+                "median": 3.23454595,
+                "min": 3.193573,
+                "max": 3.26068497
+              },
+              "download_ms": {
+                "median": 0.0204869993,
+                "min": 0.0197650008,
+                "max": 0.0208069999
+              },
+              "seed_ms": {
+                "median": 3.2e-05,
+                "min": 3.1e-05,
+                "max": 4.2e-05
+              },
+              "verification_ms": {
+                "median": 9.2e-05,
+                "min": 6.5e-05,
+                "max": 9.4e-05
+              },
+              "wall_ms": {
+                "median": 3.273747,
+                "min": 3.23301,
+                "max": 3.307939
+              }
+            },
+            "stepped": {
+              "kernel_ms": {
+                "median": 0.364827991,
+                "min": 0.359777004,
+                "max": 0.385596007
+              },
+              "download_ms": {
+                "median": 0.0188820008,
+                "min": 0.0185620002,
+                "max": 0.0191639997
+              },
+              "seed_ms": {
+                "median": 0.004857,
+                "min": 0.004438,
+                "max": 0.006186
+              },
+              "verification_ms": {
+                "median": 0.000105,
+                "min": 0.000104,
+                "max": 0.000105
+              },
+              "wall_ms": {
+                "median": 0.408086,
+                "min": 0.401769,
+                "max": 0.429919
+              }
+            }
+          },
+          "median_wall_speedup": 8.022198752223796,
+          "stepped_median_verified_scalars_per_second": 160593600.36854976
+        },
+        {
+          "name": "boundary_3",
+          "targets": 3,
+          "prepare_direct_ms": 16.369667,
+          "prepare_stepped_ms": 3.35317,
+          "samples": [
+            {
+              "kernel": "direct",
+              "sample": 0,
+              "kernel_ms": 3.26898503,
+              "download_ms": 0.0191639997,
+              "seed_ms": 3.2e-05,
+              "verification_ms": 0.010956,
+              "wall_ms": 3.323358,
+              "device_steps": 65536,
+              "matches": 3
+            },
+            {
+              "kernel": "stepped",
+              "sample": 0,
+              "kernel_ms": 0.407204986,
+              "download_ms": 0.0208870005,
+              "seed_ms": 0.004391,
+              "verification_ms": 0.010316,
+              "wall_ms": 0.461689,
+              "device_steps": 65536,
+              "matches": 3
+            },
+            {
+              "kernel": "stepped",
+              "sample": 1,
+              "kernel_ms": 0.392452002,
+              "download_ms": 0.021288,
+              "seed_ms": 0.004242,
+              "verification_ms": 0.009856,
+              "wall_ms": 0.447317,
+              "device_steps": 65536,
+              "matches": 3
+            },
+            {
+              "kernel": "direct",
+              "sample": 1,
+              "kernel_ms": 3.24336696,
+              "download_ms": 0.0204070006,
+              "seed_ms": 3.4e-05,
+              "verification_ms": 0.009698,
+              "wall_ms": 3.292989,
+              "device_steps": 65536,
+              "matches": 3
+            },
+            {
+              "kernel": "direct",
+              "sample": 2,
+              "kernel_ms": 3.23631096,
+              "download_ms": 0.0193239991,
+              "seed_ms": 3.3e-05,
+              "verification_ms": 0.009497,
+              "wall_ms": 3.284686,
+              "device_steps": 65536,
+              "matches": 3
+            },
+            {
+              "kernel": "stepped",
+              "sample": 2,
+              "kernel_ms": 0.383911997,
+              "download_ms": 0.0201660004,
+              "seed_ms": 0.004261,
+              "verification_ms": 0.009388,
+              "wall_ms": 0.436016,
+              "device_steps": 65536,
+              "matches": 3
+            },
+            {
+              "kernel": "stepped",
+              "sample": 3,
+              "kernel_ms": 0.383711994,
+              "download_ms": 0.0244149994,
+              "seed_ms": 0.004243,
+              "verification_ms": 0.009594,
+              "wall_ms": 0.440712,
+              "device_steps": 65536,
+              "matches": 3
+            },
+            {
+              "kernel": "direct",
+              "sample": 3,
+              "kernel_ms": 3.20018888,
+              "download_ms": 0.0188030005,
+              "seed_ms": 3.2e-05,
+              "verification_ms": 0.00951,
+              "wall_ms": 3.247734,
+              "device_steps": 65536,
+              "matches": 3
+            },
+            {
+              "kernel": "direct",
+              "sample": 4,
+              "kernel_ms": 3.22732997,
+              "download_ms": 0.0193639994,
+              "seed_ms": 3.4e-05,
+              "verification_ms": 0.009199,
+              "wall_ms": 3.274399,
+              "device_steps": 65536,
+              "matches": 3
+            },
+            {
+              "kernel": "stepped",
+              "sample": 4,
+              "kernel_ms": 0.395018011,
+              "download_ms": 0.0216889996,
+              "seed_ms": 0.004112,
+              "verification_ms": 0.009032,
+              "wall_ms": 0.448937,
+              "device_steps": 65536,
+              "matches": 3
+            }
+          ],
+          "statistics": {
+            "direct": {
+              "kernel_ms": {
+                "median": 3.23631096,
+                "min": 3.20018888,
+                "max": 3.26898503
+              },
+              "download_ms": {
+                "median": 0.0193239991,
+                "min": 0.0188030005,
+                "max": 0.0204070006
+              },
+              "seed_ms": {
+                "median": 3.3e-05,
+                "min": 3.2e-05,
+                "max": 3.4e-05
+              },
+              "verification_ms": {
+                "median": 0.00951,
+                "min": 0.009199,
+                "max": 0.010956
+              },
+              "wall_ms": {
+                "median": 3.284686,
+                "min": 3.247734,
+                "max": 3.323358
+              }
+            },
+            "stepped": {
+              "kernel_ms": {
+                "median": 0.392452002,
+                "min": 0.383711994,
+                "max": 0.407204986
+              },
+              "download_ms": {
+                "median": 0.021288,
+                "min": 0.0201660004,
+                "max": 0.0244149994
+              },
+              "seed_ms": {
+                "median": 0.004243,
+                "min": 0.004112,
+                "max": 0.004391
+              },
+              "verification_ms": {
+                "median": 0.009594,
+                "min": 0.009032,
+                "max": 0.010316
+              },
+              "wall_ms": {
+                "median": 0.447317,
+                "min": 0.436016,
+                "max": 0.461689
+              }
+            }
+          },
+          "median_wall_speedup": 7.343083316752996,
+          "stepped_median_verified_scalars_per_second": 146509075.219587
+        },
+        {
+          "name": "no_match_32",
+          "targets": 32,
+          "prepare_direct_ms": 2.833324,
+          "prepare_stepped_ms": 2.946573,
+          "samples": [
+            {
+              "kernel": "direct",
+              "sample": 0,
+              "kernel_ms": 3.33172798,
+              "download_ms": 0.020366,
+              "seed_ms": 3.3e-05,
+              "verification_ms": 7.8e-05,
+              "wall_ms": 3.371212,
+              "device_steps": 65536,
+              "matches": 0
+            },
+            {
+              "kernel": "stepped",
+              "sample": 0,
+              "kernel_ms": 0.756277978,
+              "download_ms": 0.0210480001,
+              "seed_ms": 0.004778,
+              "verification_ms": 9e-05,
+              "wall_ms": 0.801586,
+              "device_steps": 65536,
+              "matches": 0
+            },
+            {
+              "kernel": "stepped",
+              "sample": 1,
+              "kernel_ms": 0.736913979,
+              "download_ms": 0.0207269993,
+              "seed_ms": 0.004223,
+              "verification_ms": 9e-05,
+              "wall_ms": 0.781553,
+              "device_steps": 65536,
+              "matches": 0
+            },
+            {
+              "kernel": "direct",
+              "sample": 1,
+              "kernel_ms": 3.27359509,
+              "download_ms": 0.0184419993,
+              "seed_ms": 3.2e-05,
+              "verification_ms": 8e-05,
+              "wall_ms": 3.311288,
+              "device_steps": 65536,
+              "matches": 0
+            },
+            {
+              "kernel": "direct",
+              "sample": 2,
+              "kernel_ms": 3.22961593,
+              "download_ms": 0.0191629995,
+              "seed_ms": 3.3e-05,
+              "verification_ms": 7.8e-05,
+              "wall_ms": 3.268492,
+              "device_steps": 65536,
+              "matches": 0
+            },
+            {
+              "kernel": "stepped",
+              "sample": 2,
+              "kernel_ms": 0.733705997,
+              "download_ms": 0.0213290006,
+              "seed_ms": 0.004441,
+              "verification_ms": 8.7e-05,
+              "wall_ms": 0.778228,
+              "device_steps": 65536,
+              "matches": 0
+            },
+            {
+              "kernel": "stepped",
+              "sample": 3,
+              "kernel_ms": 0.730058014,
+              "download_ms": 0.0204859991,
+              "seed_ms": 0.004119,
+              "verification_ms": 8.6e-05,
+              "wall_ms": 0.774325,
+              "device_steps": 65536,
+              "matches": 0
+            },
+            {
+              "kernel": "direct",
+              "sample": 3,
+              "kernel_ms": 3.23390603,
+              "download_ms": 0.0185219999,
+              "seed_ms": 3.4e-05,
+              "verification_ms": 8.2e-05,
+              "wall_ms": 3.276173,
+              "device_steps": 65536,
+              "matches": 0
+            },
+            {
+              "kernel": "direct",
+              "sample": 4,
+              "kernel_ms": 3.20716596,
+              "download_ms": 0.0189229995,
+              "seed_ms": 3.3e-05,
+              "verification_ms": 7.7e-05,
+              "wall_ms": 3.245288,
+              "device_steps": 65536,
+              "matches": 0
+            },
+            {
+              "kernel": "stepped",
+              "sample": 4,
+              "kernel_ms": 0.745572984,
+              "download_ms": 0.0202859994,
+              "seed_ms": 0.004574,
+              "verification_ms": 8.6e-05,
+              "wall_ms": 0.789056,
+              "device_steps": 65536,
+              "matches": 0
+            }
+          ],
+          "statistics": {
+            "direct": {
+              "kernel_ms": {
+                "median": 3.23390603,
+                "min": 3.20716596,
+                "max": 3.33172798
+              },
+              "download_ms": {
+                "median": 0.0189229995,
+                "min": 0.0184419993,
+                "max": 0.020366
+              },
+              "seed_ms": {
+                "median": 3.3e-05,
+                "min": 3.2e-05,
+                "max": 3.4e-05
+              },
+              "verification_ms": {
+                "median": 7.8e-05,
+                "min": 7.7e-05,
+                "max": 8.2e-05
+              },
+              "wall_ms": {
+                "median": 3.276173,
+                "min": 3.245288,
+                "max": 3.371212
+              }
+            },
+            "stepped": {
+              "kernel_ms": {
+                "median": 0.736913979,
+                "min": 0.730058014,
+                "max": 0.756277978
+              },
+              "download_ms": {
+                "median": 0.0207269993,
+                "min": 0.0202859994,
+                "max": 0.0213290006
+              },
+              "seed_ms": {
+                "median": 0.004441,
+                "min": 0.004119,
+                "max": 0.004778
+              },
+              "verification_ms": {
+                "median": 8.7e-05,
+                "min": 8.6e-05,
+                "max": 9e-05
+              },
+              "wall_ms": {
+                "median": 0.781553,
+                "min": 0.774325,
+                "max": 0.801586
+              }
+            }
+          },
+          "median_wall_speedup": 4.191875662942884,
+          "stepped_median_verified_scalars_per_second": 83853558.23597376
+        }
+      ],
+      "command": [
+        "./build/hip-release/hip_xpoint_benchmark",
+        "0",
+        "65536"
+      ]
+    },
+    {
+      "device": 0,
+      "count": 1048576,
+      "begin": "0x800000000000000000000000000000000000000000000000fffffffffffffff1",
+      "workloads": [
+        {
+          "name": "no_match_1",
+          "targets": 1,
+          "prepare_direct_ms": 373.005254,
+          "prepare_stepped_ms": 11.218704,
+          "samples": [
+            {
+              "kernel": "direct",
+              "sample": 0,
+              "kernel_ms": 41.2756233,
+              "download_ms": 0.0205659997,
+              "seed_ms": 5.1e-05,
+              "verification_ms": 8e-05,
+              "wall_ms": 41.31684,
+              "device_steps": 1048576,
+              "matches": 0
+            },
+            {
+              "kernel": "stepped",
+              "sample": 0,
+              "kernel_ms": 0.66563201,
+              "download_ms": 0.0185620002,
+              "seed_ms": 0.006326,
+              "verification_ms": 8.8e-05,
+              "wall_ms": 0.709998,
+              "device_steps": 1048576,
+              "matches": 0
+            },
+            {
+              "kernel": "stepped",
+              "sample": 1,
+              "kernel_ms": 0.660821021,
+              "download_ms": 0.0194840003,
+              "seed_ms": 0.005088,
+              "verification_ms": 9e-05,
+              "wall_ms": 0.703799,
+              "device_steps": 1048576,
+              "matches": 0
+            },
+            {
+              "kernel": "direct",
+              "sample": 1,
+              "kernel_ms": 40.7626724,
+              "download_ms": 0.0196850002,
+              "seed_ms": 4.5e-05,
+              "verification_ms": 8.3e-05,
+              "wall_ms": 40.805144,
+              "device_steps": 1048576,
+              "matches": 0
+            },
+            {
+              "kernel": "direct",
+              "sample": 2,
+              "kernel_ms": 41.4072189,
+              "download_ms": 0.0198049992,
+              "seed_ms": 3.2e-05,
+              "verification_ms": 9.3e-05,
+              "wall_ms": 41.446269,
+              "device_steps": 1048576,
+              "matches": 0
+            },
+            {
+              "kernel": "stepped",
+              "sample": 2,
+              "kernel_ms": 0.665391982,
+              "download_ms": 0.019444,
+              "seed_ms": 0.004935,
+              "verification_ms": 9.2e-05,
+              "wall_ms": 0.708322,
+              "device_steps": 1048576,
+              "matches": 0
+            },
+            {
+              "kernel": "stepped",
+              "sample": 3,
+              "kernel_ms": 0.664188981,
+              "download_ms": 0.0189229995,
+              "seed_ms": 0.004466,
+              "verification_ms": 8.8e-05,
+              "wall_ms": 0.7062,
+              "device_steps": 1048576,
+              "matches": 0
+            },
+            {
+              "kernel": "direct",
+              "sample": 3,
+              "kernel_ms": 41.1505547,
+              "download_ms": 0.0194039997,
+              "seed_ms": 3.3e-05,
+              "verification_ms": 8.6e-05,
+              "wall_ms": 41.19187,
+              "device_steps": 1048576,
+              "matches": 0
+            },
+            {
+              "kernel": "direct",
+              "sample": 4,
+              "kernel_ms": 41.4709244,
+              "download_ms": 0.020606,
+              "seed_ms": 3.2e-05,
+              "verification_ms": 8.4e-05,
+              "wall_ms": 41.510526,
+              "device_steps": 1048576,
+              "matches": 0
+            },
+            {
+              "kernel": "stepped",
+              "sample": 4,
+              "kernel_ms": 0.66563201,
+              "download_ms": 0.0198849998,
+              "seed_ms": 0.004759,
+              "verification_ms": 9.3e-05,
+              "wall_ms": 0.70951,
+              "device_steps": 1048576,
+              "matches": 0
+            }
+          ],
+          "statistics": {
+            "direct": {
+              "kernel_ms": {
+                "median": 41.2756233,
+                "min": 40.7626724,
+                "max": 41.4709244
+              },
+              "download_ms": {
+                "median": 0.0198049992,
+                "min": 0.0194039997,
+                "max": 0.020606
+              },
+              "seed_ms": {
+                "median": 3.3e-05,
+                "min": 3.2e-05,
+                "max": 5.1e-05
+              },
+              "verification_ms": {
+                "median": 8.4e-05,
+                "min": 8e-05,
+                "max": 9.3e-05
+              },
+              "wall_ms": {
+                "median": 41.31684,
+                "min": 40.805144,
+                "max": 41.510526
+              }
+            },
+            "stepped": {
+              "kernel_ms": {
+                "median": 0.665391982,
+                "min": 0.660821021,
+                "max": 0.66563201
+              },
+              "download_ms": {
+                "median": 0.019444,
+                "min": 0.0185620002,
+                "max": 0.0198849998
+              },
+              "seed_ms": {
+                "median": 0.004935,
+                "min": 0.004466,
+                "max": 0.006326
+              },
+              "verification_ms": {
+                "median": 9e-05,
+                "min": 8.8e-05,
+                "max": 9.3e-05
+              },
+              "wall_ms": {
+                "median": 0.708322,
+                "min": 0.703799,
+                "max": 0.709998
+              }
+            }
+          },
+          "median_wall_speedup": 58.330589760024395,
+          "stepped_median_verified_scalars_per_second": 1480366274.0956795
+        },
+        {
+          "name": "boundary_3",
+          "targets": 3,
+          "prepare_direct_ms": 15.859518,
+          "prepare_stepped_ms": 3.155147,
+          "samples": [
+            {
+              "kernel": "direct",
+              "sample": 0,
+              "kernel_ms": 41.7690468,
+              "download_ms": 0.0193239991,
+              "seed_ms": 3.2e-05,
+              "verification_ms": 0.012538,
+              "wall_ms": 41.819973,
+              "device_steps": 1048576,
+              "matches": 3
+            },
+            {
+              "kernel": "stepped",
+              "sample": 0,
+              "kernel_ms": 0.69778502,
+              "download_ms": 0.0207679998,
+              "seed_ms": 0.004928,
+              "verification_ms": 0.011316,
+              "wall_ms": 0.75386,
+              "device_steps": 1048576,
+              "matches": 3
+            },
+            {
+              "kernel": "stepped",
+              "sample": 1,
+              "kernel_ms": 0.695459008,
+              "download_ms": 0.0218100008,
+              "seed_ms": 0.00451,
+              "verification_ms": 0.010678,
+              "wall_ms": 0.751222,
+              "device_steps": 1048576,
+              "matches": 3
+            },
+            {
+              "kernel": "direct",
+              "sample": 1,
+              "kernel_ms": 41.0556717,
+              "download_ms": 0.0190430004,
+              "seed_ms": 3.2e-05,
+              "verification_ms": 0.010937,
+              "wall_ms": 41.108748,
+              "device_steps": 1048576,
+              "matches": 3
+            },
+            {
+              "kernel": "direct",
+              "sample": 2,
+              "kernel_ms": 41.5691605,
+              "download_ms": 0.0184819996,
+              "seed_ms": 3.3e-05,
+              "verification_ms": 0.012813,
+              "wall_ms": 41.619219,
+              "device_steps": 1048576,
+              "matches": 3
+            },
+            {
+              "kernel": "stepped",
+              "sample": 2,
+              "kernel_ms": 0.73683399,
+              "download_ms": 0.0215690006,
+              "seed_ms": 0.004542,
+              "verification_ms": 0.010146,
+              "wall_ms": 0.792452,
+              "device_steps": 1048576,
+              "matches": 3
+            },
+            {
+              "kernel": "stepped",
+              "sample": 3,
+              "kernel_ms": 0.705963969,
+              "download_ms": 0.0211280007,
+              "seed_ms": 0.004582,
+              "verification_ms": 0.010189,
+              "wall_ms": 0.760449,
+              "device_steps": 1048576,
+              "matches": 3
+            },
+            {
+              "kernel": "direct",
+              "sample": 3,
+              "kernel_ms": 41.5319176,
+              "download_ms": 0.0190440007,
+              "seed_ms": 3.4e-05,
+              "verification_ms": 0.010126,
+              "wall_ms": 41.584321,
+              "device_steps": 1048576,
+              "matches": 3
+            },
+            {
+              "kernel": "direct",
+              "sample": 4,
+              "kernel_ms": 41.4106789,
+              "download_ms": 0.0242950004,
+              "seed_ms": 3.2e-05,
+              "verification_ms": 0.009994,
+              "wall_ms": 41.463419,
+              "device_steps": 1048576,
+              "matches": 3
+            },
+            {
+              "kernel": "stepped",
+              "sample": 4,
+              "kernel_ms": 0.699829996,
+              "download_ms": 0.0208480004,
+              "seed_ms": 0.004332,
+              "verification_ms": 0.009887,
+              "wall_ms": 0.75403,
+              "device_steps": 1048576,
+              "matches": 3
+            }
+          ],
+          "statistics": {
+            "direct": {
+              "kernel_ms": {
+                "median": 41.5319176,
+                "min": 41.0556717,
+                "max": 41.7690468
+              },
+              "download_ms": {
+                "median": 0.0190440007,
+                "min": 0.0184819996,
+                "max": 0.0242950004
+              },
+              "seed_ms": {
+                "median": 3.2e-05,
+                "min": 3.2e-05,
+                "max": 3.4e-05
+              },
+              "verification_ms": {
+                "median": 0.010937,
+                "min": 0.009994,
+                "max": 0.012813
+              },
+              "wall_ms": {
+                "median": 41.584321,
+                "min": 41.108748,
+                "max": 41.819973
+              }
+            },
+            "stepped": {
+              "kernel_ms": {
+                "median": 0.699829996,
+                "min": 0.695459008,
+                "max": 0.73683399
+              },
+              "download_ms": {
+                "median": 0.0211280007,
+                "min": 0.0207679998,
+                "max": 0.0218100008
+              },
+              "seed_ms": {
+                "median": 0.004542,
+                "min": 0.004332,
+                "max": 0.004928
+              },
+              "verification_ms": {
+                "median": 0.010189,
+                "min": 0.009887,
+                "max": 0.011316
+              },
+              "wall_ms": {
+                "median": 0.75403,
+                "min": 0.751222,
+                "max": 0.792452
+              }
+            }
+          },
+          "median_wall_speedup": 55.14942508918744,
+          "stepped_median_verified_scalars_per_second": 1390629020.0655146
+        },
+        {
+          "name": "no_match_32",
+          "targets": 32,
+          "prepare_direct_ms": 2.95957,
+          "prepare_stepped_ms": 3.001751,
+          "samples": [
+            {
+              "kernel": "direct",
+              "sample": 0,
+              "kernel_ms": 41.8646812,
+              "download_ms": 0.0193639994,
+              "seed_ms": 3.2e-05,
+              "verification_ms": 8.5e-05,
+              "wall_ms": 41.903681,
+              "device_steps": 1048576,
+              "matches": 0
+            },
+            {
+              "kernel": "stepped",
+              "sample": 0,
+              "kernel_ms": 1.84338903,
+              "download_ms": 0.0208470002,
+              "seed_ms": 0.005464,
+              "verification_ms": 6.6e-05,
+              "wall_ms": 1.893021,
+              "device_steps": 1048576,
+              "matches": 0
+            },
+            {
+              "kernel": "stepped",
+              "sample": 1,
+              "kernel_ms": 1.89061594,
+              "download_ms": 0.0211679991,
+              "seed_ms": 0.004562,
+              "verification_ms": 6e-05,
+              "wall_ms": 1.934752,
+              "device_steps": 1048576,
+              "matches": 0
+            },
+            {
+              "kernel": "direct",
+              "sample": 1,
+              "kernel_ms": 41.7589645,
+              "download_ms": 0.0184409991,
+              "seed_ms": 3.4e-05,
+              "verification_ms": 8.1e-05,
+              "wall_ms": 41.797001,
+              "device_steps": 1048576,
+              "matches": 0
+            },
+            {
+              "kernel": "direct",
+              "sample": 2,
+              "kernel_ms": 41.6020813,
+              "download_ms": 0.0181610007,
+              "seed_ms": 3.4e-05,
+              "verification_ms": 0.000136,
+              "wall_ms": 41.642151,
+              "device_steps": 1048576,
+              "matches": 0
+            },
+            {
+              "kernel": "stepped",
+              "sample": 2,
+              "kernel_ms": 1.84310794,
+              "download_ms": 0.0230930001,
+              "seed_ms": 0.005026,
+              "verification_ms": 6.2e-05,
+              "wall_ms": 1.889809,
+              "device_steps": 1048576,
+              "matches": 0
+            },
+            {
+              "kernel": "stepped",
+              "sample": 3,
+              "kernel_ms": 1.89101601,
+              "download_ms": 0.0214889999,
+              "seed_ms": 0.004298,
+              "verification_ms": 6.3e-05,
+              "wall_ms": 1.936285,
+              "device_steps": 1048576,
+              "matches": 0
+            },
+            {
+              "kernel": "direct",
+              "sample": 3,
+              "kernel_ms": 40.9542885,
+              "download_ms": 0.0192440003,
+              "seed_ms": 3.5e-05,
+              "verification_ms": 8.2e-05,
+              "wall_ms": 40.99322,
+              "device_steps": 1048576,
+              "matches": 0
+            },
+            {
+              "kernel": "direct",
+              "sample": 4,
+              "kernel_ms": 41.6151962,
+              "download_ms": 0.0183620006,
+              "seed_ms": 3.2e-05,
+              "verification_ms": 8.3e-05,
+              "wall_ms": 41.656146,
+              "device_steps": 1048576,
+              "matches": 0
+            },
+            {
+              "kernel": "stepped",
+              "sample": 4,
+              "kernel_ms": 1.86844504,
+              "download_ms": 0.0210880004,
+              "seed_ms": 0.004427,
+              "verification_ms": 6.4e-05,
+              "wall_ms": 1.912843,
+              "device_steps": 1048576,
+              "matches": 0
+            }
+          ],
+          "statistics": {
+            "direct": {
+              "kernel_ms": {
+                "median": 41.6151962,
+                "min": 40.9542885,
+                "max": 41.8646812
+              },
+              "download_ms": {
+                "median": 0.0184409991,
+                "min": 0.0181610007,
+                "max": 0.0193639994
+              },
+              "seed_ms": {
+                "median": 3.4e-05,
+                "min": 3.2e-05,
+                "max": 3.5e-05
+              },
+              "verification_ms": {
+                "median": 8.3e-05,
+                "min": 8.1e-05,
+                "max": 0.000136
+              },
+              "wall_ms": {
+                "median": 41.656146,
+                "min": 40.99322,
+                "max": 41.903681
+              }
+            },
+            "stepped": {
+              "kernel_ms": {
+                "median": 1.86844504,
+                "min": 1.84310794,
+                "max": 1.89101601
+              },
+              "download_ms": {
+                "median": 0.0211679991,
+                "min": 0.0208470002,
+                "max": 0.0230930001
+              },
+              "seed_ms": {
+                "median": 0.004562,
+                "min": 0.004298,
+                "max": 0.005464
+              },
+              "verification_ms": {
+                "median": 6.3e-05,
+                "min": 6e-05,
+                "max": 6.6e-05
+              },
+              "wall_ms": {
+                "median": 1.912843,
+                "min": 1.889809,
+                "max": 1.936285
+              }
+            }
+          },
+          "median_wall_speedup": 21.777085730506894,
+          "stepped_median_verified_scalars_per_second": 548176719.1557279
+        }
+      ],
+      "command": [
+        "./build/hip-release/hip_xpoint_benchmark",
+        "0",
+        "1048576"
+      ]
+    }
+  ],
+  "compiler_resources": {
+    "source_compile_command": {
+      "directory": "/home/bagus/keyhunt-GPU/build/hip-release",
+      "command": "/opt/rocm/core-10.0/lib/llvm/bin/clang++ -D__HIP_ROCclr__=1 -I/home/bagus/keyhunt-GPU/kernels -I/home/bagus/keyhunt-GPU/kernels/hip -I/home/bagus/keyhunt-GPU/include -I/home/bagus/keyhunt-GPU/third_party -O3 -DNDEBUG --offload-arch=gfx942 -Wall -Wextra -std=gnu++17 -o CMakeFiles/keyhunt_backend.dir/src/backend/hip/xpoint.hip.o -x hip -c /home/bagus/keyhunt-GPU/src/backend/hip/xpoint.hip",
+      "file": "/home/bagus/keyhunt-GPU/src/backend/hip/xpoint.hip"
+    },
+    "resource_command": [
+      "/opt/rocm/core-10.0/lib/llvm/bin/clang++",
+      "-D__HIP_ROCclr__=1",
+      "-I/home/bagus/keyhunt-GPU/kernels",
+      "-I/home/bagus/keyhunt-GPU/kernels/hip",
+      "-I/home/bagus/keyhunt-GPU/include",
+      "-I/home/bagus/keyhunt-GPU/third_party",
+      "-O3",
+      "-DNDEBUG",
+      "--offload-arch=gfx942",
+      "-Wall",
+      "-Wextra",
+      "-std=gnu++17",
+      "-o",
+      "/tmp/keyhunt-c09-resources.o",
+      "-x",
+      "hip",
+      "-c",
+      "/home/bagus/keyhunt-GPU/src/backend/hip/xpoint.hip",
+      "--offload-device-only",
+      "-Rpass-analysis=kernel-resource-usage"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "In file included from /home/bagus/keyhunt-GPU/src/backend/hip/xpoint.hip:3:\n/home/bagus/keyhunt-GPU/kernels/hip/xpoint.h:42:1: remark: Function Name: _ZN7keyhunt3gpu13xpoint_directENS0_6ScalarEmPKNS0_5FieldEjPNS_4core15XPointCandidateEjPNS0_14XPointCountersE [-Rpass-analysis=kernel-resource-usage]\n   42 |     XPointCounters* counters) {\n      | ^\n/home/bagus/keyhunt-GPU/kernels/hip/xpoint.h:42:1: remark:     TotalSGPRs: 86 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/kernels/hip/xpoint.h:42:1: remark:     VGPRs: 128 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/kernels/hip/xpoint.h:42:1: remark:     AGPRs: 0 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/kernels/hip/xpoint.h:42:1: remark:     ScratchSize [bytes/lane]: 164 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/kernels/hip/xpoint.h:42:1: remark:     Dynamic Stack: False [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/kernels/hip/xpoint.h:42:1: remark:     Occupancy [waves/SIMD]: 4 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/kernels/hip/xpoint.h:42:1: remark:     SGPRs Spill: 0 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/kernels/hip/xpoint.h:42:1: remark:     VGPRs Spill: 84 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/kernels/hip/xpoint.h:42:1: remark:     LDS Size [bytes/block]: 32768 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/kernels/hip/xpoint.h:64:1: remark: Function Name: _ZN7keyhunt3gpu14xpoint_steppedILb1EEEvNS0_5PointEmPKS2_PKNS0_5FieldEjPNS_4core15XPointCandidateEjPNS0_14XPointCountersE [-Rpass-analysis=kernel-resource-usage]\n   64 |     uint32_t capacity, XPointCounters* counters) {\n      | ^\n/home/bagus/keyhunt-GPU/kernels/hip/xpoint.h:64:1: remark:     TotalSGPRs: 104 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/kernels/hip/xpoint.h:64:1: remark:     VGPRs: 128 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/kernels/hip/xpoint.h:64:1: remark:     AGPRs: 0 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/kernels/hip/xpoint.h:64:1: remark:     ScratchSize [bytes/lane]: 260 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/kernels/hip/xpoint.h:64:1: remark:     Dynamic Stack: False [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/kernels/hip/xpoint.h:64:1: remark:     Occupancy [waves/SIMD]: 4 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/kernels/hip/xpoint.h:64:1: remark:     SGPRs Spill: 0 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/kernels/hip/xpoint.h:64:1: remark:     VGPRs Spill: 220 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/kernels/hip/xpoint.h:64:1: remark:     LDS Size [bytes/block]: 0 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/kernels/hip/xpoint.h:64:1: remark: Function Name: _ZN7keyhunt3gpu14xpoint_steppedILb0EEEvNS0_5PointEmPKS2_PKNS0_5FieldEjPNS_4core15XPointCandidateEjPNS0_14XPointCountersE [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/kernels/hip/xpoint.h:64:1: remark:     TotalSGPRs: 108 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/kernels/hip/xpoint.h:64:1: remark:     VGPRs: 128 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/kernels/hip/xpoint.h:64:1: remark:     AGPRs: 0 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/kernels/hip/xpoint.h:64:1: remark:     ScratchSize [bytes/lane]: 912 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/kernels/hip/xpoint.h:64:1: remark:     Dynamic Stack: False [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/kernels/hip/xpoint.h:64:1: remark:     Occupancy [waves/SIMD]: 4 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/kernels/hip/xpoint.h:64:1: remark:     SGPRs Spill: 0 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/kernels/hip/xpoint.h:64:1: remark:     VGPRs Spill: 105 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/kernels/hip/xpoint.h:64:1: remark:     LDS Size [bytes/block]: 32768 [-Rpass-analysis=kernel-resource-usage]\n"
+  },
+  "compile_commands": [
+    {
+      "directory": "/home/bagus/keyhunt-GPU/build/hip-release",
+      "command": "/opt/rocm/core-10.0/lib/llvm/bin/clang++ -D__HIP_ROCclr__=1 -I/home/bagus/keyhunt-GPU/kernels -I/home/bagus/keyhunt-GPU/kernels/hip -I/home/bagus/keyhunt-GPU/include -I/home/bagus/keyhunt-GPU/third_party -O3 -DNDEBUG --offload-arch=gfx942 -Wall -Wextra -std=gnu++17 -o CMakeFiles/keyhunt_backend.dir/src/backend/hip/xpoint.hip.o -x hip -c /home/bagus/keyhunt-GPU/src/backend/hip/xpoint.hip",
+      "file": "/home/bagus/keyhunt-GPU/src/backend/hip/xpoint.hip"
+    },
+    {
+      "directory": "/home/bagus/keyhunt-GPU/build/hip-release",
+      "command": "/usr/bin/c++  -I/home/bagus/keyhunt-GPU/include -I/home/bagus/keyhunt-GPU/third_party -O3 -DNDEBUG -std=gnu++17 -o CMakeFiles/hip_xpoint_benchmark.dir/tests/gpu/xpoint_benchmark.cpp.o -c /home/bagus/keyhunt-GPU/tests/gpu/xpoint_benchmark.cpp",
+      "file": "/home/bagus/keyhunt-GPU/tests/gpu/xpoint_benchmark.cpp"
+    }
+  ],
+  "decision": "Retain stepped kernel and use 1048576 maximum steps by default; both target-count branches improve checked whole-batch time well beyond the 5% gate.",
+  "limitations": [
+    "SPX/NPS1 device 0 timings; CPX/QPX arithmetic/search hardware validation remains pending.",
+    "No durable storage/checkpoint cost or multi-device scheduling measured.",
+    "Compiler resource estimates show spills; further workload/profiler tuning remains C16/C17."
+  ]
+}

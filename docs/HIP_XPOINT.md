@@ -20,7 +20,7 @@ printf '%s\n' 79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798 >
 endomorphism, random order, early stop, or silent CPU fallback is enabled.
 `--device` chooses one currently visible logical HIP device. CPX/QPX/SPX settings
 are neither changed nor assumed; allocations query this device's current free
-memory and retain 64 MiB of headroom. CLI defaults are 65,536 steps and 1,024
+memory and retain 64 MiB of headroom. CLI defaults are 1,048,576 steps and 1,024
 candidate slots; each limit must be 1..1,048,576.
 
 ## Targets and identity
@@ -97,3 +97,88 @@ host sanitizer results. Twenty-nine xpoint runtime/corruption boundaries pass.
 The fault-test binary uses the host C++ linker because the CPU archives contain
 GCC LTO objects; HIP clang/lld cannot consume those archives directly. Kernel
 compilation remains HIP without the legacy x86/fast-math compiler options.
+
+
+## Measured point-stepping optimization
+
+`--kernel stepped` is the default; `--kernel direct` retains the validated
+scalar-per-thread reference. A stepped lane owns eight consecutive offsets,
+starting at `8 * global_thread_index`. The CPU computes the batch's `begin*G`
+once. A read-only table of the 20 affine points `2^i * G` is prepared once per
+executor (1,920 bytes); its set bits reconstruct the lane offset without another
+256-bit multiplication. The lane then adds G for the remaining seven points.
+The final group clips to the exact batch count; no point outside the range is
+looked up. Equal/inverse/infinity cases retain C08's complete point operations.
+No wave size, CU count, XCC count or partition count enters this mapping.
+
+For one to four targets, compare Jacobian `X` with `target_x * Z^2` directly;
+nonzero Z makes this equivalent to affine-X equality. This removes normalization
+inversions. Larger target sets keep eight X/Z pairs and use C08 batch inversion,
+then the same exact binary lookup. Separate template instantiations remove the
+unused arrays from the small-target path. Count atomics are amortized per lane
+group; candidate writes and overflow semantics are identical to the reference.
+
+The paired benchmark warms each executor once, alternates direct/stepped order
+and retains five samples for each equivalent workload. All samples check exact
+counts and expected matches, including CPU verification. Tables/uploads are
+prepared outside the timed batches and their preparation costs are reported.
+The first owner can pay lazy runtime initialization, so those preparation samples
+are descriptive and are not used for the speedup comparison.
+Batch wall time includes CPU seed derivation, queueing, download and verification;
+CLI startup, JSON output and durable storage are excluded. Kernel events exclude
+CPU seed work. The host was not reserved and clocks/power limits were not changed.
+
+| Scalars | Targets/workload | Direct median wall ms | Stepped median wall ms | Speedup |
+| ---: | --- | ---: | ---: | ---: |
+| 65,536 | 1, no match | 3.273747 | 0.408086 | 8.02x |
+| 65,536 | 3, start/middle/end matches | 3.284686 | 0.447317 | 7.34x |
+| 65,536 | 32, no match | 3.276173 | 0.781553 | 4.19x |
+| 1,048,576 | 1, no match | 41.316840 | 0.708322 | 58.33x |
+| 1,048,576 | 3, start/middle/end matches | 41.584321 | 0.754030 | 55.15x |
+| 1,048,576 | 32, no match | 41.656146 | 1.912843 | 21.78x |
+
+Use the maximum bounded batch (1,048,576) by default: its 16 times larger work
+amortizes launch overhead and exposes more independent groups on this SPX device.
+Smaller ranges still launch only their actual work; `--batch-size` can reduce the
+limit on other partitions/workloads. This choice does not alter memory capacity
+or exact intervals, and all executor allocations remain explicitly bounded.
+Retain the stepped path based on these whole-batch improvements, not a claim of a
+global optimum. C16/C17 must revisit grouping, block size, arithmetic, spills,
+large target layouts and scheduling with profiler evidence and durable workloads.
+
+Reproduce the checked measurements (one visible logical device at a time):
+
+```sh
+./build/hip-release/hip_xpoint_benchmark 0 65536 > /tmp/keyhunt-xpoint-small.json
+./build/hip-release/hip_xpoint_benchmark 0 1048576 > /tmp/keyhunt-xpoint-large.json
+```
+
+
+Compiler resource remarks for these exact gfx942 kernels:
+
+| Kernel | SGPRs | VGPRs | Scratch bytes/lane | VGPR spills | LDS bytes/block |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Direct | 86 | 128 | 164 | 84 | 32768 |
+| Stepped, up to 4 targets | 104 | 128 | 260 | 220 | 0 |
+| Stepped, larger target set | 108 | 128 | 912 | 105 | 32768 |
+
+All three report an estimated four waves/SIMD. These are compiler estimates,
+not achieved occupancy or profiling counters. The stepped path wins despite
+spills because it removes much more arithmetic; the remaining scratch traffic
+and compiler-generated LDS use are concrete C17 tuning targets. No handwritten
+ISA, wave-width assumptions, fast-math or architecture dispatch was added.
+
+
+[Measurement evidence](baselines/C09_MEASUREMENTS.json) retains raw samples,
+min/median/max statistics, source/binary fingerprints, exact compile commands,
+runtime/device identity, compiler remarks, profiler version and read-only clock,
+power and temperature snapshots around the final runs. Clocks were not pinned;
+snapshots do not prove a constant frequency during every sample.
+
+[Final search parity evidence](baselines/C09_SEARCH.json) records 48 independent
+search cases per kernel and 29 CLI rejections per variant, including full-capacity
+local-offset bits and both target-lookup paths. Both variants execute on all eight
+visible SPX/NPS1 devices. Thirty-one runtime/corruption boundaries pass, including
+the extra seed-table allocation/upload. CPX/QPX compatibility remains mode-independent
+by construction and covered by C07 discovery tests; actual C09 CPX/QPX hardware
+search validation is pending. Partition settings remain unchanged.

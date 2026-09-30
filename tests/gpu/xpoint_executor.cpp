@@ -22,12 +22,12 @@ int main() {
         core::XPointVerifier verifier;
         auto begin=UInt256::from_hex("100000000fffffffffffffffe");
         std::vector<core::XPointBytes> values;
-        for (unsigned i=0;i<257;++i) {
+        for (unsigned i=0;i<1025;++i) {
             const auto pub=verifier.derive(begin.add(UInt256(i)));
             core::XPointBytes x{}; std::copy_n(pub.begin()+1,32,x.begin()); values.push_back(x);
         }
         core::XPointTargets targets(values);
-        backend::XPointOptions options; options.max_steps=257; options.candidate_capacity=257;
+        backend::XPointOptions options; options.max_steps=1025; options.candidate_capacity=1025;
         rejects([&] { backend::HipXPointExecutor e(-1,targets,verifier,options); });
         rejects([&] { auto bad=options; bad.max_steps=0; backend::HipXPointExecutor e(0,targets,verifier,bad); });
         rejects([&] { auto bad=options; bad.max_steps=1048577; backend::HipXPointExecutor e(0,targets,verifier,bad); });
@@ -45,7 +45,7 @@ int main() {
         require(kept.matches.size()==257 && kept.verified_steps==257,"dense batch incomplete");
         require(kept.batch.work().identity()==first.work().identity() && kept.batch.work().block_id()==UInt256(1),"identity lost");
         rejects([&] { e.take(ticket); });
-        for (unsigned count : {1,2,7,8,9,31,32,33,127,128,129,255,256,257}) {
+        for (unsigned count : {1,2,3,4,5,7,8,9,31,32,33,127,128,129,255,256,257,1023,1024,1025}) {
             const auto next=e.submit(plan(begin,count,targets));
             rejects([&] { e.poll(ticket); });
             e.drain(); const auto r=e.take(next);
@@ -60,7 +60,7 @@ int main() {
         auto replay=small.submit(plan(begin,1,targets)); small.drain();
         require(small.take(replay).matches.size()==1,"replay failed");
         require(kept.matches.front().scalar==begin && kept.matches.back().scalar==begin.add(UInt256(256)),"owned result mutated");
-        rejects([&] { e.submit(plan(begin,258,targets)); });
+        rejects([&] { e.submit(plan(begin,1026,targets)); });
         rejects([&] { e.submit(plan(begin,1,core::XPointTargets({core::XPointBytes{}}))); });
         backend::HipDiagnosticExecutor diagnostic(0);
         auto dt=diagnostic.submit(first);
