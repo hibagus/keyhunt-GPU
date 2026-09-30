@@ -19,8 +19,9 @@ change is committed separately. Analysis and validation evidence live under
 | C10: versioned GPU BSGS table preparation | Completed | [Table format and acceptance](BSGS_TABLES.md); 4,765 pinned-oracle baby entries, checksums/rehashed-corruption rejection, exact collision lists, memory budgets, CPU/HIP filter parity and eight SPX devices |
 | C11: complete HIP BSGS range search | Completed | [Search mapping and evidence](HIP_BSGS.md); exhaustive tiny/seeded high-offset cases, signed points/infinity, exact tails, all-target replay, eight SPX devices and measured grouping |
 | C12: sparse coverage and transactional assignments | Completed | [Storage contracts, commands and measurements](STORAGE.md); private versioned SQLite, exact sparse rank selection, merged coverage, fenced ownership, concurrent/idempotent claims and quarantined backup/restore; [acceptance evidence](baselines/C12_VALIDATION.json) |
-| C13: checkpoint verified progress and replay incomplete work | Next | Bind CPU-verified C09/C11 results and exact coverage in one durable transaction; fault/replay and corrupt/mismatched job gates |
-| C14–C23 | Planned | Acceptance gates remain in the redesign plan |
+| C13: checkpoint verified progress and replay incomplete work | Completed | [Checkpoint contracts, commands and findings](CHECKPOINTS.md); canonical input binding, atomic verified matches/coverage, fourteen process-exit faults, real HIP restart, migration/corruption gates and a corrected BSGS type collision; [acceptance evidence](baselines/C13_VALIDATION.json) |
+| C14: graceful pause, resume and inspection | Next | Signal/control path, bounded drain, checkpoint-on-pause, resume controls and operational recovery checks |
+| C15–C23 | Planned | Acceptance gates remain in the redesign plan |
 
 C01 records the original CPU boundary/stride defects. C06 fixes modular/point
 arithmetic and the tested BSGS start miss; tail overrun and stride defects remain.
@@ -29,6 +30,8 @@ legacy target with GMP development files extracted
 under `/tmp`; no system package was installed. Sanitizer diagnostics and known
 legacy defects remain documented follow-up work. C09 uses the exact planner for
 HIP xpoint search; C11 adds a separate exact BSGS tile mapping. C12 supplies the
-local storage foundation; GPU checkpoint integration, authenticated coordination
-and deployment remain unimplemented. C12 changes no kernels or partition settings:
-CPX/QPX/SPX contracts remain supported, with current hardware validation on SPX/NPS1.
+local storage foundation; C13 adds verified durable GPU checkpoint execution through
+separate commands. C13 also fixes the legacy/canonical BSGS target type-name collision
+found by debug and sanitizer creation tests. Graceful pause controls, authenticated
+coordination and deployment remain unimplemented. CPX/QPX/SPX contracts remain
+supported, with current hardware validation on SPX/NPS1 and no partition changes.

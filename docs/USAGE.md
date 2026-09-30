@@ -5,7 +5,8 @@ The legacy `-m` search commands use the preserved CPU engine. HIP provides devic
 discovery, bounded diagnostics and the separate [bounded xpoint search](HIP_XPOINT.md).
 C10 adds [versioned BSGS table preparation](BSGS_TABLES.md), including HIP lookup
 validation, and C11 implements [bounded HIP BSGS range search](HIP_BSGS.md).
-Job, checkpoint and coordinator commands remain planned.
+C12/C13 add [local state](STORAGE.md) and [verified checkpoint commands](CHECKPOINTS.md).
+Authenticated coordinator commands remain planned.
 
 ## A finite address search
 
@@ -77,12 +78,14 @@ job input validation will be added during core extraction.
 parameter, not a global limit. Minikey search uses its own candidate domain and
 continues after finding matches; scalar `-r` bounds do not make it finite.
 
-Ctrl-C stops the current process, without a durable progress checkpoint. An OS
-stop/continue can suspend and resume the same live process, but that state does
-not survive process or machine failure. Durable local pause/resume is planned
-under C13/C14. C12 provides independent local assignment ownership and thirty-day
-expiry through [`keyhunt state`](STORAGE.md); GPU searches do not yet consume
-those assignments or write durable checkpoints.
+For the ordinary legacy/C09/C11 commands, Ctrl-C stops the process without a
+durable progress checkpoint. An OS stop/continue can suspend and resume that same
+live process, but its memory does not survive failure. Graceful checkpoint-on-signal
+controls remain C14 work. C12 provides local assignment ownership and thirty-day
+expiry through [`keyhunt state`](STORAGE.md). C13 adds the separate
+[`keyhunt checkpoint` commands](CHECKPOINTS.md), which persist verified HIP results
+and accepted coverage and resume the committed complement after process failure.
+The ordinary legacy and C09/C11 search commands retain their volatile behavior.
 
 `bsgsd` is the old local table daemon, not the authenticated coordinator. Its
 [protocol document](../BSGSD.md) remains available; C02 documents that its port

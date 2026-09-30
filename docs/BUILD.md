@@ -255,3 +255,20 @@ The opt-in measurement creates synthetic journals in temporary external
 directories. It reports allocation wall time and sparse-index/file sizes for
 sequential, global random and random-window claims. Timing includes process
 startup, transaction, JSON and close/checkpoint; it is not GPU throughput.
+
+
+## Verified local checkpoints
+
+C13 adds `storage_checkpoint` and `storage_checkpoint_failures` to every CPU/HIP
+suite. `checkpoint_cli` tests canonical job creation and explicit backend rejection
+in CPU builds, and actual HIP crash/restart, overflow and result inspection in HIP
+builds. These checks are included in the focused sanitizer selector.
+
+~~~sh
+ctest --preset cpu-release -R checkpoint
+ctest --preset hip-release -R checkpoint
+python3 tools/measure_c13_checkpoints.py --binary build/hip-release/keyhunt --oracle build/hip-release/secp256k1_oracle --report /tmp/keyhunt-c13-timing.json
+~~~
+
+See [CHECKPOINTS.md](CHECKPOINTS.md) for schema migration, command examples,
+timing scope, known limits and acceptance evidence.

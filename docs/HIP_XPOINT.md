@@ -70,8 +70,9 @@ measurements are reported separately, including replay work in attempted counts.
 
 These are **volatile execution receipts**, with `durable_coverage: false`, not
 checkpoints or persisted assignments. A partial output after an error is not a
-complete job. C12 supplies the [local journal](STORAGE.md); C13 will bind durable
-matches and coverage. Stdout flush is not fsync. The application does not append legacy `KEYFOUNDKEYFOUND.txt`.
+complete job. For durable execution, use the separate C13
+[checkpoint commands](CHECKPOINTS.md), which bind verified matches and coverage.
+Stdout flush alone is not fsync. The application does not append legacy `KEYFOUNDKEYFOUND.txt`.
 Host storage is bounded by targets and one result slot, independent of range size.
 
 ## Reference implementation and validation

@@ -1,0 +1,377 @@
+{
+  "binary_sha256": "7082e7ed0bc6d7e5ccf951393de716d6f2646313b50fb8d3b726801395c7efcc",
+  "oracle_commit": "0cdc758a56360bf58a851fe91085a327ec97685a",
+  "scope": "one HIP device, 2^20 scalars, one no-match target, one excluded warm-up round, rotating variant order",
+  "timing": "fresh-process wall time includes startup, preparation, runtime, output, cleanup and checkpoint work; not kernel-only",
+  "device": 0,
+  "bsgs_m": 257,
+  "repeats": 3,
+  "cases": [
+    {
+      "mode": "xpoint",
+      "variant": "volatile",
+      "median_process_wall_ms": 616.151479,
+      "median_checkpoint_ms": 0,
+      "samples": [
+        {
+          "process_wall_ms": 616.151479,
+          "summary": {
+            "type": "summary",
+            "complete": true,
+            "durable_coverage": false,
+            "verified_steps": "0x0000000000000000000000000000000000000000000000000000000000100000",
+            "device_steps": "0x0000000000000000000000000000000000000000000000000000000000100000",
+            "matches": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "launch_count": 16,
+            "overflow_replays": 0,
+            "kernel_ms": 20.1651128,
+            "download_ms": 16.6901072,
+            "verification_ms": 0.003359,
+            "seed_ms": 0.075587,
+            "wall_ms": 535.102231
+          }
+        },
+        {
+          "process_wall_ms": 595.629373,
+          "summary": {
+            "type": "summary",
+            "complete": true,
+            "durable_coverage": false,
+            "verified_steps": "0x0000000000000000000000000000000000000000000000000000000000100000",
+            "device_steps": "0x0000000000000000000000000000000000000000000000000000000000100000",
+            "matches": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "launch_count": 16,
+            "overflow_replays": 0,
+            "kernel_ms": 18.1092838,
+            "download_ms": 16.6291656,
+            "verification_ms": 0.003487,
+            "seed_ms": 0.073439,
+            "wall_ms": 515.986428
+          }
+        },
+        {
+          "process_wall_ms": 619.382439,
+          "summary": {
+            "type": "summary",
+            "complete": true,
+            "durable_coverage": false,
+            "verified_steps": "0x0000000000000000000000000000000000000000000000000000000000100000",
+            "device_steps": "0x0000000000000000000000000000000000000000000000000000000000100000",
+            "matches": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "launch_count": 16,
+            "overflow_replays": 0,
+            "kernel_ms": 19.9850622,
+            "download_ms": 16.5749517,
+            "verification_ms": 0.003292,
+            "seed_ms": 0.073804,
+            "wall_ms": 540.354511
+          }
+        }
+      ]
+    },
+    {
+      "mode": "xpoint",
+      "variant": "timed",
+      "median_process_wall_ms": 648.830768,
+      "median_checkpoint_ms": 0.4737,
+      "samples": [
+        {
+          "process_wall_ms": 652.812153,
+          "summary": {
+            "type": "summary",
+            "complete": true,
+            "durability": "local",
+            "durable_coverage": true,
+            "resumed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000100000",
+            "device_steps": "0x0000000000000000000000000000000000000000000000000000000000100000",
+            "match_observations": 0,
+            "batches": 16,
+            "overflow_replays": 0,
+            "checkpoints": 1,
+            "checkpoint_ms": 0.507902
+          }
+        },
+        {
+          "process_wall_ms": 648.830768,
+          "summary": {
+            "type": "summary",
+            "complete": true,
+            "durability": "local",
+            "durable_coverage": true,
+            "resumed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000100000",
+            "device_steps": "0x0000000000000000000000000000000000000000000000000000000000100000",
+            "match_observations": 0,
+            "batches": 16,
+            "overflow_replays": 0,
+            "checkpoints": 1,
+            "checkpoint_ms": 0.463917
+          }
+        },
+        {
+          "process_wall_ms": 633.895885,
+          "summary": {
+            "type": "summary",
+            "complete": true,
+            "durability": "local",
+            "durable_coverage": true,
+            "resumed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000100000",
+            "device_steps": "0x0000000000000000000000000000000000000000000000000000000000100000",
+            "match_observations": 0,
+            "batches": 16,
+            "overflow_replays": 0,
+            "checkpoints": 1,
+            "checkpoint_ms": 0.4737
+          }
+        }
+      ]
+    },
+    {
+      "mode": "xpoint",
+      "variant": "every-batch",
+      "median_process_wall_ms": 629.699993,
+      "median_checkpoint_ms": 3.8616,
+      "samples": [
+        {
+          "process_wall_ms": 648.322841,
+          "summary": {
+            "type": "summary",
+            "complete": true,
+            "durability": "local",
+            "durable_coverage": true,
+            "resumed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000100000",
+            "device_steps": "0x0000000000000000000000000000000000000000000000000000000000100000",
+            "match_observations": 0,
+            "batches": 16,
+            "overflow_replays": 0,
+            "checkpoints": 16,
+            "checkpoint_ms": 3.73403
+          }
+        },
+        {
+          "process_wall_ms": 629.699993,
+          "summary": {
+            "type": "summary",
+            "complete": true,
+            "durability": "local",
+            "durable_coverage": true,
+            "resumed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000100000",
+            "device_steps": "0x0000000000000000000000000000000000000000000000000000000000100000",
+            "match_observations": 0,
+            "batches": 16,
+            "overflow_replays": 0,
+            "checkpoints": 16,
+            "checkpoint_ms": 3.8616
+          }
+        },
+        {
+          "process_wall_ms": 626.601218,
+          "summary": {
+            "type": "summary",
+            "complete": true,
+            "durability": "local",
+            "durable_coverage": true,
+            "resumed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000100000",
+            "device_steps": "0x0000000000000000000000000000000000000000000000000000000000100000",
+            "match_observations": 0,
+            "batches": 16,
+            "overflow_replays": 0,
+            "checkpoints": 16,
+            "checkpoint_ms": 3.89256
+          }
+        }
+      ]
+    },
+    {
+      "mode": "bsgs",
+      "variant": "volatile",
+      "median_process_wall_ms": 673.706992,
+      "median_checkpoint_ms": 0,
+      "samples": [
+        {
+          "process_wall_ms": 673.706992,
+          "summary": {
+            "type": "summary",
+            "complete": true,
+            "durable_coverage": false,
+            "verified_scalars": "0x0000000000000000000000000000000000000000000000000000000000100000",
+            "verified_target_steps": "0x0000000000000000000000000000000000000000000000000000000000000ff1",
+            "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000ff1",
+            "matches": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "launch_count": 16,
+            "overflow_replays": 0,
+            "tiles": 16,
+            "kernel_ms": 16.4061353,
+            "download_ms": 16.4860175,
+            "verification_ms": 0.003229,
+            "seed_ms": 0.078348,
+            "wall_ms": 585.212492
+          }
+        },
+        {
+          "process_wall_ms": 657.280023,
+          "summary": {
+            "type": "summary",
+            "complete": true,
+            "durable_coverage": false,
+            "verified_scalars": "0x0000000000000000000000000000000000000000000000000000000000100000",
+            "verified_target_steps": "0x0000000000000000000000000000000000000000000000000000000000000ff1",
+            "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000ff1",
+            "matches": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "launch_count": 16,
+            "overflow_replays": 0,
+            "tiles": 16,
+            "kernel_ms": 17.484948,
+            "download_ms": 16.2667756,
+            "verification_ms": 0.003179,
+            "seed_ms": 0.079589,
+            "wall_ms": 567.768141
+          }
+        },
+        {
+          "process_wall_ms": 676.763482,
+          "summary": {
+            "type": "summary",
+            "complete": true,
+            "durable_coverage": false,
+            "verified_scalars": "0x0000000000000000000000000000000000000000000000000000000000100000",
+            "verified_target_steps": "0x0000000000000000000000000000000000000000000000000000000000000ff1",
+            "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000ff1",
+            "matches": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "launch_count": 16,
+            "overflow_replays": 0,
+            "tiles": 16,
+            "kernel_ms": 16.2990209,
+            "download_ms": 16.3180254,
+            "verification_ms": 0.002857,
+            "seed_ms": 0.079444,
+            "wall_ms": 588.79834
+          }
+        }
+      ]
+    },
+    {
+      "mode": "bsgs",
+      "variant": "timed",
+      "median_process_wall_ms": 688.186196,
+      "median_checkpoint_ms": 0.472586,
+      "samples": [
+        {
+          "process_wall_ms": 695.494383,
+          "summary": {
+            "type": "summary",
+            "complete": true,
+            "durability": "local",
+            "durable_coverage": true,
+            "resumed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000100000",
+            "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000ff1",
+            "match_observations": 0,
+            "batches": 16,
+            "overflow_replays": 0,
+            "checkpoints": 1,
+            "checkpoint_ms": 0.541739
+          }
+        },
+        {
+          "process_wall_ms": 681.873058,
+          "summary": {
+            "type": "summary",
+            "complete": true,
+            "durability": "local",
+            "durable_coverage": true,
+            "resumed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000100000",
+            "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000ff1",
+            "match_observations": 0,
+            "batches": 16,
+            "overflow_replays": 0,
+            "checkpoints": 1,
+            "checkpoint_ms": 0.459451
+          }
+        },
+        {
+          "process_wall_ms": 688.186196,
+          "summary": {
+            "type": "summary",
+            "complete": true,
+            "durability": "local",
+            "durable_coverage": true,
+            "resumed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000100000",
+            "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000ff1",
+            "match_observations": 0,
+            "batches": 16,
+            "overflow_replays": 0,
+            "checkpoints": 1,
+            "checkpoint_ms": 0.472586
+          }
+        }
+      ]
+    },
+    {
+      "mode": "bsgs",
+      "variant": "every-batch",
+      "median_process_wall_ms": 692.436871,
+      "median_checkpoint_ms": 3.78084,
+      "samples": [
+        {
+          "process_wall_ms": 686.906789,
+          "summary": {
+            "type": "summary",
+            "complete": true,
+            "durability": "local",
+            "durable_coverage": true,
+            "resumed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000100000",
+            "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000ff1",
+            "match_observations": 0,
+            "batches": 16,
+            "overflow_replays": 0,
+            "checkpoints": 16,
+            "checkpoint_ms": 3.84453
+          }
+        },
+        {
+          "process_wall_ms": 692.436871,
+          "summary": {
+            "type": "summary",
+            "complete": true,
+            "durability": "local",
+            "durable_coverage": true,
+            "resumed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000100000",
+            "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000ff1",
+            "match_observations": 0,
+            "batches": 16,
+            "overflow_replays": 0,
+            "checkpoints": 16,
+            "checkpoint_ms": 3.78084
+          }
+        },
+        {
+          "process_wall_ms": 706.867879,
+          "summary": {
+            "type": "summary",
+            "complete": true,
+            "durability": "local",
+            "durable_coverage": true,
+            "resumed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000100000",
+            "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000ff1",
+            "match_observations": 0,
+            "batches": 16,
+            "overflow_replays": 0,
+            "checkpoints": 16,
+            "checkpoint_ms": 3.73142
+          }
+        }
+      ]
+    }
+  ]
+}

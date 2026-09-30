@@ -112,7 +112,10 @@ batch size without crediting its retained candidate prefix.
 On restart, planning starts from the complement of committed intervals, not the
 previous process's counters or stdout. Partial BSGS group cursors are intentionally
 not persisted: replaying a bounded tile keeps restart independent of launch/group
-geometry. A retry after the final commit performs no new GPU work. Expired or
+geometry. With many targets, completing all groups of one tile can take longer
+than the checkpoint cadence; scalar coverage cannot be accepted partway through
+those groups. Reduce `--giant-batch` when a shorter tile replay window is needed.
+A retry after the final commit performs no new GPU work. Expired or
 transferred active assignments cannot resume until explicitly recovered with a
 valid fence. Corrupt target files/table caches or mismatched job inputs fail
 before GPU work.
@@ -269,3 +272,64 @@ headers together and asserts distinct types, and the new command test exercises
 creation/destruction in release, debug and sanitizer builds. The original failures
 and diagnosis are retained in [C13_ODR_FINDING.json](baselines/C13_ODR_FINDING.json).
 This changes host type identity, not BSGS arithmetic or device kernel selection.
+
+## Measured checkpoint cost
+
+The [opt-in measurement](../tools/measure_c13_checkpoints.py) compares equivalent
+no-match workloads on logical HIP device 0 after the regression suites finish:
+2^20 scalars, one target, 65,536-scalar xpoint batches, or BSGS m=257 with 256
+giants per tile and one target. One warm-up round is excluded; three fresh
+processes per variant are retained with rotating variant order. All outputs
+are checked for exact completion and no matches.
+
+[Raw timing samples](baselines/C13_CHECKPOINT_TIMING.json) include binary/oracle
+identity and the complete summaries. Process wall time includes startup,
+input/table preparation, HIP initialization, execution, output and cleanup.
+Checkpoint time measures the result/coverage SQL transaction, not preflight,
+executor registration or final connection close/checkpoint.
+
+| Mode | Persistence | Median process wall ms | Median checkpoint transaction ms | Commits |
+| --- | --- | ---: | ---: | ---: |
+| xpoint | volatile | 616.151 | 0.000 | 0 |
+| xpoint | timed | 648.831 | 0.474 | 1 |
+| xpoint | every-batch | 629.700 | 3.862 | 16 |
+| bsgs | volatile | 673.707 | 0.000 | 0 |
+| bsgs | timed | 688.186 | 0.473 | 1 |
+| bsgs | every-batch | 692.437 | 3.781 | 16 |
+
+For these short runs, the ten-second default coalesced all sixteen no-match
+batches into one final commit. Per-batch mode used sixteen transactions.
+Observed transaction time was about 0.47 ms with the default, versus 3.8–3.9 ms
+with per-batch commits. Keep the default batching; found matches still commit
+immediately. This avoids coupling every short GPU launch to a durable write.
+
+Process timing includes substantial startup cost and run-to-run variation:
+the xpoint per-batch median was lower than its timed-checkpoint median despite
+more SQL transaction time. Three short samples do not establish a steady-state
+GPU throughput difference. No GPU arithmetic, kernel selection, partition or
+operating setting was changed for C13.
+
+## Final acceptance
+
+[C13_VALIDATION.json](baselines/C13_VALIDATION.json) retains source/schema/binary
+hashes, raw CTest summaries, command reports, the eight-device inventory and
+partition checks. The initial destructor-collision failures remain separately
+documented rather than being hidden by the corrected runs.
+
+| Build | Result |
+| --- | --- |
+| CPU release | 29/29 |
+| CPU debug | 29/29 |
+| CPU address/undefined sanitizers, focused selector | 27/27 |
+| HIP release, gfx942 | 44/44 |
+
+The focused sanitizer selector excludes only the pre-existing legacy
+whole-application cpu_baseline and target_loading gates. Every new checkpoint
+gate is included. Corrected builds completed without compiler warnings.
+Documentation link/anchor/fence and whitespace checks also pass.
+
+Real hardware validation uses MI300X SPX/NPS1. CPX/QPX/SPX discovery contracts
+remain supported; live CPX/QPX searches were not performed on this configuration.
+C13 is complete. C14 is next for graceful signal/control-driven pause, bounded
+drain and resume operations; authenticated coordination and remote acceptance
+remain C15.

@@ -1,9 +1,9 @@
 # Sparse local journal (C12)
 
 C12 supplies local storage primitives for project-scoped jobs, sparse block
-selection, assignments and exact accepted coverage. Search execution is still
-separate: C13 must commit verified results with coverage before a GPU receipt
-becomes durable progress. This library is not the authenticated coordinator;
+selection, assignments and exact accepted coverage. C13 now adds
+[verified GPU checkpoint integration](CHECKPOINTS.md), committing matches with
+accepted coverage through a separate durable command. This library is not the authenticated coordinator;
 C15 must enforce project membership and derive owner identity from credentials.
 
 ## Database and deployment boundary
@@ -40,7 +40,9 @@ cmake --preset cpu-release \
 
 ## Schema and migration
 
-The initial migration is `src/storage/schema_v1.sql`. A private application ID,
+The immutable initial migration is `src/storage/schema_v1.sql`. C13 upgrades to
+[schema version 2](CHECKPOINTS.md#schema-version-2-and-migration) with an automatic
+sealed pre-migration backup; the v1 contract below records the C12 foundation. A private application ID,
 `user_version=1`, and SHA256 of the exact migration text identify the schema.
 Only an empty, unowned database is initialized. Foreign databases, unknown
 versions and changed migration checksums fail without reinterpreting state.
@@ -78,7 +80,8 @@ block width, target digest and algorithm/configuration digest. Its SHA256 is the
 job ID within a project. The semantics are secp256k1 scalar ranges, stride one,
 all targets and exhaustive completion. Hardware and launch geometry are excluded.
 The supplied digests describe intended inputs; C12 does not load/verify GPU target
-files or table caches. C13 must resolve and bind those inputs before execution.
+files or table caches. The C13 checkpoint commands resolve and bind those inputs
+before execution.
 Creating the same job again preserves its existing selection seed/counter.
 
 The free-space index is a binary tree over `[0, block_count)`, split at integer
@@ -131,8 +134,10 @@ current assignment. It checks containment, merges overlapping/adjacent intervals
 and records the receipt/event in the same transaction. Full exact coverage removes
 partial rows and the active assignment, then coalesces adjacent finished block
 runs. Partial blocks remain in_progress; their complement identifies unsearched
-work. The CLI does not expose arbitrary coverage writes. C13 will supply the
-verified-result/coverage commit boundary; C09/C11 search output remains volatile.
+work. The CLI does not expose arbitrary coverage writes. C13 supplies the
+[verified-result/coverage commit boundary](CHECKPOINTS.md) for bound search jobs;
+raw `record_coverage` now rejects those jobs. The ordinary C09/C11 commands remain
+volatile; use `keyhunt checkpoint run` for durable searches.
 
 `check()` audits SQLite integrity and foreign keys, canonical job identity,
 coverage containment, disjoint block states, and every persisted subtree count
@@ -314,8 +319,7 @@ SPX/NPS1 devices, including xpoint, BSGS and partition contracts. CPX/QPX discov
 contracts pass; actual CPX/QPX hardware search runs remain pending. C12 introduces
 no kernel changes and does not modify GPU partitions or operating settings.
 
-C12 is complete. C13 must bind actual canonical targets/configuration to the
-registered manifest, validate resumed state, CPU-verify candidates, and commit
-matches plus exact accepted coverage atomically before durable acknowledgement.
-Its executor/checkpoint bridge must reject stale generations and replay uncommitted
-work. Until then, the local state commands and C09/C11 GPU searches are independent.
+C12 is complete. [C13](CHECKPOINTS.md) now binds canonical inputs and verified
+matches/coverage to durable execution, checks stale generations and replays
+uncommitted work. Its separate checkpoint commands consume C12 assignments;
+the ordinary C09/C11 commands keep their volatile semantics.

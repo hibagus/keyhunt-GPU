@@ -9,8 +9,8 @@ correctness checks, resumable searches, and coordinated work across machines.
 HIP discovery, arithmetic and bounded xpoint searches pass on MI300X, with CPU
 verification and candidate overflow replay. Versioned BSGS tables and bounded
 HIP BSGS range searches are implemented, including all targets and exact tails.
-C12 adds a sparse local journal and transactional assignments. GPU checkpoints
-and the authenticated coordinator remain planned.
+The local journal now supports transactional assignments and CPU-verified durable
+HIP checkpoints. Graceful pause controls and the authenticated coordinator remain planned.
 
 [Build guide](docs/BUILD.md) · [Usage](docs/USAGE.md) ·
 [Implementation status](docs/IMPLEMENTATION_STATUS.md) ·
@@ -24,7 +24,8 @@ and the authenticated coordinator remain planned.
 | AMD HIP / MI300X | C07–C11 discovery, arithmetic, xpoint and BSGS searches validated on gfx942 |
 | NVIDIA CUDA | Planned at C18; NVIDIA compiler/device validation remains outstanding |
 | Local state | C12 project-scoped SQLite journal, sparse allocation, fenced assignments and sealed backups; [operations guide](docs/STORAGE.md) |
-| Pause/resume and distributed blocks | GPU checkpoint integration, pause/resume and coordination remain C13–C15 and C20 |
+| Durable HIP searches | C13 verified local checkpoints and replay for xpoint/BSGS; [commands and recovery](docs/CHECKPOINTS.md) |
+| Pause/resume and distributed blocks | Graceful pause controls and coordination remain C14–C15 and C20; C13 resumes committed local coverage after process failure |
 
 The CPU engine still has range, stride and whole-application sanitizer defects.
 C06 corrected arithmetic and the tested BSGS start-boundary miss. See
@@ -131,7 +132,8 @@ process exit as proof of saved search progress or exact coverage.
 - [x] C10: versioned BSGS tables, validated caches and HIP filter/exact lookup.
 - [x] C11: bounded HIP BSGS searches, all targets, exact tails and overflow replay.
 - [x] C12: sparse local coverage repository, transactional assignments and state commands.
-- [ ] C13–C15: verified GPU checkpoints, local pause/resume and authenticated coordination.
+- [x] C13: CPU-verified durable HIP checkpoints and exact replay after interruption.
+- [ ] C14–C15: graceful local pause/resume and authenticated coordination.
 - [ ] C16–C20: measured tuning, native CUDA, validated assembly and multiple GPUs.
 - [ ] C21–C23: operations guides, offline assignments and further GPU modes.
 

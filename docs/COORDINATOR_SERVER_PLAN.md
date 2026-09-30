@@ -8,6 +8,8 @@ S01/C12's [local storage foundation](STORAGE.md) is implemented: external privat
 directories, a versioned project-scoped schema, sparse transactional allocation,
 fencing and quarantined backup/restore. Authentication, remote membership,
 reconciled restore activation and the coordinator service remain C15 work.
+C13 adds [verified standalone checkpoints](CHECKPOINTS.md); their acknowledgments
+are local durability, not evidence of server acceptance or a synchronized outbox.
 
 Current scheduling defaults: one distinct active block per GPU, about twelve hours
 of computation per block on a calibrated reference GPU, local checkpoints every
