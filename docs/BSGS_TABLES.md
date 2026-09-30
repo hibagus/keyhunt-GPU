@@ -222,3 +222,19 @@ remarks, inventory, tool versions, CPU affinity and read-only clock/power snapsh
 saturated-filter rejection of false matches, 40 runtime/corruption boundaries
 and identical CPU/HIP cache checksums. C07's CPX/QPX/SPX discovery contracts still
 pass; real C10 table execution currently covers SPX/NPS1 only.
+
+
+## C10 acceptance
+
+[Final validation evidence](baselines/C10_VALIDATION.json) records 31/31 HIP release,
+20/20 CPU release, 20/20 CPU debug and 18/18 focused ASan/UBSan tests passing.
+The sanitizer run keeps the documented `cpu_baseline` and `target_loading`
+exclusions; it does not establish whole-application sanitizer cleanliness.
+The complete HIP gate includes existing arithmetic, xpoint, ownership and
+partition-discovery regressions as well as the new table checks.
+
+C10 is complete. C11 will consume the immutable device table to implement the
+bounded BSGS range search, including exact residual/scalar reconstruction, all
+targets, giant-step tails, candidate overflow/replay and independent CPU/oracle
+verification. GPU table generation and lookup-policy tuning require measurement
+against that complete search workload.

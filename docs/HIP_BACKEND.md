@@ -4,7 +4,8 @@ C07 adds optional AMD HIP discovery and bounded diagnostic execution. It does no
 implement a GPU search or mark any interval as searched. C08 supplies
 [portable field/point arithmetic](GPU_ARITHMETIC.md), and C09 implements the separate
 [bounded xpoint search](HIP_XPOINT.md). The diagnostic commands retain their
-transport-only meaning.
+transport-only meaning. C10 adds [immutable BSGS table uploads and lookup
+validation](BSGS_TABLES.md); the BSGS range search remains C11.
 
 ## Build and discovery
 

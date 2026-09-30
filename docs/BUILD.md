@@ -1,8 +1,8 @@
 # Build and test
 
 The preserved CPU engine requires Linux x86-64 and SSSE3 for its assembly and
-hashes. Optional HIP discovery, diagnostics and bounded xpoint searches are
-implemented. `KEYHUNT_ENABLE_CUDA` still fails configuration with an explicit C18
+hashes. Optional HIP discovery, diagnostics, bounded xpoint searches and BSGS
+table preparation/lookup are implemented. `KEYHUNT_ENABLE_CUDA` still fails configuration with an explicit C18
 message. CPU builds never probe or download
 either GPU SDK.
 
@@ -41,7 +41,7 @@ cmake --build --preset cpu-sanitizers --parallel 4
 | `KEYHUNT_BUILD_LEGACY` | OFF | Separate GMP/OpenSSL executable |
 | `KEYHUNT_BUILD_BSGSD` | OFF | Original local BSGS daemon |
 | `BUILD_TESTING` | ON | Python/CTest regression checks |
-| `KEYHUNT_ENABLE_HIP` | OFF | AMD HIP discovery, diagnostics and xpoint search; requires ROCm AMD clang/runtime |
+| `KEYHUNT_ENABLE_HIP` | OFF | AMD HIP discovery, diagnostics, xpoint search and BSGS tables; requires ROCm AMD clang/runtime |
 | `KEYHUNT_ENABLE_CUDA` | OFF | Explicitly rejected until C18 |
 
 Changing tuning does not make the existing x86 engine portable to ARM. Release
@@ -192,3 +192,22 @@ The opt-in benchmark compares direct multiplication with the default stepping
 kernel after warm-up. It checks every result and reports preparation, seed,
 kernel, download, CPU verification and submit-to-take wall timing. It measures
 one logical device with volatile coverage, not durable or multi-device throughput.
+
+
+## Versioned BSGS tables
+
+C10 supplies a portable CPU builder/validator and an immutable HIP upload with
+shared exact/filter lookup. The [format and operations guide](BSGS_TABLES.md)
+defines memory budgets, checksum/semantic validation and the explicit legacy
+cache rebuild policy. Actual HIP BSGS search is C11.
+
+```sh
+./build/cpu-release/keyhunt bsgs-table build --m 4097 --output /tmp/babies.khb
+./build/hip-release/keyhunt bsgs-table validate --backend hip --input /tmp/babies.khb
+ctest --preset hip-release -R bsgs
+./build/hip-release/hip_bsgs_benchmark 0 65537 > /tmp/keyhunt-bsgs-preparation.json
+```
+
+The benchmark checks positive/negative queries after warm-up and reports CPU
+construction, upload, kernel, transfer and host validation times. It does not
+measure giant-step or effective scalar-range search throughput.

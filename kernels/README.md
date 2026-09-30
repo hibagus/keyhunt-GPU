@@ -11,7 +11,9 @@ Arithmetic test and measurement entry points live under `tests/gpu/`.
 
 C09 implements direct and stepped xpoint kernels in `hip/xpoint.h`, with exact
 lookup, bounded candidate writes and checked tail counts. See the
-[xpoint contract and measurements](../docs/HIP_XPOINT.md). C11 adds BSGS kernels;
+[xpoint contract and measurements](../docs/HIP_XPOINT.md). C10 supplies the portable full-point lookup/filter in
+`include/keyhunt/core/bsgs_layout.h` and the HIP preparation probe in
+`hip/bsgs_probe.h`. C11 adds BSGS range-search kernels;
 C18 adds native CUDA runtime validation. Measured ISA
 specializations belong in `arch/` after their separate gates. CPU legacy headers
 and x86 assembly remain under `include/` and `src/crypto/`.
