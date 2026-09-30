@@ -98,7 +98,7 @@ keyhunt_configure_target(keyhunt_core)
 # These targets deliberately do not use the legacy CPU compiler-options helper.
 # HIP language compilation receives no x86 SIMD, native tuning, LTO or fast-math.
 if(KEYHUNT_ENABLE_HIP)
-    add_library(keyhunt_backend STATIC src/backend/hip/discovery.hip src/backend/hip/executor.hip src/backend/hip/xpoint.hip)
+    add_library(keyhunt_backend STATIC src/backend/hip/discovery.hip src/backend/hip/executor.hip src/backend/hip/xpoint.hip src/backend/hip/bsgs_table.hip)
     target_include_directories(keyhunt_backend PRIVATE kernels kernels/hip)
     target_link_libraries(keyhunt_backend PUBLIC keyhunt_core)
     set_target_properties(keyhunt_backend PROPERTIES INTERPROCEDURAL_OPTIMIZATION OFF)

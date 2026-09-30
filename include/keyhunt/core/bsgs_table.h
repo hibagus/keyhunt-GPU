@@ -24,6 +24,8 @@ public:
     Table& operator=(Table&&) = default;
     Table(const Table&) = delete;
     Table& operator=(const Table&) = delete;
+    // Build/load initialize the preserved CPU curve context. Prepare tables
+    // before starting CPU workers; immutable lookup itself needs no curve state.
     static Table build(uint64_t m,Options options={});
     static Table load(const std::string& path,Options options={});
     // Exclusive atomic publication: an existing file is never replaced.

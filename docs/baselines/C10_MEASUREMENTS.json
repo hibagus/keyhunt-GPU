@@ -1,0 +1,756 @@
+{
+  "recorded_utc": "2026-09-30T04:29:42.994597+00:00",
+  "base_commit": "a8a089f3c9e82b77071d82d628642da4c8a54cdb",
+  "source_state": "Validated C10 HIP preparation before its commit; identified by source hashes.",
+  "source_sha256": {
+    "include/keyhunt/core/bsgs_layout.h": "616e52cf1ec632dc330b3d4268751217e731f03e13a285ca91ec28649aabd8d0",
+    "include/keyhunt/core/bsgs_table.h": "033e2fce13c6ff6983cd4c52d8ed6e1fb787e87633ff0f404fedf479cec81d13",
+    "include/keyhunt/backend/hip_bsgs_table.h": "4b454b50d6571548112e0dd060fbaeb996e1e301de11e1117643c770efab91ee",
+    "src/core/bsgs_table.cpp": "2d5922a0eda9a9fa07ad7100eee738488d64f1b3995bae4caeac11995701e36b",
+    "src/backend/bsgs_table_command.cpp": "832cf30e0c6fb6f136380042d567592299b0c0567e34ce0e0f118b9983faca2e",
+    "src/backend/hip/bsgs_table.hip": "5b1c40ca475e85b107245f931683a3f8a5926012f81710583b02a2f383ee7ef9",
+    "src/backend/hip/runtime.h": "0385ee894ef35d7795920f3a3413b9b42bcf45a67f65d1a4ca48602da3953d35",
+    "kernels/hip/bsgs_probe.h": "466a7fde0481efc28ad01119bccd29ce388378481212f8072b8ba33901da8c64",
+    "tests/gpu/bsgs_benchmark.cpp": "fdcc5d1925c211b0ee1a51747014e898345b221bcfa97da3d8ec489a5da10330",
+    "tests/gpu/bsgs_table.hip": "1cfe949d105749d286be40e8070ba06598033e205af3ed25b1cb17e2840fdb66",
+    "tests/gpu/bsgs_failures.hip": "3f579c72a601ab6700b11189429972101caae3ac369ee42727b45aee0c81cf27",
+    "tests/integration/bsgs_table.py": "0793e194973fc4c5602888ac52e84c5b0173d313cbe1b4f63e25bdb3c0453cc7",
+    "tests/integration/bsgs_devices.py": "c7c359389457d94b1d0088b1d402251b873924dcaa9a8460af2c07e7c3fe09f4",
+    "tests/unit/bsgs_table.cpp": "4cbc7b28323a16d2ee4ff1d222827f9d863ea9c03e7d29a62c4ccb995b23903d",
+    "cmake/BsgsTableTests.cmake": "fdbc106997bd7cf696ec485129630c1557f4ec6136e15d716bfe3e2bf4ab1448",
+    "CMakeLists.txt": "fe3a4568fa3582aefe64951d9700eac6aa057a27e9b0286ac1e091c539c456b5"
+  },
+  "binary_sha256": {
+    "build/hip-release/keyhunt": "3c5609ea71a190ffd78f0af3e0ee46a38a81db528ad8bba8b19828130e07900b",
+    "build/hip-release/hip_bsgs_benchmark": "6d2a26fb9982186abb6abf37d4e471488b725d7689acb2c9df262c61750ede21"
+  },
+  "metadata": {
+    "recorded_utc": "2026-09-30T04:27:45.982742+00:00",
+    "cpu_affinity": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63,
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      71,
+      72,
+      73,
+      74,
+      75,
+      76,
+      77,
+      78,
+      79,
+      80,
+      81,
+      82,
+      83,
+      84,
+      85,
+      86,
+      87,
+      88,
+      89,
+      90,
+      91,
+      92,
+      93,
+      94,
+      95
+    ],
+    "platform": {
+      "system": "Linux",
+      "node": "xe9680-waco4",
+      "release": "5.15.0-191-generic",
+      "version": "#201-Ubuntu SMP Fri Aug 7 18:39:04 UTC 2026",
+      "machine": "x86_64",
+      "processor": "x86_64"
+    },
+    "amd_smi_version": {
+      "command": [
+        "amd-smi",
+        "version",
+        "--json"
+      ],
+      "exit_code": 0,
+      "stdout": "[\n    {\n        \"tool\": \"AMDSMI Tool\",\n        \"version\": \"27.0.0+6b0e43f3\",\n        \"amdsmi_library_version\": \"27.0.0\",\n        \"rocm_version\": \"10.0.0\",\n        \"amdgpu_version\": \"7.1.3.31500000\",\n        \"nic_driver_version\": \"N/A\"\n    }\n]\n",
+      "stderr": ""
+    },
+    "profiler_version": {
+      "command": [
+        "rocprofv3",
+        "--version"
+      ],
+      "exit_code": 0,
+      "stdout": "             version: 1.3.5\n        git_revision: 6b0e43f341195e203754e08f850e437ff2fc09f9\n        library_arch: x86_64-unknown-linux-gnu\n         system_name: Linux\n    system_processor: x86_64\n      system_version: 6.12.73-95.123.amzn2023.x86_64\n         compiler_id: Clang\n    compiler_version: 23.0.0\n        rocm_version: 10.0.0\n",
+      "stderr": ""
+    },
+    "inventory": {
+      "backend": "hip",
+      "runtime_version": 71526333,
+      "driver_version": 71526333,
+      "devices": [
+        {
+          "ordinal": 0,
+          "name": "AMD Instinct MI300X",
+          "architecture": "gfx942:sramecc+:xnack-",
+          "uuid": "30646366333934386337333264313231",
+          "pci_bus_id": "0000:1b:00.0",
+          "physical_id": "0dcf3948c732d121",
+          "physical_id_source": "sysfs.unique_id",
+          "compute_partition": "SPX",
+          "memory_partition": "NPS1",
+          "memory_allocation_mode": "CAPPING",
+          "numa_node": 0,
+          "compute_units": 304,
+          "warp_size": 64,
+          "property_memory_bytes": 206141652992,
+          "total_memory_bytes": 206141652992,
+          "free_memory_bytes": 205533478912,
+          "warnings": []
+        },
+        {
+          "ordinal": 1,
+          "name": "AMD Instinct MI300X",
+          "architecture": "gfx942:sramecc+:xnack-",
+          "uuid": "30393337633864376335303031303365",
+          "pci_bus_id": "0000:3d:00.0",
+          "physical_id": "0937c8d7c500103e",
+          "physical_id_source": "sysfs.unique_id",
+          "compute_partition": "SPX",
+          "memory_partition": "NPS1",
+          "memory_allocation_mode": "CAPPING",
+          "numa_node": 0,
+          "compute_units": 304,
+          "warp_size": 64,
+          "property_memory_bytes": 206141652992,
+          "total_memory_bytes": 206141652992,
+          "free_memory_bytes": 205533478912,
+          "warnings": []
+        },
+        {
+          "ordinal": 2,
+          "name": "AMD Instinct MI300X",
+          "architecture": "gfx942:sramecc+:xnack-",
+          "uuid": "34616433376163376162633937306666",
+          "pci_bus_id": "0000:4e:00.0",
+          "physical_id": "4ad37ac7abc970ff",
+          "physical_id_source": "sysfs.unique_id",
+          "compute_partition": "SPX",
+          "memory_partition": "NPS1",
+          "memory_allocation_mode": "CAPPING",
+          "numa_node": 0,
+          "compute_units": 304,
+          "warp_size": 64,
+          "property_memory_bytes": 206141652992,
+          "total_memory_bytes": 206141652992,
+          "free_memory_bytes": 205533478912,
+          "warnings": []
+        },
+        {
+          "ordinal": 3,
+          "name": "AMD Instinct MI300X",
+          "architecture": "gfx942:sramecc+:xnack-",
+          "uuid": "64636438643565303832323137646663",
+          "pci_bus_id": "0000:5f:00.0",
+          "physical_id": "dcd8d5e082217dfc",
+          "physical_id_source": "sysfs.unique_id",
+          "compute_partition": "SPX",
+          "memory_partition": "NPS1",
+          "memory_allocation_mode": "CAPPING",
+          "numa_node": 0,
+          "compute_units": 304,
+          "warp_size": 64,
+          "property_memory_bytes": 206141652992,
+          "total_memory_bytes": 206141652992,
+          "free_memory_bytes": 205533478912,
+          "warnings": []
+        },
+        {
+          "ordinal": 4,
+          "name": "AMD Instinct MI300X",
+          "architecture": "gfx942:sramecc+:xnack-",
+          "uuid": "63613033303464653334643962636639",
+          "pci_bus_id": "0000:9d:00.0",
+          "physical_id": "ca0304de34d9bcf9",
+          "physical_id_source": "sysfs.unique_id",
+          "compute_partition": "SPX",
+          "memory_partition": "NPS1",
+          "memory_allocation_mode": "CAPPING",
+          "numa_node": 1,
+          "compute_units": 304,
+          "warp_size": 64,
+          "property_memory_bytes": 206141652992,
+          "total_memory_bytes": 206141652992,
+          "free_memory_bytes": 205533478912,
+          "warnings": []
+        },
+        {
+          "ordinal": 5,
+          "name": "AMD Instinct MI300X",
+          "architecture": "gfx942:sramecc+:xnack-",
+          "uuid": "66366665356431386461333065623431",
+          "pci_bus_id": "0000:bd:00.0",
+          "physical_id": "f6fe5d18da30eb41",
+          "physical_id_source": "sysfs.unique_id",
+          "compute_partition": "SPX",
+          "memory_partition": "NPS1",
+          "memory_allocation_mode": "CAPPING",
+          "numa_node": 1,
+          "compute_units": 304,
+          "warp_size": 64,
+          "property_memory_bytes": 206141652992,
+          "total_memory_bytes": 206141652992,
+          "free_memory_bytes": 205533478912,
+          "warnings": []
+        },
+        {
+          "ordinal": 6,
+          "name": "AMD Instinct MI300X",
+          "architecture": "gfx942:sramecc+:xnack-",
+          "uuid": "32333266393737383136343134663766",
+          "pci_bus_id": "0000:cd:00.0",
+          "physical_id": "232f977816414f7f",
+          "physical_id_source": "sysfs.unique_id",
+          "compute_partition": "SPX",
+          "memory_partition": "NPS1",
+          "memory_allocation_mode": "CAPPING",
+          "numa_node": 1,
+          "compute_units": 304,
+          "warp_size": 64,
+          "property_memory_bytes": 206141652992,
+          "total_memory_bytes": 206141652992,
+          "free_memory_bytes": 205533478912,
+          "warnings": []
+        },
+        {
+          "ordinal": 7,
+          "name": "AMD Instinct MI300X",
+          "architecture": "gfx942:sramecc+:xnack-",
+          "uuid": "37386338613437353837623036353233",
+          "pci_bus_id": "0000:dd:00.0",
+          "physical_id": "78c8a47587b06523",
+          "physical_id_source": "sysfs.unique_id",
+          "compute_partition": "SPX",
+          "memory_partition": "NPS1",
+          "memory_allocation_mode": "CAPPING",
+          "numa_node": 1,
+          "compute_units": 304,
+          "warp_size": 64,
+          "property_memory_bytes": 206141652992,
+          "total_memory_bytes": 206141652992,
+          "free_memory_bytes": 205533478912,
+          "warnings": []
+        }
+      ]
+    },
+    "metric_before": {
+      "command": [
+        "amd-smi",
+        "metric",
+        "--gpu",
+        "0000:1b:00.0",
+        "--clock",
+        "--power",
+        "--temperature",
+        "--perf-level",
+        "--json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\n    \"gpu_data\": [\n        {\n            \"gpu\": 0,\n            \"power\": {\n                \"socket_power\": {\n                    \"value\": 182,\n                    \"unit\": \"W\"\n                },\n                \"gfx_voltage\": \"N/A\",\n                \"soc_voltage\": \"N/A\",\n                \"mem_voltage\": \"N/A\",\n                \"throttle_status\": \"N/A\",\n                \"power_management\": \"ENABLED\",\n                \"ubb_power\": \"N/A\"\n            },\n            \"clock\": {\n                \"gfx_0\": {\n                    \"clk\": {\n                        \"value\": 170,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 500,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 2100,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"DISABLED\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"gfx_1\": {\n                    \"clk\": {\n                        \"value\": 170,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 500,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 2100,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"DISABLED\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"gfx_2\": {\n                    \"clk\": {\n                        \"value\": 170,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 500,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 2100,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"DISABLED\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"gfx_3\": {\n                    \"clk\": {\n                        \"value\": 169,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 500,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 2100,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"DISABLED\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"gfx_4\": {\n                    \"clk\": {\n                        \"value\": 168,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 500,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 2100,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"DISABLED\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"gfx_5\": {\n                    \"clk\": {\n                        \"value\": 168,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 500,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 2100,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"DISABLED\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"gfx_6\": {\n                    \"clk\": {\n                        \"value\": 177,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 500,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 2100,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"DISABLED\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"gfx_7\": {\n                    \"clk\": {\n                        \"value\": 177,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 500,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 2100,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"DISABLED\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"mem_0\": {\n                    \"clk\": {\n                        \"value\": 1060,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 900,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 1300,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"N/A\",\n                    \"deep_sleep\": \"DISABLED\"\n                },\n                \"vclk_0\": {\n                    \"clk\": {\n                        \"value\": 34,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 914,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 1333,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"N/A\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"vclk_1\": {\n                    \"clk\": {\n                        \"value\": 34,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 914,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 1333,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"N/A\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"vclk_2\": {\n                    \"clk\": {\n                        \"value\": 34,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 914,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 1333,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"N/A\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"vclk_3\": {\n                    \"clk\": {\n                        \"value\": 34,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 914,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 1333,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"N/A\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"dclk_0\": {\n                    \"clk\": {\n                        \"value\": 28,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 711,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 1143,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"N/A\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"dclk_1\": {\n                    \"clk\": {\n                        \"value\": 28,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 711,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 1143,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"N/A\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"dclk_2\": {\n                    \"clk\": {\n                        \"value\": 28,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 711,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 1143,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"N/A\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"dclk_3\": {\n                    \"clk\": {\n                        \"value\": 28,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 711,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 1143,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"N/A\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"fclk_0\": {\n                    \"clk\": \"N/A\",\n                    \"min_clk\": \"N/A\",\n                    \"max_clk\": \"N/A\",\n                    \"clk_locked\": \"N/A\",\n                    \"deep_sleep\": \"N/A\"\n                },\n                \"socclk_0\": {\n                    \"clk\": {\n                        \"value\": 34,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 889,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 1143,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"N/A\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"uclk_aid\": {\n                    \"aid_0\": \"N/A\",\n                    \"aid_1\": \"N/A\"\n                },\n                \"socclks_mid\": {\n                    \"mid_0\": \"N/A\",\n                    \"mid_1\": \"N/A\"\n                }\n            },\n            \"temperature\": {\n                \"edge\": \"N/A\",\n                \"hotspot\": {\n                    \"value\": 53,\n                    \"unit\": \"C\"\n                },\n                \"mem\": {\n                    \"value\": 49,\n                    \"unit\": \"C\"\n                },\n                \"hbm_stacks\": [\n                    \"N/A\",\n                    \"N/A\",\n                    \"N/A\",\n                    \"N/A\",\n                    \"N/A\",\n                    \"N/A\",\n                    \"N/A\",\n                    \"N/A\",\n                    \"N/A\",\n                    \"N/A\",\n                    \"N/A\",\n                    \"N/A\"\n                ],\n                \"mid\": [\n                    \"N/A\",\n                    \"N/A\"\n                ],\n                \"aid\": [\n                    \"N/A\",\n                    \"N/A\"\n                ],\n                \"xcd\": {\n                    \"xcp_0\": [\n                        \"N/A\",\n                        \"N/A\",\n                        \"N/A\",\n                        \"N/A\",\n                        \"N/A\",\n                        \"N/A\",\n                        \"N/A\",\n                        \"N/A\"\n                    ]\n                }\n            },\n            \"perf_level\": \"AMDSMI_DEV_PERF_LEVEL_AUTO\"\n        }\n    ]\n}\n",
+      "stderr": ""
+    },
+    "metric_after": {
+      "command": [
+        "amd-smi",
+        "metric",
+        "--gpu",
+        "0000:1b:00.0",
+        "--clock",
+        "--power",
+        "--temperature",
+        "--perf-level",
+        "--json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\n    \"gpu_data\": [\n        {\n            \"gpu\": 0,\n            \"power\": {\n                \"socket_power\": {\n                    \"value\": 183,\n                    \"unit\": \"W\"\n                },\n                \"gfx_voltage\": \"N/A\",\n                \"soc_voltage\": \"N/A\",\n                \"mem_voltage\": \"N/A\",\n                \"throttle_status\": \"N/A\",\n                \"power_management\": \"ENABLED\",\n                \"ubb_power\": \"N/A\"\n            },\n            \"clock\": {\n                \"gfx_0\": {\n                    \"clk\": {\n                        \"value\": 325,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 500,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 2100,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"DISABLED\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"gfx_1\": {\n                    \"clk\": {\n                        \"value\": 325,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 500,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 2100,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"DISABLED\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"gfx_2\": {\n                    \"clk\": {\n                        \"value\": 325,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 500,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 2100,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"DISABLED\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"gfx_3\": {\n                    \"clk\": {\n                        \"value\": 325,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 500,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 2100,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"DISABLED\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"gfx_4\": {\n                    \"clk\": {\n                        \"value\": 324,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 500,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 2100,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"DISABLED\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"gfx_5\": {\n                    \"clk\": {\n                        \"value\": 325,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 500,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 2100,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"DISABLED\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"gfx_6\": {\n                    \"clk\": {\n                        \"value\": 337,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 500,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 2100,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"DISABLED\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"gfx_7\": {\n                    \"clk\": {\n                        \"value\": 337,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 500,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 2100,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"DISABLED\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"mem_0\": {\n                    \"clk\": {\n                        \"value\": 1031,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 900,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 1300,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"N/A\",\n                    \"deep_sleep\": \"DISABLED\"\n                },\n                \"vclk_0\": {\n                    \"clk\": {\n                        \"value\": 33,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 914,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 1333,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"N/A\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"vclk_1\": {\n                    \"clk\": {\n                        \"value\": 33,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 914,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 1333,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"N/A\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"vclk_2\": {\n                    \"clk\": {\n                        \"value\": 33,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 914,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 1333,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"N/A\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"vclk_3\": {\n                    \"clk\": {\n                        \"value\": 33,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 914,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 1333,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"N/A\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"dclk_0\": {\n                    \"clk\": {\n                        \"value\": 27,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 711,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 1143,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"N/A\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"dclk_1\": {\n                    \"clk\": {\n                        \"value\": 27,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 711,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 1143,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"N/A\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"dclk_2\": {\n                    \"clk\": {\n                        \"value\": 27,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 711,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 1143,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"N/A\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"dclk_3\": {\n                    \"clk\": {\n                        \"value\": 27,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 711,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 1143,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"N/A\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"fclk_0\": {\n                    \"clk\": \"N/A\",\n                    \"min_clk\": \"N/A\",\n                    \"max_clk\": \"N/A\",\n                    \"clk_locked\": \"N/A\",\n                    \"deep_sleep\": \"N/A\"\n                },\n                \"socclk_0\": {\n                    \"clk\": {\n                        \"value\": 51,\n                        \"unit\": \"MHz\"\n                    },\n                    \"min_clk\": {\n                        \"value\": 889,\n                        \"unit\": \"MHz\"\n                    },\n                    \"max_clk\": {\n                        \"value\": 1143,\n                        \"unit\": \"MHz\"\n                    },\n                    \"clk_locked\": \"N/A\",\n                    \"deep_sleep\": \"ENABLED\"\n                },\n                \"uclk_aid\": {\n                    \"aid_0\": \"N/A\",\n                    \"aid_1\": \"N/A\"\n                },\n                \"socclks_mid\": {\n                    \"mid_0\": \"N/A\",\n                    \"mid_1\": \"N/A\"\n                }\n            },\n            \"temperature\": {\n                \"edge\": \"N/A\",\n                \"hotspot\": {\n                    \"value\": 53,\n                    \"unit\": \"C\"\n                },\n                \"mem\": {\n                    \"value\": 49,\n                    \"unit\": \"C\"\n                },\n                \"hbm_stacks\": [\n                    \"N/A\",\n                    \"N/A\",\n                    \"N/A\",\n                    \"N/A\",\n                    \"N/A\",\n                    \"N/A\",\n                    \"N/A\",\n                    \"N/A\",\n                    \"N/A\",\n                    \"N/A\",\n                    \"N/A\",\n                    \"N/A\"\n                ],\n                \"mid\": [\n                    \"N/A\",\n                    \"N/A\"\n                ],\n                \"aid\": [\n                    \"N/A\",\n                    \"N/A\"\n                ],\n                \"xcd\": {\n                    \"xcp_0\": [\n                        \"N/A\",\n                        \"N/A\",\n                        \"N/A\",\n                        \"N/A\",\n                        \"N/A\",\n                        \"N/A\",\n                        \"N/A\",\n                        \"N/A\"\n                    ]\n                }\n            },\n            \"perf_level\": \"AMDSMI_DEV_PERF_LEVEL_AUTO\"\n        }\n    ]\n}\n",
+      "stderr": ""
+    },
+    "finished_utc": "2026-09-30T04:27:54.686660+00:00"
+  },
+  "measurements": [
+    {
+      "device": 0,
+      "m": 65537,
+      "seed": 3088,
+      "cpu_build_ms": 394.298765,
+      "prepare_wall_ms": 443.291368,
+      "prepare_upload_ms": 19.6073704,
+      "resident_bytes": 3539000,
+      "host_peak_bytes": 8135129,
+      "device_bytes": 3805280,
+      "pinned_bytes": 266280,
+      "samples": [
+        {
+          "kind": "positive",
+          "sample": 0,
+          "queries": 4096,
+          "hits": 4096,
+          "bloom_positive": 4096,
+          "upload_ms": 0.0208069999,
+          "kernel_ms": 0.037726,
+          "download_ms": 0.0204060003,
+          "wall_ms": 0.84854
+        },
+        {
+          "kind": "negative",
+          "sample": 0,
+          "queries": 4096,
+          "hits": 0,
+          "bloom_positive": 0,
+          "upload_ms": 0.0192440003,
+          "kernel_ms": 0.00873900019,
+          "download_ms": 0.0207679998,
+          "wall_ms": 0.715291
+        },
+        {
+          "kind": "negative",
+          "sample": 1,
+          "queries": 4096,
+          "hits": 0,
+          "bloom_positive": 0,
+          "upload_ms": 0.0206070002,
+          "kernel_ms": 0.00874000043,
+          "download_ms": 0.0215290003,
+          "wall_ms": 0.623
+        },
+        {
+          "kind": "positive",
+          "sample": 1,
+          "queries": 4096,
+          "hits": 4096,
+          "bloom_positive": 4096,
+          "upload_ms": 0.0217289999,
+          "kernel_ms": 0.0377659984,
+          "download_ms": 0.0204460006,
+          "wall_ms": 0.830709
+        },
+        {
+          "kind": "positive",
+          "sample": 2,
+          "queries": 4096,
+          "hits": 4096,
+          "bloom_positive": 4096,
+          "upload_ms": 0.0189629998,
+          "kernel_ms": 0.037845999,
+          "download_ms": 0.0206870008,
+          "wall_ms": 0.756714
+        },
+        {
+          "kind": "negative",
+          "sample": 2,
+          "queries": 4096,
+          "hits": 0,
+          "bloom_positive": 0,
+          "upload_ms": 0.0189629998,
+          "kernel_ms": 0.00870000012,
+          "download_ms": 0.0206870008,
+          "wall_ms": 0.698417
+        },
+        {
+          "kind": "negative",
+          "sample": 3,
+          "queries": 4096,
+          "hits": 0,
+          "bloom_positive": 0,
+          "upload_ms": 0.0215290003,
+          "kernel_ms": 0.00922099967,
+          "download_ms": 0.0216889996,
+          "wall_ms": 0.61467
+        },
+        {
+          "kind": "positive",
+          "sample": 3,
+          "queries": 4096,
+          "hits": 4096,
+          "bloom_positive": 4096,
+          "upload_ms": 0.0199260004,
+          "kernel_ms": 0.0381259993,
+          "download_ms": 0.0218499992,
+          "wall_ms": 0.801012
+        },
+        {
+          "kind": "positive",
+          "sample": 4,
+          "queries": 4096,
+          "hits": 4096,
+          "bloom_positive": 4096,
+          "upload_ms": 0.0188430008,
+          "kernel_ms": 0.0376849994,
+          "download_ms": 0.0204869993,
+          "wall_ms": 0.750036
+        },
+        {
+          "kind": "negative",
+          "sample": 4,
+          "queries": 4096,
+          "hits": 0,
+          "bloom_positive": 0,
+          "upload_ms": 0.0202859994,
+          "kernel_ms": 0.00869899988,
+          "download_ms": 0.0206870008,
+          "wall_ms": 0.694697
+        }
+      ],
+      "command": [
+        "./build/hip-release/hip_bsgs_benchmark",
+        "0",
+        "65537"
+      ],
+      "statistics": {
+        "positive": {
+          "upload_ms": {
+            "min": 0.0188430008,
+            "median": 0.0199260004,
+            "max": 0.0217289999
+          },
+          "kernel_ms": {
+            "min": 0.0376849994,
+            "median": 0.0377659984,
+            "max": 0.0381259993
+          },
+          "download_ms": {
+            "min": 0.0204060003,
+            "median": 0.0204869993,
+            "max": 0.0218499992
+          },
+          "wall_ms": {
+            "min": 0.750036,
+            "median": 0.801012,
+            "max": 0.84854
+          }
+        },
+        "negative": {
+          "upload_ms": {
+            "min": 0.0189629998,
+            "median": 0.0202859994,
+            "max": 0.0215290003
+          },
+          "kernel_ms": {
+            "min": 0.00869899988,
+            "median": 0.00873900019,
+            "max": 0.00922099967
+          },
+          "download_ms": {
+            "min": 0.0206870008,
+            "median": 0.0207679998,
+            "max": 0.0216889996
+          },
+          "wall_ms": {
+            "min": 0.61467,
+            "median": 0.694697,
+            "max": 0.715291
+          }
+        }
+      }
+    },
+    {
+      "device": 0,
+      "m": 1048576,
+      "seed": 3088,
+      "cpu_build_ms": 6474.60559,
+      "prepare_wall_ms": 461.787343,
+      "prepare_upload_ms": 20.6745319,
+      "resident_bytes": 53477384,
+      "host_peak_bytes": 108134776,
+      "device_bytes": 53743664,
+      "pinned_bytes": 266280,
+      "samples": [
+        {
+          "kind": "positive",
+          "sample": 0,
+          "queries": 4096,
+          "hits": 4096,
+          "bloom_positive": 4096,
+          "upload_ms": 0.0217289999,
+          "kernel_ms": 0.0443410017,
+          "download_ms": 0.023333,
+          "wall_ms": 1.301641
+        },
+        {
+          "kind": "negative",
+          "sample": 0,
+          "queries": 4096,
+          "hits": 0,
+          "bloom_positive": 2,
+          "upload_ms": 0.019204,
+          "kernel_ms": 0.0138309998,
+          "download_ms": 0.0201660004,
+          "wall_ms": 1.253492
+        },
+        {
+          "kind": "negative",
+          "sample": 1,
+          "queries": 4096,
+          "hits": 0,
+          "bloom_positive": 2,
+          "upload_ms": 0.0196039993,
+          "kernel_ms": 0.0135110002,
+          "download_ms": 0.0205269996,
+          "wall_ms": 1.049817
+        },
+        {
+          "kind": "positive",
+          "sample": 1,
+          "queries": 4096,
+          "hits": 4096,
+          "bloom_positive": 4096,
+          "upload_ms": 0.0204470009,
+          "kernel_ms": 0.0442200005,
+          "download_ms": 0.0202060007,
+          "wall_ms": 1.152067
+        },
+        {
+          "kind": "positive",
+          "sample": 2,
+          "queries": 4096,
+          "hits": 4096,
+          "bloom_positive": 4096,
+          "upload_ms": 0.0197250005,
+          "kernel_ms": 0.0443000011,
+          "download_ms": 0.0202859994,
+          "wall_ms": 1.116241
+        },
+        {
+          "kind": "negative",
+          "sample": 2,
+          "queries": 4096,
+          "hits": 0,
+          "bloom_positive": 2,
+          "upload_ms": 0.0206470005,
+          "kernel_ms": 0.0135509996,
+          "download_ms": 0.0203259997,
+          "wall_ms": 1.084021
+        },
+        {
+          "kind": "negative",
+          "sample": 3,
+          "queries": 4096,
+          "hits": 0,
+          "bloom_positive": 2,
+          "upload_ms": 0.0202859994,
+          "kernel_ms": 0.0136310002,
+          "download_ms": 0.0207669996,
+          "wall_ms": 1.027828
+        },
+        {
+          "kind": "positive",
+          "sample": 3,
+          "queries": 4096,
+          "hits": 4096,
+          "bloom_positive": 4096,
+          "upload_ms": 0.0200050008,
+          "kernel_ms": 0.0463859998,
+          "download_ms": 0.0226910003,
+          "wall_ms": 1.115786
+        },
+        {
+          "kind": "positive",
+          "sample": 4,
+          "queries": 4096,
+          "hits": 4096,
+          "bloom_positive": 4096,
+          "upload_ms": 0.0198049992,
+          "kernel_ms": 0.0442200005,
+          "download_ms": 0.0198849998,
+          "wall_ms": 1.092294
+        },
+        {
+          "kind": "negative",
+          "sample": 4,
+          "queries": 4096,
+          "hits": 0,
+          "bloom_positive": 2,
+          "upload_ms": 0.0216090009,
+          "kernel_ms": 0.0136719998,
+          "download_ms": 0.0203259997,
+          "wall_ms": 1.065574
+        }
+      ],
+      "command": [
+        "./build/hip-release/hip_bsgs_benchmark",
+        "0",
+        "1048576"
+      ],
+      "statistics": {
+        "positive": {
+          "upload_ms": {
+            "min": 0.0197250005,
+            "median": 0.0200050008,
+            "max": 0.0217289999
+          },
+          "kernel_ms": {
+            "min": 0.0442200005,
+            "median": 0.0443000011,
+            "max": 0.0463859998
+          },
+          "download_ms": {
+            "min": 0.0198849998,
+            "median": 0.0202859994,
+            "max": 0.023333
+          },
+          "wall_ms": {
+            "min": 1.092294,
+            "median": 1.116241,
+            "max": 1.301641
+          }
+        },
+        "negative": {
+          "upload_ms": {
+            "min": 0.019204,
+            "median": 0.0202859994,
+            "max": 0.0216090009
+          },
+          "kernel_ms": {
+            "min": 0.0135110002,
+            "median": 0.0136310002,
+            "max": 0.0138309998
+          },
+          "download_ms": {
+            "min": 0.0201660004,
+            "median": 0.0203259997,
+            "max": 0.0207669996
+          },
+          "wall_ms": {
+            "min": 1.027828,
+            "median": 1.065574,
+            "max": 1.253492
+          }
+        }
+      }
+    }
+  ],
+  "compiler_resources": {
+    "source_compile_command": {
+      "directory": "/home/bagus/keyhunt-GPU/build/hip-release",
+      "command": "/opt/rocm/core-10.0/lib/llvm/bin/clang++ -D__HIP_ROCclr__=1 -I/home/bagus/keyhunt-GPU/kernels -I/home/bagus/keyhunt-GPU/kernels/hip -I/home/bagus/keyhunt-GPU/include -I/home/bagus/keyhunt-GPU/third_party -O3 -DNDEBUG --offload-arch=gfx942 -Wall -Wextra -std=gnu++17 -o CMakeFiles/keyhunt_backend.dir/src/backend/hip/bsgs_table.hip.o -x hip -c /home/bagus/keyhunt-GPU/src/backend/hip/bsgs_table.hip",
+      "file": "/home/bagus/keyhunt-GPU/src/backend/hip/bsgs_table.hip"
+    },
+    "resource_command": [
+      "/opt/rocm/core-10.0/lib/llvm/bin/clang++",
+      "-D__HIP_ROCclr__=1",
+      "-I/home/bagus/keyhunt-GPU/kernels",
+      "-I/home/bagus/keyhunt-GPU/kernels/hip",
+      "-I/home/bagus/keyhunt-GPU/include",
+      "-I/home/bagus/keyhunt-GPU/third_party",
+      "-O3",
+      "-DNDEBUG",
+      "--offload-arch=gfx942",
+      "-Wall",
+      "-Wextra",
+      "-std=gnu++17",
+      "-o",
+      "/tmp/keyhunt-c10-resources.o",
+      "-x",
+      "hip",
+      "-c",
+      "/home/bagus/keyhunt-GPU/src/backend/hip/bsgs_table.hip",
+      "--offload-device-only",
+      "-Rpass-analysis=kernel-resource-usage"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "In file included from /home/bagus/keyhunt-GPU/src/backend/hip/bsgs_table.hip:3:\n/home/bagus/keyhunt-GPU/kernels/hip/bsgs_probe.h:6:1: remark: Function Name: _ZN7keyhunt3gpuL10bsgs_probeENS_4bsgs4ViewEPKNS1_3KeyEmPNS_7backend12BsgsProbeHitEPyb [-Rpass-analysis=kernel-resource-usage]\n    6 |     backend::BsgsProbeHit* hits,unsigned long long* executed,bool use_filter) {\n      | ^\n/home/bagus/keyhunt-GPU/kernels/hip/bsgs_probe.h:6:1: remark:     TotalSGPRs: 62 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/kernels/hip/bsgs_probe.h:6:1: remark:     VGPRs: 20 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/kernels/hip/bsgs_probe.h:6:1: remark:     AGPRs: 0 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/kernels/hip/bsgs_probe.h:6:1: remark:     ScratchSize [bytes/lane]: 0 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/kernels/hip/bsgs_probe.h:6:1: remark:     Dynamic Stack: False [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/kernels/hip/bsgs_probe.h:6:1: remark:     Occupancy [waves/SIMD]: 8 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/kernels/hip/bsgs_probe.h:6:1: remark:     SGPRs Spill: 0 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/kernels/hip/bsgs_probe.h:6:1: remark:     VGPRs Spill: 0 [-Rpass-analysis=kernel-resource-usage]\n/home/bagus/keyhunt-GPU/kernels/hip/bsgs_probe.h:6:1: remark:     LDS Size [bytes/block]: 0 [-Rpass-analysis=kernel-resource-usage]\n"
+  },
+  "compile_commands": [
+    {
+      "directory": "/home/bagus/keyhunt-GPU/build/hip-release",
+      "command": "/opt/rocm/core-10.0/lib/llvm/bin/clang++ -D__HIP_ROCclr__=1 -I/home/bagus/keyhunt-GPU/kernels -I/home/bagus/keyhunt-GPU/kernels/hip -I/home/bagus/keyhunt-GPU/include -I/home/bagus/keyhunt-GPU/third_party -O3 -DNDEBUG --offload-arch=gfx942 -Wall -Wextra -std=gnu++17 -o CMakeFiles/keyhunt_backend.dir/src/backend/hip/bsgs_table.hip.o -x hip -c /home/bagus/keyhunt-GPU/src/backend/hip/bsgs_table.hip",
+      "file": "/home/bagus/keyhunt-GPU/src/backend/hip/bsgs_table.hip"
+    },
+    {
+      "directory": "/home/bagus/keyhunt-GPU/build/hip-release",
+      "command": "/usr/bin/c++  -I/home/bagus/keyhunt-GPU/include -I/home/bagus/keyhunt-GPU/third_party -O3 -DNDEBUG -std=gnu++17 -o CMakeFiles/hip_bsgs_benchmark.dir/tests/gpu/bsgs_benchmark.cpp.o -c /home/bagus/keyhunt-GPU/tests/gpu/bsgs_benchmark.cpp",
+      "file": "/home/bagus/keyhunt-GPU/tests/gpu/bsgs_benchmark.cpp"
+    }
+  ],
+  "methodology": {
+    "seed": 3088,
+    "warmups_per_kind": 1,
+    "samples_per_kind": 5,
+    "queries_per_sample": 4096,
+    "distribution": "mt19937_64 sampling with replacement across sorted entries, skipping j=0; negatives flip Y parity",
+    "ordering": "alternating positive/negative order",
+    "host_reserved": false,
+    "clocks_controlled": false,
+    "partition_changes": false,
+    "timing_scope": "Lookup diagnostics only, including execution counts and GPU result checks. Wall time includes transfers and CPU comparison; no giant-step generation, search results or durable coverage.",
+    "preparation_scope": "One CPU build and one upload per table; preparation may include cold HIP initialization and pageable staging. These are descriptive single samples, not stable upload-bandwidth estimates."
+  }
+}
