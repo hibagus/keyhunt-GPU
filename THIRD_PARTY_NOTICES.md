@@ -30,6 +30,15 @@ SQLite implementation is vendored. The [storage setup](docs/STORAGE.md#database-
 records the required version and the installed standalone library used for validation.
 Deployment packages must provide that runtime dependency.
 
+C15 optionally compiles against external nlohmann JSON headers (3.10.5 used in
+validation). Their MIT notice and the additional header contributor notices are
+retained in [NLOHMANN_JSON.txt](third_party/licenses/NLOHMANN_JSON.txt), copied from
+the supplied headers and Ubuntu `nlohmann-json3-dev` package copyright record.
+No JSON implementation is vendored. C15 links external OpenSSL 3 (`libcrypto`)
+and, for HTTPS workers only, libcurl. Deployment must provide those runtime
+libraries with their upstream/package notices. Apache is an external service;
+the repository supplies configuration and test fixtures, not Apache code.
+
 The `src/crypto/` placement identifies maintained CPU implementation, not
 original authorship. All source notices and existing dependency licenses remain
 with their files. [GPL-3.0.txt](third_party/licenses/GPL-3.0.txt) supplies the full
