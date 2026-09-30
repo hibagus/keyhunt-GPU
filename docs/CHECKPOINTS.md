@@ -336,3 +336,27 @@ remain supported; live CPX/QPX searches were not performed on this configuration
 This section records C13 acceptance. C14 subsequently adds
 [graceful controls, bounded drain and resume](PAUSE_RESUME.md). C15 now provides
 [authenticated coordination, the atomic outbox and remote acceptance](COORDINATOR.md).
+
+## C16 execution metrics
+
+Checkpoint summaries now include `metrics_version: 1`, device ordinal/UUID and
+checkpoint cadence, successful `verified_device_steps`, HIP event `kernel_ms`
+and `download_ms`, host `seed_ms`, executor `verification_ms` and
+`executor_wall_ms`, owner `revalidation_ms`, discarded-attempt `replay_kernel_ms`,
+total `download_bytes` (hexadecimal), and peak device/pinned allocation bytes.
+Attempted work and timings include overflow; useful work excludes discarded
+attempts. BSGS work is **target giant steps**, while `computed_scalars` counts
+each completed all-target interval once. A completed retry reports no GPU work.
+
+`preparation_ms` ends just before the first submission and includes journal
+opening/auditing, input loading, discovery and lazy executor creation.
+`executor_setup_ms` is the constructor subset; BSGS `table_upload_ms` is nested
+within it. All three are zero when no executor is created. `wall_ms` spans journal
+opening through execution and cleanup, before writing the final summary. Existing
+`checkpoint_ms` measures `commit_search`, including its validation and SQLite
+COMMIT; it is not a pure fsync measurement. Timing fields overlap as described and
+must not be added together as disjoint phases. Failed processes have no complete
+summary and must never contribute a throughput sample.
+
+CPU receipt tests exercise overflow costs, useful-work counts, peak allocations,
+transfer totals, BSGS target multiplicity, and completed-job retry metrics.

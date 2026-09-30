@@ -2,6 +2,8 @@
 #include "checkpoint_control.h"
 #include "keyhunt/storage/checkpoint.h"
 #include "keyhunt/backend/device.h"
+#include <chrono>
+#include <iomanip>
 #include <iostream>
 #include <limits>
 #include <set>
@@ -46,6 +48,9 @@ int checkpoint_command(int argc,char** argv){
         if(!args.emplace(key,argv[i+1]).second)throw std::invalid_argument("duplicate checkpoint option: "+flag);
     }
     if(action=="run" && required(args,"backend")!="hip")throw std::invalid_argument("checkpoint execution requires --backend hip");
+    const auto wall_start=std::chrono::steady_clock::now();
+    const auto elapsed=[&]{return std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-wall_start).count();};
+    std::cout<<std::setprecision(12);
     Journal journal(optional(args,"state-dir"));
     if(action=="pause" || action=="resume" || action=="stop" || action=="status"){
         const auto response=LocalCheckpointControl::command(journal.state_directory(),action);
@@ -106,11 +111,13 @@ int checkpoint_command(int argc,char** argv){
     }
 #ifndef KEYHUNT_HAS_HIP
     (void)device;
+    (void)elapsed;
     discover_hip();return 2; // Explicit backend availability; no CPU search fallback.
 #else
     const auto inventory=discover_hip();
     if(device>=inventory.devices.size())throw std::invalid_argument("HIP device ordinal is not visible");
     core::XPointVerifier verifier;CheckpointSummary summary;
+    double preparation_ms=0,executor_setup_ms=0,table_upload_ms=0;
     const auto notify=[&](const std::vector<ScalarInterval>& coverage,size_t matches,double ms){
         std::cout<<"{\"type\":\"checkpoint\",\"durability\":\"local\",\"durable_results\":true,\"durable_coverage\":"
             <<(coverage.empty()?"false":"true")<<",\"intervals\":[";
@@ -127,7 +134,11 @@ int checkpoint_command(int argc,char** argv){
         gpu.kernel=optional(args,"kernel","stepped")=="direct"?XPointKernel::Direct:XPointKernel::Stepped;
         std::unique_ptr<HipXPointExecutor> executor;
         summary=CheckpointRun::xpoint(journal,grant,targets,verifier,[&](const auto& batch){
-            if(!executor)executor=std::make_unique<HipXPointExecutor>(int(device),targets,verifier,gpu);
+            if(!executor){
+                const auto setup_start=elapsed();
+                executor=std::make_unique<HipXPointExecutor>(int(device),targets,verifier,gpu);
+                executor_setup_ms=elapsed()-setup_start;preparation_ms=elapsed();
+            }
             const auto ticket=executor->submit(batch);executor->drain();return executor->take(ticket);
         },options,notify,[&]{executor.reset();control.close();},control.callbacks());
     }else{
@@ -138,7 +149,12 @@ int checkpoint_command(int argc,char** argv){
         gpu.memory_reserve_bytes=decimal(optional(args,"reserve-bytes","67108864"));
         std::unique_ptr<HipBsgsExecutor> executor;
         summary=CheckpointRun::bsgs(journal,grant,targets,table,verifier,[&](const auto& batch){
-            if(!executor)executor=std::make_unique<HipBsgsExecutor>(int(device),table,targets,verifier,gpu);
+            if(!executor){
+                const auto setup_start=elapsed();
+                executor=std::make_unique<HipBsgsExecutor>(int(device),table,targets,verifier,gpu);
+                executor_setup_ms=elapsed()-setup_start;preparation_ms=elapsed();
+                table_upload_ms=executor->table_upload_ms();
+            }
             const auto ticket=executor->submit(batch);executor->drain();return executor->take(ticket);
         },options,notify,[&]{executor.reset();control.close();},control.callbacks());
     }
@@ -147,7 +163,19 @@ int checkpoint_command(int argc,char** argv){
         <<",\"resumed_scalars\":"<<quote(summary.resumed_scalars.hex())<<",\"computed_scalars\":"<<quote(summary.computed_scalars.hex())
         <<",\"device_steps\":"<<quote(summary.device_steps.hex())<<",\"match_observations\":"<<summary.match_observations
         <<",\"batches\":"<<summary.batches<<",\"overflow_replays\":"<<summary.overflows<<",\"checkpoints\":"<<summary.checkpoints
-        <<",\"checkpoint_ms\":"<<summary.checkpoint_ms<<'}';flush();return 0;
+        <<",\"checkpoint_ms\":"<<summary.checkpoint_ms
+        <<",\"metrics_version\":1,\"device\":"<<device<<",\"uuid\":"<<quote(inventory.devices[device].uuid)
+        <<",\"mode\":"<<quote(mode==Mode::XPoint?"xpoint":"bsgs")
+        <<",\"checkpoint_seconds\":"<<options.checkpoint_seconds<<",\"bsgs_group_size\":"<<summary.bsgs_group_size
+        <<",\"verified_device_steps\":"<<quote(summary.verified_device_steps.hex())
+        <<",\"kernel_ms\":"<<summary.kernel_ms<<",\"download_ms\":"<<summary.download_ms
+        <<",\"seed_ms\":"<<summary.seed_ms<<",\"verification_ms\":"<<summary.verification_ms
+        <<",\"revalidation_ms\":"<<summary.revalidation_ms<<",\"executor_wall_ms\":"<<summary.executor_wall_ms
+        <<",\"replay_kernel_ms\":"<<summary.replay_kernel_ms<<",\"download_bytes\":"<<quote(summary.download_bytes.hex())
+        <<",\"peak_device_allocation_bytes\":"<<summary.peak_device_allocation_bytes
+        <<",\"peak_pinned_allocation_bytes\":"<<summary.peak_pinned_allocation_bytes
+        <<",\"preparation_ms\":"<<preparation_ms<<",\"executor_setup_ms\":"<<executor_setup_ms
+        <<",\"table_upload_ms\":"<<table_upload_ms<<",\"wall_ms\":"<<elapsed()<<'}';flush();return 0;
 #endif
 }
 } // namespace keyhunt::backend

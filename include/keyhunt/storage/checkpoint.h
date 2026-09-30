@@ -9,9 +9,16 @@ struct CheckpointOptions {
     uint32_t target_batch=64,candidate_capacity=1024,checkpoint_seconds=10;
 };
 struct CheckpointSummary {
-    UInt256 resumed_scalars,computed_scalars,device_steps;
+    UInt256 resumed_scalars,computed_scalars,device_steps,verified_device_steps;
     uint64_t match_observations=0,batches=0,overflows=0,checkpoints=0;
+    unsigned bsgs_group_size=0; // Actual dispatch; zero if no BSGS batch ran.
     double checkpoint_ms=0;
+    // Include failed overflow attempts in cost, but never in useful work. BSGS
+    // device steps count target giants; scalar coverage is credited separately.
+    double kernel_ms=0,download_ms=0,seed_ms=0,verification_ms=0,executor_wall_ms=0;
+    double replay_kernel_ms=0,revalidation_ms=0;
+    UInt256 download_bytes;
+    uint64_t peak_device_allocation_bytes=0,peak_pinned_allocation_bytes=0;
     bool complete=false; // A graceful stop may leave a valid in-progress block.
 };
 // Called only after COMMIT. Throwing (e.g. a broken stdout) stops submissions;

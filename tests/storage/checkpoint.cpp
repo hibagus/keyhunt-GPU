@@ -33,6 +33,25 @@ int main(){
         require(finished.resumed_scalars==UInt256(9)&&finished.batches==0,"finished retry");
         auto different=x_targets(verifier,{2});rejects([&]{CheckpointRun::xpoint(j,grant,different,verifier,run,options);});
 
+        // Timings and transfer costs include discarded overflow work; useful
+        // steps and scalar coverage must not count it a second time.
+        auto dense=x_targets(verifier,{1,2});
+        const auto dense_scope=CheckpointRun::create_xpoint(j,project,ScalarInterval(UInt256(1),UInt256(9)),UInt256(8),dense);
+        const auto dense_grant=j.claim(dense_scope,"worker","metrics").at(0);
+        auto measured=CheckpointRun::xpoint(j,dense_grant,dense,verifier,[&](const auto& b){
+            auto r=execute(b,dense,verifier,1);
+            r.kernel_ms=2;r.download_ms=1;r.seed_ms=0.25;r.verification_ms=0.5;r.wall_ms=4;
+            r.download_bytes=64;r.device_allocation_bytes=1024;r.pinned_allocation_bytes=128;
+            return r;
+        },options);
+        require(measured.overflows==1 && measured.device_steps==UInt256(12) &&
+                measured.verified_device_steps==UInt256(8) && measured.computed_scalars==UInt256(8),"xpoint replay accounting");
+        require(measured.kernel_ms==18 && measured.replay_kernel_ms==2 && measured.executor_wall_ms==36 &&
+                measured.download_ms==9 && measured.seed_ms==2.25 && measured.verification_ms==4.5 &&
+                measured.download_bytes==UInt256(576) && measured.peak_device_allocation_bytes==1024 &&
+                measured.peak_pinned_allocation_bytes==128,"xpoint timing/transfer accounting");
+        require(finished.verified_device_steps==UInt256() && finished.kernel_ms==0,"retry reported phantom GPU work");
+
         // No-match batches coalesce until the timer/end boundary, avoiding a
         // FULL fsync in every short kernel loop by default.
         auto absent=x_targets(verifier,{1000});
@@ -60,7 +79,12 @@ int main(){
         const auto wrong_table=bsgs::Table::build(4);
         rejects([&]{CheckpointRun::bsgs(j,bg,bs,wrong_table,verifier,[&](const auto& b){return execute(b,bs,verifier,1);},options);});
         options.target_batch=3;options.giant_steps=3;
-        auto replay=CheckpointRun::bsgs(j,bg,bs,table,verifier,[&](const auto& b){return execute(b,bs,verifier,1);},options);
+        auto replay=CheckpointRun::bsgs(j,bg,bs,table,verifier,[&](const auto& b){
+            auto r=execute(b,bs,verifier,1);r.kernel_ms=2;r.wall_ms=3;return r;
+        },options);
+        require(replay.verified_device_steps==UInt256(9) && replay.device_steps==UInt256(18) &&
+                replay.computed_scalars==UInt256(9) && replay.kernel_ms==8 && replay.replay_kernel_ms==2 &&
+                replay.executor_wall_ms==12,"BSGS target-giant replay accounting");
         require(replay.overflows>0&&j.results(bscope).size()==3,"BSGS replay/deduplication");
         j.check();
 

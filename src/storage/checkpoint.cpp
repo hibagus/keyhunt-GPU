@@ -84,13 +84,30 @@ struct CheckpointRun::Impl {
         if(state.state!="finished")executor=journal.begin_search(g);
     }
     void validate(){journal.validate_search(grant,executor);}
+    template<class Result> void account(const Result& result){
+        // Receipts have already passed identity/count validation. These timings
+        // are diagnostic only and cannot change the durable coverage decision.
+        summary.device_steps=summary.device_steps.add(UInt256(result.device_steps));
+        summary.verified_device_steps=summary.verified_device_steps.add(UInt256(result.verified_steps));
+        summary.kernel_ms+=result.kernel_ms;summary.download_ms+=result.download_ms;
+        summary.seed_ms+=result.seed_ms;summary.verification_ms+=result.verification_ms;
+        summary.executor_wall_ms+=result.wall_ms;
+        if(result.overflow)summary.replay_kernel_ms+=result.kernel_ms;
+        summary.download_bytes=summary.download_bytes.add(UInt256(result.download_bytes));
+        summary.peak_device_allocation_bytes=std::max(summary.peak_device_allocation_bytes,result.device_allocation_bytes);
+        summary.peak_pinned_allocation_bytes=std::max(summary.peak_pinned_allocation_bytes,result.pinned_allocation_bytes);
+    }
     void verified(const ScalarInterval& interval,const std::vector<core::XPointMatch>& matches,bool unique_target){
+        const auto start=Clock::now();
         std::set<UInt256> scalars;std::set<uint32_t> targets;
         for(const auto& m:matches){
             if(!interval.contains(m.scalar) || (unique_target?!targets.insert(m.target).second:!scalars.insert(m.scalar).second))
                 throw std::runtime_error("duplicate or out-of-batch checkpoint match");
             input.verify(verifier,m.scalar,m.target);
         }
+        // The journal owner checks matches again after the executor. Keep that
+        // cost separate from executor verification and commit_search's work.
+        summary.revalidation_ms+=std::chrono::duration<double,std::milli>(Clock::now()-start).count();
 #ifdef KEYHUNT_TEST_STORAGE_FAILURES
         if(detail::transaction_test_hook)detail::transaction_test_hook("after_verification");
 #endif
@@ -186,7 +203,7 @@ CheckpointSummary CheckpointRun::xpoint(Journal& journal,const Grant& grant,cons
                 throw std::runtime_error("xpoint completion does not match submitted checkpoint work");
             counts(result.overflow,result.verified_steps,result.device_steps,result.candidate_count,result.matches.size(),
                 batch.step_count(),batch.step_count(),o.candidate_capacity);
-            state.summary.device_steps=state.summary.device_steps.add(UInt256(result.device_steps));
+            state.account(result);
             if(result.overflow){
                 ++state.summary.overflows;
                 if(steps==1)throw std::logic_error("single-step overflow");
@@ -220,7 +237,7 @@ CheckpointSummary CheckpointRun::bsgs(Journal& journal,const Grant& grant,const 
                     throw std::runtime_error("BSGS completion does not match submitted checkpoint work");
                 counts(result.overflow,result.verified_steps,result.device_steps,result.candidate_count,result.matches.size(),
                     batch.steps(),count,o.candidate_capacity);
-                state.summary.device_steps=state.summary.device_steps.add(UInt256(result.device_steps));
+                state.account(result);state.summary.bsgs_group_size=result.group_size;
                 if(result.overflow){
                     ++state.summary.overflows;if(count==1)throw std::logic_error("single-target overflow");
                     limit=uint32_t(std::min<uint64_t>(o.candidate_capacity,count/2));continue;
