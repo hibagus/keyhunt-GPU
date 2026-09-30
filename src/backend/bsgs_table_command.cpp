@@ -69,9 +69,8 @@ int bsgs_table_command(int argc,char** argv) {
     double kernel_ms=0,upload_ms=0,download_ms=0,preparation_ms=0;
 #ifdef KEYHUNT_HAS_GPU
     if (action=="validate") {
-        const auto inventory=discover_gpu();
-        if (device>=inventory.devices.size()) throw std::invalid_argument("GPU device ordinal is not visible");
-        device_uuid=inventory.devices[device].uuid;
+        const auto selected = select_gpu(int(device));
+        device_uuid=selected.device.uuid;
         BsgsUploadOptions config; config.max_queries=uint32_t(queries); config.memory_reserve_bytes=reserve;
         config.host_memory_bytes=options.host_memory_bytes;
         GpuBsgsTable prepared(int(device),table,config);

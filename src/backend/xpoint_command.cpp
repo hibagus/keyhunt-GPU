@@ -66,8 +66,7 @@ int xpoint_command(int argc, char** argv) {
 #else
     const auto wall_start = std::chrono::steady_clock::now();
     const auto targets = core::XPointTargets::load(args["--targets"]);
-    const auto inventory = discover_gpu();
-    if (device >= inventory.devices.size()) throw std::invalid_argument("GPU device ordinal is not visible");
+    const auto selected = select_gpu(int(device));
     core::XPointVerifier verifier;
     XPointOptions options;
     options.max_steps = batch_size; options.candidate_capacity = uint32_t(capacity);
@@ -82,7 +81,7 @@ int xpoint_command(int argc, char** argv) {
     identity.assignment_id[0] = 1;
     identity.assignment_generation = identity.executor_generation = 1;
     std::cout << std::setprecision(9) << "{\"type\":\"start\",\"backend\":\"" << gpu_backend_name() << "\",\"mode\":\"xpoint\",\"device\":" << device
-              << ",\"uuid\":\"" << inventory.devices[device].uuid << "\",\"target_count\":" << targets.values().size()
+              << ",\"uuid\":\"" << selected.device.uuid << "\",\"target_count\":" << targets.values().size()
               << ",\"target_digest\":\"" << hex_bytes(targets.digest().data(),targets.digest().size())
               << "\",\"begin\":\"" << interval.begin().hex() << "\",\"end_exclusive\":\"" << interval.end().hex()
               << "\",\"kernel\":\"" << kernel << "\",\"durable_coverage\":false,\"preparation_ms\":" << preparation_ms << '}';

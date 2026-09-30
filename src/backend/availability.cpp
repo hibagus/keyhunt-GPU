@@ -41,4 +41,15 @@ DeviceInventory discover_gpu() {
     if (cuda_available()) return discover_cuda();
     return discover_hip();
 }
+SelectedDevice select_gpu(int ordinal) {
+#ifdef KEYHUNT_HAS_CUDA
+    SelectedDevice select_cuda(int);
+    return select_cuda(ordinal);
+#else
+    auto inventory = discover_hip();
+    if (ordinal < 0 || size_t(ordinal) >= inventory.devices.size())
+        throw std::invalid_argument("GPU device ordinal is not visible");
+    return {std::move(inventory.devices[size_t(ordinal)]), inventory.devices.size()};
+#endif
+}
 }

@@ -70,3 +70,16 @@ for unavailable in (("hip", "cuda") if not a.hardware else
     for command in ("devices", "gpu-smoke"):
         r = run([command, "--backend", unavailable])
         assert r.returncode == 2 and "not built" in r.stderr and not r.stdout, r
+
+if a.hardware and a.backend == "cuda" and not os.environ.get("CUDA_VISIBLE_DEVICES") and len(inventory["devices"]) >= 2:
+    # Native ordinals change after filtering. Selection must retain runtime UUID
+    # identity and must reject an ordinal outside the now-visible device count.
+    env = dict(os.environ, CUDA_VISIBLE_DEVICES="1,0")
+    remapped = run(["devices", "--backend", "cuda"], env)
+    assert remapped.returncode == 0, remapped
+    devices = json.loads(remapped.stdout)["devices"]
+    assert [d["uuid"] for d in devices] == [inventory["devices"][1]["uuid"], inventory["devices"][0]["uuid"]]
+    result = run(["gpu-smoke", "--backend", "cuda", "--device", "1", "--steps", "129"], env)
+    assert result.returncode == 0 and json.loads(result.stdout)["uuid"] == devices[1]["uuid"], result
+    result = run(["gpu-smoke", "--backend", "cuda", "--device", "2"], env)
+    assert result.returncode == 2 and "not visible" in result.stderr and not result.stdout, result

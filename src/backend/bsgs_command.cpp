@@ -70,8 +70,7 @@ int bsgs_command(int argc,char** argv) {
     const uint64_t target_bytes=targets.values().capacity()*sizeof(core::UncompressedPublicKey);
     if (target_bytes>=host_memory) throw std::invalid_argument("BSGS targets exceed host memory budget");
     const auto table=bsgs::Table::load(args["--table"],{16,host_memory-target_bytes});
-    const auto inventory=discover_gpu();
-    if(device>=inventory.devices.size()) throw std::invalid_argument("GPU device ordinal is not visible");
+    const auto selected = select_gpu(int(device));
     core::XPointVerifier verifier;
     BsgsSearchOptions options;
     options.max_steps=giants*target_batch; options.candidate_capacity=uint32_t(capacity); options.group_size=unsigned(group);
@@ -79,7 +78,7 @@ int bsgs_command(int argc,char** argv) {
     GpuBsgsExecutor executor(int(device),table,targets,verifier,options);
     const auto elapsed=[&]{return std::chrono::duration<double,std::milli>(Clock::now()-start).count();};
     std::cout<<std::setprecision(9)<<"{\"type\":\"start\",\"backend\":\"" << gpu_backend_name() << "\",\"mode\":\"bsgs\",\"device\":"<<device
-        <<",\"uuid\":\""<<inventory.devices[device].uuid<<"\",\"m\":"<<table.memory().m
+        <<",\"uuid\":\""<<selected.device.uuid<<"\",\"m\":"<<table.memory().m
         <<",\"table_checksum\":\""<<hex(table.checksum().data(),32)<<"\",\"target_digest\":\""<<hex(targets.digest().data(),32)
         <<"\",\"target_count\":"<<targets.values().size()<<",\"begin\":\""<<interval.begin().hex()<<"\",\"end_exclusive\":\""<<interval.end().hex()
         <<"\",\"group_size\":"<<group<<",\"durable_coverage\":false,\"preparation_ms\":"<<elapsed()

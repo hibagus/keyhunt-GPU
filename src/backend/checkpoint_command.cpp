@@ -114,8 +114,7 @@ int checkpoint_command(int argc,char** argv){
     (void)elapsed;
     discover_gpu();return 2; // Explicit backend availability; no CPU search fallback.
 #else
-    const auto inventory=discover_gpu();
-    if(device>=inventory.devices.size())throw std::invalid_argument("GPU device ordinal is not visible");
+    const auto selected = select_gpu(int(device));
     core::XPointVerifier verifier;CheckpointSummary summary;
     double preparation_ms=0,executor_setup_ms=0,table_upload_ms=0;
     const auto notify=[&](const std::vector<ScalarInterval>& coverage,size_t matches,double ms){
@@ -125,7 +124,7 @@ int checkpoint_command(int argc,char** argv){
             <<",\"end_exclusive\":"<<quote(coverage[i].end().hex())<<'}';
         std::cout<<"],\"match_observations\":"<<matches<<",\"transaction_ms\":"<<ms<<'}';flush();
     };
-    LocalCheckpointControl control(journal.state_directory(),grant,int(device),inventory.devices.size());
+    LocalCheckpointControl control(journal.state_directory(),grant,int(device),selected.visible_devices);
     // Construct/upload the executor lazily, after binding validation, integrity
     // checks, the exclusive owner guard and durable executor-generation allocation.
     if(mode==Mode::XPoint){
@@ -164,7 +163,7 @@ int checkpoint_command(int argc,char** argv){
         <<",\"device_steps\":"<<quote(summary.device_steps.hex())<<",\"match_observations\":"<<summary.match_observations
         <<",\"batches\":"<<summary.batches<<",\"overflow_replays\":"<<summary.overflows<<",\"checkpoints\":"<<summary.checkpoints
         <<",\"checkpoint_ms\":"<<summary.checkpoint_ms
-        <<",\"metrics_version\":1,\"device\":"<<device<<",\"uuid\":"<<quote(inventory.devices[device].uuid)
+        <<",\"metrics_version\":1,\"device\":"<<device<<",\"uuid\":"<<quote(selected.device.uuid)
         <<",\"mode\":"<<quote(mode==Mode::XPoint?"xpoint":"bsgs")
         <<",\"checkpoint_seconds\":"<<options.checkpoint_seconds<<",\"bsgs_group_size\":"<<summary.bsgs_group_size
         <<",\"verified_device_steps\":"<<quote(summary.verified_device_steps.hex())

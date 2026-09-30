@@ -84,3 +84,19 @@ Performance results apply to recorded workloads and this host. They are not a
 claim that one kernel is globally optimal for every table size, target count,
 launch size, or GPU. Later sections and `docs/baselines/C18_*` record accepted
 optimizations and validation evidence.
+
+## Selected-device initialization
+
+CUDA 12 and later eagerly initialize the primary context in `cudaSetDevice`.
+The initial port inherited full inventory discovery during every search startup,
+which visited all eight H200s. `select_gpu()` now queries the visible count and
+only describes the requested CUDA ordinal; `devices` still provides the full
+inventory. Device scopes retain the previous thread selection. HIP discovery is
+unchanged. See NVIDIA's [device initialization contract](https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__DEVICE.html).
+
+Five alternating 257-step diagnostic processes measured median startup plus
+execution wall time of 3770 ms before and 756 ms after this change, with all eight
+GPUs visible (unreserved host). This is a startup result, not a kernel speedup.
+Raw observations are in [C18_DEVICE_SELECTION.json](baselines/C18_DEVICE_SELECTION.json).
+The CLI checks cover hidden devices, invalid/unbuilt backends, `1,0` visibility
+remapping and selected UUID identity.

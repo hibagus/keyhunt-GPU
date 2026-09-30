@@ -101,15 +101,14 @@ int smoke(int argc, char** argv) {
     identity.assignment_generation = identity.executor_generation = 1;
     const auto work = scheduler::WorkUnit::plan(grid, UInt256(0), begin, steps, identity);
     const auto batch = scheduler::KernelBatch::plan(*work, begin, steps);
-    const auto inventory = discover_gpu();
-    if (size_t(device) >= inventory.devices.size()) throw std::invalid_argument("GPU device ordinal is not visible");
+    const auto selected = select_gpu(int(device));
     GpuDiagnosticExecutor executor(device, ExecutorOptions{steps});
     const auto ticket = executor.submit(*batch);
     while (!executor.poll(ticket)) std::this_thread::sleep_for(std::chrono::milliseconds(1));
     const auto result = executor.take(ticket);
     std::cout << "{\"backend\":\"" << gpu_backend_name() << "\",\"diagnostic_only\":true,\"search_coverage\":false,\"device\":" << device
-              << ",\"uuid\":" << quoted(inventory.devices[device].uuid)
-              << ",\"architecture\":" << quoted(inventory.devices[device].architecture)
+              << ",\"uuid\":" << quoted(selected.device.uuid)
+              << ",\"architecture\":" << quoted(selected.device.architecture)
               << ",\"begin\":" << quoted(interval.begin().hex()) << ",\"end_exclusive\":" << quoted(interval.end().hex())
               << ",\"device_steps\":" << result.device_steps << ",\"launch_count\":" << result.launch_count
               << ",\"device_allocation_bytes\":" << result.device_allocation_bytes
