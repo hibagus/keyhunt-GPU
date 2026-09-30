@@ -917,15 +917,16 @@ implementation evidence in [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md).
 | C17 | `perf: tune HIP batching arithmetic and memory layout` | C16 | Completed: separate measured launch-bound, mixed-addition, inversion, buffer and replay changes; 33 CPU / 59 HIP / 8 debug / 6 sanitizer gates pass; [paired throughput, pause and compiler evidence](HIP_TUNING.md) |
 | C18 | `feat: add native CUDA backend over shared kernels` | C11, C13 | Completed: NVIDIA compile and H200 hardware parity/recovery tests pass; [CUDA evidence and backend matrix](CUDA_BACKEND.md) |
 | C19 | `perf: add validated gfx942 arithmetic specializations` | C17 | Completed: opt-in compiler carry/borrow intrinsics, portable fallback, exact-binary ISA and paired search evidence; rejected multiplication/assembly experiments retained; [C19 validation](GFX942_SPECIALIZATIONS.md) |
-| C20 | `feat: schedule and balance multiple GPU devices` | C14–C17 | Completed (HIP scope): calibrated immutable twelve-hour-target blocks, transactional balancing, persistent device owners, local controls, safe restart/handoff, batched sync, 1/2/4/8-GPU scaling and isolated memory/stall recovery pass; [C20 implementation and evidence](MULTI_GPU.md) |
+| C20 | `feat: schedule and balance multiple GPU devices` | C14–C17 | Completed (HIP and CUDA / localhost): calibrated immutable twelve-hour-target blocks, transactional balancing, persistent device owners, local controls, safe restart/handoff, batched sync, 1/2/4/8-GPU scaling and isolated memory/stall recovery pass; [C20 implementation and evidence](MULTI_GPU.md) |
 | C21 | `docs: publish validated GPU build and operations guides` | C14, C16, C20 | HIP quickstarts match released behavior; CUDA/assembly sections follow C18/C19 validation; benchmark and recovery limitations documented |
 | C22 | `feat: export and reconcile offline work assignments` | C15 | Reservations, duplicate imports, revocation generations, incompatible manifests, and exact union tested |
 | C23 | `feat: extend GPU mode coverage` | C18, C20 | Separate commits for hash/address/other modes; each has algorithm and recovery parity before enablement |
 
 C12 can be developed after C05 without waiting for HIP; its integration still
 requires GPU completion contracts to pass. NVIDIA validation requires access to a
-CUDA toolchain and NVIDIA device, which have not been established on this host.
-An untested CUDA build must stay labeled experimental. GPU parity for the later
+CUDA toolchain and NVIDIA device; native xpoint/BSGS and C20 execution now pass
+on the recorded H200 stack ([C20 evidence](C20_CUDA_VALIDATION.md)). An untested
+CUDA build must stay labeled experimental. GPU parity for the later
 modes is an explicit follow-up phase, not an implied part of the first BSGS release.
 
 ## 11. Verification and release gates

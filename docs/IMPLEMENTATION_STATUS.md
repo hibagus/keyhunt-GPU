@@ -26,7 +26,7 @@ change is committed separately. Analysis and validation evidence live under
 | C17: measured HIP tuning | Completed | [Changes, rejected experiment and paired evidence](HIP_TUNING.md); xpoint kernels 1.94–2.33× and BSGS kernels 1.31–1.72× faster on the measured MI300X workloads; exact overflow recovery, compact transfers, complete grouping metrics, pause checks; 33 CPU / 59 HIP / 8 debug / 6 sanitizer tests pass |
 | C18: native CUDA | Completed | [CUDA build, tuning and acceptance](CUDA_BACKEND.md); 47 CUDA-build and 32 CPU tests, eight H200s, exact xpoint/BSGS parity, checkpoint recovery, 12 sanitizer runs and measured PTX/mixed-coordinate optimizations; [validation evidence](baselines/C18_VALIDATION.json) |
 | C19: gfx942 arithmetic specializations | Completed (opt-in) | [Carry/borrow intrinsics, rejected experiments and ISA evidence](GFX942_SPECIALIZATIONS.md); small-target stepped xpoint kernels 1.051–1.060× faster, portable fallback; 33 CPU / 61 HIP / 4 debug / 4 sanitizer checks pass |
-| C20: concurrent GPU scheduling | Completed (HIP scope) | [Ownership, operations and measured evidence](MULTI_GPU.md); persistent per-device executors, transactional balancing, calibrated immutable widths, independent controls and bounded recovery; 48 validated 1/2/4/8-GPU runs, 66 HIP / 47 CPU / 9 debug / 7 sanitizer gates; [acceptance manifest](baselines/C20_VALIDATION.json) |
+| C20: concurrent GPU scheduling | Completed (HIP and CUDA / localhost) | [Ownership and operations](MULTI_GPU.md); persistent owners, balancing, calibrated widths and bounded recovery. HIP: 66 HIP / 47 CPU / 9 debug / 7 sanitizer gates and [manifest](baselines/C20_VALIDATION.json). [H200 acceptance](C20_CUDA_VALIDATION.md): 64 CUDA-build tests, three GPU memory/leak checks; each backend has 48 validated 1/2/4/8-GPU runs and calibrated lifecycle recovery. |
 | C21–C23 | Planned | Acceptance gates remain in the redesign plan |
 
 C01 records the original CPU boundary/stride defects. C06 fixes modular/point
@@ -65,7 +65,9 @@ startup-sensitive CLI timings. Multiplication ISA was rejected for regressions;
 explicit carry assembly was not retained because its incremental gain over
 intrinsics stayed below the acceptance threshold.
 
-C20 completes concurrent machine execution on the validated HIP host. Eight GPUs
-measure 6.04× xpoint and 4.75× BSGS finite-job throughput relative to one GPU, with
-exact coverage and retained results. It addresses A16–A18 and the selected-device
-startup path from A20; new NVIDIA hardware acceptance remains a follow-up.
+C20 completes concurrent machine execution on the validated HIP and CUDA hosts.
+Eight MI300X GPUs measure 6.04× xpoint and 4.75× BSGS finite-job throughput;
+eight H200s measure 6.32× and 4.60× respectively, each relative to one GPU on its
+own host. Both retain exact coverage and verified results. A16–A18 and A20 have
+live recovery/context evidence; the H200 report preserves the rejected startup
+setting experiment and leaves existing kernel choices unchanged.

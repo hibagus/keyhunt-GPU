@@ -13,8 +13,8 @@ The user-authorized SSH node reports eight H200s, each with 132 SMs and
 were idle at the initial inspection. The host was not reserved; external load
 is uncontrolled. Another CUDA audit appeared during correctness testing; the
 fleet measurements waited until its GPU workload cleared. Two-second process
-observations accompany the measured window. Validation changes no partition mode, clock, power limit,
-system package or system service.
+observations accompany the measured window. Validation changes no partition
+mode, clock, power limit, system package or system service.
 
 The remote checkout matched C20 before testing. A separate `build/cuda-c20`
 directory enables CUDA, coordinator and HTTPS together. SQLite 3.51.3 comes
@@ -74,16 +74,19 @@ valid worker self-test retain API-error reporting. Raw commands/output are in th
 [log archive](baselines/C20_CUDA_TEST_LOGS.tar.gz).
 
 The context test also passes with `CUDA_VISIBLE_DEVICES=7,1`: only visible ordinal
-1 becomes active and its UUID matches physical GPU 1. Final checks also cover `6,1` remapping and one visible GPU. An empty visibility
-mask initially exposed a test-only defect: `cuInit` returns `CUDA_ERROR_NO_DEVICE`
+1 becomes active and its UUID matches physical GPU 1. Final checks also cover
+`6,1` remapping and one visible GPU. An empty visibility mask initially exposed
+a test-only defect: `cuInit` returns `CUDA_ERROR_NO_DEVICE`
 before enumeration. The corrected gate returns skip 77 for both one and zero
 visible devices and still passes on all eight. The original failure and focused
-reruns are retained; production binary hashes are unchanged. This explicit skip-contract check is
-separate from the all-visible 64-test run, which has no skips.
+reruns are retained; production binary hashes are unchanged. The explicit skip
+check is separate from the all-visible 64-test run, which has no skips.
 
 ## Measured fleet behavior
 
-All **48 runs** pass: eight warm-ups and forty measured runs, totaling **360 block completions**. Every selected GPU completes two blocks in every run. The [raw report](baselines/C20_CUDA_FLEET.json) retains each grant and timing.
+All **48 runs** pass: eight warm-ups and forty measured runs, totaling
+**360 block completions**. Every selected GPU completes two blocks in every run.
+The [raw report](baselines/C20_CUDA_FLEET.json) retains each grant and timing.
 
 | GPUs | Xpoint seconds, median [min–max] | Billion scalars/s | Relative to one GPU | BSGS seconds, median [min–max] | Billion effective scalars/s | Relative to one GPU |
 | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -147,8 +150,8 @@ The stall case stops a host process with SIGSTOP; it does not induce an actual
 GPU driver hang. The memory-pressure case limits host preparation budgets;
 backend refusal tests separately cover device-memory limits. MIG, distributed
 coordinator/worker traffic across hosts and public ingress remain unvalidated by
-this loopback session. The original frozen audit reports and C18/C20 HIP evidence
-are preserved unchanged.
+this loopback session. Frozen revision-specific audit results and earlier
+C18/C20 HIP evidence are retained; follow-up links identify newer acceptance.
 
 ## Startup-setting experiment
 

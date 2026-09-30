@@ -1,10 +1,10 @@
 # C20: concurrent machine execution
 
-C20 is complete for the validated HIP/localhost scope. The
-[acceptance manifest](baselines/C20_VALIDATION.json) records source/binary hashes,
-raw test logs, fleet measurements and limitations. New CUDA hardware acceptance
-remains a follow-up; the shared implementation and selected-device source changes
-are not a claim of new NVIDIA validation.
+C20 is complete for the validated HIP and native CUDA localhost scope. The
+[HIP acceptance manifest](baselines/C20_VALIDATION.json) and
+[H200 follow-up](C20_CUDA_VALIDATION.md) record independent source/binary hashes,
+raw tests, 1/2/4/8-GPU measurements and lifecycle checks. Each backend retains its
+own recorded hardware, toolchain and timing results.
 
 ## Ownership and failure boundaries
 
@@ -70,7 +70,7 @@ Signals retain their previous meanings. Standalone execution still uses
 `control.sock`. A queue's process lock protects its persistent endpoint; a block
 lock protects each individual checkpoint run. Control intent survives handoff.
 
-The live `coordinator_https_worker` HIP/mTLS test passes: two short BSGS grants
+The live `coordinator_https_worker` HIP and CUDA mTLS tests pass: two short BSGS grants
 complete with exactly one executor setup/table upload and one fresh self-test.
 Their outbox stays pending until explicit synchronization. Existing
 `checkpoint_controls` socket, signal, durability and recovery tests also pass.
@@ -156,8 +156,10 @@ all-device diagnostic operation.
 The discovery mock passes SPX/QPX/CPX layouts and visibility remapping with device
 0's memory query failing while selected device 1 succeeds. Only device 1 is
 queried. Real HIP selected-device self-tests and two-device fleet/HTTPS regressions
-pass. The CUDA path uses the existing selected-device API and version queries;
-new NVIDIA hardware validation is unavailable on this host and is not claimed.
+pass. The native `coordinator_cuda_contexts` gate now verifies the production
+self-test on H200: eight GPUs are visible but only selected ordinal 7 has an
+active primary context. Remapped visibility also passes; one/zero visible GPUs
+explicitly skip this isolation gate. See [CUDA acceptance](C20_CUDA_VALIDATION.md).
 
 ## Bounded operational output
 
@@ -263,7 +265,8 @@ MI300X owners and the measured xpoint twelve-hour-target width:
   completes both blocks. Only the failing queue is quarantined; journal checks pass.
 
 A17 is addressed by retained process/table ownership and measured multi-grant
-execution; A20's discovery path is corrected with HIP and mock validation. The
+execution; A20's discovery path is corrected with HIP, mock and CUDA context
+validation. The
 frozen C15/C19 audit reports remain descriptions of their audited revisions.
 
 Acceptance comprises **66 HIP/coordinator**, **47 CPU/coordinator**, **9 focused
@@ -271,5 +274,9 @@ debug** and **7 focused ASAN/UBSAN** gates, plus the 48-run fleet matrix and lon
 lifecycle run. [Raw test logs](baselines/C20_TEST_LOGS.tar.gz) retain the initial
 failures and corrective reruns described above. No failures are waived. The
 hardware scope is SPX/NPS1 on this host; CPX/QPX contracts remain covered by mocks.
-The earlier user-selected localhost scope remains: public ingress, a physical
-second host, and new NVIDIA acceptance are not part of this evidence.
+These counts and measurements describe the original HIP acceptance. The
+[H200 follow-up](C20_CUDA_VALIDATION.md) adds 64 CUDA-build tests, three GPU
+memory/leak checks, 48 fleet runs and calibrated lifecycle recovery. Eight H200s
+measure 6.32× xpoint and 4.60× BSGS finite-job throughput versus one H200.
+Public ingress and cross-host coordinator/worker traffic remain outside both
+localhost validations.

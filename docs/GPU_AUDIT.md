@@ -2,8 +2,9 @@
 
 Current implementation: [C20 concurrent execution](MULTI_GPU.md) addresses A16,
 A17 and A18, and corrects the selected-device startup path identified by A20.
-HIP fleet evidence is recorded. The independent H200 follow-up below verifies
-A20 context isolation; full CUDA fleet acceptance remains separate.
+HIP fleet evidence and [C20 H200 acceptance](C20_CUDA_VALIDATION.md) are recorded,
+including native CUDA fleet scaling and recovery. The independent H200 audit
+below separately verifies A20 against its frozen revisions.
 [C17 measured tuning](HIP_TUNING.md) addresses A12, A13,
 A14 and A19 with separate changes and retained paired evidence. The audits below
 remain scoped to their frozen revisions.

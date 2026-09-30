@@ -30,7 +30,7 @@ contracts, validated on eight H200s with measured arithmetic and inline PTX tuni
 | Local state | C12 project-scoped SQLite journal, sparse allocation, fenced assignments and sealed backups; [operations guide](docs/STORAGE.md) |
 | Durable GPU searches | C13/C18 verified local checkpoints and replay for HIP/CUDA xpoint and BSGS; [commands and recovery](docs/CHECKPOINTS.md), [CUDA usage](docs/CUDA_BACKEND.md) |
 | Pause/resume | C14 local commands, graceful signals, exact restart and live inspection; [operations guide](docs/PAUSE_RESUME.md) |
-| Distributed blocks | C15 authenticated coordination and supervised workers; [localhost setup](docs/COORDINATOR.md#s06-isolated-localhost-operation). Simultaneous multi-GPU execution remains C20 |
+| Distributed blocks | C15 authenticated coordination and supervised workers; [localhost setup](docs/COORDINATOR.md#s06-isolated-localhost-operation). [C20 concurrent HIP/CUDA execution](docs/MULTI_GPU.md) is validated on eight MI300X and eight H200 GPUs |
 
 The CPU engine still has range, stride and whole-application sanitizer defects.
 C06 corrected arithmetic and the tested BSGS start-boundary miss. See
@@ -63,9 +63,9 @@ The distribution design gives each selected GPU its own block, sized for roughly
 12 hours on a reference device, with local checkpoints and a 30-day renewable
 assignment. The C15 supervisor batches synchronization with an authenticated
 HTTPS coordinator every two hours. Block width remains an explicit calibration
-input; production execution is one GPU at a time until C20. Public ingress and a
-physical second host are deferred from the user-approved localhost gate. See the
-[GPU plan](docs/GPU_REDESIGN_PLAN.md) and [coordinator plan](docs/COORDINATOR_SERVER_PLAN.md).
+input; C20 runs persistent owners concurrently on the selected GPUs. Public
+ingress and cross-host coordinator/worker traffic remain outside the validated
+localhost scope. See the [GPU plan](docs/GPU_REDESIGN_PLAN.md) and [coordinator plan](docs/COORDINATOR_SERVER_PLAN.md).
 
 ## Built with
 
@@ -148,7 +148,7 @@ process exit as proof of saved search progress or exact coverage.
 - [x] C17: [measured HIP arithmetic, buffer and overflow tuning](docs/HIP_TUNING.md).
 - [x] C18: native CUDA, H200 parity/recovery, measured arithmetic and inline PTX tuning.
 - [x] C19: [opt-in gfx942 carry/borrow intrinsics, portable fallback and paired ISA evidence](docs/GFX942_SPECIALIZATIONS.md).
-- [ ] C20: simultaneous multi-GPU scheduling and balancing.
+- [x] C20: [concurrent HIP/CUDA scheduling, balancing and recovery](docs/MULTI_GPU.md); [H200 acceptance](docs/C20_CUDA_VALIDATION.md).
 - [ ] C21–C23: operations guides, offline assignments and further GPU modes.
 
 See [implementation status](docs/IMPLEMENTATION_STATUS.md) for evidence and

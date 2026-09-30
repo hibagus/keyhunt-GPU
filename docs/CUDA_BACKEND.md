@@ -3,7 +3,9 @@
 C18 compiles the same bounded search algorithms and executor lifecycle with
 NVIDIA nvcc. CUDA and HIP use separate build directories and native runtimes.
 The H200 preset targets `sm_90` and embeds `compute_90` PTX for forward JIT
-compatibility. No HIP SDK is required for CUDA or CPU builds.
+compatibility. No HIP SDK is required for CUDA or CPU builds. The later
+[C20 H200 acceptance](C20_CUDA_VALIDATION.md) validates concurrent CUDA owners,
+coordinator/HTTPS integration, 1/2/4/8-GPU scaling and calibrated recovery.
 
 ## Build and run
 
@@ -54,8 +56,8 @@ The exact C05/C11 plans, full candidate verification, guarded capacity, overflow
 replay, C13 durable receipts and C14 controls are shared. A CUDA error never falls
 through to a CPU search. Destruction drains only owned streams. CUDA does not
 change clocks, reset devices, reserve all GPUs, or alter compute partitions.
-This milestone executes one selected device per owner; concurrent multi-device
-scheduling remains C20.
+C18 executes one selected device per owner. C20 adds the validated concurrent
+multi-device scheduler described in [MULTI_GPU.md](MULTI_GPU.md).
 
 Device selection also restores the caller's ordinal if scope construction throws
 after the native runtime has changed it. The failure test injects both get-device
@@ -286,8 +288,8 @@ visible ordinal in a fresh process, then queries every primary context with
 [`cuDevicePrimaryCtxGetState`](https://docs.nvidia.com/cuda/cuda-driver-api/cuda_driver_api/group__CUDA__PRIMARY__CTX.html).
 The observer does not retain contexts or select devices. Only the chosen ordinal
 may be active, catching both full-inventory initialization and accidental
-restoration of the untouched default device. Fewer than two visible devices
-explicitly skips this isolation gate; it cannot prove isolation on one GPU.
+restoration of the untouched default device. The gate explicitly skips when
+fewer than two devices are visible; it cannot prove isolation on one GPU.
 An empty visibility mask may return `CUDA_ERROR_NO_DEVICE` from `cuInit` before
 count enumeration; the gate treats that as the same explicit skip, preserving
 other driver initialization failures as errors.
@@ -309,5 +311,5 @@ and passes 55 CUDA-build tests plus 12 Compute Sanitizer runs. It verifies C17's
 shared compact-buffer, overflow-recovery and mixed-group accounting changes on
 CUDA, measures warm and periodic-checkpoint throughput, and checks the A20 fix
 separately at `fb57428`. Raw logs, source/binary fingerprints and independent
-statistic checks are retained with that report; full CUDA fleet acceptance and
-MIG remain separate.
+statistic checks are retained with that report. Full CUDA fleet acceptance is
+recorded in the [C20 follow-up](C20_CUDA_VALIDATION.md); MIG remains unvalidated.
