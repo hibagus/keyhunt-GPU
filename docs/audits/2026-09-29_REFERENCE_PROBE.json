@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "scope": "Host-only arithmetic probe; no GPU compilation or execution",
+  "reference_commit": "f80e95e1dbe5f6f71450025d00a74d8d98acb131",
+  "reference_header_sha256": "3a46820a5b9aaa3f1091d8c7cf3cb4d4b77810f51fc44971cf35429cef30afaf",
+  "reference_kernel_sha256": "408c51fe956e76f7c44097581c3a8264ea80fb4f942d7c8fc6fd347a93cff136",
+  "harness_sha256": "798d74187266e33e6e3dea7042ba2f97ff524931e3cfbb6bbe4d4a717c1b1af4",
+  "compiler": "g++ (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0",
+  "compiler_flags": [
+    "-O2",
+    "-std=c++17"
+  ],
+  "seed": 20260929,
+  "field_multiplication_cases": 1081,
+  "edge_cases": 81,
+  "seeded_cases": 1000,
+  "failed_field_multiplication_cases": 29,
+  "failed_edge_cases": 29,
+  "failed_seeded_cases": 0,
+  "first_failed_examples": [
+    {
+      "case_index": 30,
+      "kind": "edge",
+      "a": "fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2e",
+      "b": "fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2e",
+      "expected": "0000000000000000000000000000000000000000000000000000000000000001",
+      "actual": "fffffffefffffffefffffffefffffffefffffffefffffffefffffc2cfffff85f"
+    },
+    {
+      "case_index": 31,
+      "kind": "edge",
+      "a": "fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2e",
+      "b": "fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2d",
+      "expected": "0000000000000000000000000000000000000000000000000000000000000002",
+      "actual": "fffffffefffffffefffffffefffffffefffffffefffffffefffffc2cfffff860"
+    },
+    {
+      "case_index": 32,
+      "kind": "edge",
+      "a": "fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2e",
+      "b": "fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2c",
+      "expected": "0000000000000000000000000000000000000000000000000000000000000003",
+      "actual": "fffffffefffffffefffffffefffffffefffffffefffffffefffffc2cfffff861"
+    },
+    {
+      "case_index": 33,
+      "kind": "edge",
+      "a": "fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2e",
+      "b": "00000000000000000000000000000000000000000000000000000000ffffffff",
+      "expected": "fffffffffffffffffffffffffffffffffffffffffffffffffffffffdfffffc30",
+      "actual": "fffffffffffffffffffffffffffffffffffffffffffffffefffffffdfffffc30"
+    },
+    {
+      "case_index": 34,
+      "kind": "edge",
+      "a": "fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2e",
+      "b": "00000000000000000000000000000000ffffffffffffffffffffffffffffffff",
+      "expected": "fffffffffffffffffffffffffffffffefffffffffffffffffffffffefffffc30",
+      "actual": "fffffffffffffffffffffffefffffffdfffffffefffffffefffffffefffffc30"
+    },
+    {
+      "case_index": 35,
+      "kind": "edge",
+      "a": "fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2e",
+      "b": "8000000000000000000000000000000000000000000000000000000000000000",
+      "expected": "7ffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f",
+      "actual": "7ffffffefffffffefffffffefffffffefffffffefffffffffffffffdfffff85e"
+    },
+    {
+      "case_index": 39,
+      "kind": "edge",
+      "a": "fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2d",
+      "b": "fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2e",
+      "expected": "0000000000000000000000000000000000000000000000000000000000000002",
+      "actual": "fffffffefffffffefffffffefffffffefffffffefffffffefffffc2cfffff860"
+    },
+    {
+      "case_index": 40,
+      "kind": "edge",
+      "a": "fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2d",
+      "b": "fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2d",
+      "expected": "0000000000000000000000000000000000000000000000000000000000000004",
+      "actual": "fffffffefffffffefffffffefffffffefffffffefffffffefffffc2cfffff862"
+    }
+  ],
+  "double_g_expected_z": "9075b4ee4d4788cabb49f7f81c221151fa2f68914d0aa833388fa11ff621a970",
+  "double_g_z_separate": "9075b4ee4d4788cabb49f7f81c221151fa2f68914d0aa833388fa11ff621a970",
+  "double_g_z_in_place": "ad22b093ea5991eedebfafc97ec1b694877ec67c362707f0bfd122c97f5b97b6",
+  "double_g_failed": true,
+  "source_derived_inversion_counts": {
+    "squarings": 256,
+    "multiplies": 249
+  },
+  "source_derived_bloom_512_mib_bit_count_uint32": 0
+}

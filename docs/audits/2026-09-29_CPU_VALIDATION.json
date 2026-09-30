@@ -1,0 +1,252 @@
+{
+  "schema_version": 1,
+  "audit_date": "2026-09-29",
+  "audited_revision": "ad64ee864af4dbd23a34ace5a9365d92e3f94d9d",
+  "scope": "Frozen C03 CPU regression characterization; known defects intentionally preserved; no GPU validation",
+  "commands": [
+    "git archive ad64ee864af4 (extracted into isolated temporary source directory)",
+    "cmake -S source -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON",
+    "cmake --build build --parallel 4",
+    "ctest --test-dir build --output-on-failure"
+  ],
+  "configure_succeeded": true,
+  "ctest_output": "Internal ctest changing into directory: /tmp/keyhunt-audit-je85m8dc/build\nTest project /tmp/keyhunt-audit-je85m8dc/build\n    Start 1: cpu_baseline\n1/1 Test #1: cpu_baseline .....................   Passed   29.34 sec\n\n100% tests passed, 0 tests failed out of 1\n\nLabel Time Summary:\nbaseline    =  29.34 sec*proc (1 test)\ncpu         =  29.34 sec*proc (1 test)\n\nTotal Test time (real) =  29.35 sec\n",
+  "binary_sha256": "ad4ef332b2148e6baa3b88491d53be4a0dcfba53914ddfbd17e6eaee3531522c",
+  "fixture_sha256": "fec2e6c0ea3f9a21c9d8a41e1bd49723e26fc13f94314c79edf68cb25063d885",
+  "cases": [
+    {
+      "name": "help_existing_exit_status",
+      "passed": true,
+      "known_defect": false,
+      "failures": []
+    },
+    {
+      "name": "invalid_mode",
+      "passed": true,
+      "known_defect": false,
+      "failures": []
+    },
+    {
+      "name": "invalid_crypto",
+      "passed": true,
+      "known_defect": false,
+      "failures": []
+    },
+    {
+      "name": "unknown_option",
+      "passed": true,
+      "known_defect": false,
+      "failures": []
+    },
+    {
+      "name": "pub2rmd_removed",
+      "passed": true,
+      "known_defect": false,
+      "failures": []
+    },
+    {
+      "name": "missing_input",
+      "passed": true,
+      "known_defect": false,
+      "failures": []
+    },
+    {
+      "name": "empty_input_accepted_existing_defect",
+      "passed": true,
+      "known_defect": true,
+      "failures": []
+    },
+    {
+      "name": "malformed_xpoint_ignored_existing_defect",
+      "passed": true,
+      "known_defect": true,
+      "failures": []
+    },
+    {
+      "name": "xpoint_aligned_boundary",
+      "passed": true,
+      "known_defect": false,
+      "failures": []
+    },
+    {
+      "name": "xpoint_tail_overrun_existing_defect",
+      "passed": true,
+      "known_defect": true,
+      "failures": []
+    },
+    {
+      "name": "xpoint_tiny_range_overrun_existing_defect",
+      "passed": true,
+      "known_defect": true,
+      "failures": []
+    },
+    {
+      "name": "xpoint_no_match",
+      "passed": true,
+      "known_defect": false,
+      "failures": []
+    },
+    {
+      "name": "xpoint_swapped_range",
+      "passed": true,
+      "known_defect": false,
+      "failures": []
+    },
+    {
+      "name": "zero_start_becomes_one",
+      "passed": true,
+      "known_defect": false,
+      "failures": []
+    },
+    {
+      "name": "xpoint_above_64_bits",
+      "passed": true,
+      "known_defect": false,
+      "failures": []
+    },
+    {
+      "name": "stride_overlapping_batches_existing_defect",
+      "passed": true,
+      "known_defect": true,
+      "failures": []
+    },
+    {
+      "name": "address_compressed",
+      "passed": true,
+      "known_defect": false,
+      "failures": []
+    },
+    {
+      "name": "address_uncompressed",
+      "passed": true,
+      "known_defect": false,
+      "failures": []
+    },
+    {
+      "name": "address_both",
+      "passed": true,
+      "known_defect": false,
+      "failures": []
+    },
+    {
+      "name": "address_no_match",
+      "passed": true,
+      "known_defect": false,
+      "failures": []
+    },
+    {
+      "name": "rmd160_compressed",
+      "passed": true,
+      "known_defect": false,
+      "failures": []
+    },
+    {
+      "name": "rmd160_uncompressed",
+      "passed": true,
+      "known_defect": false,
+      "failures": []
+    },
+    {
+      "name": "rmd160_both",
+      "passed": true,
+      "known_defect": false,
+      "failures": []
+    },
+    {
+      "name": "rmd160_no_match",
+      "passed": true,
+      "known_defect": false,
+      "failures": []
+    },
+    {
+      "name": "ethereum_address",
+      "passed": true,
+      "known_defect": false,
+      "failures": []
+    },
+    {
+      "name": "vanity_prefix",
+      "passed": true,
+      "known_defect": false,
+      "failures": []
+    },
+    {
+      "name": "vanity_no_match",
+      "passed": true,
+      "known_defect": false,
+      "failures": []
+    },
+    {
+      "name": "minikey_deterministic_start",
+      "passed": true,
+      "known_defect": false,
+      "failures": []
+    },
+    {
+      "name": "minikey_invalid_length",
+      "passed": true,
+      "known_defect": false,
+      "failures": []
+    },
+    {
+      "name": "random_mode_does_not_exhaust",
+      "passed": true,
+      "known_defect": false,
+      "failures": []
+    },
+    {
+      "name": "equal_endpoints_fallback_existing_defect",
+      "passed": true,
+      "known_defect": true,
+      "failures": []
+    },
+    {
+      "name": "bsgs_known_match_compressed",
+      "passed": true,
+      "known_defect": false,
+      "failures": []
+    },
+    {
+      "name": "bsgs_known_match_uncompressed",
+      "passed": true,
+      "known_defect": false,
+      "failures": []
+    },
+    {
+      "name": "bsgs_no_match",
+      "passed": true,
+      "known_defect": false,
+      "failures": []
+    },
+    {
+      "name": "bsgs_start_missed_existing_defect",
+      "passed": true,
+      "known_defect": true,
+      "failures": []
+    },
+    {
+      "name": "bsgs_tail_overrun_existing_defect",
+      "passed": true,
+      "known_defect": true,
+      "failures": []
+    },
+    {
+      "name": "bsgs_invalid_n",
+      "passed": true,
+      "known_defect": false,
+      "failures": []
+    },
+    {
+      "name": "bsgs_range_too_small",
+      "passed": true,
+      "known_defect": false,
+      "failures": []
+    }
+  ],
+  "sizes_probe": {
+    "sizeof_Int": 40,
+    "sizeof_Point": 120,
+    "three_1024_Point_arrays_bytes": 368640,
+    "513_Int_denominators_bytes": 20520
+  }
+}
