@@ -1,6 +1,7 @@
 #include "keyhunt/scheduler/xpoint_batch_size.h"
 #include "keyhunt/storage/checkpoint.h"
 #include "checkpoint_data.h"
+#include "sqlite.h"
 #include <algorithm>
 #include <chrono>
 #include <fcntl.h>
@@ -17,15 +18,30 @@ using Clock=std::chrono::steady_clock;
 bool same(const ScalarInterval& a,const ScalarInterval& b){return a.begin()==b.begin() && a.end()==b.end();}
 class RunLock {
 public:
-    explicit RunLock(const std::string& directory){
-        // One stable inode avoids unlink/recreate races and per-block lock-file
-        // growth. C20 can replace this coarse standalone guard with its supervisor.
+    explicit RunLock(const std::string& directory,const Grant& grant,bool concurrent){
+        // One stable inode keeps crash recovery safe and avoids a file per block.
+        // Shared flock permits supervised devices; standalone execution excludes
+        // the entire fleet. An OFD range lock then excludes duplicate blocks.
         fd_=::open((directory+"/executor.lock").c_str(),O_RDWR|O_CREAT|O_CLOEXEC|O_NOFOLLOW,0600);
         if(fd_<0)throw std::runtime_error("cannot open local executor lock");
         struct stat st{};
         if(fstat(fd_,&st) || !S_ISREG(st.st_mode) || st.st_uid!=geteuid() || (st.st_mode&0077) || st.st_nlink!=1 ||
-           flock(fd_,LOCK_EX|LOCK_NB)){
+           flock(fd_,(concurrent?LOCK_SH:LOCK_EX)|LOCK_NB)){
             close(fd_);fd_=-1;throw std::runtime_error("local executor lock is unsafe or already held");
+        }
+        if(concurrent){
+            detail::Bytes identity(grant.scope.project.begin(),grant.scope.project.end());
+            identity.insert(identity.end(),grant.scope.job.begin(),grant.scope.job.end());
+            const auto block=grant.block.bytes();identity.insert(identity.end(),block.begin(),block.end());
+            const auto hash=detail::digest(identity);
+            uint64_t offset=0;for(unsigned i=0;i<8;++i)offset=(offset<<8)|hash[i];
+            struct flock range{};range.l_type=F_WRLCK;range.l_whence=SEEK_SET;
+            range.l_start=off_t(offset & uint64_t(INT64_MAX-1));range.l_len=1;
+            // Hash collisions deny concurrency; they can never permit overlap.
+            // OFD locks belong to this open description, unlike process locks.
+            if(fcntl(fd_,F_OFD_SETLK,&range)){
+                close(fd_);fd_=-1;throw std::runtime_error("checkpoint block already executing");
+            }
         }
     }
     ~RunLock(){if(fd_>=0)close(fd_);}
@@ -70,7 +86,7 @@ struct CheckpointRun::Impl {
     Impl(Journal& j,const Grant& g,detail::Binding b,const core::XPointVerifier& v,
          CheckpointOptions o,CheckpointObserver notify,CheckpointControl controls)
         :journal(j),grant(g),input(std::move(b)),verifier(v),options(o),
-         observer(std::move(notify)),control(std::move(controls)),lock(j.state_directory()){
+         observer(std::move(notify)),control(std::move(controls)),lock(j.state_directory(),g,o.concurrent_blocks){
         // Full semantic audit precedes any GPU work. This checks receipt hashes,
         // stored result relations and exact coverage, not only SQLite page health.
         journal.check();

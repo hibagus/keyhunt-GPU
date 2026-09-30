@@ -6,6 +6,9 @@
 
 namespace keyhunt::storage {
 struct CheckpointOptions {
+    // Supervised devices share the journal but retain an exclusive block guard.
+    // Standalone callers keep the original whole-journal exclusion by default.
+    bool concurrent_blocks=false;
     uint64_t xpoint_steps=1048576,giant_steps=16384;
     uint32_t target_batch=64,candidate_capacity=1024,checkpoint_seconds=10;
 };

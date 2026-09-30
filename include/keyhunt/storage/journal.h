@@ -1,6 +1,7 @@
 #pragma once
 #include "keyhunt/core/xpoint_search.h"
 #include <functional>
+#include <stdexcept>
 #include <memory>
 #include <string>
 #include <vector>
@@ -10,6 +11,14 @@ namespace keyhunt::storage {
 using core::UInt256;
 using core::ScalarInterval;
 using Digest=scheduler::Digest;
+// Expected lease/control transitions are separate from a failed GPU executor.
+// Existing callers can still handle these as invalid_argument.
+class ExecutionBlocked : public std::invalid_argument {
+public:
+    enum class Reason { Fence, Expired, Revalidation, Paused };
+    ExecutionBlocked(Reason why,const char* message):std::invalid_argument(message),reason(why){}
+    Reason reason;
+};
 enum class Mode:uint8_t { XPoint=1, Bsgs=2 };
 struct Manifest {
     Mode mode;

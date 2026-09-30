@@ -101,16 +101,16 @@ struct Journal::Impl {
         return Grant{scope,id,interval,s.text(0),s.integer(1),s.integer(2),db.metadata("epoch")};
     }
     Grant authorized(const Grant& g,const Job& job,bool* started=nullptr)const{
-        if(g.epoch!=db.metadata("epoch"))throw std::invalid_argument("stale journal epoch");
+        if(g.epoch!=db.metadata("epoch"))throw ExecutionBlocked(ExecutionBlocked::Reason::Fence,"stale journal epoch");
         auto current=assignment(g.scope,job,g.block,started);
-        if(!current || current->owner!=g.owner || current->generation!=g.generation || current->interval.begin()!=g.interval.begin() || current->interval.end()!=g.interval.end())throw std::invalid_argument("stale or foreign assignment");
-        if(current->expires<=now())throw std::invalid_argument("assignment expired; explicit recovery required");
+        if(!current || current->owner!=g.owner || current->generation!=g.generation || current->interval.begin()!=g.interval.begin() || current->interval.end()!=g.interval.end())throw ExecutionBlocked(ExecutionBlocked::Reason::Fence,"stale or foreign assignment");
+        if(current->expires<=now())throw ExecutionBlocked(ExecutionBlocked::Reason::Expired,"assignment expired; explicit recovery required");
         if(remote(g.scope)&&!importing_remote){
             Statement q(db.handle(),"SELECT generation,boot,deadline,paused FROM worker_grants WHERE project=? AND job=? AND block=?");
             scope_bind(q,g.scope);q.bind(3,g.block);
             if(!q.step()||q.integer(0)!=g.generation||q.text(1)!=boot_id()||q.integer(2)<=boot_seconds())
-                throw std::invalid_argument("offline deadline uncertain or expired; synchronize before execution");
-            if(q.integer(3))throw std::invalid_argument("coordinator paused this job");
+                throw ExecutionBlocked(ExecutionBlocked::Reason::Revalidation,"offline deadline uncertain or expired; synchronize before execution");
+            if(q.integer(3))throw ExecutionBlocked(ExecutionBlocked::Reason::Paused,"coordinator paused this job");
         }
         return *current;
     }
@@ -130,7 +130,7 @@ struct Journal::Impl {
         Statement q(db.handle(),"SELECT assignment_generation,executor_generation FROM executors WHERE project=? AND job=? AND block=?");
         scope_bind(q,grant.scope);q.bind(3,grant.block);
         if(!q.step() || q.integer(0)!=grant.generation || q.integer(1)!=generation)
-            throw std::invalid_argument("stale checkpoint executor");
+            throw ExecutionBlocked(ExecutionBlocked::Reason::Fence,"stale checkpoint executor");
     }
     void apply_coverage(const Grant& grant,const std::vector<ScalarInterval>& intervals){
         if(intervals.empty())return; // partial BSGS targets may commit matches alone
