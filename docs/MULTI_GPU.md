@@ -1,7 +1,10 @@
 # C20: concurrent machine execution
 
-This document records C20 implementation decisions and validation. C20 remains
-in progress until its acceptance evidence is recorded here.
+C20 is complete for the validated HIP/localhost scope. The
+[acceptance manifest](baselines/C20_VALIDATION.json) records source/binary hashes,
+raw test logs, fleet measurements and limitations. New CUDA hardware acceptance
+remains a follow-up; the shared implementation and selected-device source changes
+are not a claim of new NVIDIA validation.
 
 ## Ownership and failure boundaries
 
@@ -187,3 +190,86 @@ selected HIP discovery returned a runtime error instead of the established
 inventory, while other runtime failures still propagate. A dedicated discovery
 assertion and all three CLI gates pass. Together with the other 63 full-run gates,
 all 66 HIP/coordinator gates are validated; no failures are waived.
+
+## Measured fleet scaling
+
+[Raw repeated measurements](baselines/C20_FLEET.json) cover eight physical MI300X
+SPX/NPS1 devices (304 CUs each), gfx942 with the opt-in C19 carry path enabled.
+No partition settings were changed. Each mode/device-count pair has one warm-up
+run and five measured runs. Every run executes two nominal `2^32`-scalar blocks
+per GPU, with a seven-scalar final tail reduction. All 48 runs pass: every selected
+GPU completes work, all 360 block completions have exact per-job coverage, the
+known scalar-1 match survives local durability and authenticated upload, and no
+completion triggers an early upload. Each working process constructs one search
+executor, reusing its targets and BSGS table across grants.
+
+Times include fresh process startup, self-tests, durable GPU execution and
+supervisor shutdown. Assignment setup and explicit post-run inspection/upload
+are outside the measured interval. Rates are median finite-job throughput,
+not a claim about twelve-hour sustained throughput or ideal linear scaling.
+
+| GPUs | Xpoint seconds, median [min–max] | Xpoint billion scalars/s | Relative to one GPU | BSGS seconds, median [min–max] | BSGS billion effective scalars/s | Relative to one GPU |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 1 | 4.343 [4.294–4.583] | 1.978 | 1.00× | 1.940 [1.933–1.945] | 4.428 | 1.00× |
+| 2 | 4.583 [4.561–4.813] | 3.749 | 1.90× | 2.143 [2.127–2.155] | 8.017 | 1.81× |
+| 4 | 5.002 [4.939–5.174] | 6.869 | 3.47× | 2.534 [2.528–2.544] | 13.557 | 3.06× |
+| 8 | 5.753 [5.674–5.871] | 11.944 | 6.04× | 3.265 [3.211–3.325] | 21.048 | 4.75× |
+
+Xpoint uses one X target. BSGS uses `m=257` and two signed public-key targets;
+its effective scalar rate is not interchangeable with direct-scan work. Raw
+records retain actual target-giant counts and per-grant wall/kernel times. These
+small tables and finite jobs do not establish scaling for large tables, different
+target counts, CPX/QPX, NVIDIA devices, or uncontrolled concurrent workloads.
+
+The [reference recommendations](baselines/C20_CALIBRATION.json), derived from
+five warmed single-device grants on queue 0, are **110,289,156,413,738 scalars**
+for xpoint and **404,442,914,333,361 effective scalars** for this BSGS configuration.
+These widths predict twelve active hours on that reference; they are neither
+powers of two nor measured twelve-hour completions. Different inputs require
+new calibration. Existing jobs never change their width.
+
+An initial measurement attempt hit the coordinator's 120-request/minute limit
+because the fixture explicitly inspected/uploaded many small jobs. The fixture
+now paces those calls within the existing limit. Production synchronization was
+not relaxed. The incomplete attempt is excluded from this measured dataset.
+
+Reproduce the measurements and calibrated lifecycle check:
+
+```sh
+python3 tools/validate_fleet.py --build-dir build/hip-release \
+  --apache-root /path/to/private/apache-root --counts 1,2,4,8 \
+  --repeat 5 --block-bits 32 --output /tmp/C20_FLEET.json
+python3 tools/validate_fleet.py --build-dir build/hip-release \
+  --apache-root /path/to/private/apache-root --counts 2 --lifecycle-only \
+  --reference-report /tmp/C20_FLEET.json --reference-device 0 \
+  --output /tmp/C20_LIFECYCLE.json
+```
+
+## Lifecycle acceptance and remaining limits
+
+The [calibrated live lifecycle run](baselines/C20_LIFECYCLE.json) passes with two
+MI300X owners and the measured xpoint twelve-hour-target width:
+
+- Three authenticated server pause/resume cycles retain both PIDs and consume no
+  device failure budget (A16).
+- A confirmed socket pause lasts over 65 seconds against a 60-second watchdog;
+  the same owner resumes while its healthy peer continues making progress (A18).
+- SIGSTOP makes one owner unresponsive. The bounded watchdog quarantines it;
+  the healthy peer and an explicit machine sync continue. No hardware reset or
+  actual driver failure is induced. Separate mocks cover an unreapable driver PID.
+- Restart with only queue 1 and restricted visibility maps its original physical
+  GPU from ordinal 1 to ordinal 0, retaining the UUID and unfinished block.
+- A 128-byte host preparation budget rejects the BSGS queue while the xpoint queue
+  completes both blocks. Only the failing queue is quarantined; journal checks pass.
+
+A17 is addressed by retained process/table ownership and measured multi-grant
+execution; A20's discovery path is corrected with HIP and mock validation. The
+frozen C15/C19 audit reports remain descriptions of their audited revisions.
+
+Acceptance comprises **66 HIP/coordinator**, **47 CPU/coordinator**, **9 focused
+debug** and **7 focused ASAN/UBSAN** gates, plus the 48-run fleet matrix and long
+lifecycle run. [Raw test logs](baselines/C20_TEST_LOGS.tar.gz) retain the initial
+failures and corrective reruns described above. No failures are waived. The
+hardware scope is SPX/NPS1 on this host; CPX/QPX contracts remain covered by mocks.
+The earlier user-selected localhost scope remains: public ingress, a physical
+second host, and new NVIDIA acceptance are not part of this evidence.

@@ -1,0 +1,50 @@
+{
+  "xpoint": {
+    "mode": "xpoint",
+    "reference_queue": "0",
+    "reference_uuid": "30646366333934386337333264313231",
+    "samples": 5,
+    "target_count": 1,
+    "m": 1,
+    "configuration": "6b68736561726368010100000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "targets": "79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+    "effective_scalars_per_second": {
+      "numerator": "715827881500000000",
+      "denominator": "280388077"
+    },
+    "device_steps_per_second": {
+      "numerator": "715827881500000000",
+      "denominator": "280388077"
+    },
+    "block_target_seconds": 43200,
+    "work_unit_target_seconds": 180,
+    "alignment": "1",
+    "block_width": "0x0000000000000000000000000000000000000000000000000000644eb1fd992a",
+    "initial_work_unit_width": "0x0000000000000000000000000000000000000000000000000000006afe9bb92b",
+    "note": "Prediction from measured complete-target wall time; pauses excluded. New jobs only."
+  },
+  "bsgs": {
+    "mode": "bsgs",
+    "reference_queue": "0",
+    "reference_uuid": "30646366333934386337333264313231",
+    "samples": 5,
+    "target_count": 2,
+    "m": 257,
+    "configuration": "6b687365617263680102000000000000010112af8158df481f3d0ae6d95f4192c71897fafd9cf7ba8e112aca8bd2d04c90d5",
+    "targets": "0479be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b80479be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798b7c52588d95c3b9aa25b0403f1eef75702e84bb7597aabe663b82f6f04ef2777",
+    "effective_scalars_per_second": {
+      "numerator": "1431655763000000000",
+      "denominator": "152920293"
+    },
+    "device_steps_per_second": {
+      "numerator": "11141290000000000",
+      "denominator": "152920293"
+    },
+    "block_target_seconds": 43200,
+    "work_unit_target_seconds": 180,
+    "alignment": "257",
+    "block_width": "0x00000000000000000000000000000000000000000000000000016fd6b43da2b1",
+    "initial_work_unit_width": "0x000000000000000000000000000000000000000000000000000001885c7bfd57",
+    "note": "Prediction from measured complete-target wall time; pauses excluded. New jobs only."
+  }
+}

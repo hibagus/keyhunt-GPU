@@ -17,6 +17,7 @@ import tempfile
 import time
 
 from coordinator_local import Environment, HOST, REPO
+from calibrate_blocks import recommend
 
 GX = "79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798"
 GY = "483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8"
@@ -64,7 +65,11 @@ def main():
     parser.add_argument("--block-bits", type=int, default=32)
     parser.add_argument("--lifecycle", action="store_true", help="also exercise real long pauses, stopped owners and memory pressure")
     parser.add_argument("--lifecycle-only", action="store_true")
+    parser.add_argument("--reference-report", type=Path, help="validated measurements for lifecycle block sizing")
+    parser.add_argument("--reference-device", help="explicit reference queue in --reference-report")
     args = parser.parse_args()
+    if bool(args.reference_report) != bool(args.reference_device):
+        parser.error("reference report and reference device must be supplied together")
     build = args.build_dir.resolve()
     worker, binary, coordinator = (build / name for name in ("keyhunt-worker", "keyhunt", "keyhunt-coordinator"))
     counts = [int(value) for value in args.counts.split(",")]
@@ -148,9 +153,12 @@ def main():
                 return [sys.executable, REPO / "tools/coordinator_worker.py", "--state-dir", state,
                     "--worker", worker, "--keyhunt", binary, "--backend", args.backend, "--table", table, *extra]
 
-            def start(state, *extra):
+            def start(state, *extra, visible=None):
+                environment = os.environ.copy()
+                if visible is not None:
+                    environment["HIP_VISIBLE_DEVICES" if args.backend == "hip" else "CUDA_VISIBLE_DEVICES"] = visible
                 log = open(root / (state.name + ".supervisor.log"), "w")
-                process = subprocess.Popen(list(map(str, words(state, *extra))), stdout=log, stderr=subprocess.STDOUT)
+                process = subprocess.Popen(list(map(str, words(state, *extra))), stdout=log, stderr=subprocess.STDOUT, env=environment)
                 processes.append((process, log))
                 return process
 
@@ -205,7 +213,13 @@ def main():
                             print(f"{label}: exact {count * 2} blocks, {wall_ns / 1e9:.3f}s", flush=True)
 
             if args.lifecycle or args.lifecycle_only:
-                job, _ = create("lifecycle", "xpoint", ["0", "1"], 1 << 45)
+                width = 1 << 45
+                if args.reference_report:
+                    calibration = recommend(json.loads(args.reference_report.read_text()), "xpoint", args.reference_device)
+                    assert calibration["configuration"] == bindings["xpoint"] and calibration["targets"] == targets["xpoint"]
+                    width = int(calibration["block_width"], 16)
+                    report["lifecycle"]["block_calibration"] = calibration
+                job, _ = create("lifecycle", "xpoint", ["0", "1"], width)
                 state = configure("lifecycle-worker", [job])
                 process = start(state, "--stall-seconds", "60")
                 until(lambda: all(event(state, queue, "progress") for queue in ("0", "1")))
@@ -246,7 +260,7 @@ def main():
                 invoke([binary, "state", "check", "--state-dir", state])
                 # Select only the healthy queue on restart; the quarantined slot
                 # retains its block, and saved failure counts do not block peers.
-                process = start(state, "--devices", "1")
+                process = start(state, "--devices", "1", "--device-map", "1=0", visible="1")
                 def restarted():
                     try:
                         return control(state, "1")["pid"] != initial["1"]
@@ -255,6 +269,7 @@ def main():
                 until(restarted)
                 stop(process)
                 report["lifecycle"]["changed_device_count_resume"] = True
+                report["lifecycle"]["visibility_remap"] = "queue 1 retained its UUID at visible ordinal 0"
                 bjob, _ = create("memory-bsgs", "bsgs", ["0"], 1024)
                 xjob, _ = create("memory-xpoint", "xpoint", ["1"], 1024)
                 pressure = configure("memory-worker", [bjob, xjob])
