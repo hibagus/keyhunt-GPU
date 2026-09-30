@@ -1,6 +1,6 @@
 // Equivalent target sets, table and tile for both kernels. One warm-up and five
 // alternating samples; validate the expected match set before accepting timing.
-#include "keyhunt/backend/hip_bsgs.h"
+#include "keyhunt/backend/gpu_bsgs.h"
 #include <algorithm>
 #include <chrono>
 #include <iomanip>
@@ -35,10 +35,10 @@ int main(int argc,char** argv){
             }
             core::BsgsPublicKeyTargets targets(points);
             core::BsgsBatch batch(interval,m,0,uint32_t(targets.values().size()),targets.digest(),table.checksum());
-            std::unique_ptr<backend::HipBsgsExecutor> owners[3];double prep[3]{};
+            std::unique_ptr<backend::GpuBsgsExecutor> owners[3];double prep[3]{};
             for(unsigned kind=0;kind<3;++kind){
                 backend::BsgsSearchOptions options;options.group_size=kind==2?0:kind?8:1;
-                const auto start=Clock::now();owners[kind]=std::make_unique<backend::HipBsgsExecutor>(device,table,targets,cpu,options);
+                const auto start=Clock::now();owners[kind]=std::make_unique<backend::GpuBsgsExecutor>(device,table,targets,cpu,options);
                 prep[kind]=std::chrono::duration<double,std::milli>(Clock::now()-start).count();
             }
             std::cout<<(workload?",":"")<<"{\"name\":\""<<(workload==0?"no_match_1":workload==1?"boundary_3":"no_match_32")

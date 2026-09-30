@@ -75,6 +75,15 @@
         "KEYHUNT_ENABLE_HTTPS_WORKER": "OFF",
         "BUILD_TESTING": "OFF"
       }
+    },
+    {
+      "name": "cuda-h200",
+      "inherits": "cpu-release",
+      "displayName": "Native NVIDIA CUDA H200 (sm_90)",
+      "cacheVariables": {
+        "KEYHUNT_ENABLE_CUDA": "ON",
+        "CMAKE_CUDA_ARCHITECTURES": "90"
+      }
     }
   ],
   "buildPresets": [
@@ -112,6 +121,10 @@
       "targets": [
         "keyhunt-coordinator"
       ]
+    },
+    {
+      "name": "cuda-h200",
+      "configurePreset": "cuda-h200"
     }
   ],
   "testPresets": [
@@ -160,6 +173,13 @@
     {
       "name": "coordinator-sanitizers",
       "configurePreset": "coordinator-sanitizers",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "cuda-h200",
+      "configurePreset": "cuda-h200",
       "output": {
         "outputOnFailure": true
       }

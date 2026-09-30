@@ -27,5 +27,13 @@ struct DeviceInventory {
 
 bool hip_available();
 DeviceInventory discover_hip(); // throws an operation-specific error on runtime failure
+bool cuda_available();
+DeviceInventory discover_cuda();
+
+// A binary supplies one native GPU runtime. Explicit CLI selection must match
+// it; persisted job identity and table formats never depend on this selection.
+const char* gpu_backend_name();
+void require_backend(const std::string& name);
+DeviceInventory discover_gpu();
 
 } // namespace keyhunt::backend

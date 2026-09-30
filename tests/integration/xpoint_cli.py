@@ -19,8 +19,9 @@ def main():
     parser.add_argument('--binary', type=Path, required=True)
     parser.add_argument('--oracle', type=Path, required=True)
     parser.add_argument('--report', type=Path, required=True)
-    parser.add_argument('--hip', action='store_true')
+    parser.add_argument('--hardware','--hip',dest='hardware', action='store_true')
     parser.add_argument('--kernel', choices=['direct','stepped'], default='stepped')
+    parser.add_argument("--backend",choices=("hip","cuda"),default="hip")
     args = parser.parse_args()
     binary = str(args.binary.resolve())
     report = {'oracle_commit': check_source(), 'seed': 0xC09, 'kernel': args.kernel, 'cases': [], 'rejections': 0}
@@ -31,20 +32,20 @@ def main():
     with tempfile.TemporaryDirectory(prefix='keyhunt-c09-') as directory:
         target_file = Path(directory)/'targets.txt'
         target_file.write_text('00'*32+'\n')
-        base = ['--backend', 'hip', '--range', '1:2', '--targets', str(target_file)]
+        base = ['--backend', args.backend, '--range', '1:2', '--targets', str(target_file)]
         # Malformed/ambiguous options and exact scalar domains fail before launch.
-        invalid = [[], ['--backend', 'cuda'], base+['--unknown', '1'], base+['--device', '-1'],
+        invalid = [[], ['--backend', 'invalid'], base+['--unknown', '1'], base+['--device', '-1'],
                    base+['--device', '2147483648'], base+['--device', '0', '--device', '0'],
                    base+['--batch-size', '0'], base+['--batch-size', '1048577'],
                    base+['--batch-size', '12junk'], base+['--candidate-capacity', '0'],
                    base+['--candidate-capacity', '1048577'], base+['--kernel','unknown'], base+['--device']]
-        invalid += [['--backend','hip','--range',r,'--targets',str(target_file)]
+        invalid += [['--backend',args.backend,'--range',r,'--targets',str(target_file)]
                     for r in ['0:2','2:2','3:2','1','1:2:3',f'1:{N+1:x}',f'{N:x}:{N+1:x}']]
         for words in invalid:
             result = run(words)
             assert result.returncode == 2 and not result.stdout, result
             report['rejections'] += 1
-        if not args.hip:
+        if not args.hardware:
             result = run(base)
             assert result.returncode == 2 and 'not built' in result.stderr and not result.stdout, result
             report['rejections'] += 1
@@ -56,11 +57,11 @@ def main():
                 report['rejections'] += 1
             target_file.write_text('00'*32+'\n')
             for words, env in [(base+['--device','2147483647'],None),
-                               (base,dict(os.environ,HIP_VISIBLE_DEVICES='-1',ROCR_VISIBLE_DEVICES='-1'))]:
+                               (base,dict(os.environ, CUDA_VISIBLE_DEVICES='-1',HIP_VISIBLE_DEVICES='-1',ROCR_VISIBLE_DEVICES='-1'))]:
                 result = run(words,env)
                 assert result.returncode == 2 and 'not visible' in result.stderr and not result.stdout, result
                 report['rejections'] += 1
-            inventory = json.loads(subprocess.check_output([binary,'devices','--backend','hip'],text=True,timeout=30))
+            inventory = json.loads(subprocess.check_output([binary,'devices','--backend',args.backend],text=True,timeout=30))
             assert inventory['devices'], 'real HIP hardware required'
             report['inventory'] = inventory
             cases = []
@@ -93,7 +94,7 @@ def main():
                 target_file.write_text('\r\n'.join(list(reversed(targets))+[targets[0]])+'\r\n\r\n')
                 unique=sorted(set(targets))
                 expected=[(k,xs[k],unique.index(xs[k])) for k in range(begin,begin+count) if xs[k] in unique]
-                result=run(['--backend','hip','--range',f'{begin:x}:{begin+count:x}','--targets',str(target_file),
+                result=run(['--backend',args.backend,'--range',f'{begin:x}:{begin+count:x}','--targets',str(target_file),
                             '--batch-size',str(batch),'--candidate-capacity',str(capacity),'--device',str(device),'--kernel',args.kernel])
                 assert result.returncode == 0 and not result.stderr, (name,result)
                 records=[json.loads(line) for line in result.stdout.splitlines()]
@@ -129,7 +130,7 @@ def main():
             pubs=oracle_run(args.oracle,[f'pub {begin+d:064x}' for d in offsets])
             targets=[pub[2:66] for pub in pubs]
             target_file.write_text('\n'.join(targets)) # also check no final newline
-            result=run(['--backend','hip','--range',f'{begin:x}:{begin+count:x}','--targets',str(target_file),
+            result=run(['--backend',args.backend,'--range',f'{begin:x}:{begin+count:x}','--targets',str(target_file),
                         '--batch-size',str(count),'--candidate-capacity',str(len(targets)),'--kernel',args.kernel])
             assert result.returncode==0 and not result.stderr, result
             records=[json.loads(line) for line in result.stdout.splitlines()]

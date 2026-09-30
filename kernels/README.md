@@ -18,3 +18,7 @@ bounded candidate kernel in `hip/bsgs_search.h`; see [the search contract](../do
 C18 adds native CUDA runtime validation. Measured ISA
 specializations belong in `arch/` after their separate gates. CPU legacy headers
 and x86 assembly remain under `include/` and `src/crypto/`.
+
+C18: shared search kernels now live in `search/`; `device_runtime.h` is a private
+native HIP/CUDA SDK spelling adapter. Public host APIs remain SDK-free. See
+[the CUDA guide](../docs/CUDA_BACKEND.md) for H200 builds and validation.

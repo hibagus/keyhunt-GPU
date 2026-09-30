@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Supervise HIP execution and one persisted machine synchronization schedule.
+"""Supervise GPU execution and one persisted machine synchronization schedule.
 
 Network I/O and GPU ownership live in separate child processes. The supervisor
-never initializes HIP, resets devices, or contacts HTTPS on a per-batch path.
+never initializes a GPU runtime, resets devices, or contacts HTTPS on a per-batch path.
 C15 keeps C14's single local executor; simultaneous device execution is C20.
 """
 import argparse
@@ -46,6 +46,7 @@ def main():
     parser.add_argument("--giant-batch", type=int, default=16384)
     parser.add_argument("--target-batch", type=int, default=64)
     parser.add_argument("--host-memory", type=int, default=1073741824)
+    parser.add_argument("--backend", choices=("hip", "cuda"), default="hip")
     args = parser.parse_args()
     if args.stall_seconds < 60:
         parser.error("stall deadline must be at least 60 seconds")
@@ -68,7 +69,7 @@ def main():
     config = read("configuration")
     devices = [device for job in config["jobs"] for device in job["devices"]]
     if any(not device.isdecimal() or str(int(device)) != device for device in devices):
-        raise RuntimeError("HIP supervisor device queues must use canonical visible ordinals (0, 1, ...)")
+        raise RuntimeError("GPU supervisor device queues must use canonical visible ordinals (0, 1, ...)")
     state_path = root / "supervisor.json"
     saved = json.loads(state_path.read_text()) if state_path.exists() else {}
     failures = {} if args.retry_failed else saved.get("failures", {})
@@ -160,7 +161,7 @@ def main():
                         width = 64 if selected["mode"] == "xpoint" else 130
                         target_path = root / "execution-targets.txt"
                         private_write(target_path, "\n".join(targets[i:i+width] for i in range(0, len(targets), width)) + "\n")
-                        words = [str(keyhunt), "checkpoint", "run", "--state-dir", str(root), "--backend", "hip",
+                        words = [str(keyhunt), "checkpoint", "run", "--state-dir", str(root), "--backend", args.backend,
                                  "--grant", selected["token"], "--targets", str(target_path), "--device", gpu_device]
                         if selected["mode"] == "xpoint":
                             words += ["--batch-size", str(args.batch_size), "--kernel", args.kernel]

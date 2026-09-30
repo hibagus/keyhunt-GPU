@@ -125,7 +125,7 @@ std::string format(const Request& request, const Result& result) {
 }
 
 #ifdef KEYHUNT_GPU_PROBE
-using keyhunt::backend::hip_check;
+using keyhunt::backend::gpu_check;
 __global__ void arithmetic_kernel(const Request* input, Result* output, uint64_t count,
                                   unsigned long long* executed) {
     const uint64_t index = uint64_t(blockIdx.x)*blockDim.x + threadIdx.x;
@@ -135,13 +135,13 @@ __global__ void arithmetic_kernel(const Request* input, Result* output, uint64_t
 }
 template<class T> struct Buffer {
     T* data = nullptr;
-    explicit Buffer(size_t count) { hip_check(hipMalloc(&data, count*sizeof(T)), "hipMalloc(probe)"); }
-    ~Buffer() { if (data) (void)hipFree(data); }
+    explicit Buffer(size_t count) { gpu_check(gpuMalloc(&data, count*sizeof(T)), "gpuMalloc(probe)"); }
+    ~Buffer() { if (data) (void)gpuFree(data); }
 };
 struct Event {
-    hipEvent_t value = nullptr;
-    Event() { hip_check(hipEventCreate(&value), "hipEventCreate(probe)"); }
-    ~Event() { if (value) (void)hipEventDestroy(value); }
+    gpuEvent_t value = nullptr;
+    Event() { gpu_check(gpuEventCreate(&value), "gpuEventCreate(probe)"); }
+    ~Event() { if (value) (void)gpuEventDestroy(value); }
 };
 struct Runner {
     Buffer<Request> input;
@@ -152,23 +152,23 @@ struct Runner {
     explicit Runner(size_t capacity) : input(capacity), output(capacity+1) {}
     void run(const std::vector<Request>& requests, std::vector<Result>& results) {
         const size_t count = requests.size();
-        hip_check(hipMemcpy(input.data, requests.data(), count*sizeof(Request), hipMemcpyHostToDevice), "hipMemcpy(input)");
-        hip_check(hipMemset(output.data, 0xa5, (count+1)*sizeof(Result)), "hipMemset(output)");
-        hip_check(hipMemset(executed.data, 0, sizeof(unsigned long long)), "hipMemset(counter)");
-        hip_check(hipEventRecord(start.value), "hipEventRecord(start)");
-        (void)hipGetLastError();
-        hipLaunchKernelGGL(arithmetic_kernel, dim3((count+127)/128), dim3(128), 0, 0,
+        gpu_check(gpuMemcpy(input.data, requests.data(), count*sizeof(Request), gpuMemcpyHostToDevice), "gpuMemcpy(input)");
+        gpu_check(gpuMemset(output.data, 0xa5, (count+1)*sizeof(Result)), "gpuMemset(output)");
+        gpu_check(gpuMemset(executed.data, 0, sizeof(unsigned long long)), "gpuMemset(counter)");
+        gpu_check(gpuEventRecord(start.value), "gpuEventRecord(start)");
+        (void)gpuGetLastError();
+        gpuLaunchKernelGGL(arithmetic_kernel, dim3((count+127)/128), dim3(128), 0, 0,
                           input.data, output.data, count, executed.data);
-        hip_check(hipGetLastError(), "arithmetic kernel launch");
-        hip_check(hipEventRecord(done.value), "hipEventRecord(done)");
-        hip_check(hipEventSynchronize(done.value), "hipEventSynchronize(probe)");
+        gpu_check(gpuGetLastError(), "arithmetic kernel launch");
+        gpu_check(gpuEventRecord(done.value), "gpuEventRecord(done)");
+        gpu_check(gpuEventSynchronize(done.value), "gpuEventSynchronize(probe)");
         float elapsed = 0;
-        hip_check(hipEventElapsedTime(&elapsed, start.value, done.value), "hipEventElapsedTime(probe)");
+        gpu_check(gpuEventElapsedTime(&elapsed, start.value, done.value), "gpuEventElapsedTime(probe)");
         kernel_ms += elapsed;
         results.resize(count+1);
-        hip_check(hipMemcpy(results.data(), output.data, results.size()*sizeof(Result), hipMemcpyDeviceToHost), "hipMemcpy(output)");
+        gpu_check(gpuMemcpy(results.data(), output.data, results.size()*sizeof(Result), gpuMemcpyDeviceToHost), "gpuMemcpy(output)");
         unsigned long long completed = 0;
-        hip_check(hipMemcpy(&completed, executed.data, sizeof(completed), hipMemcpyDeviceToHost), "hipMemcpy(counter)");
+        gpu_check(gpuMemcpy(&completed, executed.data, sizeof(completed), gpuMemcpyDeviceToHost), "gpuMemcpy(counter)");
         if (completed != count) throw std::runtime_error("device arithmetic count mismatch");
         const auto* guard = reinterpret_cast<const unsigned char*>(&results[count]);
         if (!std::all_of(guard, guard+sizeof(Result), [](unsigned char byte) { return byte == 0xa5; }))

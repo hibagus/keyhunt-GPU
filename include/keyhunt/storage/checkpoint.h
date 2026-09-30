@@ -1,7 +1,7 @@
 #pragma once
 #include "keyhunt/storage/journal.h"
-#include "keyhunt/backend/hip_xpoint.h"
-#include "keyhunt/backend/hip_bsgs.h"
+#include "keyhunt/backend/gpu_xpoint.h"
+#include "keyhunt/backend/gpu_bsgs.h"
 
 namespace keyhunt::storage {
 struct CheckpointOptions {

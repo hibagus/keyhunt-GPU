@@ -24,7 +24,7 @@ an offline outbox and fenced recovery, validated in an isolated localhost setup.
 | CPU modes | Bitcoin address/HASH160, xpoint, BSGS, Ethereum address, vanity and minikeys; limitations documented |
 | Optional GMP legacy / bsgsd | Builds and selected compatibility checks pass; separate from the authenticated coordinator |
 | AMD HIP / MI300X | C07–C11 discovery, arithmetic, xpoint and BSGS searches validated on gfx942 |
-| NVIDIA CUDA | Planned at C18; NVIDIA compiler/device validation remains outstanding |
+| NVIDIA CUDA | Native C18 backend; H200 build and validation in [CUDA_BACKEND.md](docs/CUDA_BACKEND.md) |
 | Local state | C12 project-scoped SQLite journal, sparse allocation, fenced assignments and sealed backups; [operations guide](docs/STORAGE.md) |
 | Durable HIP searches | C13 verified local checkpoints and replay for xpoint/BSGS; [commands and recovery](docs/CHECKPOINTS.md) |
 | Pause/resume | C14 local commands, graceful signals, exact restart and live inspection; [operations guide](docs/PAUSE_RESUME.md) |
@@ -77,7 +77,7 @@ physical second host are deferred from the user-approved localhost gate. See the
   workers and Apache for the mTLS deployment boundary.
 
 ROCm/HIP is optional for [device diagnostics](docs/HIP_BACKEND.md) and
-[bounded xpoint searches](docs/HIP_XPOINT.md). CUDA remains planned.
+[bounded xpoint searches](docs/HIP_XPOINT.md). Native NVIDIA builds use the [H200 CUDA preset](docs/CUDA_BACKEND.md).
 CPU builds do not require a GPU SDK or network access.
 
 ## Getting started

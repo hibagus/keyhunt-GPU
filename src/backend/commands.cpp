@@ -1,8 +1,8 @@
 #include "keyhunt/backend/commands.h"
 #include "keyhunt/backend/device.h"
 
-#ifdef KEYHUNT_HAS_HIP
-#include "keyhunt/backend/hip_executor.h"
+#ifdef KEYHUNT_HAS_GPU
+#include "keyhunt/backend/gpu_executor.h"
 #endif
 #include <charconv>
 #include <chrono>
@@ -34,7 +34,7 @@ std::string quoted(const std::string& text) {
     return out.str();
 }
 void print_inventory(const DeviceInventory& inventory) {
-    std::cout << "{\"backend\":\"hip\",\"runtime_version\":" << inventory.runtime_version
+    std::cout << "{\"backend\":\"" << gpu_backend_name() << "\",\"runtime_version\":" << inventory.runtime_version
               << ",\"driver_version\":" << inventory.driver_version << ",\"devices\":[";
     bool first = true;
     for (const auto& d : inventory.devices) {
@@ -68,7 +68,7 @@ uint64_t number(const std::string& value) {
     return result;
 }
 int smoke(int argc, char** argv) {
-    const char* usage = "usage: keyhunt gpu-smoke --backend hip [--device N] [--steps 1..1048576] [--start HEX]";
+    const char* usage = "usage: keyhunt gpu-smoke --backend hip|cuda [--device N] [--steps 1..1048576] [--start HEX]";
     int device = 0;
     uint64_t steps = 257;
     std::string start = "0x100000000ffffffffffffffff";
@@ -76,7 +76,7 @@ int smoke(int argc, char** argv) {
     for (int i = 2; i < argc; i += 2) {
         if (i + 1 >= argc) throw std::invalid_argument(usage);
         const std::string key = argv[i], value = argv[i + 1];
-        if (key == "--backend" && !backend && value == "hip") backend = true;
+        if (key == "--backend" && !backend && (value == "hip" || value == "cuda")) { require_backend(value); backend = true; }
         else if (key == "--device" && !seen_device) {
             const auto parsed = number(value);
             if (parsed > std::numeric_limits<int>::max()) throw std::invalid_argument("device ordinal is too large");
@@ -87,9 +87,9 @@ int smoke(int argc, char** argv) {
     }
     if (!backend) throw std::invalid_argument(usage);
     if (steps == 0 || steps > 1048576) throw std::invalid_argument("steps must be in [1, 1048576]");
-#ifndef KEYHUNT_HAS_HIP
+#ifndef KEYHUNT_HAS_GPU
     (void)device;
-    discover_hip(); // same explicit unavailable-backend error as discovery
+    discover_gpu(); // same explicit unavailable-backend error as discovery
     return 2;
 #else
     using core::UInt256;
@@ -101,13 +101,13 @@ int smoke(int argc, char** argv) {
     identity.assignment_generation = identity.executor_generation = 1;
     const auto work = scheduler::WorkUnit::plan(grid, UInt256(0), begin, steps, identity);
     const auto batch = scheduler::KernelBatch::plan(*work, begin, steps);
-    const auto inventory = discover_hip();
-    if (size_t(device) >= inventory.devices.size()) throw std::invalid_argument("HIP device ordinal is not visible");
-    HipDiagnosticExecutor executor(device, ExecutorOptions{steps});
+    const auto inventory = discover_gpu();
+    if (size_t(device) >= inventory.devices.size()) throw std::invalid_argument("GPU device ordinal is not visible");
+    GpuDiagnosticExecutor executor(device, ExecutorOptions{steps});
     const auto ticket = executor.submit(*batch);
     while (!executor.poll(ticket)) std::this_thread::sleep_for(std::chrono::milliseconds(1));
     const auto result = executor.take(ticket);
-    std::cout << "{\"backend\":\"hip\",\"diagnostic_only\":true,\"search_coverage\":false,\"device\":" << device
+    std::cout << "{\"backend\":\"" << gpu_backend_name() << "\",\"diagnostic_only\":true,\"search_coverage\":false,\"device\":" << device
               << ",\"uuid\":" << quoted(inventory.devices[device].uuid)
               << ",\"architecture\":" << quoted(inventory.devices[device].architecture)
               << ",\"begin\":" << quoted(interval.begin().hex()) << ",\"end_exclusive\":" << quoted(interval.end().hex())
@@ -132,9 +132,10 @@ int dispatch_command(int argc, char** argv) {
         if (command == "xpoint") return xpoint_command(argc, argv);
         if (command == "bsgs") return bsgs_command(argc, argv);
         if (command == "bsgs-table") return bsgs_table_command(argc, argv);
-        if (argc != 4 || std::string(argv[2]) != "--backend" || std::string(argv[3]) != "hip")
-            throw std::invalid_argument("usage: keyhunt devices --backend hip (JSON output)");
-        print_inventory(discover_hip());
+        if (argc != 4 || std::string(argv[2]) != "--backend" || (std::string(argv[3]) != "hip" && std::string(argv[3]) != "cuda"))
+            throw std::invalid_argument("usage: keyhunt devices --backend hip|cuda (JSON output)");
+        require_backend(argv[3]);
+        print_inventory(discover_gpu());
         return 0;
     } catch (const std::exception& error) {
         std::cerr << "keyhunt: " << error.what() << '\n';

@@ -34,7 +34,6 @@ void topology(DeviceInfo& info, const std::filesystem::path& sysfs_root) {
 }
 }
 
-bool hip_available() { return true; }
 // The root is an internal test seam, not a user-controlled device selector.
 // HIP ordinals and properties stay authoritative in CPX, QPX and SPX alike.
 static DeviceInventory discover_hip_at(const std::filesystem::path& sysfs_root) {
@@ -46,7 +45,7 @@ static DeviceInventory discover_hip_at(const std::filesystem::path& sysfs_root) 
     if (status == hipErrorNoDevice) return result;
     hip_check(status, "hipGetDeviceCount");
     for (int i = 0; i < count; ++i) {
-        DeviceScope selected(i);
+        HipDiscoveryDeviceScope selected(i);
         hipDeviceProp_t prop{};
         hip_check(hipGetDeviceProperties(&prop, i), "hipGetDeviceProperties");
         DeviceInfo info;

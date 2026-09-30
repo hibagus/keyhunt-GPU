@@ -17,10 +17,11 @@ parser=argparse.ArgumentParser()
 parser.add_argument("--binary",type=Path,required=True)
 parser.add_argument("--oracle",type=Path,required=True)
 parser.add_argument("--report",type=Path,required=True)
-parser.add_argument("--hip",action="store_true")
+parser.add_argument("--hardware","--hip",dest="hardware",action="store_true")
+parser.add_argument("--backend",choices=("hip","cuda"),default="hip")
 args=parser.parse_args()
 binary=args.binary.resolve()
-report={"oracle_commit":check_source(),"binary_sha256":hashlib.sha256(binary.read_bytes()).hexdigest(),"hip":args.hip,"checks":0,"cases":[]}
+report={"oracle_commit":check_source(),"binary_sha256":hashlib.sha256(binary.read_bytes()).hexdigest(),"backend":args.backend,"hardware":args.hardware,"checks":0,"cases":[]}
 with tempfile.TemporaryDirectory(prefix="keyhunt-c13-cli-") as temporary:
     root=Path(temporary);state=root/"state"
     def command(family,action,*options):
@@ -53,7 +54,7 @@ with tempfile.TemporaryDirectory(prefix="keyhunt-c13-cli-") as temporary:
         assert call("checkpoint","create",*common)[0]==created
         scope=["--project",project,"--job",created["job"]]
         grant=call("state","claim",*scope,"--owner","test-worker","--request",label)[0]["assignments"][0]["grant"]
-        run=["--backend","hip","--grant",grant,"--targets",targets]
+        run=["--backend",args.backend,"--grant",grant,"--targets",targets]
         if mode=="bsgs":run+=["--table",table]
         expected={(k,value) for k,value in values.items() if begin<=k<end}
         if mode=="xpoint":
@@ -83,7 +84,7 @@ with tempfile.TemporaryDirectory(prefix="keyhunt-c13-cli-") as temporary:
     for mode,begin,end,seeds,label in cases:
         scope,run,expected,targets=prepare(mode,begin,end,seeds,label)
         bad_target=root/"mismatch.txt";bad_target.write_text(("00"*32 if mode=="xpoint" else oracle_run(args.oracle,["pub "+"2".zfill(64)])[0])+"\n")
-        if not args.hip:
+        if not args.hardware:
             error=call("checkpoint","run",*run,ok=False)
             assert "not built" in error.stderr
             assert results(scope)==[]
@@ -107,7 +108,7 @@ with tempfile.TemporaryDirectory(prefix="keyhunt-c13-cli-") as temporary:
         assert again["batches"]==0 and int(again["resumed_scalars"],16)==end-begin
         report["cases"].append({"case":label,"summary":summary,"finished_retry":again})
 
-    if args.hip:
+    if args.hardware:
         for mode in ("xpoint","bsgs"):
             # The first acknowledgment is durable; kill with many batches still
             # pending, then change launch geometry and replay the exact complement.

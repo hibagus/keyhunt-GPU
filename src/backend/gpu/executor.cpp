@@ -1,4 +1,4 @@
-#include "keyhunt/backend/hip_executor.h"
+#include "keyhunt/backend/gpu_executor.h"
 #include "runtime.h"
 #include "diagnostic.h"
 
@@ -15,14 +15,14 @@ double milliseconds(Clock::duration value) {
     return std::chrono::duration<double, std::milli>(value).count();
 }
 }
-struct HipDiagnosticExecutor::Impl {
+struct GpuDiagnosticExecutor::Impl {
     int device;
     ExecutorOptions options;
     uint64_t id = next_executor_id.fetch_add(1), sequence = 0;
     bool failed = false;
     std::optional<scheduler::KernelBatch> batch;
-    hipStream_t stream = nullptr;
-    hipEvent_t start = nullptr, kernel_done = nullptr, done = nullptr;
+    gpuStream_t stream = nullptr;
+    gpuEvent_t start = nullptr, kernel_done = nullptr, done = nullptr;
     DiagnosticScalar *device_output = nullptr, *host_output = nullptr;
     unsigned long long *device_count = nullptr, *host_count = nullptr;
     size_t output_bytes = 0;
@@ -38,19 +38,19 @@ struct HipDiagnosticExecutor::Impl {
         // expose different budgets; neither package HBM nor a cached partition
         // count is an allocation limit for this executor.
         size_t free = 0, total = 0;
-        hip_check(hipMemGetInfo(&free, &total), "hipMemGetInfo");
+        gpu_check(gpuMemGetInfo(&free, &total), "gpuMemGetInfo");
         if (options.memory_reserve_bytes > free ||
             output_bytes + sizeof(*device_count) > free - options.memory_reserve_bytes)
-            throw std::runtime_error("insufficient HIP memory after reserved headroom");
+            throw std::runtime_error("insufficient GPU memory after reserved headroom");
         try {
-            hip_check(hipStreamCreateWithFlags(&stream, hipStreamNonBlocking), "hipStreamCreateWithFlags");
-            hip_check(hipEventCreate(&start), "hipEventCreate(start)");
-            hip_check(hipEventCreate(&kernel_done), "hipEventCreate(kernel_done)");
-            hip_check(hipEventCreate(&done), "hipEventCreate(done)");
-            hip_check(hipMalloc(&device_output, output_bytes), "hipMalloc(output)");
-            hip_check(hipMalloc(&device_count, sizeof(*device_count)), "hipMalloc(count)");
-            hip_check(hipHostMalloc(&host_output, output_bytes), "hipHostMalloc(output)");
-            hip_check(hipHostMalloc(&host_count, sizeof(*host_count)), "hipHostMalloc(count)");
+            gpu_check(gpuStreamCreateWithFlags(&stream, gpuStreamNonBlocking), "gpuStreamCreateWithFlags");
+            gpu_check(gpuEventCreate(&start), "gpuEventCreate(start)");
+            gpu_check(gpuEventCreate(&kernel_done), "gpuEventCreate(kernel_done)");
+            gpu_check(gpuEventCreate(&done), "gpuEventCreate(done)");
+            gpu_check(gpuMalloc(&device_output, output_bytes), "gpuMalloc(output)");
+            gpu_check(gpuMalloc(&device_count, sizeof(*device_count)), "gpuMalloc(count)");
+            gpu_check(gpuHostMalloc(&host_output, output_bytes), "gpuHostMalloc(output)");
+            gpu_check(gpuHostMalloc(&host_count, sizeof(*host_count)), "gpuHostMalloc(count)");
         } catch (...) {
             release(); // constructors must also release partially acquired resources
             throw;
@@ -59,45 +59,45 @@ struct HipDiagnosticExecutor::Impl {
     ~Impl() {
         // Destructors cannot report runtime errors. Public drain/poll/take do.
         int previous = 0;
-        if (hipGetDevice(&previous) != hipSuccess) return;
-        if (hipSetDevice(device) == hipSuccess) release();
-        (void)hipSetDevice(previous);
+        if (gpuGetDevice(&previous) != gpuSuccess) return;
+        if (gpuSetDevice(device) == gpuSuccess) release();
+        (void)gpuSetDevice(previous);
     }
     void release() noexcept {
         // Keep pinned buffers alive until every queued transfer stops using them.
         // Never reset the whole device (other executors may still be healthy).
-        if (stream) (void)hipStreamSynchronize(stream);
-        if (host_count) (void)hipHostFree(host_count);
-        if (host_output) (void)hipHostFree(host_output);
-        if (device_count) (void)hipFree(device_count);
-        if (device_output) (void)hipFree(device_output);
-        if (done) (void)hipEventDestroy(done);
-        if (kernel_done) (void)hipEventDestroy(kernel_done);
-        if (start) (void)hipEventDestroy(start);
-        if (stream) (void)hipStreamDestroy(stream);
+        if (stream) (void)gpuStreamSynchronize(stream);
+        if (host_count) (void)gpuHostFree(host_count);
+        if (host_output) (void)gpuHostFree(host_output);
+        if (device_count) (void)gpuFree(device_count);
+        if (device_output) (void)gpuFree(device_output);
+        if (done) (void)gpuEventDestroy(done);
+        if (kernel_done) (void)gpuEventDestroy(kernel_done);
+        if (start) (void)gpuEventDestroy(start);
+        if (stream) (void)gpuStreamDestroy(stream);
     }
     void healthy() const {
-        if (failed) throw std::runtime_error("HIP executor failed; no diagnostic result is valid; recreate to retry");
+        if (failed) throw std::runtime_error("GPU executor failed; no diagnostic result is valid; recreate to retry");
     }
     void validate(Ticket ticket) const {
         healthy();
         if (!batch || ticket.executor != id || ticket.sequence != sequence)
-            throw std::invalid_argument("stale or foreign HIP ticket");
+            throw std::invalid_argument("stale or foreign GPU ticket");
     }
 };
 
-HipDiagnosticExecutor::HipDiagnosticExecutor(int device, ExecutorOptions options)
+GpuDiagnosticExecutor::GpuDiagnosticExecutor(int device, ExecutorOptions options)
     : impl_(std::make_unique<Impl>(device, options)) {}
-HipDiagnosticExecutor::~HipDiagnosticExecutor() = default;
+GpuDiagnosticExecutor::~GpuDiagnosticExecutor() = default;
 
-Ticket HipDiagnosticExecutor::submit(const scheduler::KernelBatch& batch) {
+Ticket GpuDiagnosticExecutor::submit(const scheduler::KernelBatch& batch) {
     auto& s = *impl_;
     s.healthy();
-    if (s.batch) throw std::logic_error("HIP result slot busy; take its result before submitting");
+    if (s.batch) throw std::logic_error("GPU result slot busy; take its result before submitting");
     if (batch.step_count() > s.options.max_steps)
-        throw std::invalid_argument("batch exceeds HIP executor capacity");
+        throw std::invalid_argument("batch exceeds GPU executor capacity");
     if (s.sequence == std::numeric_limits<uint64_t>::max())
-        throw std::overflow_error("HIP ticket sequence exhausted");
+        throw std::overflow_error("GPU ticket sequence exhausted");
     s.batch = batch; // own a snapshot until take() releases the slot
     ++s.sequence;
     s.submitted = Clock::now();
@@ -106,43 +106,43 @@ Ticket HipDiagnosticExecutor::submit(const scheduler::KernelBatch& batch) {
         DiagnosticScalar begin{};
         const auto bytes = batch.interval().begin().bytes();
         std::copy(bytes.begin(), bytes.end(), begin.bytes);
-        hip_check(hipMemsetAsync(s.device_output, 0xa5, s.output_bytes, s.stream), "hipMemsetAsync(output)");
-        hip_check(hipMemsetAsync(s.device_count, 0, sizeof(*s.device_count), s.stream), "hipMemsetAsync(count)");
-        hip_check(hipEventRecord(s.start, s.stream), "hipEventRecord(start)");
+        gpu_check(gpuMemsetAsync(s.device_output, 0xa5, s.output_bytes, s.stream), "gpuMemsetAsync(output)");
+        gpu_check(gpuMemsetAsync(s.device_count, 0, sizeof(*s.device_count), s.stream), "gpuMemsetAsync(count)");
+        gpu_check(gpuEventRecord(s.start, s.stream), "gpuEventRecord(start)");
         // Cover the exact batch independently of the device's CU/XCC count.
         // The runtime schedules these workgroups across the selected partition.
         const auto blocks = static_cast<unsigned>((batch.step_count() + 255) / 256);
-        // HIP retains a thread-local last error even after the caller handled
+        // GPU retains a thread-local last error even after the caller handled
         // a failed API call (e.g. invalid device selection). All setup calls
         // above are checked directly; clear stale status before this launch.
-        (void)hipGetLastError();
-        hipLaunchKernelGGL(diagnostic_indices, dim3(blocks), dim3(256), 0, s.stream,
+        (void)gpuGetLastError();
+        gpuLaunchKernelGGL(diagnostic_indices, dim3(blocks), dim3(256), 0, s.stream,
                           begin, batch.step_count(), s.device_output, s.device_count);
-        hip_check(hipGetLastError(), "diagnostic_indices launch");
-        hip_check(hipEventRecord(s.kernel_done, s.stream), "hipEventRecord(kernel_done)");
+        gpu_check(gpuGetLastError(), "diagnostic_indices launch");
+        gpu_check(gpuEventRecord(s.kernel_done, s.stream), "gpuEventRecord(kernel_done)");
         const size_t bytes_to_copy = (batch.step_count() + 1) * sizeof(DiagnosticScalar);
-        hip_check(hipMemcpyAsync(s.host_output, s.device_output, bytes_to_copy,
-                                hipMemcpyDeviceToHost, s.stream), "hipMemcpyAsync(output)");
-        hip_check(hipMemcpyAsync(s.host_count, s.device_count, sizeof(*s.device_count),
-                                hipMemcpyDeviceToHost, s.stream), "hipMemcpyAsync(count)");
-        hip_check(hipEventRecord(s.done, s.stream), "hipEventRecord(done)");
+        gpu_check(gpuMemcpyAsync(s.host_output, s.device_output, bytes_to_copy,
+                                gpuMemcpyDeviceToHost, s.stream), "gpuMemcpyAsync(output)");
+        gpu_check(gpuMemcpyAsync(s.host_count, s.device_count, sizeof(*s.device_count),
+                                gpuMemcpyDeviceToHost, s.stream), "gpuMemcpyAsync(count)");
+        gpu_check(gpuEventRecord(s.done, s.stream), "gpuEventRecord(done)");
         return {s.id, s.sequence};
     } catch (...) { s.failed = true; throw; }
 }
-bool HipDiagnosticExecutor::poll(Ticket ticket) {
+bool GpuDiagnosticExecutor::poll(Ticket ticket) {
     auto& s = *impl_;
     s.validate(ticket);
     try {
         DeviceScope selected(s.device);
-        const auto status = hipEventQuery(s.done);
-        if (status == hipErrorNotReady) return false;
-        hip_check(status, "hipEventQuery");
+        const auto status = gpuEventQuery(s.done);
+        if (status == gpuErrorNotReady) return false;
+        gpu_check(status, "gpuEventQuery");
         return true;
     } catch (...) { s.failed = true; throw; }
 }
-DiagnosticResult HipDiagnosticExecutor::take(Ticket ticket) {
+DiagnosticResult GpuDiagnosticExecutor::take(Ticket ticket) {
     auto& s = *impl_;
-    if (!poll(ticket)) throw std::logic_error("HIP result is not ready");
+    if (!poll(ticket)) throw std::logic_error("GPU result is not ready");
     try {
         DeviceScope selected(s.device);
         DiagnosticResult result{*s.batch, {}};
@@ -151,20 +151,20 @@ DiagnosticResult HipDiagnosticExecutor::take(Ticket ticket) {
         result.device_allocation_bytes = s.output_bytes + sizeof(*s.device_count);
         result.pinned_allocation_bytes = result.device_allocation_bytes;
         result.download_bytes = (s.batch->step_count() + 1) * sizeof(DiagnosticScalar) + sizeof(*s.device_count);
-        hip_check(hipEventElapsedTime(&result.kernel_ms, s.start, s.kernel_done), "hipEventElapsedTime(kernel)");
-        hip_check(hipEventElapsedTime(&result.download_ms, s.kernel_done, s.done), "hipEventElapsedTime(download)");
+        gpu_check(gpuEventElapsedTime(&result.kernel_ms, s.start, s.kernel_done), "gpuEventElapsedTime(kernel)");
+        gpu_check(gpuEventElapsedTime(&result.download_ms, s.kernel_done, s.done), "gpuEventElapsedTime(download)");
         const auto verify_start = Clock::now();
         if (result.device_steps != s.batch->step_count())
-            throw std::runtime_error("HIP diagnostic executed-count mismatch");
+            throw std::runtime_error("GPU diagnostic executed-count mismatch");
         for (uint8_t byte : s.host_output[result.device_steps].bytes)
-            if (byte != 0xa5) throw std::runtime_error("HIP diagnostic tail guard overwritten");
+            if (byte != 0xa5) throw std::runtime_error("GPU diagnostic tail guard overwritten");
         result.scalars.reserve(result.device_steps);
         for (uint64_t i = 0; i < result.device_steps; ++i) {
             core::UInt256::Bytes bytes{};
             std::copy_n(s.host_output[i].bytes, bytes.size(), bytes.begin());
             const auto scalar = core::UInt256::from_bytes(bytes);
             if (scalar != s.batch->scalar_at(i))
-                throw std::runtime_error("HIP diagnostic scalar mismatch at index " + std::to_string(i));
+                throw std::runtime_error("GPU diagnostic scalar mismatch at index " + std::to_string(i));
             result.scalars.push_back(scalar);
         }
         result.verification_ms = milliseconds(Clock::now() - verify_start);
@@ -173,12 +173,12 @@ DiagnosticResult HipDiagnosticExecutor::take(Ticket ticket) {
         return result;
     } catch (...) { s.failed = true; throw; }
 }
-void HipDiagnosticExecutor::drain() {
+void GpuDiagnosticExecutor::drain() {
     auto& s = *impl_;
     s.healthy();
     try {
         DeviceScope selected(s.device);
-        hip_check(hipStreamSynchronize(s.stream), "hipStreamSynchronize");
+        gpu_check(gpuStreamSynchronize(s.stream), "gpuStreamSynchronize");
     } catch (...) { s.failed = true; throw; }
 }
 }

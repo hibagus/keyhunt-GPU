@@ -1,4 +1,4 @@
-#include "keyhunt/backend/hip_xpoint.h"
+#include "keyhunt/backend/gpu_xpoint.h"
 #include "runtime.h"
 #include <algorithm>
 #include <iostream>
@@ -23,18 +23,18 @@ int main() {
         auto work=*scheduler::WorkUnit::plan(grid,UInt256(0),UInt256(1),2,id);
         auto batch=*scheduler::KernelBatch::plan(work,UInt256(1),2);
         unsigned tested=0;
-        for (const char* operation : {"hipStreamCreateWithFlags","hipEventCreate(start)","hipEventCreate(kernel_done)",
-            "hipEventCreate(done)","hipMalloc(targets)","hipMalloc(output)","hipMalloc(count)",
-            "hipHostMalloc(output)","hipHostMalloc(count)","hipMemcpy(targets)","hipMalloc(powers)","hipMemcpy(powers)"}) {
+        for (const char* operation : {"gpuStreamCreateWithFlags","gpuEventCreate(start)","gpuEventCreate(kernel_done)",
+            "gpuEventCreate(done)","gpuMalloc(targets)","gpuMalloc(output)","gpuMalloc(count)",
+            "gpuHostMalloc(output)","gpuHostMalloc(count)","gpuMemcpy(targets)","gpuMalloc(powers)","gpuMemcpy(powers)"}) {
             backend::injected_failure=operation;
-            expect_error([&] { backend::HipXPointExecutor e(0,targets,verifier); },operation);
+            expect_error([&] { backend::GpuXPointExecutor e(0,targets,verifier); },operation);
             ++tested;
         }
-        for (const char* operation : {"hipMemsetAsync(output)","hipMemsetAsync(count)","hipEventRecord(start)",
-            "xpoint launch","hipEventRecord(kernel_done)","hipMemcpyAsync(output)","hipMemcpyAsync(count)",
-            "hipEventRecord(done)","hipEventQuery","hipEventElapsedTime(kernel)","hipEventElapsedTime(download)",
-            "hipStreamSynchronize"}) {
-            backend::HipXPointExecutor e(0,targets,verifier);
+        for (const char* operation : {"gpuMemsetAsync(output)","gpuMemsetAsync(count)","gpuEventRecord(start)",
+            "xpoint launch","gpuEventRecord(kernel_done)","gpuMemcpyAsync(output)","gpuMemcpyAsync(count)",
+            "gpuEventRecord(done)","gpuEventQuery","gpuEventElapsedTime(kernel)","gpuEventElapsedTime(download)",
+            "gpuStreamSynchronize"}) {
+            backend::GpuXPointExecutor e(0,targets,verifier);
             backend::injected_failure=operation;
             expect_error([&] { const auto t=e.submit(batch); e.drain(); (void)e.take(t); },operation);
             expect_error([&] { e.submit(batch); },"executor failed");
@@ -45,17 +45,17 @@ int main() {
         // Each failure must poison the owner and cannot produce a coverage receipt.
         for (const auto& fault : {std::pair{"steps","counters"},{"count","counters"},{"overflow","counters"},
             {"guard","guard"},{"offset","record"},{"target","record"},{"false_match","CPU verification"}}) {
-            backend::HipXPointExecutor e(0,targets,verifier);
+            backend::GpuXPointExecutor e(0,targets,verifier);
             auto ticket=e.submit(batch); e.drain();
             backend::xpoint_test_corruption=fault.first;
             expect_error([&] { (void)e.take(ticket); },fault.second);
             expect_error([&] { e.submit(batch); },"executor failed");
             ++tested;
         }
-        backend::HipXPointExecutor recovered(0,targets,verifier);
+        backend::GpuXPointExecutor recovered(0,targets,verifier);
         auto ticket=recovered.submit(batch); recovered.drain();
         const auto result=recovered.take(ticket);
         if (result.verified_steps!=2 || result.matches.size()!=1) throw std::runtime_error("recovery failed");
-        std::cout<<tested<<" HIP xpoint failure boundaries passed\n";
+        std::cout<<tested<<" GPU xpoint failure boundaries passed\n";
     } catch(const std::exception& e) { std::cerr<<e.what()<<'\n'; return 1; }
 }

@@ -1,6 +1,6 @@
 #pragma once
-#include <hip/hip_runtime.h>
-#include "keyhunt/backend/hip_bsgs_table.h"
+#include "device_runtime.h"
+#include "keyhunt/backend/gpu_bsgs_table.h"
 namespace keyhunt::gpu {
 static __global__ void bsgs_probe(bsgs::View table,const bsgs::Key* keys,uint64_t count,
     backend::BsgsProbeHit* hits,unsigned long long* executed,bool use_filter) {

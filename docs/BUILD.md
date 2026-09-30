@@ -2,9 +2,9 @@
 
 The preserved CPU engine requires Linux x86-64 and SSSE3 for its assembly and
 hashes. Optional HIP discovery, diagnostics, bounded xpoint and BSGS searches,
-and table preparation/lookup are implemented. `KEYHUNT_ENABLE_CUDA` still fails configuration with an explicit C18
-message. CPU builds never probe or download
-either GPU SDK.
+and table preparation/lookup are implemented. `KEYHUNT_ENABLE_CUDA` builds the
+native NVIDIA backend; see [the C18 guide](CUDA_BACKEND.md). CPU builds never
+probe or download either GPU SDK.
 
 Use CMake 3.22+, GCC/G++ (11.4.0 tested), Make, SQLite 3.51.3+ development
 headers/library, and Python 3.9+ for tests. A
@@ -51,7 +51,7 @@ cmake --build --preset cpu-sanitizers --parallel 4
 | `KEYHUNT_BUILD_BSGSD` | OFF | Original local BSGS daemon |
 | `BUILD_TESTING` | ON | Python/CTest regression checks |
 | `KEYHUNT_ENABLE_HIP` | OFF | AMD HIP discovery, diagnostics, xpoint/BSGS searches and tables; requires ROCm AMD clang/runtime |
-| `KEYHUNT_ENABLE_CUDA` | OFF | Explicitly rejected until C18 |
+| `KEYHUNT_ENABLE_CUDA` | OFF | Native NVIDIA discovery, xpoint, BSGS and checkpoints |
 | `KEYHUNT_ENABLE_COORDINATOR` | OFF | Registry, coordinator and durable HTTPS worker support; needs OpenSSL 3 and nlohmann JSON >=3.10 |
 | `KEYHUNT_ENABLE_HTTPS_WORKER` | ON | With coordination enabled, build the libcurl HTTPS worker and Python supervisor; disable for server-only builds |
 | `KEYHUNT_TEST_APACHE_ROOT` | Empty | Enable real Apache/mTLS integration tests using `/` or an extracted package root |
@@ -321,3 +321,9 @@ worker configuration, deployment templates, backup/restore rules and boundaries.
 [Validation](COORDINATOR_VALIDATION.md) records the combined regression evidence.
 The focused sanitizer selector continues to exclude only the pre-existing
 `cpu_baseline` and `target_loading` legacy gates.
+
+## Native CUDA / H200 (C18)
+
+Use the `cuda-h200` configure/build/test presets and explicit `--backend cuda`.
+The [CUDA guide](CUDA_BACKEND.md) documents toolkit discovery, shared execution
+contracts and H200 validation. HIP and CUDA are separate native builds.

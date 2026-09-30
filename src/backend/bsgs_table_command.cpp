@@ -1,7 +1,7 @@
 #include "keyhunt/core/bsgs_table.h"
 #include "keyhunt/backend/device.h"
-#ifdef KEYHUNT_HAS_HIP
-#include "keyhunt/backend/hip_bsgs_table.h"
+#ifdef KEYHUNT_HAS_GPU
+#include "keyhunt/backend/gpu_bsgs_table.h"
 #endif
 #include <limits>
 #include <algorithm>
@@ -22,7 +22,7 @@ uint64_t number(const std::string& text) {
 }
 }
 int bsgs_table_command(int argc,char** argv) {
-    const char* usage="usage: keyhunt bsgs-table build --m N --output FILE [--bits-per-entry 8|16|32] [--host-memory BYTES] OR bsgs-table inspect --input FILE [--host-memory BYTES] OR bsgs-table validate --backend hip --input FILE [--device N] [--max-queries 1..65536] [--reserve-bytes BYTES] [--host-memory BYTES]";
+    const char* usage="usage: keyhunt bsgs-table build --m N --output FILE [--bits-per-entry 8|16|32] [--host-memory BYTES] OR bsgs-table inspect --input FILE [--host-memory BYTES] OR bsgs-table validate --backend hip|cuda --input FILE [--device N] [--max-queries 1..65536] [--reserve-bytes BYTES] [--host-memory BYTES]";
     if (argc<3) throw std::invalid_argument(usage);
     const std::string action=argv[2];
     if (action!="build" && action!="inspect" && action!="validate") throw std::invalid_argument(usage);
@@ -42,14 +42,15 @@ int bsgs_table_command(int argc,char** argv) {
         if (value>32) throw std::invalid_argument(usage);
         options.bits_per_entry=uint32_t(value);
     }
-    if (action=="validate" && args["--backend"]!="hip") throw std::invalid_argument(usage);
+    if (action=="validate" && (args["--backend"]!="hip" && args["--backend"]!="cuda")) throw std::invalid_argument(usage);
+    if (action=="validate") require_backend(args["--backend"]);
     const auto device=args.count("--device") ? number(args["--device"]) : 0;
     const auto queries=args.count("--max-queries") ? number(args["--max-queries"]) : 4096;
     const auto reserve=args.count("--reserve-bytes") ? number(args["--reserve-bytes"]) : 64*1024*1024;
     if (device>uint64_t(std::numeric_limits<int>::max()) || !queries || queries>65536) throw std::invalid_argument(usage);
-#ifndef KEYHUNT_HAS_HIP
+#ifndef KEYHUNT_HAS_GPU
     (void)reserve;
-    if (action=="validate") discover_hip(); // no silent CPU substitute
+    if (action=="validate") discover_gpu(); // no silent CPU substitute
 #endif
     const auto start=std::chrono::steady_clock::now();
     auto table=[&] {
@@ -66,14 +67,14 @@ int bsgs_table_command(int argc,char** argv) {
     std::string device_uuid;
     uint64_t checked=0,device_bytes=0,pinned_bytes=0;
     double kernel_ms=0,upload_ms=0,download_ms=0,preparation_ms=0;
-#ifdef KEYHUNT_HAS_HIP
+#ifdef KEYHUNT_HAS_GPU
     if (action=="validate") {
-        const auto inventory=discover_hip();
-        if (device>=inventory.devices.size()) throw std::invalid_argument("HIP device ordinal is not visible");
+        const auto inventory=discover_gpu();
+        if (device>=inventory.devices.size()) throw std::invalid_argument("GPU device ordinal is not visible");
         device_uuid=inventory.devices[device].uuid;
         BsgsUploadOptions config; config.max_queries=uint32_t(queries); config.memory_reserve_bytes=reserve;
         config.host_memory_bytes=options.host_memory_bytes;
-        HipBsgsTable prepared(int(device),table,config);
+        GpuBsgsTable prepared(int(device),table,config);
         device_bytes=prepared.device_bytes(); pinned_bytes=prepared.pinned_bytes();
         preparation_ms=prepared.preparation_upload_ms();
         std::vector<bsgs::Key> batch; batch.reserve(queries);
@@ -93,7 +94,7 @@ int bsgs_table_command(int argc,char** argv) {
                     const auto expected=table.entries()[cursor+i].j;
                     const auto& hit=result.hits[i];
                     if ((!sign || expected==0) ? (hit.end-hit.begin!=1 || hit.j!=expected) : (hit.end!=hit.begin))
-                        throw std::runtime_error("HIP BSGS baby/sign verification failed");
+                        throw std::runtime_error("GPU BSGS baby/sign verification failed");
                 }
                 checked+=result.device_queries; kernel_ms+=result.kernel_ms;
                 upload_ms+=result.upload_ms; download_ms+=result.download_ms;
@@ -106,7 +107,7 @@ int bsgs_table_command(int argc,char** argv) {
     std::string checksum;
     for (uint8_t byte : table.checksum()) { checksum+="0123456789abcdef"[byte>>4]; checksum+="0123456789abcdef"[byte&15]; }
     const double elapsed=std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-start).count();
-    std::cout<<"{\"backend\":\""<<(action=="validate" ? "hip" : "cpu")<<"\",\"device\":"
+    std::cout<<"{\"backend\":\""<<(action=="validate" ? gpu_backend_name() : "cpu")<<"\",\"device\":"
         <<(action=="validate" ? std::to_string(device) : "null")<<",\"uuid\":\""<<device_uuid<<"\",\"format_version\":1,\"curve\":\"secp256k1\",\"mapping\":\"jG:0<=j<m\",\"m\":"<<p.m
         <<",\"buckets\":"<<p.buckets<<",\"bloom_words\":"<<p.bloom_words<<",\"bits_per_entry\":"<<table.bits_per_entry()
         <<",\"resident_bytes\":"<<p.resident_bytes<<",\"host_peak_bytes\":"<<p.host_peak_bytes<<",\"file_bytes\":"<<p.file_bytes

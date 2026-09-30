@@ -17,8 +17,9 @@ from oracle_selftest import check_source, run as oracle_run
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--binary',type=Path,required=True);p.add_argument('--oracle',type=Path,required=True)
-    p.add_argument('--report',type=Path,required=True);p.add_argument('--hip',action='store_true')
-    p.add_argument('--group',choices=['auto','1','8'],default='auto');args=p.parse_args()
+    p.add_argument('--report',type=Path,required=True);p.add_argument('--hardware','--hip',dest='hardware',action='store_true')
+    p.add_argument('--group',choices=['auto','1','8'],default='auto');p.add_argument("--backend",choices=("hip","cuda"),default="hip")
+    args=p.parse_args()
     binary=str(args.binary.resolve())
     report={'oracle_commit':check_source(),'seed':0xC11,'group':args.group,'cases':[],'rejections':0}
     def run(words,env=None):
@@ -29,18 +30,18 @@ def main():
     with tempfile.TemporaryDirectory(prefix='keyhunt-c11-') as directory:
         folder=Path(directory);target_file=folder/'targets';table_file=folder/'table'
         target_file.write_text('00'*33)
-        base=['--backend','hip','--range','1:2','--targets',str(target_file),'--table',str(table_file)]
+        base=['--backend',args.backend,'--range','1:2','--targets',str(target_file),'--table',str(table_file)]
         for words in [[],base+['--device','-1'],base+['--device','2147483648'],base+['--device','0','--device','1'],
                       base+['--unknown','1'],base+['--giant-batch','0'],base+['--giant-batch','16385'],
                       base+['--target-batch','65'],base+['--target-batch','0'],base+['--group-size','2'],
                       base+['--candidate-capacity','0'],base+['--candidate-capacity','65537'],
                       base+['--reserve-bytes','1junk'],base+['--host-memory','0'],base+['--device']]:reject(words)
         for r in ['0:2','2:2','3:2','1','1:2:3',f'1:{N+1:x}',f'{N:x}:{N+1:x}']:
-            reject(['--backend','hip','--range',r,'--targets',str(target_file),'--table',str(table_file)])
-        if not args.hip:
+            reject(['--backend',args.backend,'--range',r,'--targets',str(target_file),'--table',str(table_file)])
+        if not args.hardware:
             assert 'not built' in reject(base).stderr
         else:
-            inventory=json.loads(subprocess.check_output([binary,'devices','--backend','hip'],text=True,timeout=30))
+            inventory=json.loads(subprocess.check_output([binary,'devices','--backend',args.backend],text=True,timeout=30))
             assert inventory['devices'];report['inventory']=inventory
             cache={}
             for m in [1,2,3,7,17,257]:
@@ -55,7 +56,7 @@ def main():
             target_file.write_text(g)
             for words,env in [(base+['--device','2147483647'],None),(base+['--host-memory','1'],None),
                               (base+['--reserve-bytes',str(2**64-1)],None),
-                              (base,dict(os.environ,HIP_VISIBLE_DEVICES='-1',ROCR_VISIBLE_DEVICES='-1'))]:reject(words,env)
+                              (base,dict(os.environ, CUDA_VISIBLE_DEVICES='-1',HIP_VISIBLE_DEVICES='-1',ROCR_VISIBLE_DEVICES='-1'))]:reject(words,env)
             cases=[]
             def case(name,a,width,m,keys,giants=17,targets=8,capacity=64,device=0):
                 cases.append(dict(name=name,a=a,width=width,m=m,keys=sorted(set(k for k in keys if 0<k<N)),
@@ -101,7 +102,7 @@ def main():
                 for i,point in enumerate(reversed(unique)):
                     lines.append((('03' if int(point[-2:],16)&1 else '02')+point[2:66]) if i%2 else point)
                 target_file.write_text('\r\n'.join(lines+[unique[0]])+'\r\n\r\n')
-                words=['--backend','hip','--range',f"{c['a']:x}:{c['a']+c['width']:x}",'--targets',str(target_file),
+                words=['--backend',args.backend,'--range',f"{c['a']:x}:{c['a']+c['width']:x}",'--targets',str(target_file),
                        '--table',str(cache[c['m']]),'--giant-batch',str(c['giants']),'--target-batch',str(c['targets']),
                        '--candidate-capacity',str(c['capacity']),'--device',str(c['device']),'--group-size',str(args.group)]
                 r=run(words);assert r.returncode==0 and not r.stderr,(c,r)

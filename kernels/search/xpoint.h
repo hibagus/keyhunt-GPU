@@ -1,5 +1,5 @@
 #pragma once
-#include <hip/hip_runtime.h>
+#include "device_runtime.h"
 #include "common/point.h"
 #include "keyhunt/core/xpoint_search.h"
 

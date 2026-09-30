@@ -77,10 +77,11 @@ def metadata(build, binary, oracle, output, device, inventory, load_note):
     cache = {}
     for line in (build / "CMakeCache.txt").read_text().splitlines():
         if "=" in line and ":" in line and line.startswith(("CMAKE_BUILD_TYPE:", "CMAKE_CXX_COMPILER:",
-             "CMAKE_HIP_COMPILER:", "CMAKE_HIP_ARCHITECTURES:", "KEYHUNT_", "SQLite3_LIBRARY:", "SQLite3_INCLUDE_DIR:")):
+             "CMAKE_HIP_COMPILER:", "CMAKE_HIP_ARCHITECTURES:", "CMAKE_CUDA_COMPILER:", "CMAKE_CUDA_ARCHITECTURES:", "KEYHUNT_", "SQLite3_LIBRARY:", "SQLite3_INCLUDE_DIR:")):
             key, value = line.split("=", 1)
             cache[key] = value
-    compiler = next((v for k, v in cache.items() if k.startswith("CMAKE_HIP_COMPILER:")), "hipcc")
+    backend = inventory["backend"]
+    compiler = next((v for k, v in cache.items() if k.startswith(f"CMAKE_{backend.upper()}_COMPILER:")), "nvcc" if backend == "cuda" else "hipcc")
     sources = ["tools/benchmark_gpu.py", "benchmarks/gpu_metrics.py", "tools/capture_environment.py"]
     return {"source_commit": probe(["git", "rev-parse", "HEAD"]),
             "working_tree": probe(["git", "status", "--porcelain"]),
@@ -88,9 +89,9 @@ def metadata(build, binary, oracle, output, device, inventory, load_note):
             "harness_sha256": {p: sha(ROOT / p) for p in sources}, "binary_sha256": sha(binary),
             "oracle_binary_sha256": sha(oracle), "oracle_commit": check_source(),
             "compile_commands": production, "cmake_cache": cache,
-            "hip_compiler": probe([compiler, "--version"]), "cmake": probe(["cmake", "--version"]),
+            "gpu_compiler": probe([compiler, "--version"]), "cmake": probe(["cmake", "--version"]),
             "linked_libraries": probe(["ldd", str(binary)]),
-            "rocm_core_version": probe(["hipconfig", "--version"]),
+            "rocm_core_version": probe(["hipconfig", "--version"]) if backend == "hip" else None,
             "platform": platform.platform(), "python": platform.python_version(),
             "cpu_affinity": sorted(os.sched_getaffinity(0)), "numa_policy": probe(["numactl", "--show"]),
             "cpu": probe(["lscpu", "-J"]), "visibility": {k: os.environ.get(k) for k in
@@ -103,7 +104,11 @@ def metadata(build, binary, oracle, output, device, inventory, load_note):
 
 
 def smi(device):
-    # SMI ordinals are not HIP ordinals under visibility remapping. Select by BDF.
+    # Runtime ordinals can be renumbered by visibility filters; select SMI by BDF.
+    if device["architecture"].startswith("sm_"):
+        return probe(["nvidia-smi", "-i", device["pci_bus_id"],
+                      "--query-gpu=name,uuid,clocks.sm,clocks.mem,power.draw,utilization.gpu,temperature.gpu",
+                      "--format=csv"])
     return probe(["amd-smi", "metric", "--gpu", device["pci_bus_id"], "--clock", "--power", "--usage", "--json"])
 
 
@@ -137,7 +142,7 @@ def make_case(args, mode, workload, output, oracle, table_info):
 
 def execute(args, runner, case, variant, round_number, binary, table, device):
     inputs = ["--targets", case["targets"]] + (["--table", table] if case["mode"] == "bsgs" else [])
-    tuning = ["--backend", "hip", "--device", args.device, "--candidate-capacity", args.candidate_capacity, *case["geometry"]]
+    tuning = ["--backend", args.backend, "--device", args.device, "--candidate-capacity", args.candidate_capacity, *case["geometry"]]
     state = None
     if variant == "volatile":
         command = [binary, case["mode"], "--range", f'{case["begin"]}:{case["end_exclusive"]}', *inputs, *tuning]
@@ -192,6 +197,7 @@ def main():
     parser.add_argument("--variants", choices=("volatile", "timed", "every-batch"), nargs="+", default=["volatile", "timed", "every-batch"])
     parser.add_argument("--timeout", type=int, default=300)
     parser.add_argument("--other-load", default="Unreserved host; concurrent sibling/device load is unknown.")
+    parser.add_argument("--backend", choices=("hip", "cuda"), default="hip")
     args = parser.parse_args()
     bounds = {"repeats": (5, 100), "batches": (1, 1000000), "batch_size": (4, 1048576),
               "giant_batch": (1, 1048576), "target_batch": (1, 64), "m": (2, 1048576),
@@ -211,13 +217,13 @@ def main():
     runner = Runner(output, args.timeout)
     binary, oracle = build / "keyhunt", build / "secp256k1_oracle"
     report = {"schema_version": 1, "recorded_utc": datetime.now(timezone.utc).isoformat(), "passed": False,
-              "scope": "single logical HIP device; fresh processes, one excluded warm-up round; rotating durability order",
+              "scope": "single visible GPU; fresh processes, one excluded warm-up round; rotating durability order",
               "timing": "process includes input/preparation, execution, output and cleanup; job creation, table build and post-run audits are separate",
               "unmeasured": ["remote sync", "queue-empty time", "continuous clocks", "multi-device scaling", "pause latency"],
               "options": {k: str(v) if isinstance(v, Path) else v for k, v in vars(args).items()},
               "cases": [], "commands": runner.commands, "failures": []}
     try:
-        inventory = runner.run([binary, "devices", "--backend", "hip"])[0][0]
+        inventory = runner.run([binary, "devices", "--backend", args.backend])[0][0]
         device = next(d for d in inventory["devices"] if d["ordinal"] == args.device)
         report["metadata"] = metadata(build, binary, oracle, output, device, inventory, args.other_load)
         table, table_info = output / "babies.khb", {}

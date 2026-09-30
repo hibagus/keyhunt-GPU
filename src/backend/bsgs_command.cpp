@@ -1,7 +1,7 @@
 #include "keyhunt/backend/device.h"
 #include "keyhunt/core/bsgs_search.h"
-#ifdef KEYHUNT_HAS_HIP
-#include "keyhunt/backend/hip_bsgs.h"
+#ifdef KEYHUNT_HAS_GPU
+#include "keyhunt/backend/gpu_bsgs.h"
 #endif
 #include <algorithm>
 #include <charconv>
@@ -20,7 +20,7 @@ uint64_t decimal(const std::string& value) {
     if (parsed.ec!=std::errc{} || parsed.ptr!=value.data()+value.size()) throw std::invalid_argument("expected unsigned decimal: "+value);
     return result;
 }
-#ifdef KEYHUNT_HAS_HIP
+#ifdef KEYHUNT_HAS_GPU
 std::string hex(const uint8_t* bytes,size_t count) {
     const char* digits="0123456789abcdef"; std::string result;
     for(size_t i=0;i<count;++i){result+=digits[bytes[i]>>4];result+=digits[bytes[i]&15];} return result;
@@ -32,7 +32,7 @@ void flush_record() {
 #endif
 }
 int bsgs_command(int argc,char** argv) {
-    const char* usage="usage: keyhunt bsgs --backend hip --range START:END --targets FILE --table FILE [--device N] [--giant-batch 1..1048576] [--target-batch 1..64] [--candidate-capacity 1..65536] [--group-size auto|1|8] [--host-memory BYTES] [--reserve-bytes BYTES] (END exclusive; NDJSON output)";
+    const char* usage="usage: keyhunt bsgs --backend hip|cuda --range START:END --targets FILE --table FILE [--device N] [--giant-batch 1..1048576] [--target-batch 1..64] [--candidate-capacity 1..65536] [--group-size auto|1|8] [--host-memory BYTES] [--reserve-bytes BYTES] (END exclusive; NDJSON output)";
     std::map<std::string,std::string> args;
     for(int i=2;i<argc;i+=2) {
         if(i+1==argc) throw std::invalid_argument(usage);
@@ -42,8 +42,9 @@ int bsgs_command(int argc,char** argv) {
            key!="--host-memory" && key!="--reserve-bytes") throw std::invalid_argument(usage);
         if(!args.emplace(key,argv[i+1]).second) throw std::invalid_argument("duplicate BSGS option: "+key);
     }
-    if(args["--backend"]!="hip" || args["--range"].empty() || args["--targets"].empty() || args["--table"].empty())
+    if((args["--backend"]!="hip" && args["--backend"]!="cuda") || args["--range"].empty() || args["--targets"].empty() || args["--table"].empty())
         throw std::invalid_argument(usage);
+    require_backend(args["--backend"]);
     const auto range=args["--range"]; const auto colon=range.find(':');
     if(colon==std::string::npos) throw std::invalid_argument(usage);
     using core::UInt256;
@@ -56,9 +57,9 @@ int bsgs_command(int argc,char** argv) {
     if(args.count("--group-size") && args["--group-size"]!="auto" && !group) throw std::invalid_argument(usage);
     if(device>std::numeric_limits<int>::max() || !target_batch || target_batch>64 || !giants || giants>1048576/target_batch ||
        !capacity || capacity>65536 || (group!=0 && group!=1 && group!=8) || !host_memory) throw std::invalid_argument(usage);
-#ifndef KEYHUNT_HAS_HIP
+#ifndef KEYHUNT_HAS_GPU
     (void)reserve;
-    discover_hip(); // a GPU request never silently falls back to CPU
+    discover_gpu(); // a GPU request never silently falls back to CPU
     return 2;
 #else
     using Clock=std::chrono::steady_clock;
@@ -69,15 +70,15 @@ int bsgs_command(int argc,char** argv) {
     const uint64_t target_bytes=targets.values().capacity()*sizeof(core::UncompressedPublicKey);
     if (target_bytes>=host_memory) throw std::invalid_argument("BSGS targets exceed host memory budget");
     const auto table=bsgs::Table::load(args["--table"],{16,host_memory-target_bytes});
-    const auto inventory=discover_hip();
-    if(device>=inventory.devices.size()) throw std::invalid_argument("HIP device ordinal is not visible");
+    const auto inventory=discover_gpu();
+    if(device>=inventory.devices.size()) throw std::invalid_argument("GPU device ordinal is not visible");
     core::XPointVerifier verifier;
     BsgsSearchOptions options;
     options.max_steps=giants*target_batch; options.candidate_capacity=uint32_t(capacity); options.group_size=unsigned(group);
     options.host_memory_bytes=host_memory; options.memory_reserve_bytes=reserve;
-    HipBsgsExecutor executor(int(device),table,targets,verifier,options);
+    GpuBsgsExecutor executor(int(device),table,targets,verifier,options);
     const auto elapsed=[&]{return std::chrono::duration<double,std::milli>(Clock::now()-start).count();};
-    std::cout<<std::setprecision(9)<<"{\"type\":\"start\",\"backend\":\"hip\",\"mode\":\"bsgs\",\"device\":"<<device
+    std::cout<<std::setprecision(9)<<"{\"type\":\"start\",\"backend\":\"" << gpu_backend_name() << "\",\"mode\":\"bsgs\",\"device\":"<<device
         <<",\"uuid\":\""<<inventory.devices[device].uuid<<"\",\"m\":"<<table.memory().m
         <<",\"table_checksum\":\""<<hex(table.checksum().data(),32)<<"\",\"target_digest\":\""<<hex(targets.digest().data(),32)
         <<"\",\"target_count\":"<<targets.values().size()<<",\"begin\":\""<<interval.begin().hex()<<"\",\"end_exclusive\":\""<<interval.end().hex()

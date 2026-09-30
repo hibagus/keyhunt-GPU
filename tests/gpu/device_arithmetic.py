@@ -18,9 +18,10 @@ def main():
     parser.add_argument('--probe',type=Path,required=True)
     parser.add_argument('--oracle',type=Path,required=True)
     parser.add_argument('--report',type=Path,required=True)
+    parser.add_argument("--backend",choices=("hip","cuda"),default="hip")
     args=parser.parse_args()
     pin=check_source()
-    inventory=json.loads(subprocess.check_output([str(args.binary.resolve()),'devices','--backend','hip'],text=True,timeout=30))
+    inventory=json.loads(subprocess.check_output([str(args.binary.resolve()),'devices','--backend',args.backend],text=True,timeout=30))
     if not inventory['devices']: raise RuntimeError('HIP arithmetic requires visible hardware')
     scalars=[1,2,3,1<<64,1<<128,1<<192,N-1]
     public=dict(zip(scalars,run(args.oracle,[f'pub {k:064x}' for k in scalars])))

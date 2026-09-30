@@ -1,4 +1,4 @@
-#include "keyhunt/backend/hip_xpoint.h"
+#include "keyhunt/backend/gpu_xpoint.h"
 #include "keyhunt/backend/device.h"
 #include <algorithm>
 #include <iostream>
@@ -18,7 +18,7 @@ scheduler::KernelBatch plan(UInt256 begin, uint64_t count, const core::XPointTar
 }
 int main() {
     try {
-        require(!backend::discover_hip().devices.empty(),"hardware required");
+        require(!backend::discover_gpu().devices.empty(),"hardware required");
         core::XPointVerifier verifier;
         auto begin=UInt256::from_hex("100000000fffffffffffffffe");
         std::vector<core::XPointBytes> values;
@@ -28,12 +28,12 @@ int main() {
         }
         core::XPointTargets targets(values);
         backend::XPointOptions options; options.max_steps=1025; options.candidate_capacity=1025;
-        rejects([&] { backend::HipXPointExecutor e(-1,targets,verifier,options); });
-        rejects([&] { auto bad=options; bad.max_steps=0; backend::HipXPointExecutor e(0,targets,verifier,bad); });
-        rejects([&] { auto bad=options; bad.max_steps=1048577; backend::HipXPointExecutor e(0,targets,verifier,bad); });
-        rejects([&] { auto bad=options; bad.candidate_capacity=0; backend::HipXPointExecutor e(0,targets,verifier,bad); });
-        rejects([&] { auto bad=options; bad.memory_reserve_bytes=std::numeric_limits<uint64_t>::max(); backend::HipXPointExecutor e(0,targets,verifier,bad); });
-        backend::HipXPointExecutor e(0,targets,verifier,options), other(0,targets,verifier,options);
+        rejects([&] { backend::GpuXPointExecutor e(-1,targets,verifier,options); });
+        rejects([&] { auto bad=options; bad.max_steps=0; backend::GpuXPointExecutor e(0,targets,verifier,bad); });
+        rejects([&] { auto bad=options; bad.max_steps=1048577; backend::GpuXPointExecutor e(0,targets,verifier,bad); });
+        rejects([&] { auto bad=options; bad.candidate_capacity=0; backend::GpuXPointExecutor e(0,targets,verifier,bad); });
+        rejects([&] { auto bad=options; bad.memory_reserve_bytes=std::numeric_limits<uint64_t>::max(); backend::GpuXPointExecutor e(0,targets,verifier,bad); });
+        backend::GpuXPointExecutor e(0,targets,verifier,options), other(0,targets,verifier,options);
         auto first=plan(begin,257,targets);
         auto ticket=e.submit(first);
         rejects([&] { e.submit(first); });
@@ -53,7 +53,7 @@ int main() {
             for (unsigned i=0;i<count;++i) require(r.matches[i].scalar==begin.add(UInt256(i)),"gap or duplicate scalar");
         }
         auto small_options=options; small_options.candidate_capacity=1;
-        backend::HipXPointExecutor small(0,targets,verifier,small_options);
+        backend::GpuXPointExecutor small(0,targets,verifier,small_options);
         auto overflow=small.submit(first); small.drain(); const auto r=small.take(overflow);
         require(r.overflow && r.candidate_count==257 && r.matches.empty() && !r.verified_steps,"overflow credited coverage");
         // The slot remains usable after overflow; replay never consumes its prefix.
@@ -62,12 +62,12 @@ int main() {
         require(kept.matches.front().scalar==begin && kept.matches.back().scalar==begin.add(UInt256(256)),"owned result mutated");
         rejects([&] { e.submit(plan(begin,1026,targets)); });
         rejects([&] { e.submit(plan(begin,1,core::XPointTargets({core::XPointBytes{}}))); });
-        backend::HipDiagnosticExecutor diagnostic(0);
+        backend::GpuDiagnosticExecutor diagnostic(0);
         auto dt=diagnostic.submit(first);
         auto xt=e.submit(first);
         rejects([&] { e.poll(dt); }); rejects([&] { diagnostic.poll(xt); });
         diagnostic.drain(); (void)diagnostic.take(dt); e.drain(); (void)e.take(xt);
-        { backend::HipXPointExecutor pending(0,targets,verifier,options); pending.submit(first); }
-        std::cout << "HIP xpoint ownership, every-index tails, overflow and replay passed\n";
+        { backend::GpuXPointExecutor pending(0,targets,verifier,options); pending.submit(first); }
+        std::cout << "GPU xpoint ownership, every-index tails, overflow and replay passed\n";
     } catch(const std::exception& error) { std::cerr<<error.what()<<'\n'; return 1; }
 }

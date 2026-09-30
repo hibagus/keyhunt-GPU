@@ -21,7 +21,8 @@ def main():
     parser.add_argument("--worker", required=True)
     parser.add_argument("--keyhunt", required=True)
     parser.add_argument("--apache-root", default="/")
-    parser.add_argument("--hip", action="store_true")
+    parser.add_argument("--hardware", "--hip", dest="hardware", action="store_true")
+    parser.add_argument("--backend", choices=("hip", "cuda"), default="hip")
     args = parser.parse_args()
     worker, keyhunt = str(Path(args.worker).resolve()), str(Path(args.keyhunt).resolve())
     with tempfile.TemporaryDirectory(prefix="kh-workers-") as directory:
@@ -64,7 +65,7 @@ def main():
 
             def supervise(state, table=None):
                 words = [sys.executable, str(REPO / "tools/coordinator_worker.py"), "--state-dir", str(state),
-                         "--worker", worker, "--keyhunt", keyhunt, "--once"]
+                         "--worker", worker, "--keyhunt", keyhunt, "--backend", args.backend, "--once"]
                 if table:
                     words += ["--table", str(table)]
                 result = subprocess.run(words, capture_output=True, text=True, timeout=180)
@@ -95,7 +96,7 @@ def main():
             request = root / "api.json"
             request.write_text(json.dumps(dict(method="GET", path=f"/api/v1/projects/{projects[1]}/jobs/{job['job']}/status")))
             assert '"status":404' in invoke(states[0], "api", "--request", request, ok=False).stderr
-            if args.hip:
+            if args.hardware:
                 for state in states:
                     supervise(state)
                     status = invoke(state, "status")
@@ -132,7 +133,7 @@ def main():
             raise
         finally:
             env.stop()
-    print("Two native HTTPS workers and project isolation passed" + ("; supervised HIP xpoint/BSGS passed" if args.hip else ""))
+    print("Two native HTTPS workers and project isolation passed" + ("; supervised GPU xpoint/BSGS passed" if args.hardware else ""))
 
 
 if __name__ == "__main__":

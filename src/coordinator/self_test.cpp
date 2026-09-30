@@ -4,12 +4,12 @@
 #include <set>
 namespace keyhunt::coordination {
 Json device_self_test(int ordinal){
-#ifndef KEYHUNT_HAS_HIP
-    (void)ordinal;throw std::runtime_error("worker self-test requires a HIP build; there is no CPU execution fallback");
+#ifndef KEYHUNT_HAS_GPU
+    (void)ordinal;throw std::runtime_error("worker self-test requires a GPU build; there is no CPU execution fallback");
 #else
     using namespace keyhunt;using namespace core;
-    const auto inventory=backend::discover_hip();
-    if(ordinal<0||size_t(ordinal)>=inventory.devices.size())throw std::invalid_argument("HIP ordinal is not visible");
+    const auto inventory=backend::discover_gpu();
+    if(ordinal<0||size_t(ordinal)>=inventory.devices.size())throw std::invalid_argument("GPU ordinal is not visible");
     const auto& device=inventory.devices[size_t(ordinal)];
     XPointVerifier verifier;std::vector<XPointBytes> xs;std::vector<UncompressedPublicKey> points;
     for(uint64_t scalar:{1,17,32,40}){
@@ -26,21 +26,21 @@ Json device_self_test(int ordinal){
     // Run both xpoint variants and both BSGS groups on the visible partition.
     for(auto kernel:{backend::XPointKernel::Direct,backend::XPointKernel::Stepped}){
         backend::XPointOptions options;options.max_steps=64;options.kernel=kernel;options.candidate_capacity=16;
-        backend::HipXPointExecutor gpu(ordinal,targets,verifier,options);
+        backend::GpuXPointExecutor gpu(ordinal,targets,verifier,options);
         const auto ticket=gpu.submit(*batch);gpu.drain();const auto result=gpu.take(ticket);
         std::set<UInt256> found;for(const auto& match:result.matches)found.insert(match.scalar);
         if(result.overflow||result.verified_steps!=33||found!=expected||result.matches.size()!=expected.size())
-            throw std::runtime_error("HIP xpoint runtime self-test failed");
+            throw std::runtime_error("GPU xpoint runtime self-test failed");
     }
     const auto table=bsgs::Table::build(16);const BsgsPublicKeyTargets btargets(points);
     const BsgsBatch bb(interval,16,0,4,btargets.digest(),table.checksum());
     for(unsigned group:{1U,8U}){
         backend::BsgsSearchOptions options;options.max_steps=64;options.group_size=group;options.candidate_capacity=16;
-        backend::HipBsgsExecutor gpu(ordinal,table,btargets,verifier,options);
+        backend::GpuBsgsExecutor gpu(ordinal,table,btargets,verifier,options);
         const auto ticket=gpu.submit(bb);gpu.drain();const auto result=gpu.take(ticket);
         std::set<UInt256> found;for(const auto& match:result.matches)found.insert(match.scalar);
         if(result.overflow||result.verified_steps!=bb.steps()||found!=expected||result.matches.size()!=expected.size())
-            throw std::runtime_error("HIP BSGS runtime self-test failed");
+            throw std::runtime_error("GPU BSGS runtime self-test failed");
     }
     return {{"passed",true},{"ordinal",ordinal},{"uuid",device.uuid},{"pci_bus_id",device.pci_bus_id},
         {"compute_units",device.compute_units},{"compute_partition",device.compute_partition},

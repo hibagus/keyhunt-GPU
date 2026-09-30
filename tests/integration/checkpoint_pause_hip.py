@@ -19,6 +19,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--binary", type=Path, required=True)
 parser.add_argument("--oracle", type=Path, required=True)
 parser.add_argument("--report", type=Path, required=True)
+parser.add_argument("--backend",choices=("hip","cuda"),default="hip")
 args = parser.parse_args()
 binary = args.binary.resolve()
 report = {"oracle_commit": check_source(), "binary_sha256": hashlib.sha256(binary.read_bytes()).hexdigest(),
@@ -28,7 +29,7 @@ def invoke(words, env=None, ok=True):
     assert (result.returncode == 0) == ok, (words, result.stdout, result.stderr)
     return [json.loads(line) for line in result.stdout.splitlines()] if ok else result
 
-inventory = invoke(["devices", "--backend", "hip"])[0]
+inventory = invoke(["devices", "--backend", args.backend])[0]
 report["inventory"] = inventory
 count = len(inventory["devices"])
 restricted = any(os.environ.get(k) for k in ("HIP_VISIBLE_DEVICES", "ROCR_VISIBLE_DEVICES", "CUDA_VISIBLE_DEVICES"))
@@ -58,7 +59,7 @@ with tempfile.TemporaryDirectory(prefix="kh-c14-hip-") as temporary:
                     "--block-width", "100000", *inputs)[0]["job"]
         scope = ["--project", project, "--job", job]
         grant = local("state", "claim", *scope, "--owner", "pause-test", "--request", "claim")[0]["assignments"][0]["grant"]
-        run = ["checkpoint", "run", "--state-dir", state, "--backend", "hip", "--grant", grant, *inputs]
+        run = ["checkpoint", "run", "--state-dir", state, "--backend", args.backend, "--grant", grant, *inputs]
         slow = ["--batch-size", "128"] if mode == "xpoint" else ["--giant-batch", "1", "--target-batch", "1"]
         fast = ["--batch-size", "65536"] if mode == "xpoint" else ["--giant-batch", "16384", "--target-batch", "4", "--group-size", "8"]
         case = {"mode": mode, "layouts": [], "pause_samples": []}
@@ -91,7 +92,7 @@ with tempfile.TemporaryDirectory(prefix="kh-c14-hip-") as temporary:
         for stage, (visibility, device, visible_count) in enumerate(layouts[:2]):
             env = os.environ.copy()
             if visibility is not None:
-                env["HIP_VISIBLE_DEVICES"] = visibility
+                env["CUDA_VISIBLE_DEVICES" if args.backend=="cuda" else "HIP_VISIBLE_DEVICES"] = visibility
             log, err = root / f"{mode}-{stage}.out", root / f"{mode}-{stage}.err"
             with log.open("w") as out, err.open("w") as error:
                 process = subprocess.Popen([str(binary), *map(str, run + slow + ["--device", device])],
@@ -153,7 +154,7 @@ with tempfile.TemporaryDirectory(prefix="kh-c14-hip-") as temporary:
         visibility, device, visible_count = layouts[2]
         env = os.environ.copy()
         if visibility is not None:
-            env["HIP_VISIBLE_DEVICES"] = visibility
+            env["CUDA_VISIBLE_DEVICES" if args.backend=="cuda" else "HIP_VISIBLE_DEVICES"] = visibility
         completed = invoke(run + fast + ["--device", device], env=env)[-1]
         assert completed["complete"]
         assert int(completed["resumed_scalars"], 16) + int(completed["computed_scalars"], 16) == 1048576

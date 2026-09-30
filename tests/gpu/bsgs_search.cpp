@@ -1,4 +1,4 @@
-#include "keyhunt/backend/hip_bsgs.h"
+#include "keyhunt/backend/gpu_bsgs.h"
 #include <iostream>
 using namespace keyhunt;
 using core::UInt256;
@@ -17,7 +17,7 @@ int main(){
         backend::BsgsSearchOptions options; options.candidate_capacity=2;
         for(unsigned group:{0U,1U,8U}){
             options.group_size=group;
-            backend::HipBsgsExecutor executor(0,table,targets,cpu,options),other(0,table,targets,cpu,options);
+            backend::GpuBsgsExecutor executor(0,table,targets,cpu,options),other(0,table,targets,cpu,options);
             auto wrong=targets.digest();wrong[0]^=1;
             rejects([&]{executor.submit(core::BsgsBatch(range,7,0,1,wrong,table.checksum()));});
             rejects([&]{executor.submit(core::BsgsBatch(range,8,0,1,targets.digest(),table.checksum()));});
@@ -41,12 +41,12 @@ int main(){
                 if(first==0)require(!result.matches.empty(),"missing initial subset");
             }
             require(found==129 && steps==2470,"all-target replay coverage");
-            {backend::HipBsgsExecutor pending(0,table,targets,cpu,options);pending.submit(make(0,1));}
+            {backend::GpuBsgsExecutor pending(0,table,targets,cpu,options);pending.submit(make(0,1));}
         }
-        options.host_memory_bytes=1;rejects([&]{backend::HipBsgsExecutor e(0,table,targets,cpu,options);});
-        options={};options.memory_reserve_bytes=UINT64_MAX;rejects([&]{backend::HipBsgsExecutor e(0,table,targets,cpu,options);});
-        options={};options.max_steps=1;backend::HipBsgsExecutor small(0,table,targets,cpu,options);rejects([&]{small.submit(batch);});
-        options={};options.group_size=2;rejects([&]{backend::HipBsgsExecutor e(0,table,targets,cpu,options);});
-        std::cout<<"HIP BSGS slot identity, overflow/replay, all targets and ownership passed\n";
+        options.host_memory_bytes=1;rejects([&]{backend::GpuBsgsExecutor e(0,table,targets,cpu,options);});
+        options={};options.memory_reserve_bytes=UINT64_MAX;rejects([&]{backend::GpuBsgsExecutor e(0,table,targets,cpu,options);});
+        options={};options.max_steps=1;backend::GpuBsgsExecutor small(0,table,targets,cpu,options);rejects([&]{small.submit(batch);});
+        options={};options.group_size=2;rejects([&]{backend::GpuBsgsExecutor e(0,table,targets,cpu,options);});
+        std::cout<<"GPU BSGS slot identity, overflow/replay, all targets and ownership passed\n";
     }catch(const std::exception& e){std::cerr<<e.what()<<'\n';return 1;}
 }
