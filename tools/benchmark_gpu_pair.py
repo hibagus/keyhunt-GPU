@@ -157,7 +157,7 @@ def main():
     trial.add_argument('--label',required=True)
     trial.add_argument('--suite',choices=('warm','cli','both'),default='warm')
     trial.add_argument('--modes',nargs='+',choices=('xpoint','bsgs'),default=['xpoint','bsgs'])
-    trial.add_argument('--workloads',nargs='+',choices=('no-match-1','boundary-3','no-match-32'),default=['no-match-1','boundary-3','no-match-32'])
+    trial.add_argument('--workloads',nargs='+',choices=('no-match-1','boundary-3','no-match-32','dense-prefix'),default=['no-match-1','boundary-3','no-match-32'])
     trial.add_argument('--variants',nargs='+',choices=('volatile','timed','every-batch'),default=['volatile','timed'])
     trial.add_argument('--repeats',type=int,default=5)
     trial.add_argument('--device',type=int,default=0)
@@ -175,7 +175,7 @@ def main():
     if output.exists() or output == ROOT or ROOT in output.parents:
         parser.error('output-dir must be new and outside checkout')
     if args.action == 'compare':
-        if not 5 <= args.repeats <= 100 or not 3 <= args.batch_size <= 1048576 or not 2 <= args.m <= 1048576 or not 1 <= args.giant_batch <= 32768 or not 1 <= args.target_batch <= 64 or not 1 <= args.batches <= 1000000 or not 3 <= args.candidate_capacity <= (65536 if 'bsgs' in args.modes else 1048576) or args.device < 0 or args.timeout <= 0:
+        if not 5 <= args.repeats <= 100 or not 3 <= args.batch_size <= 1048576 or not 2 <= args.m <= 1048576 or not 1 <= args.giant_batch <= 32768 or not 1 <= args.target_batch <= 64 or not 1 <= args.batches <= 1000000 or not (1 if args.suite == 'cli' else 3) <= args.candidate_capacity <= (65536 if 'bsgs' in args.modes else 1048576) or args.device < 0 or args.timeout <= 0:
             parser.error('invalid bounded geometry, repetition count, or timeout')
         for key in ('modes','workloads','variants'):
             if len(set(getattr(args,key))) != len(getattr(args,key)):

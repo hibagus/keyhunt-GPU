@@ -119,7 +119,12 @@ def make_case(args, mode, workload, output, oracle, table_info):
     width = args.batches * (args.batch_size if mode == "xpoint" else args.m * args.giant_batch) - 1
     require(width >= 3, "workload must contain at least three scalars")
     end = begin + width
-    seeds = [begin, begin + width // 2, end - 1] if workload == "boundary-3" else list(range(1, 33 if workload == "no-match-32" else 2))
+    require(workload != "dense-prefix" or width >= 4, "dense prefix needs four scalars")
+    # A short saturated prefix followed by a sparse tail exposes retry policies
+    # that permanently shrink all later work after one overflowing launch.
+    seeds = (list(range(begin, begin+4)) if workload == "dense-prefix" else
+             [begin, begin + width // 2, end - 1] if workload == "boundary-3" else
+             list(range(1, 33 if workload == "no-match-32" else 2)))
     public = oracle_run(oracle, [f"pub {k:064x}" for k in seeds])
     # Validate the pinned executable against a separate Python affine model for
     # every benchmark target. X-only no-match partners n-k are outside this range.

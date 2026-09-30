@@ -33,7 +33,10 @@ are not mistaken for five independent process pairs. Reports retain raw samples,
 paired ratios, median, spread and MAD. Exact source/input/device checks reject
 incompatible work; failed processes cannot contribute an accepted result. All
 runs are opt-in, use synthetic inputs and external state, and change no hardware
-settings. CLI defaults compare volatile and ten-second checkpoint execution.
+settings. CLI defaults compare volatile and ten-second checkpoint execution. The
+`--suite cli --workloads dense-prefix --candidate-capacity 1` case puts four
+matches at the beginning of a longer sparse interval to expose persistent
+overflow shrinkage.
 
 The initial acceptance threshold is a 5% median workload improvement outside
 observed noise; justified exceptions must identify another measured benefit and
