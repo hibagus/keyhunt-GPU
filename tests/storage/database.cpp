@@ -27,7 +27,7 @@ int main(){
   Database restored((root/"restored").string());restored.check();rejects([&]{restored.writable();});
   {Statement s(restored.handle(),"SELECT name FROM projects");require(s.step()&&s.text(0)=="retained","snapshot missing commit");}
   require(restored.metadata("epoch")!=backup.metadata("epoch"),"restore epoch");
-  {Database future((root/"future").string());future.exec("PRAGMA user_version=2");}rejects([&]{Database future((root/"future").string());});
+  {Database future((root/"future").string());future.exec("PRAGMA user_version=3");}rejects([&]{Database future((root/"future").string());});
   {Database bad((root/"bad").string());bad.exec("UPDATE migrations SET digest=zeroblob(32)");}rejects([&]{Database bad((root/"bad").string());});
   struct stat st{};stat((root/"live/progress.sqlite").c_str(),&st);require((st.st_mode&0777)==0600,"database mode");
   std::cout<<"Storage schema, private paths, transactions and quarantined backup/restore passed (SQLite "<<sqlite3_libversion()<<")\n";

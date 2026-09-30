@@ -1,6 +1,9 @@
 #include "keyhunt/storage/journal.h"
 #include "sqlite.h"
 #include "free_tree.h"
+#include "checkpoint_data.h"
+#include <map>
+#include <set>
 #include <algorithm>
 #include <chrono>
 #include <limits>
@@ -106,6 +109,28 @@ struct Journal::Impl {
     std::vector<ScalarInterval> coverage(const Scope& scope,const UInt256& id)const{
         Statement s(db.handle(),"SELECT begin,end FROM coverage WHERE project=? AND job=? AND block=? ORDER BY begin");scope_bind(s,scope);s.bind(3,id);std::vector<ScalarInterval> out;while(s.step())out.emplace_back(s.wide(0),s.wide(1));return out;
     }
+    bool bound(const Scope& scope)const{
+        Statement q(db.handle(),"SELECT 1 FROM search_bindings WHERE project=? AND job=?");scope_bind(q,scope);return q.step();
+    }
+    void executor(const Grant& grant,int64_t generation)const{
+        Statement q(db.handle(),"SELECT assignment_generation,executor_generation FROM executors WHERE project=? AND job=? AND block=?");
+        scope_bind(q,grant.scope);q.bind(3,grant.block);
+        if(!q.step() || q.integer(0)!=grant.generation || q.integer(1)!=generation)
+            throw std::invalid_argument("stale checkpoint executor");
+    }
+    void apply_coverage(const Grant& grant,const std::vector<ScalarInterval>& intervals){
+        if(intervals.empty())return; // partial BSGS targets may commit matches alone
+    auto all=coverage(grant.scope,grant.block);
+    for(const auto& v:all)if(!grant.interval.contains(v))throw std::runtime_error("stored coverage escaped its block");
+    for(const auto& v:intervals){if(!grant.interval.contains(v))throw std::invalid_argument("coverage outside assigned block");all.push_back(v);}
+    std::sort(all.begin(),all.end(),[](const auto& a,const auto& b){return a.begin()<b.begin();});
+    std::vector<ScalarInterval> merged;
+    for(const auto& v:all){if(merged.empty() || merged.back().end()<v.begin())merged.push_back(v);else merged.back()=ScalarInterval(merged.back().begin(),std::max(merged.back().end(),v.end()));}
+    Statement remove(db.handle(),"DELETE FROM coverage WHERE project=? AND job=? AND block=?");scope_bind(remove,grant.scope);remove.bind(3,grant.block);remove.step();
+    if(merged.size()==1 && merged[0].begin()==grant.interval.begin() && merged[0].end()==grant.interval.end()){
+        Statement done(db.handle(),"DELETE FROM assignments WHERE project=? AND job=? AND block=?");scope_bind(done,grant.scope);done.bind(3,grant.block);done.step();merge_finished(grant.scope,grant.block);
+    }else for(const auto& v:merged){Statement q(db.handle(),"INSERT INTO coverage VALUES(?,?,?,?,?)");scope_bind(q,grant.scope);q.bind(3,grant.block);q.bind(4,v.begin());q.bind(5,v.end());q.step();}
+    }
     void merge_finished(const Scope& scope,const UInt256& block){
         auto begin=block,end=block.add(UInt256(1));
         Statement s(db.handle(),"SELECT begin,end FROM finished WHERE project=? AND job=? AND end>=? AND begin<=? ORDER BY begin");scope_bind(s,scope);s.bind(3,begin);s.bind(4,end);
@@ -175,6 +200,7 @@ Grant Journal::recover(const Scope& scope,const UInt256& block,const std::string
     if(job.generation==INT64_MAX)throw std::overflow_error("assignment generation exhausted");
     current->owner=owner;current->generation=job.generation++;current->expires=expires;
     Statement q(s.db.handle(),"UPDATE assignments SET owner=?,generation=?,expires=? WHERE project=? AND job=? AND block=?");q.bind(1,owner);q.bind(2,current->generation);q.bind(3,expires);q.bind(4,scope.project);q.bind(5,bytes(scope.job));q.bind(6,block);q.step();
+    Statement old(s.db.handle(),"DELETE FROM executors WHERE project=? AND job=? AND block=?");scope_bind(old,scope);old.bind(3,block);old.step();
     s.scheduler(scope,job);s.receipt(scope,owner,"recover",request,payload,s.response({*current}));tx.commit();return *current;
 }
 void Journal::return_unstarted(const Grant& grant,const std::string& request){
@@ -188,19 +214,91 @@ void Journal::return_unstarted(const Grant& grant,const std::string& request){
 void Journal::record_coverage(const Grant& grant,const std::vector<ScalarInterval>& intervals,const std::string& request){
     if(intervals.empty() || intervals.size()>1024)throw std::invalid_argument("coverage batch must have 1..1024 intervals");
     auto& s=*impl_;auto payload=grant_payload(grant);for(const auto& v:intervals){append(payload,v.begin());append(payload,v.end());}
-    Transaction tx(s.db);s.db.writable();auto job=s.job(grant.scope);if(s.retry(grant.scope,grant.owner,"coverage",request,payload)){tx.commit();return;}
+    Transaction tx(s.db);s.db.writable();auto job=s.job(grant.scope);if(s.bound(grant.scope))throw std::invalid_argument("bound search requires verified checkpoints");if(s.retry(grant.scope,grant.owner,"coverage",request,payload)){tx.commit();return;}
     bool started=false;s.authorized(grant,job,&started);if(!started)throw std::invalid_argument("coverage needs a started assignment");
-    auto all=s.coverage(grant.scope,grant.block);
-    for(const auto& v:all)if(!grant.interval.contains(v))throw std::runtime_error("stored coverage escaped its block");
-    for(const auto& v:intervals){if(!grant.interval.contains(v))throw std::invalid_argument("coverage outside assigned block");all.push_back(v);}
-    std::sort(all.begin(),all.end(),[](const auto& a,const auto& b){return a.begin()<b.begin();});
-    std::vector<ScalarInterval> merged;
-    for(const auto& v:all){if(merged.empty() || merged.back().end()<v.begin())merged.push_back(v);else merged.back()=ScalarInterval(merged.back().begin(),std::max(merged.back().end(),v.end()));}
-    Statement remove(s.db.handle(),"DELETE FROM coverage WHERE project=? AND job=? AND block=?");scope_bind(remove,grant.scope);remove.bind(3,grant.block);remove.step();
-    if(merged.size()==1 && merged[0].begin()==grant.interval.begin() && merged[0].end()==grant.interval.end()){
-        Statement done(s.db.handle(),"DELETE FROM assignments WHERE project=? AND job=? AND block=?");scope_bind(done,grant.scope);done.bind(3,grant.block);done.step();s.merge_finished(grant.scope,grant.block);
-    }else for(const auto& v:merged){Statement q(s.db.handle(),"INSERT INTO coverage VALUES(?,?,?,?,?)");scope_bind(q,grant.scope);q.bind(3,grant.block);q.bind(4,v.begin());q.bind(5,v.end());q.step();}
+    s.apply_coverage(grant,intervals);
     s.receipt(grant.scope,grant.owner,"coverage",request,payload,{});tx.commit();
+}
+
+void Journal::bind_search(const Scope& scope,const Binding& binding){
+    auto& s=*impl_;Transaction tx(s.db);s.db.writable();const auto job=s.job(scope);
+    if(job.manifest.mode!=binding.mode || job.manifest.targets!=binding.target_digest || job.manifest.algorithm!=binding.algorithm_digest)
+        throw std::invalid_argument("resolved inputs do not match the registered job");
+    Statement prior(s.db.handle(),"SELECT configuration,targets FROM search_bindings WHERE project=? AND job=?");scope_bind(prior,scope);
+    if(prior.step()){
+        if(prior.blob(0)!=binding.configuration || prior.blob(1)!=binding.targets)throw std::runtime_error("search binding changed");
+    }else{
+        // C12 accepted synthetic coverage without a verified result journal.
+        // Never upgrade that coverage into proof that real targets were searched.
+        Statement progress(s.db.handle(),"SELECT (SELECT count(*) FROM coverage WHERE project=? AND job=?)+(SELECT count(*) FROM finished WHERE project=? AND job=?)");
+        scope_bind(progress,scope);progress.bind(3,scope.project);progress.bind(4,bytes(scope.job));progress.step();
+        if(progress.integer(0))throw std::invalid_argument("unverified legacy coverage cannot become a checkpointed search");
+        Statement add(s.db.handle(),"INSERT INTO search_bindings VALUES(?,?,?,?,'keyhunt-C13-v1',1)");
+        scope_bind(add,scope);add.bind(3,binding.configuration);add.bind(4,binding.targets);add.step();
+    }
+    tx.commit();
+}
+int64_t Journal::begin_search(const Grant& grant){
+    auto& s=*impl_;Transaction tx(s.db);s.db.writable();const auto job=s.job(grant.scope);s.authorized(grant,job);
+    Statement next(s.db.handle(),"SELECT next_executor FROM search_bindings WHERE project=? AND job=?");scope_bind(next,grant.scope);
+    if(!next.step())throw std::invalid_argument("search is not bound to canonical inputs");
+    const auto generation=next.integer(0);if(generation==INT64_MAX)throw std::overflow_error("executor generation exhausted");
+    Statement update(s.db.handle(),"UPDATE search_bindings SET next_executor=? WHERE project=? AND job=?");
+    update.bind(1,generation+1);update.bind(2,grant.scope.project);update.bind(3,bytes(grant.scope.job));update.step();
+    Statement active(s.db.handle(),"INSERT INTO executors VALUES(?,?,?,?,?) ON CONFLICT(project,job,block) DO UPDATE SET assignment_generation=excluded.assignment_generation,executor_generation=excluded.executor_generation");
+    scope_bind(active,grant.scope);active.bind(3,grant.block);active.bind(4,grant.generation);active.bind(5,generation);active.step();
+    Statement start(s.db.handle(),"UPDATE assignments SET started=1 WHERE project=? AND job=? AND block=?");
+    scope_bind(start,grant.scope);start.bind(3,grant.block);start.step();
+    s.receipt(grant.scope,grant.owner,"execute",uuid(),grant_payload(grant),{});
+    tx.commit();return generation;
+}
+void Journal::validate_search(const Grant& grant,int64_t executor)const{
+    auto& s=*impl_;Transaction tx(s.db,false);s.db.writable();s.authorized(grant,s.job(grant.scope));s.executor(grant,executor);tx.commit();
+}
+void Journal::commit_search(const Grant& grant,int64_t executor,const std::vector<ScalarInterval>& coverage,
+    const std::vector<core::XPointMatch>& matches,const std::string& request){
+    auto& s=*impl_;
+    const auto payload=encode_checkpoint({grant.block,uint64_t(grant.generation),uint64_t(executor),grant.epoch,coverage,matches});
+    Transaction tx(s.db);s.db.writable();const auto job=s.job(grant.scope);
+    if(s.retry(grant.scope,grant.owner,"checkpoint",request,payload)){tx.commit();return;}
+    bool started=false;s.authorized(grant,job,&started);s.executor(grant,executor);
+    if(!started)throw std::invalid_argument("checkpoint requires a started assignment");
+    for(const auto& match:matches){
+        if(!grant.interval.contains(match.scalar))throw std::invalid_argument("match outside assigned block");
+        Statement q(s.db.handle(),"INSERT INTO results(project,job,block,scalar,target) VALUES(?,?,?,?,?) ON CONFLICT(project,job,scalar,target) DO NOTHING");
+        scope_bind(q,grant.scope);q.bind(3,grant.block);q.bind(4,match.scalar);q.bind(5,int64_t(match.target));q.step();
+    }
+#ifdef KEYHUNT_TEST_STORAGE_FAILURES
+    if(transaction_test_hook)transaction_test_hook("after_results");
+#endif
+    s.apply_coverage(grant,coverage);
+#ifdef KEYHUNT_TEST_STORAGE_FAILURES
+    if(transaction_test_hook)transaction_test_hook("after_coverage");
+#endif
+    // Match rows, accepted interval union and the replay receipt are one WAL
+    // transaction. A lost acknowledgment reuses this exact payload or resumes
+    // from the committed complement; result uniqueness handles recomputation.
+    s.receipt(grant.scope,grant.owner,"checkpoint",request,payload,{});
+    Statement record(s.db.handle(),"INSERT INTO checkpoints VALUES(?,?,?,'checkpoint',?,?)");
+    scope_bind(record,grant.scope);record.bind(3,grant.owner);record.bind(4,request);record.bind(5,payload);record.step();
+    tx.commit();
+}
+std::vector<StoredMatch> Journal::results(const Scope& scope,int64_t after,uint32_t limit)const{
+    if(after<0 || !limit || limit>1000)throw std::invalid_argument("result page requires after>=0 and limit 1..1000");
+    auto& s=*impl_;Transaction tx(s.db,false);const auto job=s.job(scope);
+    Statement binding(s.db.handle(),"SELECT configuration,targets FROM search_bindings WHERE project=? AND job=?");scope_bind(binding,scope);
+    if(!binding.step())throw std::invalid_argument("job has no verified search binding");
+    const auto input=decode_binding(job.manifest,binding.blob(0),binding.blob(1));
+    Statement q(s.db.handle(),"SELECT id,block,scalar,target FROM results WHERE project=? AND job=? AND id>? ORDER BY id LIMIT ?");
+    scope_bind(q,scope);q.bind(3,after);q.bind(4,int64_t(limit));std::vector<StoredMatch> out;
+    const size_t width=input.mode==Mode::XPoint?32:65;core::XPointVerifier verifier;
+    while(q.step()){
+        const auto target=q.integer(3);if(target<0 || uint64_t(target)>=input.count())throw std::runtime_error("corrupt result target");
+        input.verify(verifier,q.wide(2),uint32_t(target));
+        if(!job.grid.block(q.wide(1)).contains(q.wide(2)))throw std::runtime_error("corrupt result block");
+        out.push_back({q.integer(0),q.wide(1),q.wide(2),uint32_t(target),Bytes(input.targets.begin()+width*target,input.targets.begin()+width*(target+1))});
+    }
+    tx.commit();return out;
 }
 BlockState Journal::block(const Scope& scope,const UInt256& id)const{
     auto& s=*impl_;Transaction tx(s.db,false);const auto job=s.job(scope);const auto interval=job.grid.block(id);BlockState result;
@@ -226,6 +324,40 @@ void Journal::check()const{
     Statement jobs(s.db.handle(),"SELECT project,job FROM jobs");
     while(jobs.step()){
         const Scope scope{jobs.text(0),fixed(jobs.blob(1))};const auto job=s.job(scope);
+        Statement binding(s.db.handle(),"SELECT configuration,targets,next_executor FROM search_bindings WHERE project=? AND job=?");scope_bind(binding,scope);
+        if(binding.step()){
+            const auto input=decode_binding(job.manifest,binding.blob(0),binding.blob(1));
+            std::vector<ScalarInterval> expected_coverage,actual_coverage;
+            using MatchKey=std::pair<UInt256,uint32_t>;
+            std::map<MatchKey,UInt256> expected_matches,actual_matches;
+            Statement receipts(s.db.handle(),"SELECT c.payload,r.payload FROM checkpoints c JOIN requests r USING(project,job,owner,operation,request) WHERE c.project=? AND c.job=?");
+            scope_bind(receipts,scope);uint64_t receipt_count=0;
+            while(receipts.step()){
+                ++receipt_count;const auto payload=receipts.blob(0);
+                if(digest(payload)!=receipts.blob(1))throw std::runtime_error("checkpoint receipt checksum mismatch");
+                const auto data=decode_checkpoint(payload);const auto interval=job.grid.block(data.block);
+                if(data.generation>=uint64_t(job.generation) || data.executor>=uint64_t(binding.integer(2)))throw std::runtime_error("checkpoint generation outside history");
+                for(const auto& v:data.coverage){if(!interval.contains(v))throw std::runtime_error("checkpoint coverage escaped its block");expected_coverage.push_back(v);}
+                for(const auto& m:data.matches){if(!interval.contains(m.scalar) || m.target>=input.count())throw std::runtime_error("checkpoint match escaped its block/targets");expected_matches.emplace(MatchKey{m.scalar,m.target},data.block);}
+            }
+            Statement count(s.db.handle(),"SELECT count(*) FROM requests WHERE project=? AND job=? AND operation='checkpoint'");scope_bind(count,scope);count.step();
+            if(uint64_t(count.integer(0))!=receipt_count)throw std::runtime_error("missing checkpoint payload");
+            Statement partial(s.db.handle(),"SELECT begin,end FROM coverage WHERE project=? AND job=?");scope_bind(partial,scope);
+            while(partial.step())actual_coverage.emplace_back(partial.wide(0),partial.wide(1));
+            Statement done(s.db.handle(),"SELECT begin,end FROM finished WHERE project=? AND job=?");scope_bind(done,scope);
+            while(done.step())actual_coverage.emplace_back(job.grid.block(done.wide(0)).begin(),job.grid.block(done.wide(1).subtract(UInt256(1))).end());
+            const auto expected=merged(expected_coverage),actual=merged(actual_coverage);
+            if(expected.size()!=actual.size())throw std::runtime_error("coverage disagrees with checkpoint receipts");
+            for(size_t i=0;i<expected.size();++i)if(expected[i].begin()!=actual[i].begin() || expected[i].end()!=actual[i].end())throw std::runtime_error("coverage disagrees with checkpoint receipts");
+            core::XPointVerifier verifier;
+            Statement matches(s.db.handle(),"SELECT block,scalar,target FROM results WHERE project=? AND job=?");scope_bind(matches,scope);
+            while(matches.step()){
+                const auto target=matches.integer(2);if(target<0 || uint64_t(target)>=input.count())throw std::runtime_error("invalid stored target");
+                input.verify(verifier,matches.wide(1),uint32_t(target));
+                actual_matches.emplace(MatchKey{matches.wide(1),uint32_t(target)},matches.wide(0));
+            }
+            if(expected_matches!=actual_matches)throw std::runtime_error("results disagree with checkpoint receipts");
+        }
         using Range=std::pair<UInt256,UInt256>;
         std::vector<Range> occupied;
         Statement active(s.db.handle(),"SELECT block FROM assignments WHERE project=? AND job=?");scope_bind(active,scope);

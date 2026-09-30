@@ -1,5 +1,6 @@
 #include "sqlite.h"
 #include "schema_v1.h"
+#include "schema_v2.h"
 #include "keyhunt/crypto/hash/sha256.h"
 #include <algorithm>
 #include <cerrno>
@@ -135,18 +136,39 @@ Database::Database(const std::string& directory){
         exec("PRAGMA foreign_keys=ON; PRAGMA trusted_schema=OFF; PRAGMA synchronous=FULL;");
         {
             Transaction tx(*this);
-            const auto version=scalar(db_,"PRAGMA user_version"),app=scalar(db_,"PRAGMA application_id");
+            auto version=scalar(db_,"PRAGMA user_version");const auto app=scalar(db_,"PRAGMA application_id");
             const Bytes schema(schema_v1,schema_v1+std::strlen(schema_v1));
+            const Bytes second(schema_v2,schema_v2+std::strlen(schema_v2));
             if(version==0 && app==0 && scalar(db_,"SELECT count(*) FROM sqlite_schema WHERE name NOT LIKE 'sqlite_%'")==0){
                 exec(schema_v1);
                 Statement m(db_,"INSERT INTO migrations VALUES(1,?)");m.bind(1,digest(schema));m.step();
                 metadata("epoch",random_bytes(16));metadata("quarantine",Bytes{0});
                 exec("PRAGMA application_id="+std::to_string(application_id)+"; PRAGMA user_version=1;");
+                version=1;
             }else{
-                if(version!=1 || app!=application_id)throw std::runtime_error("foreign or unsupported journal schema");
+                if((version!=1 && version!=2) || app!=application_id)throw std::runtime_error("foreign or unsupported journal schema");
                 Statement m(db_,"SELECT digest FROM migrations WHERE version=1");
-                if(!m.step() || m.blob(0)!=digest(schema))throw std::runtime_error("journal migration checksum mismatch");
-                if(metadata("epoch").size()!=16 || (metadata("quarantine")!=Bytes{0} && metadata("quarantine")!=Bytes{1}))throw std::runtime_error("invalid journal metadata");
+                if(!m.step() || m.blob(0)!=digest(schema) || scalar(db_,"SELECT count(*) FROM migrations")!=version)
+                    throw std::runtime_error("journal migration checksum mismatch");
+                if(metadata("epoch").size()!=16 || (metadata("quarantine")!=Bytes{0} && metadata("quarantine")!=Bytes{1}))
+                    throw std::runtime_error("invalid journal metadata");
+                if(version==1){
+                    check();
+                    // A separate reader backs up committed v1 state while this
+                    // connection holds the writer reservation against changes.
+                    const auto backup_dir=prepare((directory_/("pre-v2-"+uuid())).string());
+                    sqlite3* reader=nullptr;
+                    try{open(&reader,file,SQLITE_OPEN_READONLY);copy_snapshot(reader,backup_dir/"progress.sqlite");sqlite3_close(reader);}
+                    catch(...){if(reader)sqlite3_close(reader);throw;}
+                }
+            }
+            if(version==1){
+                exec(schema_v2);
+                Statement migration(db_,"INSERT INTO migrations VALUES(2,?)");migration.bind(1,digest(second));migration.step();
+                exec("PRAGMA user_version=2");
+            }else{
+                Statement migration(db_,"SELECT digest FROM migrations WHERE version=2");
+                if(!migration.step() || migration.blob(0)!=digest(second))throw std::runtime_error("journal v2 migration checksum mismatch");
             }
             tx.commit();
         }
@@ -168,7 +190,7 @@ void Database::restore(const std::string& source,const std::string& destination)
     sqlite3* check=nullptr;
     try {
         open(&check,file,SQLITE_OPEN_READONLY);
-        if(scalar(check,"PRAGMA application_id")!=application_id || scalar(check,"PRAGMA user_version")!=1)
+        if(scalar(check,"PRAGMA application_id")!=application_id || (scalar(check,"PRAGMA user_version")!=1 && scalar(check,"PRAGMA user_version")!=2))
             throw std::runtime_error("restore source is not a supported journal");
         sqlite3_close(check);check=nullptr;
     }catch(...){if(check)sqlite3_close(check);throw;}

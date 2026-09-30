@@ -124,7 +124,7 @@ int state_command(int argc,char** argv) {
         std::cout << "{\"restored\":true,\"quarantined\":true}\n";
     } else {
         Journal journal(optional(options,"state-dir"));
-        if(action=="init")std::cout << "{\"schema_version\":1,\"state_directory\":" << quote(journal.state_directory()) << '}';
+        if(action=="init")std::cout << "{\"schema_version\":2,\"state_directory\":" << quote(journal.state_directory()) << '}';
         else if(action=="project-create")std::cout << "{\"project\":" << quote(journal.create_project(required(options,"name"))) << '}';
         else if(action=="job-create") {
             const auto mode=required(options,"mode");

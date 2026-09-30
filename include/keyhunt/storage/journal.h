@@ -1,5 +1,5 @@
 #pragma once
-#include "keyhunt/scheduler/work_unit.h"
+#include "keyhunt/core/xpoint_search.h"
 #include <functional>
 #include <memory>
 #include <string>
@@ -38,6 +38,9 @@ struct BlockState {
     bool started=false,expired=false;
     std::vector<ScalarInterval> covered,remaining;
 };
+struct StoredMatch { int64_t id; UInt256 block,scalar; uint32_t target; std::vector<uint8_t> target_bytes; };
+class CheckpointRun;
+namespace detail { struct Binding; }
 struct Statistics {
     UInt256 blocks,unexplored,finished;
     uint64_t assignments=0,coverage_intervals=0,finished_runs=0,tree_nodes=0,requests=0,events=0;
@@ -46,8 +49,8 @@ struct Statistics {
 };
 // Trusted local repository API, one connection per host owner. Identity strings
 // are NOT authentication: C15 must bind them to authenticated project membership.
-// C12 has no GPU checkpoint integration; record_coverage is reserved for C13's
-// verified commit coordinator and synthetic tests, never exposed by the CLI.
+// Raw C12 coverage is only for unbound/synthetic jobs. Bound searches accept
+// matches and coverage exclusively through the CPU-verifying CheckpointRun.
 class Journal {
 public:
     using Clock=std::function<int64_t()>;
@@ -69,11 +72,18 @@ public:
     void record_coverage(const Grant& grant,const std::vector<ScalarInterval>& intervals,const std::string& request);
     BlockState block(const Scope& scope,const UInt256& id) const;
     Statistics statistics(const Scope& scope) const;
+    std::vector<StoredMatch> results(const Scope& scope,int64_t after=0,uint32_t limit=100) const;
     void check() const;
     void compact(); // SQLite checkpoint/VACUUM; does not erase retry receipts
     void backup(const std::string& destination_directory) const;
     static void restore(const std::string& snapshot_directory,const std::string& destination_directory);
 private:
+    friend class CheckpointRun;
+    void bind_search(const Scope&,const detail::Binding&);
+    int64_t begin_search(const Grant&);
+    void validate_search(const Grant&,int64_t executor) const;
+    void commit_search(const Grant&,int64_t executor,const std::vector<ScalarInterval>&,
+        const std::vector<core::XPointMatch>&,const std::string& request);
     struct Impl;
     std::unique_ptr<Impl> impl_;
 };
