@@ -11,7 +11,12 @@ inline void require(bool ok,const char* text){if(!ok)throw std::runtime_error(te
 template<class F>void rejects(F fn){try{fn();}catch(const std::exception&){return;}throw std::runtime_error("expected rejection");}
 struct Temporary {
     std::filesystem::path path;
-    Temporary(){char p[]="/tmp/keyhunt-c13-XXXXXX";require(mkdtemp(p),"mkdtemp");path=p;}
+    Temporary(){
+        // Honor TMPDIR so journal fixtures can live outside a managed checkout.
+        std::string pattern=(std::filesystem::temp_directory_path()/"keyhunt-c13-XXXXXX").string();
+        require(mkdtemp(pattern.data()),"mkdtemp");
+        path=pattern;
+    }
     ~Temporary(){std::filesystem::remove_all(path);}
 };
 inline core::XPointTargets x_targets(const core::XPointVerifier& verifier,std::initializer_list<uint64_t> scalars){

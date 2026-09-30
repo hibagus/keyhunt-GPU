@@ -1,0 +1,228 @@
+diff --git a/kernels/common/field.h b/kernels/common/field.h
+index 8771233..2be0750 100644
+--- a/kernels/common/field.h
++++ b/kernels/common/field.h
+@@ -1,7 +1,11 @@
+ #pragma once
+ #include <cstdint>
++#if defined(__CUDACC__)
++#include "../cuda/multiply.cuh"
++#endif
+ 
+-// Shared integer arithmetic only: no HIP runtime, warp assumptions or ISA code.
++// Shared canonical integer arithmetic: no runtime headers or warp assumptions.
++// CUDA can specialize multiplication; host/HIP retain the portable reference.
+ #if defined(__HIPCC__) || defined(__CUDACC__)
+ #define KEYHUNT_HD __host__ __device__
+ #else
+@@ -119,7 +123,7 @@ KEYHUNT_HD inline Field reduce_product(const uint32_t product[16]) {
+     }
+     return fold(low, carry + product[15]);
+ }
+-KEYHUNT_HD inline void mul(Field& out, const Field& a, const Field& b) {
++KEYHUNT_HD inline void mul_portable(Field& out, const Field& a, const Field& b) {
+     uint32_t product[16]{};
+     for (unsigned i = 0; i < 8; ++i) {
+         uint64_t carry = 0;
+@@ -133,7 +137,18 @@ KEYHUNT_HD inline void mul(Field& out, const Field& a, const Field& b) {
+     }
+     out = reduce_product(product);
+ }
+-KEYHUNT_HD inline void square(Field& out, const Field& a) { mul(out, a, a); }
++KEYHUNT_HD inline void mul(Field& out, const Field& a, const Field& b) {
++#if defined(__CUDA_ARCH__) && !defined(KEYHUNT_CUDA_PORTABLE_MUL)
++    uint32_t product[16];
++    cuda_field::multiply_words(product, a.limb, b.limb);
++    out = reduce_product(product);
++#else
++    mul_portable(out, a, b);
++#endif
++}
++// Let the compiler exploit equal operands; treating a square as opaque general
++// PTX multiplication loses common subexpressions on H200.
++KEYHUNT_HD inline void square(Field& out, const Field& a) { mul_portable(out, a, a); }
+ template<unsigned Count>
+ KEYHUNT_HD inline void square_n(Field& out, const Field& a) {
+     Field result = a;
+--- /dev/null
++++ b/kernels/cuda/multiply.cuh
+@@ -0,0 +1,179 @@
++#pragma once
++#include <cstdint>
++#if defined(__CUDA_ARCH__)
++namespace keyhunt::gpu::cuda_field {
++// Compute a full 8x32 -> 16x32 product. Each row adds low halves first,
++// then high halves, with CC.CF confined to one inline-assembly statement.
++// Before row i, the product is < B^(i+8). Its new top word starts at zero.
++// After row i, the product is < B^(i+9), so the last high carry is zero.
++// Local PTX temporaries keep output operands untouched until inputs are dead,
++// preserving aliasing even if the compiler reuses an input/output register.
++__device__ __forceinline__ void multiply_words(uint32_t* out, const uint32_t* a, const uint32_t* b) {
++    asm("{\n\t"
++        ".reg .u32 p<16>;\n\t"
++        // Add a[0] * b * B^0, B = 2^32.
++        "mul.lo.u32 p0, %16, %24;\n\t"
++        "mul.lo.u32 p1, %16, %25;\n\t"
++        "mul.lo.u32 p2, %16, %26;\n\t"
++        "mul.lo.u32 p3, %16, %27;\n\t"
++        "mul.lo.u32 p4, %16, %28;\n\t"
++        "mul.lo.u32 p5, %16, %29;\n\t"
++        "mul.lo.u32 p6, %16, %30;\n\t"
++        "mul.lo.u32 p7, %16, %31;\n\t"
++        "mov.u32 p8, 0;\n\t"
++        "mad.hi.cc.u32 p1, %16, %24, p1;\n\t"
++        "madc.hi.cc.u32 p2, %16, %25, p2;\n\t"
++        "madc.hi.cc.u32 p3, %16, %26, p3;\n\t"
++        "madc.hi.cc.u32 p4, %16, %27, p4;\n\t"
++        "madc.hi.cc.u32 p5, %16, %28, p5;\n\t"
++        "madc.hi.cc.u32 p6, %16, %29, p6;\n\t"
++        "madc.hi.cc.u32 p7, %16, %30, p7;\n\t"
++        "madc.hi.u32 p8, %16, %31, p8;\n\t"
++        // Add a[1] * b * B^1, B = 2^32.
++        "mad.lo.cc.u32 p1, %17, %24, p1;\n\t"
++        "madc.lo.cc.u32 p2, %17, %25, p2;\n\t"
++        "madc.lo.cc.u32 p3, %17, %26, p3;\n\t"
++        "madc.lo.cc.u32 p4, %17, %27, p4;\n\t"
++        "madc.lo.cc.u32 p5, %17, %28, p5;\n\t"
++        "madc.lo.cc.u32 p6, %17, %29, p6;\n\t"
++        "madc.lo.cc.u32 p7, %17, %30, p7;\n\t"
++        "madc.lo.cc.u32 p8, %17, %31, p8;\n\t"
++        "addc.u32 p9, 0, 0;\n\t"
++        "mad.hi.cc.u32 p2, %17, %24, p2;\n\t"
++        "madc.hi.cc.u32 p3, %17, %25, p3;\n\t"
++        "madc.hi.cc.u32 p4, %17, %26, p4;\n\t"
++        "madc.hi.cc.u32 p5, %17, %27, p5;\n\t"
++        "madc.hi.cc.u32 p6, %17, %28, p6;\n\t"
++        "madc.hi.cc.u32 p7, %17, %29, p7;\n\t"
++        "madc.hi.cc.u32 p8, %17, %30, p8;\n\t"
++        "madc.hi.u32 p9, %17, %31, p9;\n\t"
++        // Add a[2] * b * B^2, B = 2^32.
++        "mad.lo.cc.u32 p2, %18, %24, p2;\n\t"
++        "madc.lo.cc.u32 p3, %18, %25, p3;\n\t"
++        "madc.lo.cc.u32 p4, %18, %26, p4;\n\t"
++        "madc.lo.cc.u32 p5, %18, %27, p5;\n\t"
++        "madc.lo.cc.u32 p6, %18, %28, p6;\n\t"
++        "madc.lo.cc.u32 p7, %18, %29, p7;\n\t"
++        "madc.lo.cc.u32 p8, %18, %30, p8;\n\t"
++        "madc.lo.cc.u32 p9, %18, %31, p9;\n\t"
++        "addc.u32 p10, 0, 0;\n\t"
++        "mad.hi.cc.u32 p3, %18, %24, p3;\n\t"
++        "madc.hi.cc.u32 p4, %18, %25, p4;\n\t"
++        "madc.hi.cc.u32 p5, %18, %26, p5;\n\t"
++        "madc.hi.cc.u32 p6, %18, %27, p6;\n\t"
++        "madc.hi.cc.u32 p7, %18, %28, p7;\n\t"
++        "madc.hi.cc.u32 p8, %18, %29, p8;\n\t"
++        "madc.hi.cc.u32 p9, %18, %30, p9;\n\t"
++        "madc.hi.u32 p10, %18, %31, p10;\n\t"
++        // Add a[3] * b * B^3, B = 2^32.
++        "mad.lo.cc.u32 p3, %19, %24, p3;\n\t"
++        "madc.lo.cc.u32 p4, %19, %25, p4;\n\t"
++        "madc.lo.cc.u32 p5, %19, %26, p5;\n\t"
++        "madc.lo.cc.u32 p6, %19, %27, p6;\n\t"
++        "madc.lo.cc.u32 p7, %19, %28, p7;\n\t"
++        "madc.lo.cc.u32 p8, %19, %29, p8;\n\t"
++        "madc.lo.cc.u32 p9, %19, %30, p9;\n\t"
++        "madc.lo.cc.u32 p10, %19, %31, p10;\n\t"
++        "addc.u32 p11, 0, 0;\n\t"
++        "mad.hi.cc.u32 p4, %19, %24, p4;\n\t"
++        "madc.hi.cc.u32 p5, %19, %25, p5;\n\t"
++        "madc.hi.cc.u32 p6, %19, %26, p6;\n\t"
++        "madc.hi.cc.u32 p7, %19, %27, p7;\n\t"
++        "madc.hi.cc.u32 p8, %19, %28, p8;\n\t"
++        "madc.hi.cc.u32 p9, %19, %29, p9;\n\t"
++        "madc.hi.cc.u32 p10, %19, %30, p10;\n\t"
++        "madc.hi.u32 p11, %19, %31, p11;\n\t"
++        // Add a[4] * b * B^4, B = 2^32.
++        "mad.lo.cc.u32 p4, %20, %24, p4;\n\t"
++        "madc.lo.cc.u32 p5, %20, %25, p5;\n\t"
++        "madc.lo.cc.u32 p6, %20, %26, p6;\n\t"
++        "madc.lo.cc.u32 p7, %20, %27, p7;\n\t"
++        "madc.lo.cc.u32 p8, %20, %28, p8;\n\t"
++        "madc.lo.cc.u32 p9, %20, %29, p9;\n\t"
++        "madc.lo.cc.u32 p10, %20, %30, p10;\n\t"
++        "madc.lo.cc.u32 p11, %20, %31, p11;\n\t"
++        "addc.u32 p12, 0, 0;\n\t"
++        "mad.hi.cc.u32 p5, %20, %24, p5;\n\t"
++        "madc.hi.cc.u32 p6, %20, %25, p6;\n\t"
++        "madc.hi.cc.u32 p7, %20, %26, p7;\n\t"
++        "madc.hi.cc.u32 p8, %20, %27, p8;\n\t"
++        "madc.hi.cc.u32 p9, %20, %28, p9;\n\t"
++        "madc.hi.cc.u32 p10, %20, %29, p10;\n\t"
++        "madc.hi.cc.u32 p11, %20, %30, p11;\n\t"
++        "madc.hi.u32 p12, %20, %31, p12;\n\t"
++        // Add a[5] * b * B^5, B = 2^32.
++        "mad.lo.cc.u32 p5, %21, %24, p5;\n\t"
++        "madc.lo.cc.u32 p6, %21, %25, p6;\n\t"
++        "madc.lo.cc.u32 p7, %21, %26, p7;\n\t"
++        "madc.lo.cc.u32 p8, %21, %27, p8;\n\t"
++        "madc.lo.cc.u32 p9, %21, %28, p9;\n\t"
++        "madc.lo.cc.u32 p10, %21, %29, p10;\n\t"
++        "madc.lo.cc.u32 p11, %21, %30, p11;\n\t"
++        "madc.lo.cc.u32 p12, %21, %31, p12;\n\t"
++        "addc.u32 p13, 0, 0;\n\t"
++        "mad.hi.cc.u32 p6, %21, %24, p6;\n\t"
++        "madc.hi.cc.u32 p7, %21, %25, p7;\n\t"
++        "madc.hi.cc.u32 p8, %21, %26, p8;\n\t"
++        "madc.hi.cc.u32 p9, %21, %27, p9;\n\t"
++        "madc.hi.cc.u32 p10, %21, %28, p10;\n\t"
++        "madc.hi.cc.u32 p11, %21, %29, p11;\n\t"
++        "madc.hi.cc.u32 p12, %21, %30, p12;\n\t"
++        "madc.hi.u32 p13, %21, %31, p13;\n\t"
++        // Add a[6] * b * B^6, B = 2^32.
++        "mad.lo.cc.u32 p6, %22, %24, p6;\n\t"
++        "madc.lo.cc.u32 p7, %22, %25, p7;\n\t"
++        "madc.lo.cc.u32 p8, %22, %26, p8;\n\t"
++        "madc.lo.cc.u32 p9, %22, %27, p9;\n\t"
++        "madc.lo.cc.u32 p10, %22, %28, p10;\n\t"
++        "madc.lo.cc.u32 p11, %22, %29, p11;\n\t"
++        "madc.lo.cc.u32 p12, %22, %30, p12;\n\t"
++        "madc.lo.cc.u32 p13, %22, %31, p13;\n\t"
++        "addc.u32 p14, 0, 0;\n\t"
++        "mad.hi.cc.u32 p7, %22, %24, p7;\n\t"
++        "madc.hi.cc.u32 p8, %22, %25, p8;\n\t"
++        "madc.hi.cc.u32 p9, %22, %26, p9;\n\t"
++        "madc.hi.cc.u32 p10, %22, %27, p10;\n\t"
++        "madc.hi.cc.u32 p11, %22, %28, p11;\n\t"
++        "madc.hi.cc.u32 p12, %22, %29, p12;\n\t"
++        "madc.hi.cc.u32 p13, %22, %30, p13;\n\t"
++        "madc.hi.u32 p14, %22, %31, p14;\n\t"
++        // Add a[7] * b * B^7, B = 2^32.
++        "mad.lo.cc.u32 p7, %23, %24, p7;\n\t"
++        "madc.lo.cc.u32 p8, %23, %25, p8;\n\t"
++        "madc.lo.cc.u32 p9, %23, %26, p9;\n\t"
++        "madc.lo.cc.u32 p10, %23, %27, p10;\n\t"
++        "madc.lo.cc.u32 p11, %23, %28, p11;\n\t"
++        "madc.lo.cc.u32 p12, %23, %29, p12;\n\t"
++        "madc.lo.cc.u32 p13, %23, %30, p13;\n\t"
++        "madc.lo.cc.u32 p14, %23, %31, p14;\n\t"
++        "addc.u32 p15, 0, 0;\n\t"
++        "mad.hi.cc.u32 p8, %23, %24, p8;\n\t"
++        "madc.hi.cc.u32 p9, %23, %25, p9;\n\t"
++        "madc.hi.cc.u32 p10, %23, %26, p10;\n\t"
++        "madc.hi.cc.u32 p11, %23, %27, p11;\n\t"
++        "madc.hi.cc.u32 p12, %23, %28, p12;\n\t"
++        "madc.hi.cc.u32 p13, %23, %29, p13;\n\t"
++        "madc.hi.cc.u32 p14, %23, %30, p14;\n\t"
++        "madc.hi.u32 p15, %23, %31, p15;\n\t"
++        "mov.u32 %0, p0;\n\t"
++        "mov.u32 %1, p1;\n\t"
++        "mov.u32 %2, p2;\n\t"
++        "mov.u32 %3, p3;\n\t"
++        "mov.u32 %4, p4;\n\t"
++        "mov.u32 %5, p5;\n\t"
++        "mov.u32 %6, p6;\n\t"
++        "mov.u32 %7, p7;\n\t"
++        "mov.u32 %8, p8;\n\t"
++        "mov.u32 %9, p9;\n\t"
++        "mov.u32 %10, p10;\n\t"
++        "mov.u32 %11, p11;\n\t"
++        "mov.u32 %12, p12;\n\t"
++        "mov.u32 %13, p13;\n\t"
++        "mov.u32 %14, p14;\n\t"
++        "mov.u32 %15, p15;\n\t"
++        "}"
++        : "=r"(out[0]), "=r"(out[1]), "=r"(out[2]), "=r"(out[3]), "=r"(out[4]), "=r"(out[5]), "=r"(out[6]), "=r"(out[7]), "=r"(out[8]), "=r"(out[9]), "=r"(out[10]), "=r"(out[11]), "=r"(out[12]), "=r"(out[13]), "=r"(out[14]), "=r"(out[15])
++        : "r"(a[0]), "r"(a[1]), "r"(a[2]), "r"(a[3]), "r"(a[4]), "r"(a[5]), "r"(a[6]), "r"(a[7]), "r"(b[0]), "r"(b[1]), "r"(b[2]), "r"(b[3]), "r"(b[4]), "r"(b[5]), "r"(b[6]), "r"(b[7]));
++}
++} // namespace keyhunt::gpu::cuda_field
++#endif

@@ -11,7 +11,8 @@ import tempfile
 p=argparse.ArgumentParser(description=__doc__)
 p.add_argument('--binary',type=Path,required=True)
 p.add_argument('--report',type=Path,required=True)
-p.add_argument('--hip',action='store_true')
+p.add_argument('--hardware','--hip',dest='hardware',action='store_true')
+p.add_argument("--backend",choices=("hip","cuda"),default="hip")
 a=p.parse_args()
 binary=str(a.binary.resolve())
 report={'devices':[],'rejections':0,'binary_sha256':hashlib.sha256(a.binary.read_bytes()).hexdigest()}
@@ -19,16 +20,16 @@ def run(words,env=None): return subprocess.run([binary,'bsgs-table',*map(str,wor
 with tempfile.TemporaryDirectory(prefix='keyhunt-c10-') as directory:
  path=Path(directory)/'babies.khb'
  r=run(['build','--m',257,'--output',path]); assert r.returncode==0,r
- base=['validate','--backend','hip','--input',path]
+ base=['validate','--backend',a.backend,'--input',path]
  for words in [base+['--device',-1],base+['--device',2147483648],base+['--max-queries',0],base+['--max-queries',65537],
-               ['validate','--backend','cuda','--input',path],base+['--max-queries',1,'--max-queries',2]]:
+               ['validate','--backend','invalid','--input',path],base+['--max-queries',1,'--max-queries',2]]:
   r=run(words); assert r.returncode==2 and not r.stdout,r
   report['rejections']+=1
- if not a.hip:
+ if not a.hardware:
   r=run(base); assert r.returncode==2 and 'not built' in r.stderr and not r.stdout,r
   report['rejections']+=1
  else:
-  inventory=json.loads(subprocess.check_output([binary,'devices','--backend','hip'],text=True,timeout=30))
+  inventory=json.loads(subprocess.check_output([binary,'devices','--backend',a.backend],text=True,timeout=30))
   report['inventory']=inventory
   assert inventory['devices']
   for device in inventory['devices']:
@@ -36,7 +37,7 @@ with tempfile.TemporaryDirectory(prefix='keyhunt-c10-') as directory:
    result=json.loads(r.stdout); assert result['device_queries']==514 and not result['search_coverage']
    report['devices'].append({'ordinal':device['ordinal'],'uuid':device['uuid'],'result':result})
   for words,env in [(base+['--device',2147483647],None),(base+['--reserve-bytes',(1<<64)-1],None),
-                    (base,dict(os.environ,HIP_VISIBLE_DEVICES='-1',ROCR_VISIBLE_DEVICES='-1'))]:
+                    (base,dict(os.environ, CUDA_VISIBLE_DEVICES='-1',HIP_VISIBLE_DEVICES='-1',ROCR_VISIBLE_DEVICES='-1'))]:
    r=run(words,env); assert r.returncode==2 and not r.stdout,r
    report['rejections']+=1
   # Rehash a saturated filter: every query reaches exact GPU lookup, including

@@ -24,7 +24,8 @@ change is committed separately. Analysis and validation evidence live under
 | C15: authenticated project-scoped coordination | Completed (localhost scope) | [Implementation and operations](COORDINATOR.md), [findings and validation](COORDINATOR_VALIDATION.md); required mTLS, registry/roles, atomic machine sync, durable outbox, offline fences, supervised HIP execution and reconciled restore. User-selected localhost gate replaces second-host/public ingress; those remain deferred. |
 | C16: reproducible GPU profiling and benchmarks | Completed | [Methodology, findings and raw evidence](GPU_PROFILING.md); exact oracle-checked coverage, repeated volatile/durable samples, hardware/build metadata, real periodic commits, separate ROCm traces/counters and compiler resources; 32 CPU and 58 HIP/coordinator tests pass |
 | C17: measured HIP tuning | Completed | [Changes, rejected experiment and paired evidence](HIP_TUNING.md); xpoint kernels 1.94–2.33× and BSGS kernels 1.31–1.72× faster on the measured MI300X workloads; exact overflow recovery, compact transfers, complete grouping metrics, pause checks; 33 CPU / 59 HIP / 8 debug / 6 sanitizer tests pass |
-| C18–C23 | Planned | Acceptance gates remain in the redesign plan |
+| C18: native CUDA | Completed | [CUDA build, tuning and acceptance](CUDA_BACKEND.md); 47 CUDA-build and 32 CPU tests, eight H200s, exact xpoint/BSGS parity, checkpoint recovery, 12 sanitizer runs and measured PTX/mixed-coordinate optimizations; [validation evidence](baselines/C18_VALIDATION.json) |
+| C19–C23 | Planned | Acceptance gates remain in the redesign plan |
 
 C01 records the original CPU boundary/stride defects. C06 fixes modular/point
 arithmetic and the tested BSGS start miss; tail overrun and stride defects remain.

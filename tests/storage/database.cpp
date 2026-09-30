@@ -7,7 +7,8 @@ void require(bool ok,const char* message){if(!ok)throw std::runtime_error(messag
 template<class F>void rejects(F fn){try{fn();}catch(const std::exception&){return;}throw std::runtime_error("expected rejection");}
 int main(){
  try{
-  char temporary[]="/tmp/keyhunt-c12-db-XXXXXX";require(mkdtemp(temporary),"mkdtemp");std::filesystem::path root=temporary;
+  // Honor TMPDIR so journal fixtures can live outside a managed checkout.
+        std::string temporary=(std::filesystem::temp_directory_path()/"keyhunt-c12-db-XXXXXX").string();require(mkdtemp(temporary.data()),"mkdtemp");std::filesystem::path root=temporary;
   struct Cleanup{std::filesystem::path p;~Cleanup(){std::filesystem::remove_all(p);}}cleanup{root};
   rejects([]{Database d("relative");});rejects([]{Database d(std::filesystem::current_path().string());});
   std::filesystem::create_directory(root/"repo");std::filesystem::create_directory(root/"repo/.git");

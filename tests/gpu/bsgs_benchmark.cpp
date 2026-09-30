@@ -1,6 +1,6 @@
 // Checked preparation/lookup diagnostics only. These timings are not giant-step
 // search throughput: probes include counters, downloads and CPU comparisons.
-#include "keyhunt/backend/hip_bsgs_table.h"
+#include "keyhunt/backend/gpu_bsgs_table.h"
 #include <algorithm>
 #include <chrono>
 #include <iomanip>
@@ -21,7 +21,7 @@ int main(int argc,char** argv) {
         const double build_ms=elapsed(start);
         const auto preparing=Clock::now();
         backend::BsgsUploadOptions options; options.max_queries=4096;
-        backend::HipBsgsTable owner(device,table,options);
+        backend::GpuBsgsTable owner(device,table,options);
         const double prepare_ms=elapsed(preparing);
         std::vector<bsgs::Key> keys[2];
         std::mt19937_64 random(0xC10);

@@ -1,5 +1,5 @@
 #include "keyhunt/backend/device.h"
-#include "keyhunt/backend/hip_executor.h"
+#include "keyhunt/backend/gpu_executor.h"
 #include <chrono>
 #include <iostream>
 #include <limits>
@@ -29,12 +29,12 @@ scheduler::KernelBatch plan(UInt256 begin, uint64_t count) {
 }
 int main() {
     try {
-        require(!backend::discover_hip().devices.empty(), "HIP hardware required; no device visible");
-        rejects([] { backend::HipDiagnosticExecutor e(-1); }, "invalid device accepted");
-        rejects([] { backend::HipDiagnosticExecutor e(0, {0}); }, "zero capacity accepted");
-        rejects([] { backend::HipDiagnosticExecutor e(0, {1048577}); }, "unbounded capacity accepted");
-        rejects([] { backend::HipDiagnosticExecutor e(0, {1, std::numeric_limits<uint64_t>::max()}); }, "memory headroom ignored");
-        backend::HipDiagnosticExecutor executor(0, {1024}), other(0, {1024});
+        require(!backend::discover_gpu().devices.empty(), "GPU hardware required; no device visible");
+        rejects([] { backend::GpuDiagnosticExecutor e(-1); }, "invalid device accepted");
+        rejects([] { backend::GpuDiagnosticExecutor e(0, {0}); }, "zero capacity accepted");
+        rejects([] { backend::GpuDiagnosticExecutor e(0, {1048577}); }, "unbounded capacity accepted");
+        rejects([] { backend::GpuDiagnosticExecutor e(0, {1, std::numeric_limits<uint64_t>::max()}); }, "memory headroom ignored");
+        backend::GpuDiagnosticExecutor executor(0, {1024}), other(0, {1024});
         executor.drain();
         auto begin = UInt256::from_hex("100000000ffffffffffffffff");
         const auto first = plan(begin, 257);
@@ -57,7 +57,7 @@ int main() {
             rejects([&] { executor.poll(ticket); }, "stale ticket accepted after slot reuse");
             const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(20);
             while (!executor.poll(next)) {
-                require(std::chrono::steady_clock::now() < deadline, "HIP completion timeout");
+                require(std::chrono::steady_clock::now() < deadline, "GPU completion timeout");
                 std::this_thread::sleep_for(std::chrono::milliseconds(1));
             }
             auto result = executor.take(next);
@@ -72,11 +72,11 @@ int main() {
         auto result = executor.take(last);
         require(result.scalars.back() == core::scalar_order().subtract(UInt256(1)), "order boundary wrong");
         require(kept.scalars.front() == begin, "owned result changed after slot reuse");
-        backend::HipDiagnosticExecutor small(0, {1});
+        backend::GpuDiagnosticExecutor small(0, {1});
         rejects([&] { small.submit(first); }, "oversized batch accepted");
         // Destruction with queued work must drain before freeing pinned memory.
-        { backend::HipDiagnosticExecutor pending(0); pending.submit(first); }
-        std::cout << "HIP lifecycle passed: " << launches + 1 << " verified launches, "
+        { backend::GpuDiagnosticExecutor pending(0); pending.submit(first); }
+        std::cout << "GPU lifecycle passed: " << launches + 1 << " verified launches, "
                   << steps + result.device_steps << " device indices\n";
         return 0;
     } catch (const std::exception& error) {

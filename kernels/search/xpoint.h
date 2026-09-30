@@ -1,9 +1,23 @@
 #pragma once
-#include <hip/hip_runtime.h>
+#include "device_runtime.h"
 #include "common/point.h"
 #include "keyhunt/core/xpoint_search.h"
 
 namespace keyhunt::gpu {
+#if defined(__CUDACC__)
+using XPointPower = Point;
+#define KEYHUNT_XPOINT_LAUNCH_BOUND
+#else
+using XPointPower = Affine;
+#define KEYHUNT_XPOINT_LAUNCH_BOUND __launch_bounds__(128)
+#endif
+__device__ inline void xpoint_add_cached(Point& out, const Point& a, const XPointPower& b) {
+#if defined(__CUDACC__)
+    point_add_cached(out,a,b);
+#else
+    point_add_mixed(out,a,b);
+#endif
+}
 struct XPointCounters {
     unsigned long long steps = 0, candidates = 0;
     unsigned overflow = 0, invalid = 0;
@@ -37,9 +51,9 @@ __device__ inline Scalar offset_scalar(Scalar begin, uint64_t offset) {
     }
     return begin;
 }
-// Every host launch uses 128 threads. Tell the compiler that bound so it can
-// allocate registers for this block size instead of spilling for larger blocks.
-__global__ __launch_bounds__(128) void xpoint_direct(Scalar begin, uint64_t count, const Field* targets,
+// Every host launch uses 128 threads. HIP retains the C17 register-allocation
+// bound; CUDA retains the independently measured C18 launch declaration.
+__global__ KEYHUNT_XPOINT_LAUNCH_BOUND void xpoint_direct(Scalar begin, uint64_t count, const Field* targets,
     uint32_t target_count, core::XPointCandidate* output, uint32_t capacity,
     XPointCounters* counters) {
     const uint64_t index = uint64_t(blockIdx.x)*blockDim.x+threadIdx.x;
@@ -51,7 +65,13 @@ __global__ __launch_bounds__(128) void xpoint_direct(Scalar begin, uint64_t coun
     }
     // Only X is needed: avoid the extra multiplication to normalize Y.
     Field zi,zz,x;
-    inverse(zi,point.z); square(zz,zi); mul(x,point.x,zz);
+#if defined(__CUDACC__)
+    // C18 retains binary inversion to limit CUDA direct-kernel register pressure.
+    inverse_binary(zi,point.z);
+#else
+    inverse(zi,point.z);
+#endif
+    square(zz,zi); mul(x,point.x,zz);
     xpoint_lookup(x,index,targets,target_count,output,capacity,counters);
     atomicAdd(&counters->steps,1ULL);
 }
@@ -61,7 +81,7 @@ __global__ __launch_bounds__(128) void xpoint_direct(Scalar begin, uint64_t coun
 // Disjoint lane groups cover [0,count) exactly, including the final partial group.
 constexpr unsigned xpoint_group = 8;
 template<bool SmallTargets>
-__global__ __launch_bounds__(128) void xpoint_stepped(Point base, uint64_t count, const Affine* powers,
+__global__ KEYHUNT_XPOINT_LAUNCH_BOUND void xpoint_stepped(Point base, uint64_t count, const XPointPower* powers,
     const Field* targets, uint32_t target_count, core::XPointCandidate* output,
     uint32_t capacity, XPointCounters* counters) {
     const uint64_t first = (uint64_t(blockIdx.x)*blockDim.x+threadIdx.x)*xpoint_group;
@@ -69,7 +89,7 @@ __global__ __launch_bounds__(128) void xpoint_stepped(Point base, uint64_t count
     const unsigned steps = unsigned(count-first < xpoint_group ? count-first : xpoint_group);
     Point current = base;
     for (unsigned bit=0;bit<20;++bit)
-        if ((first >> bit)&1) point_add_mixed(current,current,powers[bit]);
+        if ((first >> bit)&1) xpoint_add_cached(current,current,powers[bit]);
     Field xs[xpoint_group], zs[xpoint_group];
     for (unsigned i=0;i<steps;++i) {
         if (is_infinity(current)) { atomicExch(&counters->invalid,1U); return; }
@@ -85,7 +105,7 @@ __global__ __launch_bounds__(128) void xpoint_stepped(Point base, uint64_t count
         } else {
             xs[i] = current.x; zs[i] = current.z;
         }
-        if (i+1 < steps) point_add_mixed(current,current,powers[0]);
+        if (i+1 < steps) xpoint_add_cached(current,current,powers[0]);
     }
     if constexpr (!SmallTargets) {
         // One Fermat inversion for the whole lane group. Only X and Z are kept;
@@ -99,4 +119,5 @@ __global__ __launch_bounds__(128) void xpoint_stepped(Point base, uint64_t count
     }
     atomicAdd(&counters->steps,static_cast<unsigned long long>(steps));
 }
+#undef KEYHUNT_XPOINT_LAUNCH_BOUND
 } // namespace keyhunt::gpu

@@ -53,16 +53,16 @@ set_tests_properties(coordinator_worker_failures PROPERTIES TIMEOUT 120 LABELS "
 
 if(KEYHUNT_TEST_APACHE_ROOT AND TARGET keyhunt-worker)
     set(coordinator_worker_options "")
-    if(KEYHUNT_ENABLE_HIP)
-        list(APPEND coordinator_worker_options --hip)
+    if(KEYHUNT_ENABLE_GPU)
+        list(APPEND coordinator_worker_options --hardware --backend ${KEYHUNT_GPU_BACKEND})
     endif()
     add_test(NAME coordinator_https_worker COMMAND ${Python3_EXECUTABLE}
         ${PROJECT_SOURCE_DIR}/tests/coordinator/https_worker.py
         --coordinator $<TARGET_FILE:keyhunt-coordinator> --worker $<TARGET_FILE:keyhunt-worker>
         --keyhunt $<TARGET_FILE:keyhunt> --apache-root ${KEYHUNT_TEST_APACHE_ROOT} ${coordinator_worker_options})
     set_tests_properties(coordinator_https_worker PROPERTIES TIMEOUT 300 LABELS "coordinator;security;integration")
-    if(KEYHUNT_ENABLE_HIP)
-        set_tests_properties(coordinator_https_worker PROPERTIES LABELS "hip;hardware;coordinator;integration")
+    if(KEYHUNT_ENABLE_GPU)
+        set_tests_properties(coordinator_https_worker PROPERTIES LABELS "${KEYHUNT_GPU_BACKEND};hardware;coordinator;integration" RESOURCE_LOCK gpu_device)
     endif()
 endif()
 

@@ -1,5 +1,5 @@
 #pragma once
-#include <hip/hip_runtime.h>
+#include "device_runtime.h"
 #include <cstdint>
 
 namespace keyhunt::backend {

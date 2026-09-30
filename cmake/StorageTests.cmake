@@ -45,16 +45,16 @@ add_test(NAME storage_checkpoint_failures COMMAND storage_checkpoint_failures_te
 set_tests_properties(storage_checkpoint_failures PROPERTIES TIMEOUT 120 LABELS "cpu;storage;recovery")
 
 set(checkpoint_cli_options "")
-if(KEYHUNT_ENABLE_HIP)
-    list(APPEND checkpoint_cli_options --hip)
+if(KEYHUNT_ENABLE_GPU)
+    list(APPEND checkpoint_cli_options --hardware --backend ${KEYHUNT_GPU_BACKEND})
 endif()
 add_test(NAME checkpoint_cli COMMAND "${Python3_EXECUTABLE}"
     "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/checkpoint_cli.py"
     --binary $<TARGET_FILE:keyhunt> --oracle $<TARGET_FILE:secp256k1_oracle>
     --report "${CMAKE_CURRENT_BINARY_DIR}/checkpoint-cli-results.json" ${checkpoint_cli_options})
 set_tests_properties(checkpoint_cli PROPERTIES TIMEOUT 240 LABELS "cpu;storage;cli")
-if(KEYHUNT_ENABLE_HIP)
-    set_tests_properties(checkpoint_cli PROPERTIES LABELS "hip;hardware;storage;cli;recovery")
+if(KEYHUNT_ENABLE_GPU)
+    set_tests_properties(checkpoint_cli PROPERTIES LABELS "${KEYHUNT_GPU_BACKEND};hardware;storage;cli;recovery" RESOURCE_LOCK gpu_device)
 endif()
 
 add_executable(storage_checkpoint_control_test tests/storage/checkpoint_control.cpp)
@@ -75,10 +75,10 @@ add_test(NAME checkpoint_controls COMMAND "${Python3_EXECUTABLE}"
     --report "${CMAKE_CURRENT_BINARY_DIR}/checkpoint-controls-results.json")
 set_tests_properties(checkpoint_controls PROPERTIES TIMEOUT 120 LABELS "cpu;storage;cli;recovery")
 
-if(KEYHUNT_ENABLE_HIP)
-    add_test(NAME checkpoint_pause_hip COMMAND "${Python3_EXECUTABLE}"
+if(KEYHUNT_ENABLE_GPU)
+    add_test(NAME checkpoint_pause_${KEYHUNT_GPU_BACKEND} COMMAND "${Python3_EXECUTABLE}"
         "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/checkpoint_pause_hip.py"
         --binary $<TARGET_FILE:keyhunt> --oracle $<TARGET_FILE:secp256k1_oracle>
-        --report "${CMAKE_CURRENT_BINARY_DIR}/checkpoint-pause-hip-results.json")
-    set_tests_properties(checkpoint_pause_hip PROPERTIES TIMEOUT 180 LABELS "hip;hardware;storage;cli;recovery")
+        --backend ${KEYHUNT_GPU_BACKEND} --report "${CMAKE_CURRENT_BINARY_DIR}/checkpoint-pause-${KEYHUNT_GPU_BACKEND}-results.json")
+    set_tests_properties(checkpoint_pause_${KEYHUNT_GPU_BACKEND} PROPERTIES TIMEOUT 180 LABELS "${KEYHUNT_GPU_BACKEND};hardware;storage;cli;recovery" RESOURCE_LOCK gpu_device)
 endif()

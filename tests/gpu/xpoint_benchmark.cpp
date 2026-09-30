@@ -1,7 +1,7 @@
 // Warm executors with immutable targets, then alternate equivalent direct and
 // stepped searches. Every measured result is CPU verified and its expected match
 // scalars/count checked. This is a single-device, volatile-coverage benchmark.
-#include "keyhunt/backend/hip_xpoint.h"
+#include "keyhunt/backend/gpu_xpoint.h"
 #include <algorithm>
 #include <chrono>
 #include <iomanip>
@@ -50,14 +50,14 @@ int main(int argc,char** argv) {
             scheduler::BlockGrid grid(core::ScalarInterval(begin,begin.add(UInt256(count))),UInt256(count));
             auto work=*scheduler::WorkUnit::plan(grid,UInt256(0),begin,count,id);
             auto batch=*scheduler::KernelBatch::plan(work,begin,count);
-            std::unique_ptr<backend::HipXPointExecutor> owners[2];
+            std::unique_ptr<backend::GpuXPointExecutor> owners[2];
             double preparation[2]{};
             for (unsigned kind=0;kind<2;++kind) {
                 if (!enabled(kind)) continue;
                 backend::XPointOptions options; options.max_steps=count; options.candidate_capacity=uint32_t(capacity);
                 options.kernel=kind ? backend::XPointKernel::Stepped : backend::XPointKernel::Direct;
                 auto start=std::chrono::steady_clock::now();
-                owners[kind]=std::make_unique<backend::HipXPointExecutor>(device,targets,verifier,options);
+                owners[kind]=std::make_unique<backend::GpuXPointExecutor>(device,targets,verifier,options);
                 preparation[kind]=std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-start).count();
             }
             if (workload) std::cout<<',';

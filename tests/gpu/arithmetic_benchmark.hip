@@ -1,6 +1,6 @@
 // Opt-in microbenchmark. It emits checked results and raw timing samples, not a
 // key-search rate. No clocks, partition modes or application tuning are changed.
-#include <hip/hip_runtime.h>
+#include "device_runtime.h"
 #include "common/point.h"
 #include "multiply16.h"
 #include "runtime.h"
@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 using namespace keyhunt::gpu;
-using keyhunt::backend::hip_check;
+using keyhunt::backend::gpu_check;
 struct Input { Field a,b; Point point; };
 struct Output { Field field; Point point; };
 
@@ -38,13 +38,13 @@ __global__ void benchmark_kernel(const Input* input, Output* output, uint64_t co
 }
 template<class T> struct Buffer {
     T* data = nullptr;
-    explicit Buffer(size_t count) { hip_check(hipMalloc(&data,count*sizeof(T)),"benchmark allocation"); }
-    ~Buffer() { if (data) (void)hipFree(data); }
+    explicit Buffer(size_t count) { gpu_check(gpuMalloc(&data,count*sizeof(T)),"benchmark allocation"); }
+    ~Buffer() { if (data) (void)gpuFree(data); }
 };
 struct Event {
-    hipEvent_t value = nullptr;
-    Event() { hip_check(hipEventCreate(&value),"benchmark event creation"); }
-    ~Event() { if (value) (void)hipEventDestroy(value); }
+    gpuEvent_t value = nullptr;
+    Event() { gpu_check(gpuEventCreate(&value),"benchmark event creation"); }
+    ~Event() { if (value) (void)gpuEventDestroy(value); }
 };
 int main(int argc, char** argv) {
     try {
@@ -76,28 +76,28 @@ int main(int argc, char** argv) {
         Buffer<Input> device_input(count);
         Buffer<Output> device_output(count+1);
         Event start,done;
-        hip_check(hipMemcpy(device_input.data,input.data(),count*sizeof(Input),hipMemcpyHostToDevice),"benchmark upload");
+        gpu_check(gpuMemcpy(device_input.data,input.data(),count*sizeof(Input),gpuMemcpyHostToDevice),"benchmark upload");
         std::vector<Output> output(count+1);
         std::vector<float> times[4]; std::vector<double> walls[4];
         for (int sample = -1; sample < 5; ++sample) {
             for (unsigned order = 0; order < 4; ++order) {
                 const unsigned kind = sample >= 0 && sample%2 ? 3-order : order;
                 const auto wall_start = std::chrono::steady_clock::now();
-                hip_check(hipMemset(device_output.data,0xa5,output.size()*sizeof(Output)),"benchmark output guard");
-                hip_check(hipEventRecord(start.value),"benchmark start");
-                (void)hipGetLastError();
+                gpu_check(gpuMemset(device_output.data,0xa5,output.size()*sizeof(Output)),"benchmark output guard");
+                gpu_check(gpuEventRecord(start.value),"benchmark start");
+                (void)gpuGetLastError();
                 switch (kind) {
-                case 0: hipLaunchKernelGGL(benchmark_kernel<0>,dim3((count+127)/128),dim3(128),0,0,device_input.data,device_output.data,count,rounds[kind]); break;
-                case 1: hipLaunchKernelGGL(benchmark_kernel<1>,dim3((count+127)/128),dim3(128),0,0,device_input.data,device_output.data,count,rounds[kind]); break;
-                case 2: hipLaunchKernelGGL(benchmark_kernel<2>,dim3((count+127)/128),dim3(128),0,0,device_input.data,device_output.data,count,rounds[kind]); break;
-                case 3: hipLaunchKernelGGL(benchmark_kernel<3>,dim3((count+127)/128),dim3(128),0,0,device_input.data,device_output.data,count,rounds[kind]); break;
+                case 0: gpuLaunchKernelGGL(benchmark_kernel<0>,dim3((count+127)/128),dim3(128),0,0,device_input.data,device_output.data,count,rounds[kind]); break;
+                case 1: gpuLaunchKernelGGL(benchmark_kernel<1>,dim3((count+127)/128),dim3(128),0,0,device_input.data,device_output.data,count,rounds[kind]); break;
+                case 2: gpuLaunchKernelGGL(benchmark_kernel<2>,dim3((count+127)/128),dim3(128),0,0,device_input.data,device_output.data,count,rounds[kind]); break;
+                case 3: gpuLaunchKernelGGL(benchmark_kernel<3>,dim3((count+127)/128),dim3(128),0,0,device_input.data,device_output.data,count,rounds[kind]); break;
                 }
-                hip_check(hipGetLastError(),"benchmark kernel launch");
-                hip_check(hipEventRecord(done.value),"benchmark end");
-                hip_check(hipEventSynchronize(done.value),"benchmark completion");
+                gpu_check(gpuGetLastError(),"benchmark kernel launch");
+                gpu_check(gpuEventRecord(done.value),"benchmark end");
+                gpu_check(gpuEventSynchronize(done.value),"benchmark completion");
                 float elapsed = 0;
-                hip_check(hipEventElapsedTime(&elapsed,start.value,done.value),"benchmark timing");
-                hip_check(hipMemcpy(output.data(),device_output.data,output.size()*sizeof(Output),hipMemcpyDeviceToHost),"benchmark download");
+                gpu_check(gpuEventElapsedTime(&elapsed,start.value,done.value),"benchmark timing");
+                gpu_check(gpuMemcpy(output.data(),device_output.data,output.size()*sizeof(Output),gpuMemcpyDeviceToHost),"benchmark download");
                 for (unsigned i = 0; i < count; ++i) {
                     const auto& want = expected[kind][i]; const auto& have = output[i];
                     if (!equal(want.field,have.field) || !equal(want.point.x,have.point.x) ||

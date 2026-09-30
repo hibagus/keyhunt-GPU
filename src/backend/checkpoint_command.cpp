@@ -47,7 +47,7 @@ int checkpoint_command(int argc,char** argv){
         if(key!="state-dir" && !spec->second.count(key))throw std::invalid_argument("unsupported checkpoint option: "+flag);
         if(!args.emplace(key,argv[i+1]).second)throw std::invalid_argument("duplicate checkpoint option: "+flag);
     }
-    if(action=="run" && required(args,"backend")!="hip")throw std::invalid_argument("checkpoint execution requires --backend hip");
+    if(action=="run") require_backend(required(args,"backend"));
     const auto wall_start=std::chrono::steady_clock::now();
     const auto elapsed=[&]{return std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-wall_start).count();};
     std::cout<<std::setprecision(12);
@@ -109,13 +109,12 @@ int checkpoint_command(int argc,char** argv){
         const auto group=optional(args,"group-size","auto");
         if(group!="auto" && group!="1" && group!="8")throw std::invalid_argument("group-size must be auto, 1 or 8");
     }
-#ifndef KEYHUNT_HAS_HIP
+#ifndef KEYHUNT_HAS_GPU
     (void)device;
     (void)elapsed;
-    discover_hip();return 2; // Explicit backend availability; no CPU search fallback.
+    discover_gpu();return 2; // Explicit backend availability; no CPU search fallback.
 #else
-    const auto inventory=discover_hip();
-    if(device>=inventory.devices.size())throw std::invalid_argument("HIP device ordinal is not visible");
+    const auto selected = select_gpu(int(device));
     core::XPointVerifier verifier;CheckpointSummary summary;
     double preparation_ms=0,executor_setup_ms=0,table_upload_ms=0;
     const auto notify=[&](const std::vector<ScalarInterval>& coverage,size_t matches,double ms){
@@ -125,18 +124,18 @@ int checkpoint_command(int argc,char** argv){
             <<",\"end_exclusive\":"<<quote(coverage[i].end().hex())<<'}';
         std::cout<<"],\"match_observations\":"<<matches<<",\"transaction_ms\":"<<ms<<'}';flush();
     };
-    LocalCheckpointControl control(journal.state_directory(),grant,int(device),inventory.devices.size());
+    LocalCheckpointControl control(journal.state_directory(),grant,int(device),selected.visible_devices);
     // Construct/upload the executor lazily, after binding validation, integrity
     // checks, the exclusive owner guard and durable executor-generation allocation.
     if(mode==Mode::XPoint){
         const auto targets=core::XPointTargets::load(required(args,"targets"));
         XPointOptions gpu;gpu.max_steps=options.xpoint_steps;gpu.candidate_capacity=options.candidate_capacity;
         gpu.kernel=optional(args,"kernel","stepped")=="direct"?XPointKernel::Direct:XPointKernel::Stepped;
-        std::unique_ptr<HipXPointExecutor> executor;
+        std::unique_ptr<GpuXPointExecutor> executor;
         summary=CheckpointRun::xpoint(journal,grant,targets,verifier,[&](const auto& batch){
             if(!executor){
                 const auto setup_start=elapsed();
-                executor=std::make_unique<HipXPointExecutor>(int(device),targets,verifier,gpu);
+                executor=std::make_unique<GpuXPointExecutor>(int(device),targets,verifier,gpu);
                 executor_setup_ms=elapsed()-setup_start;preparation_ms=elapsed();
             }
             const auto ticket=executor->submit(batch);executor->drain();return executor->take(ticket);
@@ -147,11 +146,11 @@ int checkpoint_command(int argc,char** argv){
         const auto group=optional(args,"group-size","auto");gpu.group_size=group=="auto"?0:unsigned(decimal(group));
         gpu.host_memory_bytes=decimal(optional(args,"host-memory","1073741824"));
         gpu.memory_reserve_bytes=decimal(optional(args,"reserve-bytes","67108864"));
-        std::unique_ptr<HipBsgsExecutor> executor;
+        std::unique_ptr<GpuBsgsExecutor> executor;
         summary=CheckpointRun::bsgs(journal,grant,targets,table,verifier,[&](const auto& batch){
             if(!executor){
                 const auto setup_start=elapsed();
-                executor=std::make_unique<HipBsgsExecutor>(int(device),table,targets,verifier,gpu);
+                executor=std::make_unique<GpuBsgsExecutor>(int(device),table,targets,verifier,gpu);
                 executor_setup_ms=elapsed()-setup_start;preparation_ms=elapsed();
                 table_upload_ms=executor->table_upload_ms();
             }
@@ -164,7 +163,7 @@ int checkpoint_command(int argc,char** argv){
         <<",\"device_steps\":"<<quote(summary.device_steps.hex())<<",\"match_observations\":"<<summary.match_observations
         <<",\"batches\":"<<summary.batches<<",\"overflow_replays\":"<<summary.overflows<<",\"checkpoints\":"<<summary.checkpoints
         <<",\"checkpoint_ms\":"<<summary.checkpoint_ms
-        <<",\"metrics_version\":2,\"device\":"<<device<<",\"uuid\":"<<quote(inventory.devices[device].uuid)
+        <<",\"metrics_version\":2,\"device\":"<<device<<",\"uuid\":"<<quote(selected.device.uuid)
         <<",\"mode\":"<<quote(mode==Mode::XPoint?"xpoint":"bsgs")
         <<",\"checkpoint_seconds\":"<<options.checkpoint_seconds<<",\"bsgs_group_size\":"<<summary.bsgs_group_size
         <<",\"verified_device_steps\":"<<quote(summary.verified_device_steps.hex())

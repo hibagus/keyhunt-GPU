@@ -1,5 +1,5 @@
 #pragma once
-#include <hip/hip_runtime.h>
+#include "device_runtime.h"
 #include "common/point.h"
 #include "keyhunt/core/bsgs_search.h"
 
@@ -8,13 +8,17 @@ struct BsgsCounters {
     unsigned long long steps=0,candidates=0,tail_rejections=0;
     unsigned overflow=0,invalid=0;
 };
-// CPU-generated cached operands are finite and have Z=1. Mixed addition wins
-// for single-giant lanes; group-8 keeps the general formula because the mixed
-// version regressed the measured 32-target workload (see docs/HIP_TUNING.md).
+// CPU-generated cached operands are finite and have Z=1. CUDA uses its C18
+// cached-point specialization. HIP group-8 retains the general formula because
+// mixed addition regressed that workload (see docs/HIP_TUNING.md).
 template<unsigned Group>
 __device__ inline void bsgs_add_cached(Point& out,const Point& a,const Point& b) {
+#if defined(__CUDACC__)
+    point_add_cached(out,a,b);
+#else
     if constexpr (Group==1) point_add_mixed(out,a,Affine{b.x,b.y,false});
     else point_add(out,a,b);
+#endif
 }
 // One lane walks a consecutive group for one target. All absolute-start work
 // is amortized in aG, while cached -(m*2^bit)G points seed each local giant index.

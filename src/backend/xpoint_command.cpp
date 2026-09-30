@@ -1,8 +1,8 @@
 #include "keyhunt/backend/device.h"
 #include "keyhunt/core/xpoint_search.h"
 #include "keyhunt/scheduler/xpoint_batch_size.h"
-#ifdef KEYHUNT_HAS_HIP
-#include "keyhunt/backend/hip_xpoint.h"
+#ifdef KEYHUNT_HAS_GPU
+#include "keyhunt/backend/gpu_xpoint.h"
 #endif
 #include <algorithm>
 #include <charconv>
@@ -23,7 +23,7 @@ uint64_t decimal(const std::string& value) {
         throw std::invalid_argument("expected an unsigned decimal integer: "+value);
     return result;
 }
-#ifdef KEYHUNT_HAS_HIP
+#ifdef KEYHUNT_HAS_GPU
 std::string hex_bytes(const uint8_t* bytes, size_t count) {
     const char* digits = "0123456789abcdef";
     std::string result;
@@ -37,7 +37,7 @@ void flush_record() {
 #endif
 }
 int xpoint_command(int argc, char** argv) {
-    const char* usage = "usage: keyhunt xpoint --backend hip --range START:END --targets FILE [--device N] [--batch-size 1..1048576] [--candidate-capacity 1..1048576] [--kernel stepped|direct] (END is exclusive; NDJSON output)";
+    const char* usage = "usage: keyhunt xpoint --backend hip|cuda --range START:END --targets FILE [--device N] [--batch-size 1..1048576] [--candidate-capacity 1..1048576] [--kernel stepped|direct] (END is exclusive; NDJSON output)";
     std::map<std::string,std::string> args;
     for (int i=2;i<argc;i+=2) {
         if (i+1 == argc) throw std::invalid_argument(usage);
@@ -46,8 +46,9 @@ int xpoint_command(int argc, char** argv) {
             key != "--batch-size" && key != "--candidate-capacity" && key != "--kernel") throw std::invalid_argument(usage);
         if (!args.emplace(key,argv[i+1]).second) throw std::invalid_argument("duplicate xpoint option: "+key);
     }
-    if (args["--backend"] != "hip" || args["--range"].empty() || args["--targets"].empty())
+    if ((args["--backend"] != "hip" && args["--backend"] != "cuda") || args["--range"].empty() || args["--targets"].empty())
         throw std::invalid_argument(usage);
+    require_backend(args["--backend"]);
     const auto range = args["--range"];
     const auto colon = range.find(':');
     if (colon == std::string::npos) throw std::invalid_argument(usage);
@@ -60,19 +61,18 @@ int xpoint_command(int argc, char** argv) {
         throw std::invalid_argument(usage);
     const std::string kernel = args.count("--kernel") ? args["--kernel"] : "stepped";
     if (kernel != "direct" && kernel != "stepped") throw std::invalid_argument(usage);
-#ifndef KEYHUNT_HAS_HIP
-    discover_hip(); // explicit error; a GPU request never falls back to CPU
+#ifndef KEYHUNT_HAS_GPU
+    discover_gpu(); // explicit error; a GPU request never falls back to CPU
     return 2;
 #else
     const auto wall_start = std::chrono::steady_clock::now();
     const auto targets = core::XPointTargets::load(args["--targets"]);
-    const auto inventory = discover_hip();
-    if (device >= inventory.devices.size()) throw std::invalid_argument("HIP device ordinal is not visible");
+    const auto selected = select_gpu(int(device));
     core::XPointVerifier verifier;
     XPointOptions options;
     options.max_steps = batch_size; options.candidate_capacity = uint32_t(capacity);
     options.kernel = kernel == "direct" ? XPointKernel::Direct : XPointKernel::Stepped;
-    HipXPointExecutor executor(int(device),targets,verifier,options);
+    GpuXPointExecutor executor(int(device),targets,verifier,options);
     const double preparation_ms = std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-wall_start).count();
     // This standalone owner uses one lazy block, preserving C05 exact arithmetic.
     // Assignment IDs are ephemeral; durable ownership/checkpointing arrives in C12/13.
@@ -81,8 +81,8 @@ int xpoint_command(int argc, char** argv) {
     identity.target_digest = targets.digest();
     identity.assignment_id[0] = 1;
     identity.assignment_generation = identity.executor_generation = 1;
-    std::cout << std::setprecision(9) << "{\"type\":\"start\",\"backend\":\"hip\",\"mode\":\"xpoint\",\"device\":" << device
-              << ",\"uuid\":\"" << inventory.devices[device].uuid << "\",\"target_count\":" << targets.values().size()
+    std::cout << std::setprecision(9) << "{\"type\":\"start\",\"backend\":\"" << gpu_backend_name() << "\",\"mode\":\"xpoint\",\"device\":" << device
+              << ",\"uuid\":\"" << selected.device.uuid << "\",\"target_count\":" << targets.values().size()
               << ",\"target_digest\":\"" << hex_bytes(targets.digest().data(),targets.digest().size())
               << "\",\"begin\":\"" << interval.begin().hex() << "\",\"end_exclusive\":\"" << interval.end().hex()
               << "\",\"kernel\":\"" << kernel << "\",\"durable_coverage\":false,\"preparation_ms\":" << preparation_ms << '}';

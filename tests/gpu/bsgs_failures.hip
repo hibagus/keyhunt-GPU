@@ -1,4 +1,4 @@
-#include "keyhunt/backend/hip_bsgs_table.h"
+#include "keyhunt/backend/gpu_bsgs_table.h"
 #include "runtime.h"
 #include <iostream>
 using namespace keyhunt;
@@ -12,21 +12,21 @@ int main() {
         std::vector<bsgs::Key> queries;
         for (const auto& e:table.entries()) queries.push_back(e.key);
         unsigned tested=0;
-        for (const char* operation : {"hipMemGetInfo","hipStreamCreateWithFlags","hipEventCreate(start)",
-            "hipEventCreate(uploaded)","hipEventCreate(kernel_done)","hipEventCreate(done)","hipMalloc(entries)",
-            "hipMalloc(offsets)","hipMalloc(bloom)","hipMalloc(keys)","hipMalloc(hits)","hipMalloc(count)",
-            "hipHostMalloc(keys)","hipHostMalloc(hits)","hipHostMalloc(count)","hipEventRecord(prepare_start)",
-            "hipMemcpyAsync(entries)","hipMemcpyAsync(offsets)","hipMemcpyAsync(bloom)","hipEventRecord(prepare_done)",
-            "hipEventSynchronize(prepare)","hipEventElapsedTime(prepare)"}) {
+        for (const char* operation : {"gpuMemGetInfo","gpuStreamCreateWithFlags","gpuEventCreate(start)",
+            "gpuEventCreate(uploaded)","gpuEventCreate(kernel_done)","gpuEventCreate(done)","gpuMalloc(entries)",
+            "gpuMalloc(offsets)","gpuMalloc(bloom)","gpuMalloc(keys)","gpuMalloc(hits)","gpuMalloc(count)",
+            "gpuHostMalloc(keys)","gpuHostMalloc(hits)","gpuHostMalloc(count)","gpuEventRecord(prepare_start)",
+            "gpuMemcpyAsync(entries)","gpuMemcpyAsync(offsets)","gpuMemcpyAsync(bloom)","gpuEventRecord(prepare_done)",
+            "gpuEventSynchronize(prepare)","gpuEventElapsedTime(prepare)"}) {
             backend::injected_failure=operation;
-            expect([&]{backend::HipBsgsTable owner(0,table);},operation);
+            expect([&]{backend::GpuBsgsTable owner(0,table);},operation);
             ++tested;
         }
-        for (const char* operation : {"hipMemsetAsync(hits)","hipMemsetAsync(count)","hipEventRecord(start)",
-            "hipMemcpyAsync(keys)","hipEventRecord(uploaded)","bsgs_probe launch","hipEventRecord(kernel_done)",
-            "hipMemcpyAsync(hits)","hipMemcpyAsync(count)","hipEventRecord(done)","hipEventSynchronize(probe)",
-            "hipEventElapsedTime(upload)","hipEventElapsedTime(kernel)","hipEventElapsedTime(download)"}) {
-            backend::HipBsgsTable owner(0,table);
+        for (const char* operation : {"gpuMemsetAsync(hits)","gpuMemsetAsync(count)","gpuEventRecord(start)",
+            "gpuMemcpyAsync(keys)","gpuEventRecord(uploaded)","bsgs_probe launch","gpuEventRecord(kernel_done)",
+            "gpuMemcpyAsync(hits)","gpuMemcpyAsync(count)","gpuEventRecord(done)","gpuEventSynchronize(probe)",
+            "gpuEventElapsedTime(upload)","gpuEventElapsedTime(kernel)","gpuEventElapsedTime(download)"}) {
+            backend::GpuBsgsTable owner(0,table);
             backend::injected_failure=operation;
             expect([&]{owner.probe(queries);},operation);
             expect([&]{owner.probe(queries);},"table failed");
@@ -34,14 +34,14 @@ int main() {
             ++tested;
         }
         for (const char* fault : {"count","guard","hit","filter"}) {
-            backend::HipBsgsTable owner(0,table);
+            backend::GpuBsgsTable owner(0,table);
             backend::bsgs_test_corruption=fault;
             expect([&]{owner.probe(queries);},"BSGS");
             expect([&]{owner.device_view();},"table failed");
             ++tested;
         }
-        backend::HipBsgsTable recovered(0,table);
+        backend::GpuBsgsTable recovered(0,table);
         if (recovered.probe(queries).device_queries!=queries.size()) throw std::runtime_error("fresh upload did not recover");
-        std::cout<<tested<<" HIP BSGS failure/corruption boundaries passed\n";
+        std::cout<<tested<<" GPU BSGS failure/corruption boundaries passed\n";
     } catch(const std::exception& e) { std::cerr<<e.what()<<'\n'; return 1; }
 }

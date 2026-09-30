@@ -24,8 +24,23 @@ struct DeviceInventory {
     int runtime_version = 0, driver_version = 0;
     std::vector<DeviceInfo> devices;
 };
+struct SelectedDevice {
+    DeviceInfo device;
+    size_t visible_devices = 0;
+};
 
 bool hip_available();
 DeviceInventory discover_hip(); // throws an operation-specific error on runtime failure
+bool cuda_available();
+DeviceInventory discover_cuda();
+
+// A binary supplies one native GPU runtime. Explicit CLI selection must match
+// it; persisted job identity and table formats never depend on this selection.
+const char* gpu_backend_name();
+void require_backend(const std::string& name);
+DeviceInventory discover_gpu();
+// Search setup needs one device's budget and the visible count. CUDA must not
+// create primary contexts on every other GPU just to launch on this ordinal.
+SelectedDevice select_gpu(int ordinal);
 
 } // namespace keyhunt::backend

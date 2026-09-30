@@ -1,4 +1,4 @@
-#include "keyhunt/backend/hip_bsgs_table.h"
+#include "keyhunt/backend/gpu_bsgs_table.h"
 #include "keyhunt/backend/device.h"
 #include "runtime.h"
 #include "bsgs_probe.h"
@@ -10,20 +10,20 @@ void require(bool value,const char* text) { if (!value) throw std::runtime_error
 template<class F> void rejects(F fn) { try { fn(); } catch(const std::exception&) { return; } throw std::runtime_error("expected rejection"); }
 template<class T> struct Buffer {
     T* data=nullptr;
-    explicit Buffer(size_t count) { backend::hip_check(hipMalloc(&data,count*sizeof(T)),"test allocation"); }
-    ~Buffer() { if (data) (void)hipFree(data); }
+    explicit Buffer(size_t count) { backend::gpu_check(gpuMalloc(&data,count*sizeof(T)),"test allocation"); }
+    ~Buffer() { if (data) (void)gpuFree(data); }
 };
 int main() {
     try {
-        require(!backend::discover_hip().devices.empty(),"hardware required");
+        require(!backend::discover_gpu().devices.empty(),"hardware required");
         const auto table=bsgs::Table::build(257);
-        rejects([&]{backend::HipBsgsTable invalid(-1,table);});
-        rejects([&]{backend::BsgsUploadOptions o; o.max_queries=0; backend::HipBsgsTable invalid(0,table,o);});
-        rejects([&]{backend::BsgsUploadOptions o; o.max_queries=65537; backend::HipBsgsTable invalid(0,table,o);});
-        rejects([&]{backend::BsgsUploadOptions o; o.host_memory_bytes=1; backend::HipBsgsTable invalid(0,table,o);});
-        rejects([&]{backend::BsgsUploadOptions o; o.memory_reserve_bytes=UINT64_MAX; backend::HipBsgsTable invalid(0,table,o);});
+        rejects([&]{backend::GpuBsgsTable invalid(-1,table);});
+        rejects([&]{backend::BsgsUploadOptions o; o.max_queries=0; backend::GpuBsgsTable invalid(0,table,o);});
+        rejects([&]{backend::BsgsUploadOptions o; o.max_queries=65537; backend::GpuBsgsTable invalid(0,table,o);});
+        rejects([&]{backend::BsgsUploadOptions o; o.host_memory_bytes=1; backend::GpuBsgsTable invalid(0,table,o);});
+        rejects([&]{backend::BsgsUploadOptions o; o.memory_reserve_bytes=UINT64_MAX; backend::GpuBsgsTable invalid(0,table,o);});
         backend::BsgsUploadOptions options; options.max_queries=257;
-        backend::HipBsgsTable first(0,table,options), second(0,table,options);
+        backend::GpuBsgsTable first(0,table,options), second(0,table,options);
         rejects([&]{first.probe({});}); rejects([&]{first.probe(std::vector<bsgs::Key>(258));});
         std::vector<bsgs::Key> keys;
         for (const auto& e:table.entries()) keys.push_back(e.key);
@@ -40,7 +40,7 @@ int main() {
         require(first.device_view().count==257 && first.device_bytes()>table.memory().resident_bytes,"upload view missing");
         for (auto bits : {8U,32U}) {
             const auto alternative=bsgs::Table::build(129,{bits});
-            backend::HipBsgsTable owner(0,alternative);
+            backend::GpuBsgsTable owner(0,alternative);
             std::vector<bsgs::Key> q;
             for (const auto& e:alternative.entries()) q.push_back(e.key);
             require(owner.probe(q).device_queries==129,"filter policy failed");
@@ -54,22 +54,22 @@ int main() {
         bsgs::Key queries[]{entries[0].key,entries[1].key,entries[4].key,entries[3].key}; queries[3].bytes[32]=3;
         Buffer<bsgs::Entry> de(5); Buffer<uint64_t> offsets_device(2),filter(1);
         Buffer<bsgs::Key> dq(4); Buffer<backend::BsgsProbeHit> out(4); Buffer<unsigned long long> counter(1);
-        using backend::hip_check;
-        hip_check(hipMemcpy(de.data,entries,sizeof(entries),hipMemcpyHostToDevice),"test entries");
-        hip_check(hipMemcpy(offsets_device.data,offsets,sizeof(offsets),hipMemcpyHostToDevice),"test offsets");
-        hip_check(hipMemcpy(filter.data,&bloom,sizeof(bloom),hipMemcpyHostToDevice),"test filter");
-        hip_check(hipMemcpy(dq.data,queries,sizeof(queries),hipMemcpyHostToDevice),"test keys");
-        hip_check(hipMemset(counter.data,0,sizeof(*counter.data)),"test count");
+        using backend::gpu_check;
+        gpu_check(gpuMemcpy(de.data,entries,sizeof(entries),gpuMemcpyHostToDevice),"test entries");
+        gpu_check(gpuMemcpy(offsets_device.data,offsets,sizeof(offsets),gpuMemcpyHostToDevice),"test offsets");
+        gpu_check(gpuMemcpy(filter.data,&bloom,sizeof(bloom),gpuMemcpyHostToDevice),"test filter");
+        gpu_check(gpuMemcpy(dq.data,queries,sizeof(queries),gpuMemcpyHostToDevice),"test keys");
+        gpu_check(gpuMemset(counter.data,0,sizeof(*counter.data)),"test count");
         bsgs::View view{de.data,offsets_device.data,filter.data,5,1,1};
-        (void)hipGetLastError();
-        hipLaunchKernelGGL(gpu::bsgs_probe,dim3(1),dim3(128),0,0,view,dq.data,4,out.data,counter.data,true);
-        hip_check(hipGetLastError(),"synthetic collision launch");
+        (void)gpuGetLastError();
+        gpuLaunchKernelGGL(gpu::bsgs_probe,dim3(1),dim3(128),0,0,view,dq.data,4,out.data,counter.data,true);
+        gpu_check(gpuGetLastError(),"synthetic collision launch");
         backend::BsgsProbeHit hits[4]; unsigned long long count=0;
-        hip_check(hipMemcpy(hits,out.data,sizeof(hits),hipMemcpyDeviceToHost),"test hits");
-        hip_check(hipMemcpy(&count,counter.data,sizeof(count),hipMemcpyDeviceToHost),"test count result");
+        gpu_check(gpuMemcpy(hits,out.data,sizeof(hits),gpuMemcpyDeviceToHost),"test hits");
+        gpu_check(gpuMemcpy(&count,counter.data,sizeof(count),gpuMemcpyDeviceToHost),"test count result");
         require(count==4 && hits[1].begin==1 && hits[1].end==3 && hits[1].j==(1ULL<<40)+1,"collision list truncated");
         require(hits[0].j==0 && hits[2].j==(1ULL<<40)+4,"zero/sign identity wrong");
         require(hits[3].bloom_positive && hits[3].begin==hits[3].end,"false positive accepted");
-        std::cout<<"HIP BSGS upload, tails, filter parity, signs and full collision lists passed\n";
+        std::cout<<"GPU BSGS upload, tails, filter parity, signs and full collision lists passed\n";
     } catch(const std::exception& e) { std::cerr<<e.what()<<'\n'; return 1; }
 }

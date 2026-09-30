@@ -169,7 +169,7 @@ def main():
     trial.add_argument('--candidate-capacity',type=int,default=1024)
     trial.add_argument('--timeout',type=int,default=300)
     trial.add_argument('--kernel',choices=('stepped','direct'),default='stepped')
-    trial.set_defaults(group_size='auto')
+    trial.set_defaults(group_size='auto', backend='hip')
     args = parser.parse_args()
     output = args.output_dir.resolve()
     if output.exists() or output == ROOT or ROOT in output.parents:

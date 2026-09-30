@@ -96,26 +96,43 @@ KEYHUNT_HD inline void point_add(Point& out, const Point& a, const Point& b) {
     out = result;
 }
 KEYHUNT_HD inline void point_add_mixed(Point& out, const Point& a, const Affine& b) {
+#if !defined(__CUDACC__) || (defined(__CUDA_ARCH__) && !defined(KEYHUNT_CUDA_PORTABLE_MIXED))
+    // b has Z=1: omit its Z square and the multiplications by that Z and Z^2.
+    // This is the same Jacobian group law as point_add, including doubling,
+    // inverse points, infinity, and an output aliased to a.
     if (b.infinity) { out = is_infinity(a) ? Point{} : a; return; }
     if (is_infinity(a)) { out = from_affine(b); return; }
-    // The affine operand has Z=1. Specializing the general formula removes
-    // four multiplies and one square, without losing equal/opposite handling.
-    // Keep the result separate until all reads of a (possibly out) are done.
-    Field zz,u2,s2,h,r,hh,hhh,v,temp;
-    square(zz,a.z); mul(u2,b.x,zz);
-    mul(s2,b.y,a.z); mul(s2,s2,zz);
-    sub(h,u2,a.x); sub(r,s2,a.y);
+    Field zz, u2, s2, h, r, hh, hhh, v, temp;
+    square(zz, a.z); mul(u2, b.x, zz);
+    mul(s2, b.y, a.z); mul(s2, s2, zz);
+    sub(h, u2, a.x); sub(r, s2, a.y);
     if (is_zero(h)) {
-        if (is_zero(r)) point_double(out,a);
+        if (is_zero(r)) point_double(out, a);
         else out = Point{};
         return;
     }
-    square(hh,h); mul(hhh,hh,h); mul(v,a.x,hh);
+    square(hh, h); mul(hhh, hh, h); mul(v, a.x, hh);
     Point result;
-    square(result.x,r); sub(result.x,result.x,hhh); add(temp,v,v); sub(result.x,result.x,temp);
-    sub(temp,v,result.x); mul(result.y,r,temp); mul(temp,a.y,hhh); sub(result.y,result.y,temp);
-    mul(result.z,a.z,h);
+    square(result.x, r); sub(result.x, result.x, hhh);
+    add(temp, v, v); sub(result.x, result.x, temp);
+    sub(temp, v, result.x); mul(result.y, r, temp);
+    mul(temp, a.y, hhh); sub(result.y, result.y, temp);
+    mul(result.z, a.z, h);
     out = result;
+#else
+    // Retain the general formula for the explicit CUDA reference path.
+    const Point right = from_affine(b);
+    point_add(out,a,right);
+#endif
+}
+KEYHUNT_HD inline void point_add_cached(Point& out, const Point& a, const Point& b) {
+    // Search executors upload only finite affine seed/power points (Z=1).
+    // General callers must use point_add or point_add_mixed instead.
+#if defined(__CUDA_ARCH__) && !defined(KEYHUNT_CUDA_PORTABLE_MIXED)
+    point_add_mixed(out, a, Affine{b.x, b.y, false});
+#else
+    point_add(out, a, b);
+#endif
 }
 KEYHUNT_HD inline void point_multiply(Point& out, const Point& point, const Scalar& scalar) {
     Point result{};

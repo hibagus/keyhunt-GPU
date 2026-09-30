@@ -9,7 +9,8 @@ using namespace keyhunt::storage::detail;
 void require(bool ok,const char* text){if(!ok)throw std::runtime_error(text);}
 int main(){
     try {
-        char temp[]="/tmp/keyhunt-c12-process-XXXXXX";require(mkdtemp(temp),"mkdtemp");
+        // Honor TMPDIR so journal fixtures can live outside a managed checkout.
+        std::string temp=(std::filesystem::temp_directory_path()/"keyhunt-c12-process-XXXXXX").string();require(mkdtemp(temp.data()),"mkdtemp");
         struct Cleanup{std::filesystem::path p;~Cleanup(){std::filesystem::remove_all(p);}}cleanup{temp};
         const auto clock=[]{return int64_t(1000);};
         Scope crash_scope,parallel_scope,retry_scope;
