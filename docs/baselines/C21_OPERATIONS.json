@@ -1,0 +1,423 @@
+{
+  "passed": true,
+  "runs": {
+    "hip": {
+      "backend": "hip",
+      "passed": true,
+      "commands": [
+        {
+          "command": [
+            "/home/bagus/keyhunt-GPU/build/hip-release/keyhunt-worker",
+            "sync",
+            "--state-dir",
+            "/var/tmp/kh21-73cb70_n/demo/alice-worker"
+          ],
+          "exit_code": 0,
+          "stdout": "{\"client\":\"e9b0ab89-2784-4b26-ad58-adbf482cd76d\",\"dispatch\":[],\"instance\":\"9498acc3-bd06-42b5-9573-e34ba5759e17\",\"last_ack_server_time\":1790807682,\"outbox_bytes\":0,\"outbox_limit\":67108864,\"pending_request\":false,\"queues\":[{\"activity\":\"queued\",\"block\":\"0x0000000000000000000000000000000000000000000000000000000000000000\",\"device\":\"0\",\"job\":\"88ed6ae82ed5d0ab95d92934906610de0b1ecf71e0fbd4da88ca0d759932474a\",\"local_state\":\"in_progress\",\"project\":\"191a7700-fc1d-427e-b42c-e92993b03261\",\"server_expires\":1793399682}],\"sent\":true,\"sync_due_in\":7200}\n",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "python3",
+            "/home/bagus/keyhunt-GPU/tools/coordinator_worker.py",
+            "--state-dir",
+            "/var/tmp/kh21-73cb70_n/demo/alice-worker",
+            "--backend",
+            "hip",
+            "--worker",
+            "/home/bagus/keyhunt-GPU/build/hip-release/keyhunt-worker",
+            "--keyhunt",
+            "/home/bagus/keyhunt-GPU/build/hip-release/keyhunt",
+            "--device-map",
+            "0=0",
+            "--once"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "/home/bagus/keyhunt-GPU/build/hip-release/keyhunt-worker",
+            "status",
+            "--state-dir",
+            "/var/tmp/kh21-73cb70_n/demo/alice-worker"
+          ],
+          "exit_code": 0,
+          "stdout": "{\"client\":\"e9b0ab89-2784-4b26-ad58-adbf482cd76d\",\"dispatch\":[{\"block\":\"\",\"device\":\"0\",\"job\":\"\",\"project\":\"\",\"uuid\":\"30646366333934386337333264313231\"}],\"instance\":\"9498acc3-bd06-42b5-9573-e34ba5759e17\",\"last_ack_server_time\":1790807682,\"outbox_bytes\":189,\"outbox_limit\":67108864,\"pending_request\":false,\"queues\":[{\"activity\":\"local-complete-awaiting-sync\",\"block\":\"0x0000000000000000000000000000000000000000000000000000000000000000\",\"device\":\"0\",\"job\":\"88ed6ae82ed5d0ab95d92934906610de0b1ecf71e0fbd4da88ca0d759932474a\",\"local_state\":\"finished\",\"project\":\"191a7700-fc1d-427e-b42c-e92993b03261\",\"server_expires\":1793399682}],\"sync_due_in\":7199}\n",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "/home/bagus/keyhunt-GPU/build/hip-release/keyhunt-worker",
+            "sync",
+            "--state-dir",
+            "/var/tmp/kh21-73cb70_n/demo/alice-worker"
+          ],
+          "exit_code": 0,
+          "stdout": "{\"client\":\"e9b0ab89-2784-4b26-ad58-adbf482cd76d\",\"dispatch\":[{\"block\":\"\",\"device\":\"0\",\"job\":\"\",\"project\":\"\",\"uuid\":\"30646366333934386337333264313231\"}],\"instance\":\"9498acc3-bd06-42b5-9573-e34ba5759e17\",\"last_ack_server_time\":1790807683,\"outbox_bytes\":0,\"outbox_limit\":67108864,\"pending_request\":false,\"queues\":[{\"activity\":\"server-acknowledged\",\"block\":\"0x0000000000000000000000000000000000000000000000000000000000000000\",\"device\":\"0\",\"job\":\"88ed6ae82ed5d0ab95d92934906610de0b1ecf71e0fbd4da88ca0d759932474a\",\"local_state\":\"finished\",\"project\":\"191a7700-fc1d-427e-b42c-e92993b03261\",\"server_expires\":1793399682},{\"activity\":\"queued\",\"block\":\"0x0000000000000000000000000000000000000000000000000000000000000001\",\"device\":\"0\",\"job\":\"88ed6ae82ed5d0ab95d92934906610de0b1ecf71e0fbd4da88ca0d759932474a\",\"local_state\":\"in_progress\",\"project\":\"191a7700-fc1d-427e-b42c-e92993b03261\",\"server_expires\":1793399683}],\"sent\":true,\"sync_due_in\":7200}\n",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "/home/bagus/keyhunt-GPU/build/hip-release/keyhunt",
+            "state",
+            "check",
+            "--state-dir",
+            "/var/tmp/kh21-73cb70_n/demo/alice-worker"
+          ],
+          "exit_code": 0,
+          "stdout": "{\"integrity\":\"ok\"}\n",
+          "stderr": ""
+        }
+      ],
+      "script_sha256": "9e05d3bcc5b76ae3db5e88e913649a2312a1c2adc068b5677b8187c0b0645f9b",
+      "binary_sha256": {
+        "keyhunt": "bbaf8bd9fc2ee38390f7380e7a7f6817af02bde98582bf957875e32c8e1597fc",
+        "keyhunt-worker": "41d98de2265c77bc487f2844344efca89da33e56aa39c3805f25b77d2485dc1d",
+        "keyhunt-coordinator": "6cf9096be6549809bb6f930a98f797d498dbf441bb88c87a3250093a26b4d97b"
+      },
+      "launcher_command": [
+        "python3",
+        "/home/bagus/keyhunt-GPU/tools/coordinator_local.py",
+        "--directory",
+        "/var/tmp/kh21-73cb70_n/demo",
+        "--coordinator",
+        "/home/bagus/keyhunt-GPU/build/hip-release/keyhunt-coordinator",
+        "--worker",
+        "/home/bagus/keyhunt-GPU/build/hip-release/keyhunt-worker",
+        "--apache-root",
+        "/tmp/keyhunt-c15-deps/root",
+        "--port",
+        "42769"
+      ],
+      "ready": true,
+      "local_status": {
+        "client": "e9b0ab89-2784-4b26-ad58-adbf482cd76d",
+        "dispatch": [
+          {
+            "block": "",
+            "device": "0",
+            "job": "",
+            "project": "",
+            "uuid": "30646366333934386337333264313231"
+          }
+        ],
+        "instance": "9498acc3-bd06-42b5-9573-e34ba5759e17",
+        "last_ack_server_time": 1790807682,
+        "outbox_bytes": 189,
+        "outbox_limit": 67108864,
+        "pending_request": false,
+        "queues": [
+          {
+            "activity": "local-complete-awaiting-sync",
+            "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "device": "0",
+            "job": "88ed6ae82ed5d0ab95d92934906610de0b1ecf71e0fbd4da88ca0d759932474a",
+            "local_state": "finished",
+            "project": "191a7700-fc1d-427e-b42c-e92993b03261",
+            "server_expires": 1793399682
+          }
+        ],
+        "sync_due_in": 7199
+      },
+      "acknowledged_status": {
+        "client": "e9b0ab89-2784-4b26-ad58-adbf482cd76d",
+        "dispatch": [
+          {
+            "block": "",
+            "device": "0",
+            "job": "",
+            "project": "",
+            "uuid": "30646366333934386337333264313231"
+          }
+        ],
+        "instance": "9498acc3-bd06-42b5-9573-e34ba5759e17",
+        "last_ack_server_time": 1790807683,
+        "outbox_bytes": 0,
+        "outbox_limit": 67108864,
+        "pending_request": false,
+        "queues": [
+          {
+            "activity": "server-acknowledged",
+            "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "device": "0",
+            "job": "88ed6ae82ed5d0ab95d92934906610de0b1ecf71e0fbd4da88ca0d759932474a",
+            "local_state": "finished",
+            "project": "191a7700-fc1d-427e-b42c-e92993b03261",
+            "server_expires": 1793399682
+          },
+          {
+            "activity": "queued",
+            "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "device": "0",
+            "job": "88ed6ae82ed5d0ab95d92934906610de0b1ecf71e0fbd4da88ca0d759932474a",
+            "local_state": "in_progress",
+            "project": "191a7700-fc1d-427e-b42c-e92993b03261",
+            "server_expires": 1793399683
+          }
+        ],
+        "sent": true,
+        "sync_due_in": 7200
+      },
+      "supervisor": {
+        "pid": null,
+        "paused": false,
+        "stopped": true,
+        "failures": {},
+        "devices": {
+          "0": {
+            "pid": null,
+            "ordinal": "0",
+            "uuid": "30646366333934386337333264313231",
+            "state": "stopped",
+            "completed": 1,
+            "grant": null,
+            "error": null
+          }
+        },
+        "last_network_error": null,
+        "worker": {
+          "client": "e9b0ab89-2784-4b26-ad58-adbf482cd76d",
+          "dispatch": [
+            {
+              "block": "",
+              "device": "0",
+              "job": "",
+              "project": "",
+              "uuid": "30646366333934386337333264313231"
+            }
+          ],
+          "instance": "9498acc3-bd06-42b5-9573-e34ba5759e17",
+          "last_ack_server_time": 1790807682,
+          "outbox_bytes": 189,
+          "outbox_limit": 67108864,
+          "pending_request": false,
+          "queues": [
+            {
+              "activity": "local-complete-awaiting-sync",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "device": "0",
+              "job": "88ed6ae82ed5d0ab95d92934906610de0b1ecf71e0fbd4da88ca0d759932474a",
+              "local_state": "finished",
+              "project": "191a7700-fc1d-427e-b42c-e92993b03261",
+              "server_expires": 1793399682
+            }
+          ],
+          "sync_due_in": 7199
+        }
+      },
+      "launcher_stderr": "",
+      "launcher_exit_code": 0
+    },
+    "cuda": {
+      "backend": "cuda",
+      "passed": true,
+      "commands": [
+        {
+          "command": [
+            "/home/bagus/keyhunt-GPU/build/cuda-c20/keyhunt-worker",
+            "sync",
+            "--state-dir",
+            "/var/tmp/kh21-4ys9017h/demo/alice-worker"
+          ],
+          "exit_code": 0,
+          "stdout": "{\"client\":\"d11fd8f2-a616-4426-a458-a01ea5fdf266\",\"dispatch\":[],\"instance\":\"9c7b29e0-fe88-47dc-9109-af881b094c29\",\"last_ack_server_time\":1790807709,\"outbox_bytes\":0,\"outbox_limit\":67108864,\"pending_request\":false,\"queues\":[{\"activity\":\"queued\",\"block\":\"0x0000000000000000000000000000000000000000000000000000000000000000\",\"device\":\"0\",\"job\":\"88ed6ae82ed5d0ab95d92934906610de0b1ecf71e0fbd4da88ca0d759932474a\",\"local_state\":\"in_progress\",\"project\":\"1527a2b3-b81b-4732-9f7f-5695ba200bf9\",\"server_expires\":1793399709}],\"sent\":true,\"sync_due_in\":7200}\n",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "python3",
+            "/home/bagus/keyhunt-GPU/tools/coordinator_worker.py",
+            "--state-dir",
+            "/var/tmp/kh21-4ys9017h/demo/alice-worker",
+            "--backend",
+            "cuda",
+            "--worker",
+            "/home/bagus/keyhunt-GPU/build/cuda-c20/keyhunt-worker",
+            "--keyhunt",
+            "/home/bagus/keyhunt-GPU/build/cuda-c20/keyhunt",
+            "--device-map",
+            "0=7",
+            "--once"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "/home/bagus/keyhunt-GPU/build/cuda-c20/keyhunt-worker",
+            "status",
+            "--state-dir",
+            "/var/tmp/kh21-4ys9017h/demo/alice-worker"
+          ],
+          "exit_code": 0,
+          "stdout": "{\"client\":\"d11fd8f2-a616-4426-a458-a01ea5fdf266\",\"dispatch\":[{\"block\":\"\",\"device\":\"0\",\"job\":\"\",\"project\":\"\",\"uuid\":\"ab387e304af7aaf1ece8575af15045ba\"}],\"instance\":\"9c7b29e0-fe88-47dc-9109-af881b094c29\",\"last_ack_server_time\":1790807709,\"outbox_bytes\":189,\"outbox_limit\":67108864,\"pending_request\":false,\"queues\":[{\"activity\":\"local-complete-awaiting-sync\",\"block\":\"0x0000000000000000000000000000000000000000000000000000000000000000\",\"device\":\"0\",\"job\":\"88ed6ae82ed5d0ab95d92934906610de0b1ecf71e0fbd4da88ca0d759932474a\",\"local_state\":\"finished\",\"project\":\"1527a2b3-b81b-4732-9f7f-5695ba200bf9\",\"server_expires\":1793399709}],\"sync_due_in\":7197}\n",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "/home/bagus/keyhunt-GPU/build/cuda-c20/keyhunt-worker",
+            "sync",
+            "--state-dir",
+            "/var/tmp/kh21-4ys9017h/demo/alice-worker"
+          ],
+          "exit_code": 0,
+          "stdout": "{\"client\":\"d11fd8f2-a616-4426-a458-a01ea5fdf266\",\"dispatch\":[{\"block\":\"\",\"device\":\"0\",\"job\":\"\",\"project\":\"\",\"uuid\":\"ab387e304af7aaf1ece8575af15045ba\"}],\"instance\":\"9c7b29e0-fe88-47dc-9109-af881b094c29\",\"last_ack_server_time\":1790807712,\"outbox_bytes\":0,\"outbox_limit\":67108864,\"pending_request\":false,\"queues\":[{\"activity\":\"server-acknowledged\",\"block\":\"0x0000000000000000000000000000000000000000000000000000000000000000\",\"device\":\"0\",\"job\":\"88ed6ae82ed5d0ab95d92934906610de0b1ecf71e0fbd4da88ca0d759932474a\",\"local_state\":\"finished\",\"project\":\"1527a2b3-b81b-4732-9f7f-5695ba200bf9\",\"server_expires\":1793399709},{\"activity\":\"queued\",\"block\":\"0x0000000000000000000000000000000000000000000000000000000000000001\",\"device\":\"0\",\"job\":\"88ed6ae82ed5d0ab95d92934906610de0b1ecf71e0fbd4da88ca0d759932474a\",\"local_state\":\"in_progress\",\"project\":\"1527a2b3-b81b-4732-9f7f-5695ba200bf9\",\"server_expires\":1793399712}],\"sent\":true,\"sync_due_in\":7200}\n",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "/home/bagus/keyhunt-GPU/build/cuda-c20/keyhunt",
+            "state",
+            "check",
+            "--state-dir",
+            "/var/tmp/kh21-4ys9017h/demo/alice-worker"
+          ],
+          "exit_code": 0,
+          "stdout": "{\"integrity\":\"ok\"}\n",
+          "stderr": ""
+        }
+      ],
+      "script_sha256": "9e05d3bcc5b76ae3db5e88e913649a2312a1c2adc068b5677b8187c0b0645f9b",
+      "binary_sha256": {
+        "keyhunt": "1a6f332c2569b487f497778cece2e04554c95752419887161deef2589eb452e4",
+        "keyhunt-worker": "74daea7fdce141afa1f25e963219bffef451f63ab4e06cb52a888830dd80f481",
+        "keyhunt-coordinator": "f033922c9c41914aacb0f02c0614544e240474d990a4942804506b2431ad69d9"
+      },
+      "launcher_command": [
+        "python3",
+        "/home/bagus/keyhunt-GPU/tools/coordinator_local.py",
+        "--directory",
+        "/var/tmp/kh21-4ys9017h/demo",
+        "--coordinator",
+        "/home/bagus/keyhunt-GPU/build/cuda-c20/keyhunt-coordinator",
+        "--worker",
+        "/home/bagus/keyhunt-GPU/build/cuda-c20/keyhunt-worker",
+        "--apache-root",
+        "/tmp/keyhunt-c20-deps/root",
+        "--port",
+        "57171"
+      ],
+      "ready": true,
+      "local_status": {
+        "client": "d11fd8f2-a616-4426-a458-a01ea5fdf266",
+        "dispatch": [
+          {
+            "block": "",
+            "device": "0",
+            "job": "",
+            "project": "",
+            "uuid": "ab387e304af7aaf1ece8575af15045ba"
+          }
+        ],
+        "instance": "9c7b29e0-fe88-47dc-9109-af881b094c29",
+        "last_ack_server_time": 1790807709,
+        "outbox_bytes": 189,
+        "outbox_limit": 67108864,
+        "pending_request": false,
+        "queues": [
+          {
+            "activity": "local-complete-awaiting-sync",
+            "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "device": "0",
+            "job": "88ed6ae82ed5d0ab95d92934906610de0b1ecf71e0fbd4da88ca0d759932474a",
+            "local_state": "finished",
+            "project": "1527a2b3-b81b-4732-9f7f-5695ba200bf9",
+            "server_expires": 1793399709
+          }
+        ],
+        "sync_due_in": 7197
+      },
+      "acknowledged_status": {
+        "client": "d11fd8f2-a616-4426-a458-a01ea5fdf266",
+        "dispatch": [
+          {
+            "block": "",
+            "device": "0",
+            "job": "",
+            "project": "",
+            "uuid": "ab387e304af7aaf1ece8575af15045ba"
+          }
+        ],
+        "instance": "9c7b29e0-fe88-47dc-9109-af881b094c29",
+        "last_ack_server_time": 1790807712,
+        "outbox_bytes": 0,
+        "outbox_limit": 67108864,
+        "pending_request": false,
+        "queues": [
+          {
+            "activity": "server-acknowledged",
+            "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "device": "0",
+            "job": "88ed6ae82ed5d0ab95d92934906610de0b1ecf71e0fbd4da88ca0d759932474a",
+            "local_state": "finished",
+            "project": "1527a2b3-b81b-4732-9f7f-5695ba200bf9",
+            "server_expires": 1793399709
+          },
+          {
+            "activity": "queued",
+            "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "device": "0",
+            "job": "88ed6ae82ed5d0ab95d92934906610de0b1ecf71e0fbd4da88ca0d759932474a",
+            "local_state": "in_progress",
+            "project": "1527a2b3-b81b-4732-9f7f-5695ba200bf9",
+            "server_expires": 1793399712
+          }
+        ],
+        "sent": true,
+        "sync_due_in": 7200
+      },
+      "supervisor": {
+        "pid": null,
+        "paused": false,
+        "stopped": true,
+        "failures": {},
+        "devices": {
+          "0": {
+            "pid": null,
+            "ordinal": "7",
+            "uuid": "ab387e304af7aaf1ece8575af15045ba",
+            "state": "stopped",
+            "completed": 1,
+            "grant": null,
+            "error": null
+          }
+        },
+        "last_network_error": null,
+        "worker": {
+          "client": "d11fd8f2-a616-4426-a458-a01ea5fdf266",
+          "dispatch": [
+            {
+              "block": "",
+              "device": "0",
+              "job": "",
+              "project": "",
+              "uuid": "ab387e304af7aaf1ece8575af15045ba"
+            }
+          ],
+          "instance": "9c7b29e0-fe88-47dc-9109-af881b094c29",
+          "last_ack_server_time": 1790807709,
+          "outbox_bytes": 189,
+          "outbox_limit": 67108864,
+          "pending_request": false,
+          "queues": [
+            {
+              "activity": "local-complete-awaiting-sync",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "device": "0",
+              "job": "88ed6ae82ed5d0ab95d92934906610de0b1ecf71e0fbd4da88ca0d759932474a",
+              "local_state": "finished",
+              "project": "1527a2b3-b81b-4732-9f7f-5695ba200bf9",
+              "server_expires": 1793399709
+            }
+          ],
+          "sync_due_in": 7197
+        }
+      },
+      "launcher_stderr": "",
+      "launcher_exit_code": 0
+    }
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "milestone": "C21",
+  "recorded_utc": "2026-09-30T22:37:48.488548+00:00",
+  "passed": true,
+  "source_base_commit": "51166a77b52566dae758efae7334506c462c6c85",
+  "scope": "Documentation publication and executable examples; no production changes or new performance claim",
+  "publication_sha256": {
+    ".github/workflows/cpu.yml": "e04f70839ffe0b4457d804cbc4b0590807a9f54e8d5659055c6dde94ff956bf6",
+    "README.md": "463d88222a37545a9412a61a42c17772325db8c4244df359bc13e314a9f34a47",
+    "docs/BUILD.md": "0e002136d3d0ca705e772931d0e05062e7e275946f92463765329fc5d08b69e8",
+    "docs/C21_VALIDATION.md": "f53d03597d6af346f6d6c11279c31c6d3fd07b1cdcc59dd3521768f503a36ff6",
+    "docs/CHECKPOINTS.md": "8184d4a157b1f8902be5156f682beea8f6e98cc02911c5e14f0a38da1f941ede",
+    "docs/COORDINATOR.md": "fb5b7239be4056fdb0895ef8be8fcfaf5d149339a66d9fa45e7bae04676ff782",
+    "docs/CUDA_BACKEND.md": "3c6ac9e7f2ac5b708cf552ba611abc1377308862cea5c70c9c7a0d8a64b73b01",
+    "docs/GPU_PROFILING.md": "2964e8b4c43ecb117afe7c64d475a27cf6c1254650e65d97839d0ca31a94fab6",
+    "docs/GPU_QUICKSTART.md": "0052ad8f41f43e0cd4e0a7605e224b94320817b881cce821ae89111f2ea3258d",
+    "docs/GPU_REDESIGN_PLAN.md": "8489c8928603552e22f1a9e52a085a2c12f3753596451078c576cd7085346acc",
+    "docs/HIP_BACKEND.md": "e81e2d58a96417879eacfcbeb7abbad5dda9a07c5b5349c891933dcb772857c6",
+    "docs/IMPLEMENTATION_STATUS.md": "98711e80e1a89ae6234bd3bda05bf57649a70503e4846e68ac82c9943c5f2f84",
+    "docs/MODES.md": "1be9d8c1a877db64bb55339ffda511ebfbd95bf6524453241a27e00ad3e74900",
+    "docs/OPERATIONS.md": "acbb93e959047086c1fe3e3cf2ae24916cf12cc3dce892fe0d87170bcdc800db",
+    "docs/PAUSE_RESUME.md": "b52472f83b9a8f5cdc4a4e411990f9d8d7996ec68f018f0c8bf384500d613a82",
+    "docs/STORAGE.md": "5671248a6d11293356e815920581f892b4306428843af94b107bf34b1737c243",
+    "docs/USAGE.md": "dd8ea83f438b2d30d0da21bac4002addc7da20336ce483f653116dbd2745f449",
+    "tests/integration/gpu_examples.py": "5ae6fd98aae67c8d24ff7522c386bbdff8418b631a81b0f27c7d894c01354bfd"
+  },
+  "unchanged_production": {
+    "hip": {
+      "baseline": "C20_VALIDATION.json",
+      "source_files_checked": 121,
+      "differences": [],
+      "binary_sha256": {
+        "keyhunt": "bbaf8bd9fc2ee38390f7380e7a7f6817af02bde98582bf957875e32c8e1597fc",
+        "keyhunt-worker": "41d98de2265c77bc487f2844344efca89da33e56aa39c3805f25b77d2485dc1d",
+        "keyhunt-coordinator": "6cf9096be6549809bb6f930a98f797d498dbf441bb88c87a3250093a26b4d97b"
+      }
+    },
+    "cuda": {
+      "baseline": "C20_CUDA_VALIDATION.json",
+      "source_files_checked": 121,
+      "differences": [],
+      "binary_sha256": {
+        "keyhunt": "1a6f332c2569b487f497778cece2e04554c95752419887161deef2589eb452e4",
+        "keyhunt-worker": "74daea7fdce141afa1f25e963219bffef451f63ab4e06cb52a888830dd80f481",
+        "keyhunt-coordinator": "f033922c9c41914aacb0f02c0614544e240474d990a4942804506b2431ad69d9"
+      }
+    }
+  },
+  "checks": {
+    "cpu_readme_examples": 2,
+    "cpu_preparation": "passed; no GPU executed",
+    "hip_quickstart": "passed on ordinal 0, eight visible SPX/NPS1 MI300X",
+    "cuda_quickstart": "passed on ordinal 7, eight visible H200, MIG disabled",
+    "localhost_operations": {
+      "hip": "passed, queue 0 on ordinal 0",
+      "cuda": "passed, queue 0 mapped to ordinal 7"
+    },
+    "documentation": "Checked local links, anchors and code fences in 48 Markdown files",
+    "workflow": "Workflow YAML parsed; CPU quickstart preparation command checked and locally passed"
+  },
+  "log_members": {
+    "keyhunt-readme-examples.json": "05cdd503a07f5a8bdd3990796ba48dfa99c679c513bf4308258ae866791ee34b",
+    "keyhunt-c21-doc-links.txt": "480199ea40c57c5d4040704d6faf55cd1bcb5bb391cbc7fdee5940727657525f",
+    "keyhunt-c21-workflow.txt": "ef6ce1e121953297e9f190c6530cabbc25fa03213f045144fd691b8cc3584ebd",
+    "keyhunt-c21-supervisor-help.txt": "52a2cc4e5d34957b0864e5a0365a7b913fc158c8b9304fb6deaa7cfad9acbacb",
+    "keyhunt_c21_operations_smoke.py": "9e05d3bcc5b76ae3db5e88e913649a2312a1c2adc068b5677b8187c0b0645f9b"
+  },
+  "artifacts": {
+    "C21_EXAMPLES.json": {
+      "sha256": "5ff7718f0690213c4abdcef1a1e829a490905e6e01ab66e91b04b306ec67abb0",
+      "bytes": 62657
+    },
+    "C21_OPERATIONS.json": {
+      "sha256": "3f64755afb898397a4b803b4f56dc28cbeadb1808492fd5d9dddbdcadf735493",
+      "bytes": 18298
+    },
+    "C21_LOGS.tar.gz": {
+      "sha256": "fd1205fbfc5c78b70ceaa52c9a87f950841fc387b1145c3f8f8780231ad0e85b",
+      "bytes": 4952
+    }
+  },
+  "limitations": [
+    "No GitHub-hosted CI run claimed; new workflow command passed locally",
+    "Existing broad C20 acceptance retained; not rerun for documentation-only production diff",
+    "Quickstarts test one selected logical GPU per backend; not scaling or performance measurements",
+    "Operations use isolated localhost mTLS, not public ingress or cross-host coordination",
+    "QPX search, CPX fleet scaling, CUDA MIG and genuine driver hangs remain unvalidated",
+    "C22 portable offline assignments and C23 additional GPU modes remain planned"
+  ]
+}

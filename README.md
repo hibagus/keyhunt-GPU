@@ -163,7 +163,9 @@ hours. C22 manual assignment export/import and C23 further GPU modes are planned
 - [x] C18: native CUDA, H200 parity/recovery, measured arithmetic and inline PTX tuning.
 - [x] C19: [opt-in gfx942 carry/borrow intrinsics, portable fallback and paired ISA evidence](docs/GFX942_SPECIALIZATIONS.md).
 - [x] C20: [concurrent HIP/CUDA scheduling, balancing and recovery](docs/MULTI_GPU.md); [H200 acceptance](docs/C20_CUDA_VALIDATION.md).
-- [ ] C21–C23: operations guides, offline assignments and further GPU modes.
+- [x] C21: [validated GPU build/operations guides and executable quickstarts](docs/C21_VALIDATION.md).
+- [ ] C22: portable offline assignment export and reconciliation.
+- [ ] C23: further GPU modes with algorithm and recovery parity.
 
 See [implementation status](docs/IMPLEMENTATION_STATUS.md) for evidence and
 [acceptance gates](docs/GPU_REDESIGN_PLAN.md#10-commit-sized-implementation-sequence)
