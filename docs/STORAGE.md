@@ -45,7 +45,7 @@ The immutable initial migration is `src/storage/schema_v1.sql`. C13 upgrades to
 [schema version 2](CHECKPOINTS.md#schema-version-2-and-migration) with an automatic
 sealed pre-migration backup. C15 adds immutable migrations 3 (registry/roles),
 4 (machine receipts/device queues) and 5 (worker leases/outbox); the current schema
-is **5**, with one sealed `pre-v5-*` backup of the committed source version on
+is **6**, with one sealed `pre-v6-*` backup of the committed source version on
 upgrade. The v1 contract below records the C12 foundation. A private application ID,
 `user_version=1`, and SHA256 of the exact migration text identify the schema.
 Only an empty, unowned database is initialized. Foreign databases, unknown

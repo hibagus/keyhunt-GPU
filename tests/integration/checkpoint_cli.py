@@ -186,7 +186,7 @@ with tempfile.TemporaryDirectory(prefix="keyhunt-c13-cli-") as temporary:
 
     # All C++ connections are closed before the independent SQLite reader starts.
     with sqlite3.connect(state/"progress.sqlite") as db:
-        assert db.execute("PRAGMA user_version").fetchone()[0]==5
+        assert db.execute("PRAGMA user_version").fetchone()[0]==6
         assert db.execute("PRAGMA foreign_key_check").fetchall()==[]
         for payload,digest in db.execute("SELECT c.payload,r.payload FROM checkpoints c JOIN requests r USING(project,job,owner,operation,request)"):
             assert hashlib.sha256(payload).digest()==digest

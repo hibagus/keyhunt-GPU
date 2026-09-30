@@ -174,3 +174,9 @@ indefinitely for such a PID. Reaping shares a further five-second budget across
 the fleet, surviving owners are visibly quarantined, and their OS locks prevent
 replacement. A deterministic 64-child test proves the maximum shared wait is
 35 seconds, without assuming SIGKILL can interrupt a kernel driver.
+
+The full CPU/coordinator run found one stale CLI fixture expecting schema v5.
+The fixture and storage guide now expect v6; its independent foreign-key and
+checkpoint-payload checksum checks remain intact. The failed gate then passed.
+The other 46 CPU/coordinator gates passed in the full run; focused debug (9) and
+ASAN/UBSAN (7, leak detection and halt-on-error enabled) checks also passed.
