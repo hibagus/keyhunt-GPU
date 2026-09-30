@@ -1,4 +1,5 @@
 #include "keyhunt/scheduler/xpoint_batch_size.h"
+#include "keyhunt/scheduler/adaptive_work.h"
 #include "keyhunt/storage/checkpoint.h"
 #include "checkpoint_data.h"
 #include "sqlite.h"
@@ -53,7 +54,7 @@ struct Cleanup {
     ~Cleanup(){if(stop)stop();} // a throwing stop is a fatal ownership-contract violation
 };
 void options(const CheckpointOptions& o,bool bsgs){
-    if(o.checkpoint_seconds>60 || !o.candidate_capacity ||
+    if(o.work_unit_seconds>300 || (o.work_unit_seconds && o.work_unit_seconds<60) || o.checkpoint_seconds>60 || !o.candidate_capacity ||
        o.candidate_capacity>(bsgs?65536U:1048576U))throw std::invalid_argument("invalid checkpoint interval/candidate capacity");
     if(bsgs){
         if(!o.target_batch || o.target_batch>64 || !o.giant_steps || o.giant_steps>1048576/o.target_batch)
@@ -148,6 +149,9 @@ struct CheckpointRun::Impl {
         if(observer)observer(pending,matches.size(),ms);
         pending.clear();
     }
+    void planned(const ScalarInterval& interval){
+        ++summary.work_units;if(control.work_unit)control.work_unit(interval);
+    }
     void activity(CheckpointActivity value){if(control.notify)control.notify(value);}
     bool boundary(){
         if(!control.poll)return true;
@@ -207,13 +211,20 @@ CheckpointSummary CheckpointRun::xpoint(Journal& journal,const Grant& grant,cons
     std::copy(grant.epoch.begin(),grant.epoch.end(),identity.assignment_id.begin());
     identity.assignment_generation=uint64_t(grant.generation);identity.executor_generation=uint64_t(state.executor);
     scheduler::XPointBatchSize sizing(o.xpoint_steps,o.candidate_capacity);
+    scheduler::AdaptiveWorkSize units(UInt256(o.xpoint_steps),o.work_unit_seconds);
     for(const auto& gap:state.remaining){
-        auto cursor=gap.begin();
+        auto cursor=gap.begin();std::optional<scheduler::WorkUnit> work;uint64_t active_ns=0;
         while(cursor<gap.end()){
             if(!state.boundary())return state.summary;
-            state.validate();const auto steps=std::min(UInt256(sizing.limit()),gap.end().subtract(cursor)).to_uint64();
-            const auto work=scheduler::WorkUnit::plan(grid,grant.block,cursor,steps,identity);
-            const auto batch=*scheduler::KernelBatch::plan(*work,cursor,steps);
+            if(!work || cursor==work->interval().end()){
+                if(work)units.observed(work->interval().size(),active_ns);
+                const auto span=std::min({units.span(),gap.end().subtract(cursor),UInt256(UINT64_MAX)}).to_uint64();
+                work=scheduler::WorkUnit::plan(grid,grant.block,cursor,span,identity);active_ns=0;
+                state.planned(work->interval());
+            }
+            const auto started=Clock::now();state.validate();
+            const auto batch=*scheduler::KernelBatch::plan(*work,cursor,sizing.limit());
+            const auto steps=batch.step_count();
             const auto result=run(batch);++state.summary.batches;
             if(!same(result.batch.interval(),batch.interval()) || result.batch.work().identity()!=identity ||
                result.batch.work().block_id()!=grant.block || !same(result.batch.work().block_interval(),grant.interval))
@@ -223,12 +234,13 @@ CheckpointSummary CheckpointRun::xpoint(Journal& journal,const Grant& grant,cons
             state.account(result);
             if(result.overflow){
                 ++state.summary.overflows;
-                sizing.overflow(steps);continue;
+                sizing.overflow(steps);active_ns+=uint64_t(std::chrono::duration_cast<std::chrono::nanoseconds>(Clock::now()-started).count());continue;
             }
             sizing.accepted(result.candidate_count);
             state.verified(batch.interval(),result.matches,false);
             state.summary.match_observations+=result.matches.size();state.cover(batch.interval());
             state.flush(result.matches);cursor=batch.interval().end();
+            active_ns+=uint64_t(std::chrono::duration_cast<std::chrono::nanoseconds>(Clock::now()-started).count());
         }
     }
     if(!state.boundary())return state.summary;
@@ -238,14 +250,20 @@ CheckpointSummary CheckpointRun::bsgs(Journal& journal,const Grant& grant,const 
     const core::XPointVerifier& verifier,const BsgsRunner& run,CheckpointOptions o,CheckpointObserver observer,CheckpointCleanup cleanup,CheckpointControl control){
     options(o,true);Impl state(journal,grant,detail::binding(targets,table),verifier,o,std::move(observer),std::move(control));
     Cleanup stopped_before_unlock{std::move(cleanup)};
+    scheduler::AdaptiveWorkSize units(UInt256(table.memory().m).multiply(UInt256(o.giant_steps)),o.work_unit_seconds,table.memory().m);
     for(const auto& gap:state.remaining){
-        auto cursor=gap.begin();
+        auto cursor=gap.begin();std::optional<ScalarInterval> work;uint64_t active_ns=0;
         while(cursor<gap.end()){
-            const auto tile=core::bsgs_tile(ScalarInterval(cursor,gap.end()),table.memory().m,o.giant_steps);
+            if(!work || cursor==work->end()){
+                if(work)units.observed(work->size(),active_ns);
+                work=ScalarInterval(cursor,cursor.add(std::min(units.span(),gap.end().subtract(cursor))));
+                active_ns=0;state.planned(*work);
+            }
+            const auto tile=core::bsgs_tile(ScalarInterval(cursor,work->end()),table.memory().m,o.giant_steps);
             uint32_t first=0,limit=o.target_batch;
             while(first<targets.values().size()){
                 if(!state.boundary())return state.summary;
-                state.validate();const auto count=uint32_t(std::min<size_t>(limit,targets.values().size()-first));
+                const auto started=Clock::now();state.validate();const auto count=uint32_t(std::min<size_t>(limit,targets.values().size()-first));
                 const core::BsgsBatch batch(tile,table.memory().m,first,count,targets.digest(),table.checksum());
                 const auto result=run(batch);++state.summary.batches;const auto& returned=result.batch;
                 if(!same(returned.interval(),tile) || returned.m()!=batch.m() || returned.first_target()!=first ||
@@ -266,7 +284,8 @@ CheckpointSummary CheckpointRun::bsgs(Journal& journal,const Grant& grant,const 
                 group.kernel_ms+=result.kernel_ms;
                 if(result.overflow){
                     ++state.summary.overflows;if(count==1)throw std::logic_error("single-target overflow");
-                    limit=uint32_t(std::min<uint64_t>(o.candidate_capacity,count/2));continue;
+                    limit=uint32_t(std::min<uint64_t>(o.candidate_capacity,count/2));
+                    active_ns+=uint64_t(std::chrono::duration_cast<std::chrono::nanoseconds>(Clock::now()-started).count());continue;
                 }
                 std::vector<core::XPointMatch> matches;
                 for(const auto& m:result.matches){
@@ -279,6 +298,7 @@ CheckpointSummary CheckpointRun::bsgs(Journal& journal,const Grant& grant,const 
                 // only when every canonical target has completed without overflow.
                 if(first==targets.values().size())state.cover(tile);
                 state.flush(matches);
+                active_ns+=uint64_t(std::chrono::duration_cast<std::chrono::nanoseconds>(Clock::now()-started).count());
             }
             cursor=tile.end();
         }

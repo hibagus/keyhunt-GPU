@@ -105,3 +105,38 @@ process retains its owner locks and cannot be replaced unsafely.
 multi-process tests for simultaneous startup, one isolated memory failure,
 bounded retries/quarantine, healthy completion, and one machine sync check.
 The live HTTPS/HIP regression also passes with the concurrent supervisor.
+
+## Work units and reference calibration
+
+Supervised execution starts with one bounded unit, then sizes the next unit from
+accepted scalar coverage and active wall time, targeting 180 seconds. Integer
+geometry stays exact and each unit is clamped to its remaining block/gap.
+Xpoint batches carry the parent work-unit identity. BSGS units align to `m` and
+still credit a tile only after all targets finish. Timing includes validation,
+all target groups, overflow attempts and periodic commits; local pause waits are
+excluded. Kernel batch limits, ten-second checkpoints and machine sync cadence
+remain independent. An estimate changes only future local units. Exact coverage
+is journaled through the existing atomic checkpoint receipts; planned unit bounds
+are also emitted as `work-unit` events.
+
+For a new job, recommend a fixed width from at least five warmed, complete,
+validated single-device measurements of the exact inputs:
+
+```sh
+python3 tools/calibrate_blocks.py --report docs/baselines/C20_FLEET.json \
+  --mode xpoint --reference-device 0
+```
+
+The tool computes `align_up(ceil(R * 43200), alignment)` using rational integer
+arithmetic, and a 180-second initial work-unit recommendation. The reference
+queue is explicit; mixed UUIDs/targets/configurations, missing warm samples and
+invalid timings are rejected. For BSGS, alignment is `m`; complete-target measured
+wall time includes tile setup and verification. Effective scalar coverage/s and
+actual target-giant steps/s are reported separately. Recommendations never modify
+an existing job. Without a suitable reference, job creation still requires an
+explicit `block_width`. Twelve hours is a prediction, not a twelve-hour test or a
+completion-time guarantee for every device.
+
+Exact sizing/alignment/overflow tests and checkpoint, pause, concurrent ownership
+and live HTTPS/HIP regressions pass after adaptive sizing. Calibration tests
+cover rational rounding, BSGS units and rejection of unmeasured/mixed inputs.

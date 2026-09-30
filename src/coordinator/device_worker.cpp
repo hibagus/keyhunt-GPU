@@ -95,7 +95,7 @@ int run_device(const Options& args){
     const auto queue=option(args,"queue",ordinal_text);
     const auto once=option(args,"once","no"),rebind=option(args,"rebind","no");
     if((once!="yes"&&once!="no")||(rebind!="yes"&&rebind!="no"))throw std::invalid_argument("once/rebind require yes or no");
-    CheckpointOptions limits;limits.concurrent_blocks=true;
+    CheckpointOptions limits;limits.concurrent_blocks=true;limits.work_unit_seconds=180;
     limits.xpoint_steps=number(args,"batch-size",1048576,1048576);
     limits.target_batch=uint32_t(number(args,"target-batch",64,64));
     limits.giant_steps=number(args,"giant-batch",16384,1048576/limits.target_batch);
@@ -108,6 +108,8 @@ int run_device(const Options& args){
     worker.acquire_device(queue,selected.device.uuid,rebind=="yes");
     LocalCheckpointControl control(worker.journal().state_directory(),ordinal,selected.visible_devices,queue);
     auto callbacks=control.callbacks();
+    callbacks.work_unit=[&](const ScalarInterval& interval){emit({{"type","work-unit"},
+        {"interval",wire::interval(interval)},{"target_seconds",limits.work_unit_seconds}});};
     callbacks.notify(CheckpointActivity::Running);
     // The self-test is fresh in this process and runs while this device's slot
     // is exclusively owned. No persisted pass can bypass a changed runtime.
@@ -133,6 +135,7 @@ int run_device(const Options& args){
         idle_state.reset();control.bind(&*grant);callbacks.notify(CheckpointActivity::Running);
         emit({{"type","grant-start"},{"queue",queue},{"grant",wire::grant(*grant)}});
         try{
+            const auto started=Clock::now();const auto setups_before=prepared.setups;
             prepared.prepare(worker,*grant,args,host_memory);
             const auto notify=[&](const auto&,size_t matches,double milliseconds){
                 emit({{"type","checkpoint"},{"sequence",++progress},{"matches",matches},{"transaction_ms",milliseconds}});
@@ -167,7 +170,12 @@ int run_device(const Options& args){
             if(result.complete)++completed;
             emit({{"type","grant-finish"},{"complete",result.complete},{"grant",wire::grant(*grant)},
                 {"computed_scalars",result.computed_scalars.hex()},{"device_steps",result.device_steps.hex()},
-                {"kernel_ms",result.kernel_ms},{"executor_setups",prepared.setups},
+                {"kernel_ms",result.kernel_ms},{"executor_setups",prepared.setups},{"work_units",result.work_units},
+                {"cold",prepared.setups!=setups_before},
+                {"wall_ns",std::chrono::duration_cast<std::chrono::nanoseconds>(Clock::now()-started).count()},
+                {"mode",prepared.x_targets?"xpoint":"bsgs"},
+                {"target_count",prepared.x_targets?prepared.x_targets->values().size():prepared.b_targets->values().size()},
+                {"m",prepared.table?prepared.table->memory().m:1},
                 {"table_upload_ms",prepared.b_executor?prepared.b_executor->table_upload_ms():0}});
             if(!result.complete)break;
         }catch(const ExecutionBlocked& blocked){

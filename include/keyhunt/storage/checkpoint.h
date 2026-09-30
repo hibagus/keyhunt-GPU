@@ -9,6 +9,7 @@ struct CheckpointOptions {
     // Supervised devices share the journal but retain an exclusive block guard.
     // Standalone callers keep the original whole-journal exclusion by default.
     bool concurrent_blocks=false;
+    unsigned work_unit_seconds=0; // 0 preserves fixed batches; supervised default is 180.
     uint64_t xpoint_steps=1048576,giant_steps=16384;
     uint32_t target_batch=64,candidate_capacity=1024,checkpoint_seconds=10;
 };
@@ -19,7 +20,7 @@ struct BsgsGroupMetrics {
 };
 struct CheckpointSummary {
     UInt256 resumed_scalars,computed_scalars,device_steps,verified_device_steps;
-    uint64_t match_observations=0,batches=0,overflows=0,checkpoints=0;
+    uint64_t match_observations=0,batches=0,overflows=0,checkpoints=0,work_units=0;
     unsigned bsgs_group_size=0; // Last dispatch only; zero if no BSGS batch ran.
     // Indices 0/1 describe groups 1/8 across every attempt, including overflow.
     std::array<BsgsGroupMetrics,2> bsgs_groups{};
@@ -49,6 +50,7 @@ struct CheckpointControl {
     std::function<CheckpointRequest()> poll;
     std::function<void(CheckpointActivity)> notify;
     std::function<void()> wait;
+    std::function<void(const ScalarInterval&)> work_unit;
 };
 using BsgsRunner=std::function<backend::BsgsSearchResult(const core::BsgsBatch&)>;
 

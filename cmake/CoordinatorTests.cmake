@@ -101,3 +101,7 @@ set_tests_properties(coordinator_dispatch PROPERTIES TIMEOUT 120 LABELS "cpu;coo
 add_test(NAME coordinator_supervisor COMMAND ${Python3_EXECUTABLE}
     ${PROJECT_SOURCE_DIR}/tests/coordinator/supervisor.py)
 set_tests_properties(coordinator_supervisor PROPERTIES TIMEOUT 60 LABELS "cpu;coordinator;recovery")
+
+add_test(NAME coordinator_calibration COMMAND ${Python3_EXECUTABLE}
+    ${PROJECT_SOURCE_DIR}/tests/coordinator/calibration.py)
+set_tests_properties(coordinator_calibration PROPERTIES TIMEOUT 30 LABELS "cpu;coordinator;scheduler")

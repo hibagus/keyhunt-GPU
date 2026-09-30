@@ -1,4 +1,5 @@
 #include "checkpoint_fixture.h"
+#include "keyhunt/scheduler/adaptive_work.h"
 #include "checkpoint_data.h"
 #include "schema_v1.h"
 #include <cstring>
@@ -10,10 +11,14 @@ using namespace fixture;
 using namespace keyhunt::storage::detail;
 int main(){
     try{
+        scheduler::AdaptiveWorkSize adaptive(UInt256(16),180,8);
+        adaptive.observed(UInt256(100),1000000000);require(adaptive.span()==UInt256(18000),"180 second integer sizing");
+        adaptive.observed(UInt256(17),4000000000);require(adaptive.span()==UInt256(760),"BSGS alignment floors span");
+        adaptive.observed(UInt256::power_of_two(240),1);require(adaptive.span()<core::scalar_order(),"wide estimate saturates safely");
         Temporary temporary;const auto path=temporary.path.string();core::XPointVerifier verifier;
         auto xs=x_targets(verifier,{1,5,9});auto bs=b_targets(verifier,{1,5,9});
         auto table=bsgs::Table::build(3);Journal j(path);const auto project=j.create_project("checkpoint tests");
-        CheckpointOptions options;options.xpoint_steps=4;options.giant_steps=2;options.target_batch=2;options.candidate_capacity=1;options.checkpoint_seconds=0;
+        CheckpointOptions options;options.work_unit_seconds=180;options.xpoint_steps=4;options.giant_steps=2;options.target_batch=2;options.candidate_capacity=1;options.checkpoint_seconds=0;
         const auto scope=CheckpointRun::create_xpoint(j,project,ScalarInterval(UInt256(1),UInt256(10)),UInt256(9),xs);
         const auto grant=j.claim(scope,"worker","claim").at(0);
         rejects([&]{j.record_coverage(grant,{grant.interval},"unsafe");});

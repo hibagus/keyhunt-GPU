@@ -217,6 +217,7 @@ if(KEYHUNT_ENABLE_COORDINATOR)
         keyhunt_configure_target(keyhunt-worker)
         install(TARGETS keyhunt-worker RUNTIME DESTINATION bin)
         install(PROGRAMS tools/coordinator_worker.py DESTINATION bin RENAME keyhunt-supervise)
+        install(PROGRAMS tools/calibrate_blocks.py DESTINATION bin RENAME keyhunt-calibrate-blocks)
     endif()
 endif()
 
