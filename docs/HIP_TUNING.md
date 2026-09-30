@@ -57,3 +57,22 @@ Architecture-specific assembly remains an option when whole-kernel measurements
 justify it; retain a portable reference. C19's broader ISA delivery gate remains
 separate from C17. This document will record accepted and rejected experiments
 and the final validation scope as measurements complete.
+
+## Accepted: xpoint launch bounds (A13)
+
+Both xpoint entry points now declare the 128-thread maximum used by every host
+launch. On gfx942, five alternating measured pairs at 1,048,576 scalars produced
+1.525× / 1.528× / 1.591× median kernel speedups for no-match one-target,
+boundary-three-target and no-match 32-target workloads. Warm executor speedups
+were 1.465× / 1.476× / 1.562×; every individual pair improved.
+[Raw paired measurements](baselines/C17_LAUNCH.json) retain distributions, samples,
+exact commands and frozen-build identities.
+
+The [compiler remarks](baselines/C17_LAUNCH_RESOURCES.log) report zero spilled
+VGPRs for all xpoint kernels. Small-target stepping has zero scratch; grouped
+inversion still needs 784 bytes/lane of private scratch, so zero spills does not
+mean zero private memory. Compiler occupancy estimates are not measured occupancy.
+Five focused HIP tests passed: executor tails/ownership/overflow, injected
+failures, both CLI kernels and checkpoint pause. The existing C16 report provides
+the pre-change compiler baseline. Measurements used physical GPU 1 (visible
+ordinal 0); an independent C16 audit used GPU 0 on the same unreserved host.

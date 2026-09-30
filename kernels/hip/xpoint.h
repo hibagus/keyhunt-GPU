@@ -37,7 +37,9 @@ __device__ inline Scalar offset_scalar(Scalar begin, uint64_t offset) {
     }
     return begin;
 }
-__global__ void xpoint_direct(Scalar begin, uint64_t count, const Field* targets,
+// Every host launch uses 128 threads. Tell the compiler that bound so it can
+// allocate registers for this block size instead of spilling for larger blocks.
+__global__ __launch_bounds__(128) void xpoint_direct(Scalar begin, uint64_t count, const Field* targets,
     uint32_t target_count, core::XPointCandidate* output, uint32_t capacity,
     XPointCounters* counters) {
     const uint64_t index = uint64_t(blockIdx.x)*blockDim.x+threadIdx.x;
@@ -59,7 +61,7 @@ __global__ void xpoint_direct(Scalar begin, uint64_t count, const Field* targets
 // Disjoint lane groups cover [0,count) exactly, including the final partial group.
 constexpr unsigned xpoint_group = 8;
 template<bool SmallTargets>
-__global__ void xpoint_stepped(Point base, uint64_t count, const Point* powers,
+__global__ __launch_bounds__(128) void xpoint_stepped(Point base, uint64_t count, const Point* powers,
     const Field* targets, uint32_t target_count, core::XPointCandidate* output,
     uint32_t capacity, XPointCounters* counters) {
     const uint64_t first = (uint64_t(blockIdx.x)*blockDim.x+threadIdx.x)*xpoint_group;
