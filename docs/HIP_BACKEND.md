@@ -161,7 +161,7 @@ python3 tools/capture_hip_baseline.py --build-dir build/hip-release \
 This harness uses separate short processes and records their event/wall times;
 it is deliberately not a steady-state benchmark. C08 now adds
 [arithmetic microbenchmarks](GPU_ARITHMETIC.md#initial-gfx942-measurements); C16
-remains the durable end-to-end benchmark milestone.
+adds [durable end-to-end benchmarks and separate profiler capture](GPU_PROFILING.md).
 
 
 ## CPX, QPX and SPX compatibility

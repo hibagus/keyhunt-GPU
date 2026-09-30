@@ -22,7 +22,8 @@ change is committed separately. Analysis and validation evidence live under
 | C13: checkpoint verified progress and replay incomplete work | Completed | [Checkpoint contracts, commands and findings](CHECKPOINTS.md); canonical input binding, atomic verified matches/coverage, fourteen process-exit faults, real HIP restart, migration/corruption gates and a corrected BSGS type collision; [acceptance evidence](baselines/C13_VALIDATION.json) |
 | C14: graceful pause, resume and inspection | Completed | [Controls, operations and measurements](PAUSE_RESUME.md); graceful signals, private local commands, bounded drain, resume fencing, online snapshots and real HIP restart across 2/1/3 visible devices; [acceptance evidence](baselines/C14_VALIDATION.json) |
 | C15: authenticated project-scoped coordination | Completed (localhost scope) | [Implementation and operations](COORDINATOR.md), [findings and validation](COORDINATOR_VALIDATION.md); required mTLS, registry/roles, atomic machine sync, durable outbox, offline fences, supervised HIP execution and reconciled restore. User-selected localhost gate replaces second-host/public ingress; those remain deferred. |
-| C16–C23 | Planned | Acceptance gates remain in the redesign plan |
+| C16: reproducible GPU profiling and benchmarks | Completed | [Methodology, findings and raw evidence](GPU_PROFILING.md); exact oracle-checked coverage, repeated volatile/durable samples, hardware/build metadata, real periodic commits, separate ROCm traces/counters and compiler resources; 32 CPU and 58 HIP/coordinator tests pass |
+| C17–C23 | Planned | Acceptance gates remain in the redesign plan |
 
 C01 records the original CPU boundary/stride defects. C06 fixes modular/point
 arithmetic and the tested BSGS start miss; tail overrun and stride defects remain.
@@ -39,3 +40,7 @@ and isolated localhost deployment with separate worker journals. Public ingress
 and a physical second host remain deferred by user decision; simultaneous
 multi-GPU execution remains C20. CPX/QPX/SPX contracts remain
 supported, with current hardware validation on SPX/NPS1 and no partition changes.
+
+C16 adds comparable standalone execution/durability metrics and opt-in measurement
+tools without changing search kernels or persistent schemas. C15 supervisor
+availability findings remain tracked in the [follow-up audit](audits/C15_AUDIT.md).

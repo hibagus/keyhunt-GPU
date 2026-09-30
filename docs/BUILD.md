@@ -321,3 +321,18 @@ worker configuration, deployment templates, backup/restore rules and boundaries.
 [Validation](COORDINATOR_VALIDATION.md) records the combined regression evidence.
 The focused sanitizer selector continues to exclude only the pre-existing
 `cpu_baseline` and `target_loading` legacy gates.
+
+## C16 profiling and durability benchmarks
+
+With the HIP test build (including `secp256k1_oracle`) already built, run:
+
+```sh
+python3 tools/benchmark_gpu.py --build-dir build/hip-release \
+  --output-dir /tmp/keyhunt-c16-run --repeats 5 --batches 128
+```
+
+The output directory must be new and outside the checkout. The harness uses only
+Python's standard library and local build tools; tracing additionally needs
+`rocprofv3`. See [methodology, profiler commands and accepted evidence](GPU_PROFILING.md)
+for exact workload units, durability interpretation, metadata, and retained raw
+samples. Timing trials are opt-in; CPU CTest runs the benchmark acceptance checks.

@@ -5,6 +5,10 @@ passes 57 HIP and 41 CPU tests, reproduces two supervisor pause/quarantine defec
 and measures warm execution and coordinated block startup costs.
 The [C12–C13 audit](audits/C13_AUDIT.md) covers durable GPU execution and
 whole-process throughput with different checkpoint cadences.
+C16 implementation evidence now lives in [GPU profiling and benchmarks](GPU_PROFILING.md):
+durable executor timing, repeated exact-coverage measurements, ROCm traces and
+compiler resources. The historical audits below remain scoped to their frozen revisions.
+
 The earlier [C07–C11 HIP audit](audits/C11_AUDIT.md) reproduces three performance
 findings and measures a 1.48–1.51× xpoint kernel throughput improvement in an
 isolated launch-bound experiment.
