@@ -1,4 +1,5 @@
 #include "keyhunt/coordinator/repository.h"
+#include "keyhunt/coordinator/offline.h"
 #include "protocol.h"
 #include "keyhunt/storage/checkpoint.h"
 #include <sstream>
@@ -364,6 +365,20 @@ Json Repository::request(const Certificate& cert,const std::string& method,const
         q.bind(1,actor.client);while(q.step())out.push_back({{"project",q.text(0)},{"name",q.text(1)},{"role",q.integer(2)}});
     }else if(parts==std::vector<std::string>{"api","v1","sync"}&&method=="POST"){
         s.db.writable();out=s.sync(actor,body);
+    }else if(parts==std::vector<std::string>{"api","v1","offline-sync"}&&method=="POST"){
+        s.db.writable();validate_offline_request(body);
+        const auto value=s.sync(actor,body["body"]);
+        // A cached machine receipt cannot export assignments that have since
+        // expired or been recovered to a new owner/generation. Fencing is checked
+        // in this same transaction before the portable response leaves the server.
+        for(const auto& row:value["grants"]){
+            const auto grant=wire::grant(row["grant"]);const auto current=s.journal.block(grant.scope,grant.block);
+            if(!current.assignment||current.expired||grant.epoch!=s.db.metadata("epoch")||
+               current.assignment->owner!=grant.owner||current.assignment->generation!=grant.generation)
+                throw Error(409,"offline receipt contains an expired or superseded assignment; explicit recovery required");
+        }
+        out=offline_response(body,200,Json{{"ok",true},{"server_time",s.now()},{"value",value},
+                                          {"controls",control_snapshot(cert,body["body"])}});
     }else{
         if(parts.size()<5||parts[2]!="projects")throw Error(404,"not found");
         const auto& project=parts[3];s.authorize(actor,project);s.rate(actor.client+"/"+project,120);

@@ -92,4 +92,27 @@ Json read_offline(const std::string& path,const std::string& expected){
     if(checksum(text)!=expected)throw std::runtime_error("offline file checksum mismatch");
     return parse_json(text); // Also rejects ambiguous duplicate JSON fields.
 }
+void validate_offline_request(const Json& request){
+    using namespace wire;
+    fields(request,{"format","version","transfer","endpoint","body"});
+    if(str(request,"format",64)!="keyhunt-offline-request"||integer(request,"version")!=1)
+        throw Error(426,"unsupported offline request format");
+    token(str(request,"transfer",36));
+    const auto endpoint=str(request,"endpoint",512);
+    if(endpoint.rfind("https://",0)!=0||endpoint.find_first_of("/?#@",8)!=std::string::npos)
+        throw Error(400,"offline request requires an HTTPS authority");
+    if(!request["body"].is_object())throw Error(400,"offline request body must be an object");
+    offline_checksum(request); // The whole envelope must fit the portable file bound.
+}
+Json offline_response(const Json& request,int status,const Json& body){
+    validate_offline_request(request);
+    if(status!=200&&status!=401&&status!=403&&status!=404&&status!=409&&status!=426)
+        throw Error(400,"not a definite offline acknowledgment or denial");
+    Json response{{"format","keyhunt-offline-response"},{"version",1},
+        {"transfer",request["transfer"]},{"request_sha256",offline_checksum(request)},
+        {"status",status},{"body",body}};
+    offline_checksum(response);
+    return response;
+}
+
 }

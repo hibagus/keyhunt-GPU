@@ -1,4 +1,5 @@
 #include "keyhunt/coordinator/worker.h"
+#include "keyhunt/coordinator/offline.h"
 #include "protocol.h"
 #include <map>
 #include <fcntl.h>
@@ -159,10 +160,15 @@ Worker::~Worker()=default;
 Journal& Worker::journal(){return impl_->journal;}
 Json Worker::configuration()const{return impl_->configuration();}
 void Worker::configure(const Json& config){
-    fields(config,{"endpoint","ca","certificate","key","jobs"},{"resolve","outbox_limit"});
+    fields(config,{"endpoint","jobs"},{"ca","certificate","key","resolve","outbox_limit","transport"});
+    const auto transport=config.contains("transport")?str(config,"transport",8):"https";
+    if(transport!="https"&&transport!="file")throw Error(400,"transport must be https or file");
     const auto endpoint=str(config,"endpoint",512);
     if(endpoint.rfind("https://",0)!=0||endpoint.find_first_of("/?#@",8)!=std::string::npos)throw Error(400,"endpoint must be an HTTPS authority without path or userinfo");
-    for(const auto* name:{"ca","certificate","key"}){const auto path=str(config,name,4096);if(path[0]!='/')throw Error(400,"credential paths must be absolute");}
+    for(const auto* name:{"ca","certificate","key"}){
+        if(transport=="file"&&!config.contains(name))continue; // Keys may stay on the connected courier.
+        const auto path=str(config,name,4096);if(path[0]!='/')throw Error(400,"credential paths must be absolute");
+    }
     if(!config["jobs"].is_array()||config["jobs"].empty()||config["jobs"].size()>64)throw Error(400,"worker needs 1..64 job queues");
     std::set<std::string> devices;
     for(const auto& job:config["jobs"]){
@@ -179,7 +185,10 @@ void Worker::configure(const Json& config){
     save.bind(1,uuid());save.bind(2,config.dump());save.bind(3,limit);save.step();tx.commit();
 }
 bool Worker::synchronize(const Transport& transport,bool manual){
-    auto& s=*impl_;const auto request=s.prepare(manual);if(!request)return false;
+    auto& s=*impl_;
+    if(s.configuration().value("transport",std::string("https"))!="https")
+        throw std::runtime_error("file-only worker requires file-export/file-import, not HTTPS sync");
+    const auto request=s.prepare(manual);if(!request)return false;
     #ifdef KEYHUNT_TEST_STORAGE_FAILURES
     if(transaction_test_hook)transaction_test_hook("worker_before_send");
 #endif
@@ -200,6 +209,81 @@ bool Worker::synchronize(const Transport& transport,bool manual){
     if(transaction_test_hook)transaction_test_hook("worker_after_response");
 #endif
     s.accept(response,str(*request,"request",64));return true;
+}
+Json Worker::export_request(bool refresh){
+    auto& s=*impl_;Transaction tx(s.db);s.db.writable();
+    const auto config=s.configuration();
+    if(config.value("transport",std::string("https"))!="file")
+        throw std::runtime_error("file-export requires an immutable file-only worker configuration");
+    Statement pending(s.db.handle(),"SELECT document,export_boot,exported_at FROM worker_file_transfers WHERE state='pending'");
+    if(pending.step()&&!refresh&&pending.text(1)==boot_id()){
+        if(s.timer()<pending.integer(2))throw std::runtime_error("monotonic export clock regressed");
+        const auto document=parse_json(pending.text(0));tx.commit();return document;
+    }
+    // Refreshing after a lost file or a reboot retires the old delivery attempt.
+    // Its response can no longer acquire a newer monotonic lease origin.
+    s.db.exec("UPDATE worker_file_transfers SET state='superseded' WHERE state='pending'");
+    const auto body=s.prepare(true);
+    if(!body)throw std::logic_error("manual export did not prepare a request");
+    Json document{{"format","keyhunt-offline-request"},{"version",1},{"transfer",uuid()},
+                  {"endpoint",config["endpoint"]},{"body",*body}};
+    validate_offline_request(document);
+    Statement save(s.db.handle(),"INSERT INTO worker_file_transfers VALUES(?,?,?,?,?,'pending',X'')");
+    save.bind(1,str(document,"transfer",36));save.bind(2,str(*body,"request",64));save.bind(3,document.dump());
+    save.bind(4,boot_id());save.bind(5,s.timer());save.step();
+#ifdef KEYHUNT_TEST_STORAGE_FAILURES
+    if(transaction_test_hook)transaction_test_hook("offline_before_export");
+#endif
+    tx.commit();
+#ifdef KEYHUNT_TEST_STORAGE_FAILURES
+    if(transaction_test_hook)transaction_test_hook("offline_after_export");
+#endif
+    return document;
+}
+bool Worker::import_response(const Json& response){
+    fields(response,{"format","version","transfer","request_sha256","status","body"});
+    if(str(response,"format",64)!="keyhunt-offline-response"||integer(response,"version")!=1)
+        throw Error(426,"unsupported offline response format");
+    const auto response_digest=unhex(offline_checksum(response),32);
+    const auto status=integer(response,"status");
+    if(status!=200&&status!=401&&status!=403&&status!=404&&status!=409&&status!=426)
+        throw Error(400,"offline response is neither acknowledgment nor definite denial");
+    auto& s=*impl_;Transaction tx(s.db);s.db.writable();
+    if(s.configuration().value("transport",std::string("https"))!="file")
+        throw std::runtime_error("file-import requires a file-only worker");
+    Statement saved(s.db.handle(),"SELECT request,document,export_boot,exported_at,state,response_digest FROM worker_file_transfers WHERE transfer=?");
+    saved.bind(1,str(response,"transfer",36));
+    if(!saved.step())throw Error(409,"unknown offline transfer");
+    if(str(response,"request_sha256",64)!=offline_checksum(parse_json(saved.text(1))))
+        throw Error(409,"offline response does not match exported request");
+    if(saved.text(4)=="accepted"||saved.text(4)=="denied"){
+        if(saved.blob(5)!=response_digest)throw Error(409,"conflicting duplicate offline response");
+        tx.commit();return false; // Never restore grants, erase new pages or extend deadlines on replay.
+    }
+    if(saved.text(4)!="pending")throw Error(409,"offline response was superseded");
+    if(saved.text(2)!=boot_id()||s.timer()<saved.integer(3))
+        throw Error(409,"offline export boot/clock changed; export a fresh delivery attempt");
+    if(status==200){
+        // accept() uses the original request's saved send time. Courier and file
+        // delivery delay therefore consume the lease rather than extending it.
+        s.accept(response["body"],saved.text(0));
+    }else{
+        fields(response["body"],{"error"});
+        const auto reason=std::to_string(status)+": "+str(response["body"],"error",512);
+        s.db.exec("UPDATE worker_grants SET paused=1 WHERE acknowledged=0");
+        s.db.metadata("worker_sync_denial",Bytes(reason.begin(),reason.end()));
+    }
+    Statement finish(s.db.handle(),"UPDATE worker_file_transfers SET state=?,response_digest=? WHERE transfer=?");
+    finish.bind(1,std::string(status==200?"accepted":"denied"));finish.bind(2,response_digest);
+    finish.bind(3,str(response,"transfer",36));finish.step();
+#ifdef KEYHUNT_TEST_STORAGE_FAILURES
+    if(transaction_test_hook)transaction_test_hook("offline_before_import");
+#endif
+    tx.commit();
+#ifdef KEYHUNT_TEST_STORAGE_FAILURES
+    if(transaction_test_hook)transaction_test_hook("offline_after_import");
+#endif
+    return true;
 }
 std::optional<Grant> Worker::next(const std::string& device)const{
     token(device);auto& s=*impl_;Transaction tx(s.db,false);s.db.writable();
@@ -303,6 +387,9 @@ Json Worker::status()const{
             {"device",grants.text(3)},{"activity",activity},{"local_state",state.state},
             {"server_expires",parse_json(grants.text(8))["expires"]}});
     }
+    out["transport"]=s.configuration().value("transport",std::string("https"));
+    Statement transfer(s.db.handle(),"SELECT transfer FROM worker_file_transfers WHERE state='pending'");
+    out["pending_file_transfer"]=transfer.step()?Json(transfer.text(0)):Json(nullptr);
     out["dispatch"]=Json::array();
     Statement slots(s.db.handle(),"SELECT device,uuid,COALESCE(project,''),COALESCE(job,X''),COALESCE(block,X'') FROM worker_dispatch ORDER BY device");
     while(slots.step())out["dispatch"].push_back({{"device",slots.text(0)},{"uuid",slots.text(1)},

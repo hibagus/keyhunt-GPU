@@ -5,7 +5,7 @@ The checkpoint commands connect exact HIP/CUDA xpoint and BSGS execution to the
 locally acknowledged coverage and deduplicated CPU-verified matches. Start with
 the runnable [GPU quickstart](GPU_QUICKSTART.md). C13 introduced this contract;
 C18 validated it on CUDA. Historical acceptance results below retain their dates
-and scope; the current schema is [version 6](STORAGE.md#schema-and-migration).
+and scope; the current schema is [version 7](STORAGE.md#schema-and-migration).
 
 Standalone execution has no server acknowledgment. The optional
 [C15 coordinator](COORDINATOR.md) adds HTTPS synchronization and a durable worker
@@ -41,7 +41,7 @@ Only the checkpoint owner can call the private result/coverage transaction.
 ## Schema version 2 and migration
 
 This section records the original C13 v1-to-v2 migration. Current upgrades
-retain one sealed backup before applying all missing migrations through v6; see
+retain one sealed backup before applying all missing migrations through v7; see
 [the current schema contract](STORAGE.md#schema-and-migration).
 
 `schema_v1.sql` remains byte-for-byte unchanged. Version 2 adds canonical search
@@ -54,7 +54,7 @@ directory before its schema changes. The writer reservation excludes concurrent
 mutations while a separate read connection creates the sealed snapshot. Migration
 and the new schema/version digest commit together. C13 fresh journals created both
 migrations in one transaction; current fresh journals apply all migrations
-through v6 together. Unsupported versions or changed migration hashes
+through v7 together. Unsupported versions or changed migration hashes
 fail. Pre-migration snapshots retain v1 and are quarantined; opening one with a
 new binary may itself migrate it, so use a read-only SQLite connection to inspect
 its original schema version without modification.

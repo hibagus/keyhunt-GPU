@@ -12,6 +12,11 @@ public:
     void configure(const Json&);
     Json configuration() const;
     bool synchronize(const Transport&,bool manual=false);
+    // File mode never opens a network connection. Refresh replaces the delivery
+    // attempt, not the immutable pending machine request or its outbox snapshot.
+    Json export_request(bool refresh=false);
+    bool import_response(const Json&); // false means an exact duplicate, with no writes
+
     std::optional<storage::Grant> next(const std::string& device) const;
     // Held for this Worker's lifetime. Rebinding a UUID is explicit and only
     // succeeds after the previous process releases its device lock.

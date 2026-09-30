@@ -72,3 +72,28 @@ destination, invalid checksums, duplicate JSON fields, size bounds, public
 permissions, symlinks, hardlinks and nonblocking rejection of a FIFO. Failed
 publication leaves no staging file. Linux `renameat2(RENAME_NOREPLACE)` provides
 exclusive publication without a transient second hardlink.
+
+## Durable transfer and reconciliation validation
+
+Schema v7 adds a delivery-attempt ledger referencing the existing immutable worker
+requests. Migrations v1–v6 remain unchanged. Export commit precedes publication;
+import atomically updates grants, outbox acknowledgments and the response digest.
+A retry returns the same pending file. Explicit refresh or a changed boot retires
+the old attempt while preserving its machine request. Accepted/denied response
+hashes remain retained, so old duplicates cannot mutate later state.
+
+The authenticated `POST /api/v1/offline-sync` endpoint reuses machine sync and
+rechecks current grant ownership/generation/expiry before returning even a cached
+receipt. Definite denials pause imported work without deleting pending results.
+The file-only configuration can omit credential paths; keys remain on the courier.
+It rejects the direct HTTPS sync interface.
+
+CPU release validation passes all three new offline gates and 26 focused
+storage/coordinator regression gates, including actual localhost TLS. The new
+cases cover disjoint reservations during file transit, complete ten-block union
+and four verified matches, foreign/conflicting/duplicate imports, invalid manifests,
+elapsed delivery time, superseded attempts, reboot, 130-checkpoint paging,
+checkpoints arriving after export, credential revocation, recovered generations
+and expired cached grants. The v6 upgrade retains one sealed v6 snapshot.
+Four child-process exit points around export/import COMMIT verify recovery;
+import faults include pending result/coverage outbox deletion in the transaction.
