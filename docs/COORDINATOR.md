@@ -355,8 +355,9 @@ private key/configuration permissions and rejection of a checkout state path.
 
 A native repository burst with 32 authenticated machines/64 device queues reserved
 128 distinct blocks and committed 4,096 fragmented intervals. Median/p95 claim
-latency was 2.01/2.17 ms; progress plus renewal was 130.08/130.43 ms. Database/WAL
-sizes were 1,802,240/4,202,432 bytes at capture. These are local CPU/storage samples,
+latency was 1.98/2.18 ms; progress plus renewal was 2.88/3.19 ms after removing
+unnecessary curve initialization from no-match updates. Database/WAL sizes were
+1,896,448/4,260,112 bytes at capture. These are local CPU/storage samples,
 excluding HTTPS, WAN latency and GPU computation. Rate-limit rejection and exact
 receipt retries were checked in the same fixture. See the final
 [validation record](COORDINATOR_VALIDATION.md) for scope and regression results.

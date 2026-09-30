@@ -141,6 +141,8 @@ struct Repository::Impl {
         }
         Json accepted = Json::array(); size_t page_count = 0, match_count = 0, ordinal = 0;
         std::set<std::string> changed;
+        std::unique_ptr<core::XPointVerifier> verifier;
+        std::map<std::pair<std::string,Digest>,Binding> verified_inputs;
         auto unique_grant = [&](const Grant& g) {
             const auto key = g.scope.project + hex(bytes(g.scope.job)) + g.block.hex();
             if (!changed.insert(key).second) throw Error(400, "grant repeated in sync mutations");
@@ -153,10 +155,6 @@ struct Repository::Impl {
                 state.assignment->interval.end() != g.interval.end()) throw Error(409, "stale assignment");
             if (state.expired) throw Error(409, "assignment expired; explicit recovery required");
             if (!row["checkpoints"].empty() && !boolean(row, "started")) throw Error(400, "checkpoints require started activity");
-            Statement binding(db.handle(), "SELECT configuration,targets FROM search_bindings WHERE project=? AND job=?");
-            bind_scope(binding, g.scope); if (!binding.step()) throw Error(409, "job lacks canonical search inputs");
-            const auto input = decode_binding(journal.manifest(g.scope), binding.blob(0), binding.blob(1));
-            core::XPointVerifier verifier;
             std::vector<CheckpointData> pages;
             for (const auto& encoded : row["checkpoints"]) {
                 if (++page_count > 64 || !encoded.is_string()) throw Error(413, "too many checkpoint pages");
@@ -167,9 +165,22 @@ struct Repository::Impl {
                 if (match_count > 4096 || page.coverage.size() > 1024) throw Error(413, "checkpoint page exceeds work budget");
                 for (const auto& interval : page.coverage)
                     if (!g.interval.contains(interval)) throw Error(400, "coverage outside assignment");
-                for (const auto& match : page.matches) {
-                    if (!g.interval.contains(match.scalar)) throw Error(400, "match outside assignment");
-                    input.verify(verifier, match.scalar, match.target);
+                if (!page.matches.empty()) {
+                    // Lease renewal and no-match coverage need no curve context.
+                    // Resolve each immutable target binding once, and construct
+                    // one verifier only when this machine page contains results.
+                    const auto key=std::make_pair(g.scope.project,g.scope.job);
+                    auto found=verified_inputs.find(key);
+                    if(found==verified_inputs.end()){
+                        Statement binding(db.handle(),"SELECT configuration,targets FROM search_bindings WHERE project=? AND job=?");
+                        bind_scope(binding,g.scope);if(!binding.step())throw Error(409,"job lacks canonical search inputs");
+                        found=verified_inputs.emplace(key,decode_binding(journal.manifest(g.scope),binding.blob(0),binding.blob(1))).first;
+                    }
+                    if(!verifier)verifier=std::make_unique<core::XPointVerifier>();
+                    for(const auto& match:page.matches){
+                        if(!g.interval.contains(match.scalar))throw Error(400,"match outside assignment");
+                        found->second.verify(*verifier,match.scalar,match.target);
+                    }
                 }
                 pages.push_back(std::move(page));
             }
