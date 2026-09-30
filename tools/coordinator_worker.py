@@ -185,7 +185,10 @@ def main():
     network = network_log = None
     paused = stopping = False
     shutdown_deadline = None
-    initial_sync_checked = False
+    # File-only workers consume imported grants without spawning a network
+    # child. The immutable configuration preserves this behavior on restart.
+    network_enabled = config.get("transport", "https") == "https"
+    initial_sync_checked = not network_enabled
     last_status = 0
     last_network_error = None
     status = read("status")
@@ -314,7 +317,7 @@ def main():
                 if not any(device.child for device in devices.values()) or now >= shutdown_deadline:
                     break
             else:
-                if network is None and (now >= sync_due or not initial_sync_checked):
+                if network_enabled and network is None and (now >= sync_due or not initial_sync_checked):
                     network_log = private_log(root / "sync.log")
                     network = subprocess.Popen(command("scheduled-sync"), stdout=network_log, stderr=subprocess.STDOUT)
                 if initial_sync_checked and not paused:

@@ -97,3 +97,38 @@ checkpoints arriving after export, credential revocation, recovered generations
 and expired cached grants. The v6 upgrade retains one sealed v6 snapshot.
 Four child-process exit points around export/import COMMIT verify recovery;
 import faults include pending result/coverage outbox deletion in the transaction.
+
+## User commands
+
+`keyhunt-worker configure` accepts `"transport":"file"` for a new worker. Its
+configuration requires the coordinator HTTPS authority and job/device queues;
+credential fields can be omitted. Existing HTTPS configurations default to
+`"transport":"https"` and cannot be changed in place.
+
+| Command | Required options | Effect |
+| --- | --- | --- |
+| `file-export` | `--state-dir DIR --output FILE` | Persist/reuse the pending request and publish its portable envelope; prints transfer ID and SHA-256 |
+| `file-export --refresh yes` | Same | Supersede the previous delivery attempt, retaining the immutable machine request; old responses fail import |
+| `file-relay` | `--config COURIER.json --input REQUEST --sha256 HASH --output RESPONSE` | Verify the transferred request and exchange it over mTLS; no worker journal is opened on the courier |
+| `file-import` | `--state-dir DIR --input RESPONSE --sha256 HASH` | Apply a matching response atomically; exact duplicates return `duplicate:true` without changing state |
+
+A courier configuration contains `endpoint`, `ca`, `certificate`, `key`, and an
+optional localhost `resolve` override. Its authority must match the request.
+Request/response files must be absolute paths in an existing private directory
+outside every checkout. Destinations must not exist. Keep the printed SHA-256
+in a trusted channel when transferring a file. A digest copied from the same
+untrusted source as the file does not authenticate it.
+
+Definite HTTP 401/403/404/409/426 responses become bound denial files. A successful
+`file-import` command means the file was applied, not necessarily that work was
+authorized: inspect its `status` (200 for acknowledgment) and worker pause state.
+Transport failures and transient server errors produce no response file.
+
+The supervisor reads the immutable transport setting. In file mode it creates
+no scheduled-sync child or sync log, while retaining GPU owners, local controls
+and failure isolation. Explicit `sync`, `scheduled-sync` and `api` calls are
+rejected on that worker. `file-relay` is deliberately a separate courier action.
+The CPU localhost CLI gate covers real mTLS, wrong CA/authority and checksum
+rejection, exclusive file publication, duplicate imports, credential revocation
+and reviewed reactivation for both xpoint and BSGS jobs. The supervisor fixture
+also verifies two concurrent file-only owners without a network child.

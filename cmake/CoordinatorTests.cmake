@@ -152,3 +152,15 @@ target_link_libraries(coordinator_offline_failures_test PRIVATE keyhunt_core SQL
 keyhunt_configure_target(coordinator_offline_failures_test)
 add_test(NAME coordinator_offline_failures COMMAND coordinator_offline_failures_test)
 set_tests_properties(coordinator_offline_failures PROPERTIES TIMEOUT 120 LABELS "cpu;coordinator;recovery")
+
+if(KEYHUNT_TEST_APACHE_ROOT AND TARGET keyhunt-worker)
+    add_test(NAME coordinator_offline_cli COMMAND ${Python3_EXECUTABLE}
+        ${PROJECT_SOURCE_DIR}/tests/coordinator/offline_cli.py
+        --coordinator $<TARGET_FILE:keyhunt-coordinator> --worker $<TARGET_FILE:keyhunt-worker>
+        --keyhunt $<TARGET_FILE:keyhunt> --apache-root ${KEYHUNT_TEST_APACHE_ROOT}
+        --report ${CMAKE_CURRENT_BINARY_DIR}/coordinator-offline-cli.json ${coordinator_worker_options})
+    set_tests_properties(coordinator_offline_cli PROPERTIES TIMEOUT 300 LABELS "cpu;coordinator;security;integration;recovery")
+    if(KEYHUNT_ENABLE_GPU)
+        set_tests_properties(coordinator_offline_cli PROPERTIES LABELS "${KEYHUNT_GPU_BACKEND};hardware;coordinator;integration;recovery" RESOURCE_LOCK gpu_device)
+    endif()
+endif()

@@ -55,7 +55,7 @@ root = pathlib.Path(args["--state-dir"])
 action = sys.argv[1]
 def emit(**event): print(json.dumps(event), flush=True)
 if action == "configuration":
-    emit(jobs=[dict(devices=["0", "1"])])
+    emit(jobs=[dict(devices=["0", "1"])], transport="file" if (root / "file-only").exists() else "https")
 elif action == "status":
     emit(sync_due_in=7200, queues=[])
 elif action == "scheduled-sync":
@@ -89,11 +89,13 @@ with tempfile.TemporaryDirectory(prefix="kh-c20-supervisor-") as directory:
     fake = root / "worker"
     fake.write_text(FAKE)
     fake.chmod(0o700)
-    for fault in (False, True):
-        state = root / str(fault)
+    for fault, file_only in ((False, False), (True, False), (False, True)):
+        state = root / (str(fault) + str(file_only))
         state.mkdir(mode=0o700)
         if fault:
             (state / "fail-one").touch()
+        if file_only:
+            (state / "file-only").touch()
         result = subprocess.run([sys.executable, str(ROOT / "tools/coordinator_worker.py"),
             "--state-dir", str(state), "--worker", str(fake), "--keyhunt", str(fake),
             "--host-memory-total", "100", "--once"], capture_output=True, text=True, timeout=30)
@@ -105,7 +107,11 @@ with tempfile.TemporaryDirectory(prefix="kh-c20-supervisor-") as directory:
         assert saved["devices"]["1"]["completed"] == 1
         assert saved["failures"].get("1", 0) == 0
         assert saved["failures"].get("0", 0) == (3 if fault else 0)
-        assert (state / "sync-count").read_text() == "1", "per-device/completion synchronization"
+        if file_only:
+            assert not (state / "sync-count").exists(), "file-only worker spawned network child"
+            assert not (state / "sync.log").exists(), "file-only mode attempted synchronization"
+        else:
+            assert (state / "sync-count").read_text() == "1", "per-device/completion synchronization"
         assert len(json.loads((state / "self-tests.json").read_text())) == 2
         assert saved["devices"]["0"]["state"] == ("quarantined" if fault else "stopped")
-print("Concurrent children, isolated quarantine, bounded retries, one sync and pause-aware watchdog passed")
+print("Concurrent children, isolated quarantine, bounded retries, one sync, file-only isolation and pause-aware watchdog passed")
