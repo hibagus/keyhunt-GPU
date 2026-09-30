@@ -20,19 +20,26 @@ if(KEYHUNT_ENABLE_GPU)
     set_tests_properties(${KEYHUNT_GPU_BACKEND}_bsgs_search ${KEYHUNT_GPU_BACKEND}_bsgs_search_failures PROPERTIES TIMEOUT 120 LABELS "${KEYHUNT_GPU_BACKEND};hardware;bsgs" RESOURCE_LOCK gpu_device)
 endif()
 set(bsgs_search_args)
+set(bsgs_cli_timeout 300)
+if(KEYHUNT_ENABLE_CUDA)
+    # This corpus launches about 100 fresh processes. On the validated CUDA
+    # host, preparation/teardown costs about 3 seconds per process, independently
+    # of kernel time. Keep each child's 90-second watchdog and all search cases.
+    set(bsgs_cli_timeout 600)
+endif()
 if(KEYHUNT_ENABLE_GPU)
     list(APPEND bsgs_search_args --hardware --backend ${KEYHUNT_GPU_BACKEND})
 endif()
 add_test(NAME bsgs_cli COMMAND "${Python3_EXECUTABLE}"
     "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/bsgs_cli.py" --binary $<TARGET_FILE:keyhunt>
     --oracle $<TARGET_FILE:secp256k1_oracle> --report "${CMAKE_CURRENT_BINARY_DIR}/bsgs-cli-results.json" ${bsgs_search_args})
-set_tests_properties(bsgs_cli PROPERTIES TIMEOUT 300 LABELS "cpu;backend;bsgs")
+set_tests_properties(bsgs_cli PROPERTIES TIMEOUT ${bsgs_cli_timeout} LABELS "cpu;backend;bsgs")
 if(KEYHUNT_ENABLE_GPU)
     set_tests_properties(bsgs_cli PROPERTIES LABELS "${KEYHUNT_GPU_BACKEND};hardware;bsgs;oracle" RESOURCE_LOCK gpu_device)
     add_test(NAME bsgs_cli_single COMMAND "${Python3_EXECUTABLE}"
         "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/bsgs_cli.py" --binary $<TARGET_FILE:keyhunt>
         --oracle $<TARGET_FILE:secp256k1_oracle> --report "${CMAKE_CURRENT_BINARY_DIR}/bsgs-cli-single-results.json" --hardware --backend ${KEYHUNT_GPU_BACKEND} --group 1)
-    set_tests_properties(bsgs_cli_single PROPERTIES TIMEOUT 300 LABELS "${KEYHUNT_GPU_BACKEND};hardware;bsgs;oracle" RESOURCE_LOCK gpu_device)
+    set_tests_properties(bsgs_cli_single PROPERTIES TIMEOUT ${bsgs_cli_timeout} LABELS "${KEYHUNT_GPU_BACKEND};hardware;bsgs;oracle" RESOURCE_LOCK gpu_device)
 endif()
 if(KEYHUNT_ENABLE_GPU)
     add_executable(${KEYHUNT_GPU_BACKEND}_bsgs_search_benchmark tests/gpu/bsgs_search_benchmark.cpp)
@@ -45,5 +52,5 @@ if(KEYHUNT_ENABLE_GPU)
     add_test(NAME bsgs_cli_grouped COMMAND "${Python3_EXECUTABLE}"
         "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/bsgs_cli.py" --binary $<TARGET_FILE:keyhunt>
         --oracle $<TARGET_FILE:secp256k1_oracle> --report "${CMAKE_CURRENT_BINARY_DIR}/bsgs-cli-grouped-results.json" --hardware --backend ${KEYHUNT_GPU_BACKEND} --group 8)
-    set_tests_properties(bsgs_cli_grouped PROPERTIES TIMEOUT 300 LABELS "${KEYHUNT_GPU_BACKEND};hardware;bsgs;oracle" RESOURCE_LOCK gpu_device)
+    set_tests_properties(bsgs_cli_grouped PROPERTIES TIMEOUT ${bsgs_cli_timeout} LABELS "${KEYHUNT_GPU_BACKEND};hardware;bsgs;oracle" RESOURCE_LOCK gpu_device)
 endif()
