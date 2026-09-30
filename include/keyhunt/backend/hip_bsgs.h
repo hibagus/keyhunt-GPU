@@ -25,7 +25,7 @@ struct BsgsSearchResult {
 // cleanup drains the consumer stream before releasing its prepared table.
 class HipBsgsExecutor {
 public:
-    HipBsgsExecutor(int device,const bsgs::Table& table,core::BsgsTargets targets,
+    HipBsgsExecutor(int device,const bsgs::Table& table,core::BsgsPublicKeyTargets targets,
         const core::XPointVerifier& verifier,BsgsSearchOptions options={});
     ~HipBsgsExecutor();
     HipBsgsExecutor(const HipBsgsExecutor&)=delete;

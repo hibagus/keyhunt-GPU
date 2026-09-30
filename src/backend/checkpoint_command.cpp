@@ -19,7 +19,7 @@ uint64_t decimal(const std::string& value,uint64_t maximum=UINT64_MAX){
         throw std::invalid_argument("invalid unsigned decimal checkpoint option");
     return n;
 }
-bsgs::Table load_table(const Options& options,const core::BsgsTargets& targets){
+bsgs::Table load_table(const Options& options,const core::BsgsPublicKeyTargets& targets){
     const auto memory=decimal(optional(options,"host-memory","1073741824"));
     const auto target_bytes=targets.values().capacity()*sizeof(core::UncompressedPublicKey);
     if(memory<=target_bytes)throw std::invalid_argument("BSGS targets exceed host memory budget");
@@ -56,7 +56,7 @@ int checkpoint_command(int argc,char** argv){
             const auto targets=core::XPointTargets::load(required(args,"targets"));
             id=CheckpointRun::create_xpoint(journal,required(args,"project"),root,width,targets);
         }else if(mode=="bsgs"){
-            const auto targets=core::BsgsTargets::load(required(args,"targets"));const auto table=load_table(args,targets);
+            const auto targets=core::BsgsPublicKeyTargets::load(required(args,"targets"));const auto table=load_table(args,targets);
             id=CheckpointRun::create_bsgs(journal,required(args,"project"),root,width,targets,table);
         }else throw std::invalid_argument("checkpoint mode must be xpoint or bsgs");
         const auto manifest=journal.manifest(id);
@@ -123,7 +123,7 @@ int checkpoint_command(int argc,char** argv){
             const auto ticket=executor->submit(batch);executor->drain();return executor->take(ticket);
         },options,notify,[&]{executor.reset();});
     }else{
-        const auto targets=core::BsgsTargets::load(required(args,"targets"));const auto table=load_table(args,targets);
+        const auto targets=core::BsgsPublicKeyTargets::load(required(args,"targets"));const auto table=load_table(args,targets);
         BsgsSearchOptions gpu;gpu.max_steps=options.giant_steps*options.target_batch;gpu.candidate_capacity=options.candidate_capacity;
         const auto group=optional(args,"group-size","auto");gpu.group_size=group=="auto"?0:unsigned(decimal(group));
         gpu.host_memory_bytes=decimal(optional(args,"host-memory","1073741824"));

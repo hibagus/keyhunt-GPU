@@ -3,12 +3,14 @@
 #include "keyhunt/core/xpoint_search.h"
 
 namespace keyhunt::core {
+// Distinct from the preserved CPU loader's BsgsTargets aggregate: sharing
+// that qualified name would violate the ODR and can select the wrong destructor.
 // Finite SEC1 points, canonicalized to uncompressed form and sorted by full
 // point. Compressed/uncompressed duplicates coalesce; opposite signs do not.
-class BsgsTargets {
+class BsgsPublicKeyTargets {
 public:
-    explicit BsgsTargets(std::vector<UncompressedPublicKey> points);
-    static BsgsTargets load(const std::string& path);
+    explicit BsgsPublicKeyTargets(std::vector<UncompressedPublicKey> points);
+    static BsgsPublicKeyTargets load(const std::string& path);
     const std::vector<UncompressedPublicKey>& values() const { return points_; }
     const scheduler::Digest& digest() const { return digest_; }
 private:
@@ -44,6 +46,6 @@ private:
 // Choose the next exact tile without overflowing near n. Products are checked
 // UInt256 integers; no absolute scalar, endpoint or m*i product is truncated.
 ScalarInterval bsgs_tile(const ScalarInterval& remaining,uint64_t m,uint64_t max_giants);
-std::vector<BsgsMatch> verify_bsgs(const BsgsBatch& batch,const BsgsTargets& targets,
+std::vector<BsgsMatch> verify_bsgs(const BsgsBatch& batch,const BsgsPublicKeyTargets& targets,
     const XPointVerifier& verifier,std::vector<BsgsCandidate> candidates);
 } // namespace keyhunt::core

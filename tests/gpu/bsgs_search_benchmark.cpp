@@ -33,7 +33,7 @@ int main(int argc,char** argv){
                 // this interval, proving an empty expected set independently of lookup.
                 for(unsigned k=1;k<=(workload==0?1U:32U);++k)points.push_back(cpu.derive(UInt256(k)));
             }
-            core::BsgsTargets targets(points);
+            core::BsgsPublicKeyTargets targets(points);
             core::BsgsBatch batch(interval,m,0,uint32_t(targets.values().size()),targets.digest(),table.checksum());
             std::unique_ptr<backend::HipBsgsExecutor> owners[3];double prep[3]{};
             for(unsigned kind=0;kind<3;++kind){

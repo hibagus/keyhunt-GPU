@@ -1,4 +1,8 @@
 #include "keyhunt/core/bsgs_search.h"
+#include "keyhunt/core/cpu_targets.h"
+#include <type_traits>
+static_assert(!std::is_same_v<keyhunt::core::BsgsTargets,keyhunt::core::BsgsPublicKeyTargets>,
+    "Legacy loader and canonical public-key target set must be distinct types");
 #include <fstream>
 #include <iostream>
 #include <unistd.h>
@@ -11,12 +15,12 @@ int main() {
     try {
         core::XPointVerifier verifier;
         const auto g=verifier.derive(UInt256(1)),negative=verifier.derive(core::scalar_order().subtract(UInt256(1)));
-        core::BsgsTargets targets({g,negative,g});
+        core::BsgsPublicKeyTargets targets({g,negative,g});
         require(targets.values().size()==2,"signs/deduplication");
-        require(targets.digest()==core::BsgsTargets({negative,g}).digest(),"unstable digest");
-        rejects([]{core::BsgsTargets({});});
-        auto bad=g; bad[0]=0; rejects([&]{core::BsgsTargets({bad});});
-        bad=g; bad[64]^=1; rejects([&]{core::BsgsTargets({bad});});
+        require(targets.digest()==core::BsgsPublicKeyTargets({negative,g}).digest(),"unstable digest");
+        rejects([]{core::BsgsPublicKeyTargets({});});
+        auto bad=g; bad[0]=0; rejects([&]{core::BsgsPublicKeyTargets({bad});});
+        bad=g; bad[64]^=1; rejects([&]{core::BsgsPublicKeyTargets({bad});});
         struct File {
             char path[40]="/tmp/keyhunt-bsgs-targets-XXXXXX";
             File(){int fd=mkstemp(path);if(fd<0)throw std::runtime_error("mkstemp");close(fd);}
@@ -26,16 +30,16 @@ int main() {
         const auto compressed=std::string(g[64]&1?"03":"02")+hex(g.data()+1,32);
         for(const auto& ending:{"","\n","\r\n"}) {
             file.write(hex(g.data(),65)+"\n"+compressed+ending);
-            require(core::BsgsTargets::load(file.path).values()==core::BsgsTargets({g}).values(),"SEC1 normalization");
+            require(core::BsgsPublicKeyTargets::load(file.path).values()==core::BsgsPublicKeyTargets({g}).values(),"SEC1 normalization");
         }
         for(const auto& text:{std::string(),std::string(130,'0'),std::string(100000,'0'),compressed+std::string(1,'\0'),
             std::string("02")+std::string(64,'f'),std::string("02")+std::string(64,'0'),std::string("06")+hex(g.data()+1,64)}) {
-            file.write(text); rejects([&]{core::BsgsTargets::load(file.path);});
+            file.write(text); rejects([&]{core::BsgsPublicKeyTargets::load(file.path);});
         }
         const auto begin=UInt256::power_of_two(200).subtract(UInt256(3));
         const core::ScalarInterval interval(begin,begin.add(UInt256(18)));
         const auto table=bsgs::Table::build(7);
-        core::BsgsTargets known({verifier.derive(begin),verifier.derive(begin.add(UInt256(17)))});
+        core::BsgsPublicKeyTargets known({verifier.derive(begin),verifier.derive(begin.add(UInt256(17)))});
         core::BsgsBatch batch(interval,7,0,2,known.digest(),table.checksum());
         require(batch.giants()==3 && batch.last_babies()==4 && batch.steps()==6,"tail geometry");
         require(batch.scalar_at(2,3)==interval.end().subtract(UInt256(1)),"tail reconstruction");

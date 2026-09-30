@@ -30,10 +30,10 @@ public:
     static Scope create_xpoint(Journal&,const std::string& project,ScalarInterval root,UInt256 width,
         const core::XPointTargets&);
     static Scope create_bsgs(Journal&,const std::string& project,ScalarInterval root,UInt256 width,
-        const core::BsgsTargets&,const bsgs::Table&);
+        const core::BsgsPublicKeyTargets&,const bsgs::Table&);
     static CheckpointSummary xpoint(Journal&,const Grant&,const core::XPointTargets&,
         const core::XPointVerifier&,const XPointRunner&,CheckpointOptions={},CheckpointObserver={},CheckpointCleanup={});
-    static CheckpointSummary bsgs(Journal&,const Grant&,const core::BsgsTargets&,const bsgs::Table&,
+    static CheckpointSummary bsgs(Journal&,const Grant&,const core::BsgsPublicKeyTargets&,const bsgs::Table&,
         const core::XPointVerifier&,const BsgsRunner&,CheckpointOptions={},CheckpointObserver={},CheckpointCleanup={});
 private:
     struct Impl;

@@ -123,7 +123,7 @@ Scope CheckpointRun::create_xpoint(Journal& journal,const std::string& project,S
     const auto scope=journal.create_job(project,{Mode::XPoint,root,width,input.target_digest,input.algorithm_digest});
     journal.bind_search(scope,input);return scope;
 }
-Scope CheckpointRun::create_bsgs(Journal& journal,const std::string& project,ScalarInterval root,UInt256 width,const core::BsgsTargets& targets,const bsgs::Table& table){
+Scope CheckpointRun::create_bsgs(Journal& journal,const std::string& project,ScalarInterval root,UInt256 width,const core::BsgsPublicKeyTargets& targets,const bsgs::Table& table){
     const auto input=detail::binding(targets,table);
     const auto scope=journal.create_job(project,{Mode::Bsgs,root,width,input.target_digest,input.algorithm_digest});
     journal.bind_search(scope,input);return scope;
@@ -165,7 +165,7 @@ CheckpointSummary CheckpointRun::xpoint(Journal& journal,const Grant& grant,cons
     }
     return state.finish();
 }
-CheckpointSummary CheckpointRun::bsgs(Journal& journal,const Grant& grant,const core::BsgsTargets& targets,const bsgs::Table& table,
+CheckpointSummary CheckpointRun::bsgs(Journal& journal,const Grant& grant,const core::BsgsPublicKeyTargets& targets,const bsgs::Table& table,
     const core::XPointVerifier& verifier,const BsgsRunner& run,CheckpointOptions o,CheckpointObserver observer,CheckpointCleanup cleanup){
     options(o,true);Impl state(journal,grant,detail::binding(targets,table),verifier,o,std::move(observer));
     Cleanup stopped_before_unlock{std::move(cleanup)};

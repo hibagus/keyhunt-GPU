@@ -14,7 +14,7 @@ struct Binding {
     void verify(const core::XPointVerifier& verifier,const UInt256& scalar,uint32_t target) const;
 };
 Binding binding(const core::XPointTargets& targets);
-Binding binding(const core::BsgsTargets& targets,const bsgs::Table& table);
+Binding binding(const core::BsgsPublicKeyTargets& targets,const bsgs::Table& table);
 Binding decode_binding(const Manifest& manifest,const Bytes& configuration,const Bytes& targets);
 struct CheckpointData {
     UInt256 block;

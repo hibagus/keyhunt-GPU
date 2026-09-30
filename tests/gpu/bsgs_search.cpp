@@ -10,7 +10,7 @@ int main(){
         auto table=bsgs::Table::build(7);
         std::vector<core::UncompressedPublicKey> points;
         for(uint64_t k=1;k<=130;++k)points.push_back(cpu.derive(UInt256(k)));
-        core::BsgsTargets targets(points);
+        core::BsgsPublicKeyTargets targets(points);
         const core::ScalarInterval range(UInt256(1),UInt256(130));
         const auto make=[&](uint32_t first,uint32_t count){return core::BsgsBatch(range,7,first,count,targets.digest(),table.checksum());};
         auto batch=make(0,64);

@@ -19,9 +19,9 @@ inline core::XPointTargets x_targets(const core::XPointVerifier& verifier,std::i
     for(auto n:scalars){const auto pub=verifier.derive(UInt256(n));core::XPointBytes x;std::copy_n(pub.begin()+1,32,x.begin());out.push_back(x);}
     return core::XPointTargets(std::move(out));
 }
-inline core::BsgsTargets b_targets(const core::XPointVerifier& verifier,std::initializer_list<uint64_t> scalars){
+inline core::BsgsPublicKeyTargets b_targets(const core::XPointVerifier& verifier,std::initializer_list<uint64_t> scalars){
     std::vector<core::UncompressedPublicKey> out;for(auto n:scalars)out.push_back(verifier.derive(UInt256(n)));
-    return core::BsgsTargets(std::move(out));
+    return core::BsgsPublicKeyTargets(std::move(out));
 }
 // A tiny CPU executor computes real public points; the checkpoint owner still
 // performs its independent acceptance checks and all normal journal transitions.
@@ -37,7 +37,7 @@ inline backend::XPointResult execute(const scheduler::KernelBatch& batch,const c
     if(result.overflow)result.matches.clear();else result.verified_steps=result.device_steps;
     return result;
 }
-inline backend::BsgsSearchResult execute(const core::BsgsBatch& batch,const core::BsgsTargets& targets,
+inline backend::BsgsSearchResult execute(const core::BsgsBatch& batch,const core::BsgsPublicKeyTargets& targets,
     const core::XPointVerifier& verifier,uint32_t capacity){
     backend::BsgsSearchResult result{batch,{}};result.device_steps=batch.steps();
     for(auto scalar=batch.interval().begin();scalar<batch.interval().end();scalar=scalar.add(UInt256(1))){

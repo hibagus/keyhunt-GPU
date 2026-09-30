@@ -251,3 +251,21 @@ the committed state. These cases use synthetic public fixtures on logical device
 ctest --preset cpu-release -L storage
 ctest --preset hip-release -R checkpoint
 ~~~
+
+## Destructor collision found during validation
+
+The first debug and sanitizer end-to-end runs failed while creating a BSGS job.
+Two different classes had the same qualified name, `keyhunt::core::BsgsTargets`:
+the C04 legacy loader aggregate (points plus a compression array) and the C11
+canonical public-key target set (points plus a digest). This violates C++'s
+one-definition rule across translation units. The sanitizer trace entered the
+legacy aggregate's destructor for a canonical target object and attempted to free
+the digest bytes as a pointer. Optimized release runs had passed, masking the
+collision through different code generation.
+
+The canonical type is now `BsgsPublicKeyTargets` throughout the GPU/search/storage
+code. The legacy loader retains its type and behavior. A regression compiles both
+headers together and asserts distinct types, and the new command test exercises
+creation/destruction in release, debug and sanitizer builds. The original failures
+and diagnosis are retained in [C13_ODR_FINDING.json](baselines/C13_ODR_FINDING.json).
+This changes host type identity, not BSGS arithmetic or device kernel selection.

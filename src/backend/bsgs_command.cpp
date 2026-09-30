@@ -63,7 +63,7 @@ int bsgs_command(int argc,char** argv) {
 #else
     using Clock=std::chrono::steady_clock;
     const auto start=Clock::now();
-    const auto targets=core::BsgsTargets::load(args["--targets"]);
+    const auto targets=core::BsgsPublicKeyTargets::load(args["--targets"]);
     // Target storage coexists with cache decoding. Reserve it before asking
     // the table loader to allocate its checked peak buffers.
     const uint64_t target_bytes=targets.values().capacity()*sizeof(core::UncompressedPublicKey);

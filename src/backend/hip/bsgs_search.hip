@@ -18,7 +18,7 @@ struct HipBsgsExecutor::Impl {
     unsigned active_group=1;
     const bsgs::Table& table;
     std::unique_ptr<HipBsgsTable> prepared;
-    core::BsgsTargets targets;
+    core::BsgsPublicKeyTargets targets;
     const core::XPointVerifier& verifier;
     BsgsSearchOptions options;
     uint64_t id = next_executor_id.fetch_add(1), sequence = 0;
@@ -35,7 +35,7 @@ struct HipBsgsExecutor::Impl {
     size_t output_bytes = 0, target_bytes = 0;
     Clock::time_point submitted;
 
-    Impl(int ordinal,const bsgs::Table& host,core::BsgsTargets values,const core::XPointVerifier& cpu,BsgsSearchOptions config)
+    Impl(int ordinal,const bsgs::Table& host,core::BsgsPublicKeyTargets values,const core::XPointVerifier& cpu,BsgsSearchOptions config)
         : device(ordinal),table(host),targets(std::move(values)),verifier(cpu),options(config) {
         if (!options.max_steps || options.max_steps>1048576)
             throw std::invalid_argument("BSGS max_steps must be in [1,1048576]");
@@ -122,7 +122,7 @@ struct HipBsgsExecutor::Impl {
             throw std::invalid_argument("stale or foreign HIP ticket");
     }
 };
-HipBsgsExecutor::HipBsgsExecutor(int device,const bsgs::Table& table, core::BsgsTargets targets,
+HipBsgsExecutor::HipBsgsExecutor(int device,const bsgs::Table& table, core::BsgsPublicKeyTargets targets,
     const core::XPointVerifier& verifier, BsgsSearchOptions options)
     : impl_(std::make_unique<Impl>(device,table,std::move(targets),verifier,options)) {}
 HipBsgsExecutor::~HipBsgsExecutor() = default;

@@ -15,7 +15,7 @@ int main() {
     try {
         core::XPointVerifier verifier;
         const auto pub=verifier.derive(UInt256(1));
-        core::BsgsTargets targets({pub});
+        core::BsgsPublicKeyTargets targets({pub});
         const auto table=bsgs::Table::build(7);
         core::BsgsBatch batch(core::ScalarInterval(UInt256(1),UInt256(5)),7,0,1,targets.digest(),table.checksum());
         unsigned tested=0;

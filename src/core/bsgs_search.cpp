@@ -44,7 +44,7 @@ unsigned digit(char c) {
     throw std::invalid_argument("nonhexadecimal BSGS target");
 }
 }
-BsgsTargets::BsgsTargets(std::vector<UncompressedPublicKey> points) : points_(std::move(points)) {
+BsgsPublicKeyTargets::BsgsPublicKeyTargets(std::vector<UncompressedPublicKey> points) : points_(std::move(points)) {
     if (points_.empty() || points_.size()>max_targets) throw std::invalid_argument("BSGS targets must be in [1,65536]");
     for (const auto& point : points_) (void)decode(point.data(),point.size());
     std::sort(points_.begin(),points_.end());
@@ -55,7 +55,7 @@ BsgsTargets::BsgsTargets(std::vector<UncompressedPublicKey> points) : points_(st
     sha256(encoded.data(),encoded.size(),digest);
     std::copy_n(digest,32,digest_.begin());
 }
-BsgsTargets BsgsTargets::load(const std::string& path) {
+BsgsPublicKeyTargets BsgsPublicKeyTargets::load(const std::string& path) {
     std::ifstream input(path,std::ios::binary);
     if (!input) throw std::runtime_error("cannot open BSGS targets: "+path);
     std::vector<UncompressedPublicKey> points;
@@ -71,7 +71,7 @@ BsgsTargets BsgsTargets::load(const std::string& path) {
         points.push_back(encode(decode(bytes,text.size()/2)));
     }
     if (input.bad() || !input.eof()) throw std::runtime_error("failed to read BSGS targets or line too long");
-    return BsgsTargets(std::move(points));
+    return BsgsPublicKeyTargets(std::move(points));
 }
 BsgsBatch::BsgsBatch(ScalarInterval interval,uint64_t m,uint32_t first,uint32_t count,
     scheduler::Digest targets,scheduler::Digest table) : interval_(interval),m_(m),first_(first),count_(count),
@@ -97,7 +97,7 @@ ScalarInterval bsgs_tile(const ScalarInterval& remaining,uint64_t m,uint64_t max
     const auto width=UInt256(m).multiply(UInt256(max_giants));
     return ScalarInterval(remaining.begin(),remaining.begin().add(std::min(width,remaining.size())));
 }
-std::vector<BsgsMatch> verify_bsgs(const BsgsBatch& batch,const BsgsTargets& targets,
+std::vector<BsgsMatch> verify_bsgs(const BsgsBatch& batch,const BsgsPublicKeyTargets& targets,
     const XPointVerifier& verifier,std::vector<BsgsCandidate> candidates) {
     if (batch.target_digest()!=targets.digest() || batch.first_target()+batch.target_count()>targets.values().size())
         throw std::invalid_argument("BSGS target identity mismatch");

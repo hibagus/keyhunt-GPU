@@ -26,7 +26,7 @@ Binding binding(const core::XPointTargets& targets) {
     Bytes bytes;for(const auto& t:targets.values())bytes.insert(bytes.end(),t.begin(),t.end());
     return make(Mode::XPoint,bytes,targets.digest(),0,{});
 }
-Binding binding(const core::BsgsTargets& targets,const bsgs::Table& table) {
+Binding binding(const core::BsgsPublicKeyTargets& targets,const bsgs::Table& table) {
     Bytes bytes;for(const auto& t:targets.values())bytes.insert(bytes.end(),t.begin(),t.end());
     return make(Mode::Bsgs,bytes,targets.digest(),table.memory().m,table.checksum());
 }
@@ -47,7 +47,7 @@ Binding decode_binding(const Manifest& manifest,const Bytes& config,const Bytes&
         if(!m || bytes.size()%65 || bytes.size()/65>65536)throw std::runtime_error("invalid BSGS binding");
         std::vector<core::UncompressedPublicKey> targets(bytes.size()/65);
         for(size_t i=0;i<targets.size();++i)std::copy_n(bytes.begin()+65*i,65,targets[i].begin());
-        core::BsgsTargets canonical(std::move(targets));Bytes encoded;
+        core::BsgsPublicKeyTargets canonical(std::move(targets));Bytes encoded;
         for(const auto& t:canonical.values())encoded.insert(encoded.end(),t.begin(),t.end());
         result=make(Mode::Bsgs,encoded,canonical.digest(),m,checksum);
     }
