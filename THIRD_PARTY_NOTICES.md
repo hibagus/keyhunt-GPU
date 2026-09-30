@@ -25,6 +25,11 @@ It is not linked into the search executable. The retained upstream Wycheproof
 fixtures have their separate [Apache 2.0 notice](third_party/secp256k1-oracle/src/wycheproof/WYCHEPROOF_COPYING);
 those fixtures are not compiled by this integration.
 
+C12 links an external SQLite library supplied by the build environment; no
+SQLite implementation is vendored. The [storage setup](docs/STORAGE.md#database-and-deployment-boundary)
+records the required version and the installed standalone library used for validation.
+Deployment packages must provide that runtime dependency.
+
 The `src/crypto/` placement identifies maintained CPU implementation, not
 original authorship. All source notices and existing dependency licenses remain
 with their files. [GPL-3.0.txt](third_party/licenses/GPL-3.0.txt) supplies the full

@@ -32,7 +32,8 @@ plan does not reuse the scheduler's `DirectXPointV1` scalar mapping.
 
 The owner must finish every target subset before crediting a tile once. A match
 does not imply that other targets or the rest of the interval have been searched.
-All C11 receipts are volatile; checkpointed/durable coverage remains C12/C13.
+All C11 receipts are volatile. GPU checkpoint integration remains C13;
+C12 provides the [local journal](STORAGE.md).
 
 ## Initial host validation
 
@@ -201,5 +202,5 @@ sanitizer cleanliness is not claimed. Actual C11 execution currently covers
 SPX/NPS1; CPX/QPX/SPX discovery contracts pass without partition changes, while
 CPX/QPX hardware search runs remain pending.
 
-C11 is complete. C12 adds sparse persistent coverage and transactional
-assignments; C13 will bind verified matches and coverage to durable checkpoints.
+C11 and C12 are complete. C12 provides [sparse persistent coverage and transactional
+assignments](STORAGE.md); C13 will bind verified matches and coverage to durable checkpoints.

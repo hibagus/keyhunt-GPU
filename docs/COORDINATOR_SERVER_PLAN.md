@@ -4,6 +4,11 @@ Status: proposed design; no server, DNS, firewall, or certificates have been
 configured. This document refines sections 7–8 and C12/C15 of the
 [GPU redesign plan](GPU_REDESIGN_PLAN.md).
 
+S01/C12's [local storage foundation](STORAGE.md) is implemented: external private
+directories, a versioned project-scoped schema, sparse transactional allocation,
+fencing and quarantined backup/restore. Authentication, remote membership,
+reconciled restore activation and the coordinator service remain C15 work.
+
 Current scheduling defaults: one distinct active block per GPU, about twelve hours
 of computation per block on a calibrated reference GPU, local checkpoints every
 ten seconds, a combined machine sync every two hours, and thirty-day renewable

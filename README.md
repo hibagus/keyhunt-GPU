@@ -9,7 +9,8 @@ correctness checks, resumable searches, and coordinated work across machines.
 HIP discovery, arithmetic and bounded xpoint searches pass on MI300X, with CPU
 verification and candidate overflow replay. Versioned BSGS tables and bounded
 HIP BSGS range searches are implemented, including all targets and exact tails.
-Checkpoints and the coordinator remain planned.
+C12 adds a sparse local journal and transactional assignments. GPU checkpoints
+and the authenticated coordinator remain planned.
 
 [Build guide](docs/BUILD.md) · [Usage](docs/USAGE.md) ·
 [Implementation status](docs/IMPLEMENTATION_STATUS.md) ·
@@ -22,7 +23,8 @@ Checkpoints and the coordinator remain planned.
 | Optional GMP legacy / bsgsd | Builds and selected compatibility checks pass; separate from the future coordinator |
 | AMD HIP / MI300X | C07–C11 discovery, arithmetic, xpoint and BSGS searches validated on gfx942 |
 | NVIDIA CUDA | Planned at C18; NVIDIA compiler/device validation remains outstanding |
-| Pause/resume and distributed blocks | Planned at C12–C15 and C20; no durable progress tracking yet |
+| Local state | C12 project-scoped SQLite journal, sparse allocation, fenced assignments and sealed backups; [operations guide](docs/STORAGE.md) |
+| Pause/resume and distributed blocks | GPU checkpoint integration, pause/resume and coordination remain C13–C15 and C20 |
 
 The CPU engine still has range, stride and whole-application sanitizer defects.
 C06 corrected arithmetic and the tested BSGS start-boundary miss. See
@@ -63,18 +65,22 @@ HTTPS coordinator. These are design decisions, not current CLI features. See the
 - Existing CPU secp256k1, hashing, Bloom filter and encoding implementations;
   [source provenance and notices](THIRD_PARTY_NOTICES.md) are retained.
 - Python's standard library for the regression and benchmark harnesses.
+- SQLite 3.51.3+ development headers/library for durable local state.
 - GMP and OpenSSL for the optional legacy executable only.
 
 ROCm/HIP is optional for [device diagnostics](docs/HIP_BACKEND.md) and
-[bounded xpoint searches](docs/HIP_XPOINT.md). CUDA and SQLite
-remain planned. CPU builds do not require a GPU SDK or network access.
+[bounded xpoint searches](docs/HIP_XPOINT.md). CUDA remains planned.
+CPU builds do not require a GPU SDK or network access.
 
 ## Getting started
 
 ### Prerequisites
 
 Use Linux x86-64 with SSSE3, GCC/G++, Make, CMake 3.22 or newer, and Python 3.9 or
-newer for tests. The validated host uses GCC 11.4.0, CMake 3.22.1 and Python 3.10.12.
+newer for tests, plus SQLite 3.51.3+ headers/library. See the
+[SQLite setup](docs/STORAGE.md#database-and-deployment-boundary) for explicit
+dependency paths on the validated host. The validated host uses GCC 11.4.0,
+CMake 3.22.1 and Python 3.10.12.
 Native CPU tuning is enabled by default; see [build options](docs/BUILD.md#options)
 when building for a different machine.
 
@@ -124,7 +130,8 @@ process exit as proof of saved search progress or exact coverage.
 - [x] C09: bounded HIP xpoint search, CPU verification and overflow replay.
 - [x] C10: versioned BSGS tables, validated caches and HIP filter/exact lookup.
 - [x] C11: bounded HIP BSGS searches, all targets, exact tails and overflow replay.
-- [ ] C12–C15: durable coverage, local pause/resume and authenticated coordination.
+- [x] C12: sparse local coverage repository, transactional assignments and state commands.
+- [ ] C13–C15: verified GPU checkpoints, local pause/resume and authenticated coordination.
 - [ ] C16–C20: measured tuning, native CUDA, validated assembly and multiple GPUs.
 - [ ] C21–C23: operations guides, offline assignments and further GPU modes.
 

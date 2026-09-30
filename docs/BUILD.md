@@ -6,7 +6,8 @@ and table preparation/lookup are implemented. `KEYHUNT_ENABLE_CUDA` still fails 
 message. CPU builds never probe or download
 either GPU SDK.
 
-Use CMake 3.22+, GCC/G++ (11.4.0 tested), Make, and Python 3.9+ for tests. A
+Use CMake 3.22+, GCC/G++ (11.4.0 tested), Make, SQLite 3.51.3+ development
+headers/library, and Python 3.9+ for tests. A
 production-only build can omit Python with `-DBUILD_TESTING=OFF`. No dependencies
 are fetched by the build. Clang is accepted but is not yet validated here.
 
@@ -16,6 +17,14 @@ cmake --build --preset cpu-release --parallel 4
 ctest --preset cpu-release
 ./build/cpu-release/keyhunt -h
 ```
+
+If SQLite discovery fails or finds an older version, supply `SQLite3_INCLUDE_DIR`
+and `SQLite3_LIBRARY` as described in the [storage setup](STORAGE.md#database-and-deployment-boundary).
+Use these same arguments when configuring each preset. The build never installs
+or downloads SQLite. A custom library prefix also needs to be available to the
+runtime loader after installation (for example through `CMAKE_INSTALL_RPATH` or
+the deployment's library path); the default system development package avoids
+that custom-prefix requirement.
 
 The existing `-h` command returns status 1 after displaying help.
 `cpu-debug` and `cpu-sanitizers` provide separate build directories. Sanitizers
@@ -227,3 +236,22 @@ ctest --preset hip-release -R 'bsgs_cli|hip_bsgs_search|bsgs_search_contract'
 The search benchmark compares one/eight/automatic giant grouping with fixed m
 and target sets. Actual target giant steps/s and effective scalar-range coverage/s
 must be reported separately. Current search receipts are volatile.
+
+
+## Local journal and assignments
+
+C12 adds SQLite-backed storage to CPU and HIP builds and four CPU-only tests:
+`storage_database`, `storage_journal`, `storage_concurrency` and `state_cli`.
+The [storage guide](STORAGE.md) documents private external paths, manifests,
+allocation policies, expiry/fencing, local JSON commands and quarantined restore.
+
+~~~sh
+ctest --preset cpu-release -L storage
+ASAN_OPTIONS=detect_leaks=1 UBSAN_OPTIONS=halt_on_error=1 ctest --preset cpu-sanitizers -L storage
+python3 tools/measure_c12_storage.py --binary build/cpu-release/keyhunt --report /tmp/keyhunt-c12-scaling.json
+~~~
+
+The opt-in measurement creates synthetic journals in temporary external
+directories. It reports allocation wall time and sparse-index/file sizes for
+sequential, global random and random-window claims. Timing includes process
+startup, transaction, JSON and close/checkpoint; it is not GPU throughput.

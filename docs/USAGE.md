@@ -80,8 +80,9 @@ continues after finding matches; scalar `-r` bounds do not make it finite.
 Ctrl-C stops the current process, without a durable progress checkpoint. An OS
 stop/continue can suspend and resume the same live process, but that state does
 not survive process or machine failure. Durable local pause/resume is planned
-under C13/C14; assignment ownership and month-long expiry are coordinator design,
-not features of today's executable.
+under C13/C14. C12 provides independent local assignment ownership and thirty-day
+expiry through [`keyhunt state`](STORAGE.md); GPU searches do not yet consume
+those assignments or write durable checkpoints.
 
 `bsgsd` is the old local table daemon, not the authenticated coordinator. Its
 [protocol document](../BSGSD.md) remains available; C02 documents that its port

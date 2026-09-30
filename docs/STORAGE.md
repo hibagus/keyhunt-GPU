@@ -249,3 +249,73 @@ The CLI regression uses an independent Python manifest encoder and SQLite reader
 checks project foreign keys, all four policies, simultaneous request retries,
 lost stdout via `/dev/full`, sealed restore, environment precedence and high-bit
 IDs. Run the storage gates with `ctest --preset cpu-release -L storage`.
+
+## Storage measurements and decisions
+
+The [reproducible measurement](../tools/measure_c12_storage.py) uses three fresh
+synthetic journals per case, a fixed selection seed and one 256-block claim.
+The raw samples and row/file statistics are retained in
+[C12_STORAGE_SCALING.json](baselines/C12_STORAGE_SCALING.json). Timings include
+CLI startup, schema validation, FULL transaction commit, JSON and connection
+close/checkpoint. These are shared-host observations (regressions were also
+running), not an isolated transaction-throughput benchmark or GPU measurement.
+
+| Theoretical blocks | Policy | Median claim wall ms | Index rows | Compacted DB bytes |
+| --- | --- | ---: | ---: | ---: |
+| 2^20 | sequential | 119.13 | 13 | 131,072 |
+| 2^20 | random | 98.99 | 3,346 | 626,688 |
+| 2^20 | random-window | 134.12 | 1,343 | 331,776 |
+| 2^255 | sequential | 1347.48 | 248 | 167,936 |
+| 2^255 | random | 887.63 | 63,529 | 9,441,280 |
+| 2^255 | random-window | 2082.07 | 1,578 | 364,544 |
+
+Every untouched job used zero index rows, including the 2^255-block case.
+Statistics are per-job row counts but whole-database file/WAL sizes; each
+measurement database contains only one project/job. Post-command WAL sizes
+are zero because the last connection has closed and checkpointed; these
+numbers do not estimate peak WAL size with long-lived readers. Raw before/
+after-compaction statistics preserve the physical-size distinction.
+
+The 255-bit random case occupied 63,529 tree rows for 256 scattered IDs;
+a random window of 4,096 blocks reduced this to 1,578. Window selection was
+slower here because each draw computes window ranks through the tree. Keep
+sequential as the default and expose random-window for users who want bounded
+fragmentation; do not present it as uniform global random selection or a
+speed improvement. This allocation occurs per logical block reservation,
+outside the GPU kernel loop. No GPU throughput improvement is claimed by C12.
+
+Decision: retain the tested sparse tree and exact rank selection. Defer bitmap
+pages, prepared-statement caching and transaction-throughput tuning until a
+representative coordinator workload establishes the relevant bottleneck.
+Generation/request history is retained through compaction; bounded retention
+needs an explicit retry/archival protocol, not deletion based only on age.
+
+## Final C12 acceptance
+
+[Validation evidence](baselines/C12_VALIDATION.json) records implementation commits,
+schema/source/binary/library hashes, raw CTest summaries, CLI reports, hardware
+inventory and the partition regression. The four new storage gates pass in each
+build:
+
+| Build | Result |
+| --- | --- |
+| CPU release | 26/26 |
+| CPU debug | 26/26 |
+| CPU address/undefined sanitizers, focused selector | 24/24 |
+| HIP release, gfx942 | 41/41 |
+
+All four incremental builds completed without compiler warnings. Documentation
+links/anchors/fences and whitespace checks pass. The sanitizer selector excludes
+`cpu_baseline` and `target_loading` because of previously recorded legacy
+whole-application defects; it includes every new storage gate and the state CLI.
+
+The hardware suite retains the C07–C11 tests across the eight visible MI300X
+SPX/NPS1 devices, including xpoint, BSGS and partition contracts. CPX/QPX discovery
+contracts pass; actual CPX/QPX hardware search runs remain pending. C12 introduces
+no kernel changes and does not modify GPU partitions or operating settings.
+
+C12 is complete. C13 must bind actual canonical targets/configuration to the
+registered manifest, validate resumed state, CPU-verify candidates, and commit
+matches plus exact accepted coverage atomically before durable acknowledgement.
+Its executor/checkpoint bridge must reject stale generations and replay uncommitted
+work. Until then, the local state commands and C09/C11 GPU searches are independent.
