@@ -1,4 +1,5 @@
 #include "state_helpers.h"
+#include "checkpoint_control.h"
 #include "keyhunt/storage/checkpoint.h"
 #include "keyhunt/backend/device.h"
 #include <iostream>
@@ -31,8 +32,9 @@ int checkpoint_command(int argc,char** argv){
         {"create",{"project","mode","range","block-width","targets","table","host-memory"}},
         {"run",{"backend","grant","targets","table","device","batch-size","kernel","giant-batch",
                 "target-batch","candidate-capacity","group-size","host-memory","reserve-bytes","checkpoint-seconds"}},
-        {"results",{"project","job","after","limit"}}};
-    if(argc<3)throw std::invalid_argument("usage: keyhunt checkpoint create|run|results [--state-dir DIR] ...; see docs/CHECKPOINTS.md");
+        {"results",{"project","job","after","limit"}},
+        {"pause",{}},{"resume",{}},{"stop",{}},{"status",{}}};
+    if(argc<3)throw std::invalid_argument("usage: keyhunt checkpoint create|run|results|pause|resume|stop|status [--state-dir DIR] ...; see docs/CHECKPOINTS.md");
     const std::string action=argv[2];const auto spec=allowed.find(action);
     if(spec==allowed.end())throw std::invalid_argument("unknown checkpoint action");
     Options args;
@@ -45,6 +47,11 @@ int checkpoint_command(int argc,char** argv){
     }
     if(action=="run" && required(args,"backend")!="hip")throw std::invalid_argument("checkpoint execution requires --backend hip");
     Journal journal(optional(args,"state-dir"));
+    if(action=="pause" || action=="resume" || action=="stop" || action=="status"){
+        const auto response=LocalCheckpointControl::command(journal.state_directory(),action);
+        std::cout<<response;flush();
+        return response.find("\"accepted\":false")==std::string::npos?0:2;
+    }
     if(action=="create"){
         const auto range=required(args,"range");const auto colon=range.find(':');
         if(colon==std::string::npos || range.find(':',colon+1)!=std::string::npos)throw std::invalid_argument("range must be half-open HEX:HEX");
@@ -111,6 +118,7 @@ int checkpoint_command(int argc,char** argv){
             <<",\"end_exclusive\":"<<quote(coverage[i].end().hex())<<'}';
         std::cout<<"],\"match_observations\":"<<matches<<",\"transaction_ms\":"<<ms<<'}';flush();
     };
+    LocalCheckpointControl control(journal.state_directory(),grant,int(device),inventory.devices.size());
     // Construct/upload the executor lazily, after binding validation, integrity
     // checks, the exclusive owner guard and durable executor-generation allocation.
     if(mode==Mode::XPoint){
@@ -121,7 +129,7 @@ int checkpoint_command(int argc,char** argv){
         summary=CheckpointRun::xpoint(journal,grant,targets,verifier,[&](const auto& batch){
             if(!executor)executor=std::make_unique<HipXPointExecutor>(int(device),targets,verifier,gpu);
             const auto ticket=executor->submit(batch);executor->drain();return executor->take(ticket);
-        },options,notify,[&]{executor.reset();});
+        },options,notify,[&]{executor.reset();control.close();},control.callbacks());
     }else{
         const auto targets=core::BsgsPublicKeyTargets::load(required(args,"targets"));const auto table=load_table(args,targets);
         BsgsSearchOptions gpu;gpu.max_steps=options.giant_steps*options.target_batch;gpu.candidate_capacity=options.candidate_capacity;
@@ -132,9 +140,10 @@ int checkpoint_command(int argc,char** argv){
         summary=CheckpointRun::bsgs(journal,grant,targets,table,verifier,[&](const auto& batch){
             if(!executor)executor=std::make_unique<HipBsgsExecutor>(int(device),table,targets,verifier,gpu);
             const auto ticket=executor->submit(batch);executor->drain();return executor->take(ticket);
-        },options,notify,[&]{executor.reset();});
+        },options,notify,[&]{executor.reset();control.close();},control.callbacks());
     }
-    std::cout<<"{\"type\":\"summary\",\"complete\":true,\"durability\":\"local\",\"durable_coverage\":true"
+    std::cout<<"{\"type\":\"summary\",\"complete\":"<<(summary.complete?"true":"false")
+        <<",\"durability\":\"local\",\"durable_coverage\":true"
         <<",\"resumed_scalars\":"<<quote(summary.resumed_scalars.hex())<<",\"computed_scalars\":"<<quote(summary.computed_scalars.hex())
         <<",\"device_steps\":"<<quote(summary.device_steps.hex())<<",\"match_observations\":"<<summary.match_observations
         <<",\"batches\":"<<summary.batches<<",\"overflow_replays\":"<<summary.overflows<<",\"checkpoints\":"<<summary.checkpoints

@@ -62,3 +62,15 @@ target_link_libraries(storage_checkpoint_control_test PRIVATE keyhunt_storage)
 keyhunt_configure_target(storage_checkpoint_control_test)
 add_test(NAME storage_checkpoint_control COMMAND storage_checkpoint_control_test)
 set_tests_properties(storage_checkpoint_control PROPERTIES TIMEOUT 120 LABELS "cpu;storage;recovery")
+
+# The fixture uses the production Linux control implementation with a slow CPU
+# runner. It is never linked into keyhunt and needs no HIP hardware.
+add_executable(checkpoint_control_driver tests/storage/control_driver.cpp src/backend/checkpoint_control.cpp)
+target_include_directories(checkpoint_control_driver PRIVATE src/backend)
+target_link_libraries(checkpoint_control_driver PRIVATE keyhunt_storage)
+keyhunt_configure_target(checkpoint_control_driver)
+add_test(NAME checkpoint_controls COMMAND "${Python3_EXECUTABLE}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/checkpoint_controls.py"
+    --binary $<TARGET_FILE:keyhunt> --driver $<TARGET_FILE:checkpoint_control_driver>
+    --report "${CMAKE_CURRENT_BINARY_DIR}/checkpoint-controls-results.json")
+set_tests_properties(checkpoint_controls PROPERTIES TIMEOUT 120 LABELS "cpu;storage;cli;recovery")
