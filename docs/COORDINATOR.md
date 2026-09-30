@@ -177,13 +177,16 @@ A reboot forces revalidation. Fresh authenticated server time and the request's
 send time determine the deadline, with a 60-second drain margin; cached receipts
 cannot extend it. A wall-clock rollback does not extend monotonic validity.
 
-The persisted machine schedule is 7,200 seconds. Lost replies retain the exact
+The persisted HTTPS machine schedule is 7,200 seconds. Lost replies retain the exact
 pending payload. Restart, block completion, matches, an empty queue and remaining
 upload backlog do not trigger early contacts. An explicit manual sync can send
 or retry a page. Status distinguishes local completion awaiting sync from server
 acknowledgment, and reports outbox usage, last acknowledgment, expiry, pause and
 revalidation requirements. [C20 multi-GPU execution](MULTI_GPU.md) now consumes
 these machine queues concurrently through separate persistent device owners.
+[C22 file transport](OFFLINE_ASSIGNMENTS.md) reuses these snapshots and deadlines
+with manual export/relay/import, schema-v7 transfer receipts and no network child
+on the disconnected worker.
 
 S04b passed **11/11** focused gates, including two mock GPUs, lost replies,
 checkpoints arriving during HTTPS, boot/deadline fencing, outbox exhaustion and
@@ -195,7 +198,8 @@ coverage can finish a block. Existing C13/C14 storage/control gates still pass.
 ## S04c: HTTPS and process supervision
 
 `keyhunt-worker` provides `configure`, `configuration`, `status`, `sync`,
-`scheduled-sync`, `next`, `api`, `self-test` and `run-device`. Use `--state-dir DIR` for local
+`scheduled-sync`, `next`, `api`, `self-test` and `run-device`. C22 adds
+[`file-export`, `file-relay` and `file-import`](OFFLINE_ASSIGNMENTS.md#user-commands). Use `--state-dir DIR` for local
 state, `--config FILE` for initial configuration, `--request FILE` for an API
 request, and `--device N` for dispatch/self-test. `sync` is explicitly manual;
 `scheduled-sync` sends nothing before the persisted due time.

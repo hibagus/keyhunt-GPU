@@ -4,7 +4,9 @@ Use the [build matrix](BUILD.md#validated-gpu-builds) and
 [finite quickstart](GPU_QUICKSTART.md) to verify the chosen native backend first.
 The [mode matrix](MODES.md) limits GPU execution to exact xpoint and BSGS.
 Standalone execution needs only `keyhunt`; authenticated workers additionally
-need the optional coordinator/HTTPS build and enrolled client credentials.
+need the optional coordinator/HTTPS build. HTTPS workers hold enrolled client
+credentials; [file-only workers](OFFLINE_ASSIGNMENTS.md) keep those credentials
+on a connected courier.
 
 ## State, inputs and device identity
 
@@ -115,16 +117,23 @@ with `--devices 1 --device-map 1=0`. A different UUID requires the additional
 and valid grant. Do not delete lock files or mint new assignments to work around
 ownership checks. Three execution failures or a progress stall quarantine a
 queue; repair the cause before using `--retry-failed`. Healthy owners and the
-separate scheduled-sync process continue. No automatic GPU reset is performed.
+separate scheduled-sync process continue for HTTPS workers. No automatic GPU reset
+is performed.
 
-Workers persist a machine-wide 7,200-second contact schedule and default 30-day
-leases. Completion, matches and restart do not accelerate this schedule. A reboot
+HTTPS workers persist a machine-wide 7,200-second contact schedule and default
+30-day leases. Completion, matches and restart do not accelerate this schedule.
+A reboot
 or uncertain monotonic deadline requires authenticated revalidation before more
 work. A server pause reaches an offline worker only when it next contacts the
-server; use local controls for immediate intervention on that host.
+server; use local controls for immediate intervention on that host. File-only
+workers create no scheduled-sync child and report `sync_due_in:null`. Their
+[manual exchange](OFFLINE_ASSIGNMENTS.md#run-a-disconnected-worker) carries
+assignments, outbox pages and acknowledgments through a connected courier; file
+delivery consumes lease time. Reboots require a fresh export/relay/import.
 
 `keyhunt-worker status` reports local completion, pending outbox, last server
-acknowledgment, lease and sync state. To request an earlier upload explicitly:
+acknowledgment, lease and sync state. For HTTPS workers, request an earlier upload
+explicitly:
 
 ```sh
 keyhunt-worker sync --state-dir "$worker_state"

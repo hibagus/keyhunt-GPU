@@ -812,9 +812,10 @@ progress separately.
 
 Batched assignments and durable local manifests are required in C15. C22 adds
 manual file export/import under the same three-state model and explicit expiry.
-An exported block becomes in-progress and cannot be selected by other workers.
-A longer offline assignment duration is an explicit server policy, with its
-maximum recorded in recovery metadata; it is not a client-selected extension.
+The coordinator marks blocks in-progress when it relays a worker request and
+commits the response; exporting a request alone reserves nothing. Response files
+must be imported before execution. No longer assignment duration is implemented;
+any future extension needs explicit server policy and recovery metadata.
 
 Normal coordinator restart with an intact database preserves assignments,
 generations, and expiries. An older backup may omit grants held by workers still
@@ -840,11 +841,13 @@ The original CLI sketch has been superseded by tested commands:
 | Durable execution and controls | `keyhunt checkpoint run\|pause\|resume\|stop\|status`; [controls and recovery](PAUSE_RESUME.md) |
 | Authenticated coordinator | `keyhunt-coordinator serve` / `admin`; [localhost setup](COORDINATOR.md#s06-isolated-localhost-operation) |
 | Concurrent workers | `keyhunt-worker` plus `keyhunt-supervise` (source: `tools/coordinator_worker.py`); [operations](OPERATIONS.md) |
+| Offline assignments and checkpoints | `keyhunt-worker file-export\|file-relay\|file-import`; [trusted courier workflow](OFFLINE_ASSIGNMENTS.md) |
 
-Legacy `-m` flags retain their separate CPU paths. Scheduled machine sync is fixed
-at two hours; the optional `--sync-on-match` design above is not implemented.
+Legacy `-m` flags retain their separate CPU paths. Scheduled HTTPS machine sync
+is fixed at two hours; the optional `--sync-on-match` design above is not implemented.
 Restore activation currently supports only the stopped-authority/executor route,
-not a timeout-based automatic override. C22 file export/import remains planned.
+not a timeout-based automatic override. File-only workers have no automatic
+contact schedule and use manual exchange before their saved deadlines expire.
 
 ## 9. README and supporting documentation
 

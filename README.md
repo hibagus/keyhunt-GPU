@@ -9,7 +9,8 @@ correctness checks, resumable searches, and coordinated work across machines.
 xpoint/BSGS searches, CPU-verified matches, durable checkpoints and pause/resume.
 Persistent workers run concurrently across eight GPUs on each validated host.
 Authenticated coordination adds mTLS, project roles, an offline outbox and fenced
-recovery; its deployment gate is isolated localhost. Other search modes retain
+recovery, plus [manual offline file exchange](docs/OFFLINE_ASSIGNMENTS.md). Its
+deployment gate is isolated localhost. Other search modes retain
 the characterized CPU implementation. See the [mode matrix](docs/MODES.md).
 
 [Build guide](docs/BUILD.md) · [GPU quickstart](docs/GPU_QUICKSTART.md) ·
@@ -58,8 +59,10 @@ search contracts, with hardware-specific tuning validated independently.
 
 The distribution design gives each selected GPU its own block, sized for roughly
 12 hours on a reference device, with local checkpoints and a 30-day renewable
-assignment. The C15 supervisor batches synchronization with an authenticated
-HTTPS coordinator every two hours. Block width remains an explicit calibration
+assignment. HTTPS workers batch synchronization with an authenticated
+coordinator every two hours. File-only workers use manual courier exchanges
+under the same assignment and checkpoint rules. Block width remains an explicit
+calibration
 input; C20 runs persistent owners concurrently on the selected GPUs. Public
 ingress and cross-host coordinator/worker traffic remain outside the validated
 localhost scope. See the [GPU plan](docs/GPU_REDESIGN_PLAN.md) and [coordinator plan](docs/COORDINATOR_SERVER_PLAN.md).
@@ -138,8 +141,10 @@ For longer work, use [operations](docs/OPERATIONS.md) for device/queue selection
 sequential or random claims, pause/restart, memory budgets and performance limits.
 The [localhost coordinator demo](docs/COORDINATOR.md#s06-isolated-localhost-operation)
 provides reproducible worker enrollment and execution. Local completion and
-server acknowledgment are separate states; automatic machine sync is every two
-hours. C22 manual assignment export/import and C23 further GPU modes are planned.
+server acknowledgment are separate states. HTTPS workers sync every two hours;
+[offline workers](docs/OFFLINE_ASSIGNMENTS.md) use `file-export`, `file-relay` and
+`file-import`, with enrolled credentials held by a connected courier. C23 further
+GPU modes remain planned.
 
 ## Roadmap
 

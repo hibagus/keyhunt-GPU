@@ -174,8 +174,9 @@ use `checkpoint pause|status|resume|stop --state-dir DIR` in another terminal an
 wait for `durably_paused:true`. Supervised owners additionally need `--slot QUEUE`.
 For authenticated concurrent execution, use the
 [localhost worker setup](COORDINATOR.md#s06-isolated-localhost-operation) and
-[multi-GPU operations](MULTI_GPU.md). C22 portable offline exports remain planned;
-C15's durable HTTPS outbox already permits execution within valid offline leases.
+[multi-GPU operations](MULTI_GPU.md). For a disconnected worker use
+[C22 manual file exchange](OFFLINE_ASSIGNMENTS.md). Both transports retain the
+bounded outbox and stop execution when saved lease deadlines expire.
 
 The example files remain in the printed directory for inspection. They contain
 public fixtures and temporary local state; remove that directory when finished.

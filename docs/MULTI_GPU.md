@@ -9,7 +9,9 @@ own recorded hardware, toolchain and timing results.
 ## Ownership and failure boundaries
 
 The coordinator grants work to a machine instance. Its two-hour synchronization
-schedule and thirty-day lease remain unchanged. Local dispatch chooses a distinct
+schedule and thirty-day lease remain unchanged for HTTPS workers.
+[C22 file-only workers](OFFLINE_ASSIGNMENTS.md) use manual courier exchanges
+without a scheduled-sync child. Local dispatch chooses a distinct
 logical block for each device. GPU execution and HTTPS remain separate processes.
 
 Standalone checkpoint execution retains exclusive ownership of `executor.lock`.
