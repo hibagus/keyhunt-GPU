@@ -5,6 +5,7 @@
 #include <fcntl.h>
 #include <set>
 #include <stdexcept>
+#include <thread>
 #include <sys/file.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -56,6 +57,7 @@ struct CheckpointRun::Impl {
     const core::XPointVerifier& verifier;
     CheckpointOptions options;
     CheckpointObserver observer;
+    CheckpointControl control;
     RunLock lock;
     CheckpointSummary summary;
     std::vector<ScalarInterval> remaining,pending;
@@ -65,9 +67,9 @@ struct CheckpointRun::Impl {
     Clock::time_point last=Clock::now();
 
     Impl(Journal& j,const Grant& g,detail::Binding b,const core::XPointVerifier& v,
-         CheckpointOptions o,CheckpointObserver notify)
+         CheckpointOptions o,CheckpointObserver notify,CheckpointControl controls)
         :journal(j),grant(g),input(std::move(b)),verifier(v),options(o),
-         observer(std::move(notify)),lock(j.state_directory()){
+         observer(std::move(notify)),control(std::move(controls)),lock(j.state_directory()){
         // Full semantic audit precedes any GPU work. This checks receipt hashes,
         // stored result relations and exact coverage, not only SQLite page health.
         journal.check();
@@ -112,9 +114,40 @@ struct CheckpointRun::Impl {
         if(observer)observer(pending,matches.size(),ms);
         pending.clear();
     }
+    void activity(CheckpointActivity value){if(control.notify)control.notify(value);}
+    bool boundary(){
+        if(!control.poll)return true;
+        auto request=control.poll();
+        if(request==CheckpointRequest::Run)return true;
+        activity(CheckpointActivity::Draining);
+        // The synchronous runner has drained and returned all candidates. Flush
+        // exhaustive intervals even when the normal checkpoint timer is not due.
+        // A partial BSGS tile has durable matches, but no scalar coverage yet.
+        flush({},true);
+        summary.complete=journal.block(grant.scope,grant.block).state=="finished";
+        if(summary.complete){activity(CheckpointActivity::Completed);return false;}
+        if(request==CheckpointRequest::Pause){
+            activity(CheckpointActivity::Paused);
+            while((request=control.poll())==CheckpointRequest::Pause){
+                if(control.wait)control.wait();
+                else std::this_thread::sleep_for(std::chrono::milliseconds(20));
+            }
+            if(request==CheckpointRequest::Run){
+                // Pausing never renews a deadline or releases ownership. Audit
+                // saved state, then reject expiry, recovery or executor fencing
+                // before exposing the retained cursor to another submission.
+                journal.check();validate();
+                activity(CheckpointActivity::Running);
+                return true;
+            }
+        }
+        activity(CheckpointActivity::Stopped);
+        return false;
+    }
     CheckpointSummary finish(){
         flush({},true);
         if(journal.block(grant.scope,grant.block).state!="finished")throw std::logic_error("checkpointed block is incomplete");
+        summary.complete=true;
         return summary;
     }
 };
@@ -129,8 +162,8 @@ Scope CheckpointRun::create_bsgs(Journal& journal,const std::string& project,Sca
     journal.bind_search(scope,input);return scope;
 }
 CheckpointSummary CheckpointRun::xpoint(Journal& journal,const Grant& grant,const core::XPointTargets& targets,
-    const core::XPointVerifier& verifier,const XPointRunner& run,CheckpointOptions o,CheckpointObserver observer,CheckpointCleanup cleanup){
-    options(o,false);Impl state(journal,grant,detail::binding(targets),verifier,o,std::move(observer));
+    const core::XPointVerifier& verifier,const XPointRunner& run,CheckpointOptions o,CheckpointObserver observer,CheckpointCleanup cleanup,CheckpointControl control){
+    options(o,false);Impl state(journal,grant,detail::binding(targets),verifier,o,std::move(observer),std::move(control));
     Cleanup stopped_before_unlock{std::move(cleanup)};
     const auto manifest=journal.manifest(grant.scope);
     scheduler::BlockGrid grid(manifest.root,manifest.block_width);
@@ -143,6 +176,7 @@ CheckpointSummary CheckpointRun::xpoint(Journal& journal,const Grant& grant,cons
     for(const auto& gap:state.remaining){
         auto cursor=gap.begin();
         while(cursor<gap.end()){
+            if(!state.boundary())return state.summary;
             state.validate();const auto steps=std::min(UInt256(limit),gap.end().subtract(cursor)).to_uint64();
             const auto work=scheduler::WorkUnit::plan(grid,grant.block,cursor,steps,identity);
             const auto batch=*scheduler::KernelBatch::plan(*work,cursor,steps);
@@ -163,11 +197,12 @@ CheckpointSummary CheckpointRun::xpoint(Journal& journal,const Grant& grant,cons
             state.flush(result.matches);cursor=batch.interval().end();
         }
     }
+    if(!state.boundary())return state.summary;
     return state.finish();
 }
 CheckpointSummary CheckpointRun::bsgs(Journal& journal,const Grant& grant,const core::BsgsPublicKeyTargets& targets,const bsgs::Table& table,
-    const core::XPointVerifier& verifier,const BsgsRunner& run,CheckpointOptions o,CheckpointObserver observer,CheckpointCleanup cleanup){
-    options(o,true);Impl state(journal,grant,detail::binding(targets,table),verifier,o,std::move(observer));
+    const core::XPointVerifier& verifier,const BsgsRunner& run,CheckpointOptions o,CheckpointObserver observer,CheckpointCleanup cleanup,CheckpointControl control){
+    options(o,true);Impl state(journal,grant,detail::binding(targets,table),verifier,o,std::move(observer),std::move(control));
     Cleanup stopped_before_unlock{std::move(cleanup)};
     for(const auto& gap:state.remaining){
         auto cursor=gap.begin();
@@ -175,6 +210,7 @@ CheckpointSummary CheckpointRun::bsgs(Journal& journal,const Grant& grant,const 
             const auto tile=core::bsgs_tile(ScalarInterval(cursor,gap.end()),table.memory().m,o.giant_steps);
             uint32_t first=0,limit=o.target_batch;
             while(first<targets.values().size()){
+                if(!state.boundary())return state.summary;
                 state.validate();const auto count=uint32_t(std::min<size_t>(limit,targets.values().size()-first));
                 const core::BsgsBatch batch(tile,table.memory().m,first,count,targets.digest(),table.checksum());
                 const auto result=run(batch);++state.summary.batches;const auto& returned=result.batch;
@@ -204,6 +240,7 @@ CheckpointSummary CheckpointRun::bsgs(Journal& journal,const Grant& grant,const 
             cursor=tile.end();
         }
     }
+    if(!state.boundary())return state.summary;
     return state.finish();
 }
 } // namespace keyhunt::storage

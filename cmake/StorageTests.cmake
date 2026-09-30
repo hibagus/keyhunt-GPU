@@ -56,3 +56,9 @@ set_tests_properties(checkpoint_cli PROPERTIES TIMEOUT 240 LABELS "cpu;storage;c
 if(KEYHUNT_ENABLE_HIP)
     set_tests_properties(checkpoint_cli PROPERTIES LABELS "hip;hardware;storage;cli;recovery")
 endif()
+
+add_executable(storage_checkpoint_control_test tests/storage/checkpoint_control.cpp)
+target_link_libraries(storage_checkpoint_control_test PRIVATE keyhunt_storage)
+keyhunt_configure_target(storage_checkpoint_control_test)
+add_test(NAME storage_checkpoint_control COMMAND storage_checkpoint_control_test)
+set_tests_properties(storage_checkpoint_control PROPERTIES TIMEOUT 120 LABELS "cpu;storage;recovery")

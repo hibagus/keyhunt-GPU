@@ -12,6 +12,7 @@ struct CheckpointSummary {
     UInt256 resumed_scalars,computed_scalars,device_steps;
     uint64_t match_observations=0,batches=0,overflows=0,checkpoints=0;
     double checkpoint_ms=0;
+    bool complete=false; // A graceful stop may leave a valid in-progress block.
 };
 // Called only after COMMIT. Throwing (e.g. a broken stdout) stops submissions;
 // the accepted state is still durable and discoverable on the next invocation.
@@ -20,6 +21,16 @@ using CheckpointObserver=std::function<void(const std::vector<ScalarInterval>&,s
 // owner lock is released, including exceptions from submission or output.
 using CheckpointCleanup=std::function<void()>;
 using XPointRunner=std::function<backend::XPointResult(const scheduler::KernelBatch&)>;
+enum class CheckpointRequest { Run, Pause, Stop };
+enum class CheckpointActivity { Draining, Paused, Running, Stopped, Completed };
+// Only the owner thread calls these callbacks, outside SQL transactions and GPU
+// submissions. poll is nonblocking; wait must wake periodically to observe stop.
+// A paused owner retains its lock and BSGS subgroup cursor in memory.
+struct CheckpointControl {
+    std::function<CheckpointRequest()> poll;
+    std::function<void(CheckpointActivity)> notify;
+    std::function<void()> wait;
+};
 using BsgsRunner=std::function<backend::BsgsSearchResult(const core::BsgsBatch&)>;
 
 // One bounded owner per local journal. The injected runner is the trusted
@@ -32,9 +43,9 @@ public:
     static Scope create_bsgs(Journal&,const std::string& project,ScalarInterval root,UInt256 width,
         const core::BsgsPublicKeyTargets&,const bsgs::Table&);
     static CheckpointSummary xpoint(Journal&,const Grant&,const core::XPointTargets&,
-        const core::XPointVerifier&,const XPointRunner&,CheckpointOptions={},CheckpointObserver={},CheckpointCleanup={});
+        const core::XPointVerifier&,const XPointRunner&,CheckpointOptions={},CheckpointObserver={},CheckpointCleanup={},CheckpointControl={});
     static CheckpointSummary bsgs(Journal&,const Grant&,const core::BsgsPublicKeyTargets&,const bsgs::Table&,
-        const core::XPointVerifier&,const BsgsRunner&,CheckpointOptions={},CheckpointObserver={},CheckpointCleanup={});
+        const core::XPointVerifier&,const BsgsRunner&,CheckpointOptions={},CheckpointObserver={},CheckpointCleanup={},CheckpointControl={});
 private:
     struct Impl;
 };
