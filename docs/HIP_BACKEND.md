@@ -90,7 +90,8 @@ then releases the slot. `drain` synchronizes only that executor's stream and
 retains its unconsumed result. A second submission before `take` fails visibly.
 Tickets include an executor identity and increasing sequence, so stale, foreign,
 and double-consumed tickets are rejected. Result vectors survive later reuse.
-Use one host thread per executor; this is not yet a multidevice scheduler.
+Use one host thread per diagnostic executor. The search scheduler is described
+separately in [MULTI_GPU.md](MULTI_GPU.md).
 
 The configurable capacity is bounded to 1–1,048,576 indices (default 4,096).
 The device and pinned buffers each use `(capacity + 1) * 32 + 8` bytes. Preparation

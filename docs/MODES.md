@@ -1,4 +1,25 @@
-# Current CPU modes
+# Modes and backend support
+
+| Interface / mode | CPU build | HIP (MI300X) | CUDA (H200) |
+| --- | --- | --- | --- |
+| Legacy `-m address`, `rmd160`, `vanity`, `minikeys`, Ethereum | Characterized CPU paths, limitations below | Same CPU paths; no GPU acceleration | Same CPU paths; no GPU acceleration |
+| Legacy `-m xpoint`, `-m bsgs` | Characterized CPU paths, range/stride limitations | Same CPU paths | Same CPU paths |
+| Exact `xpoint --backend …` | Explicitly rejected | Validated | Validated |
+| Exact `bsgs --backend …` | Explicitly rejected | Validated | Validated |
+| `bsgs-table build` / `inspect`, state, job creation and result inspection | Supported | CPU operations | CPU operations |
+| `checkpoint run --backend …` | Explicitly rejected | Validated durable xpoint/BSGS | Validated durable xpoint/BSGS |
+| Optional supervised workers | Configuration/sync only; no CPU search executor | Validated concurrent xpoint/BSGS | Validated concurrent xpoint/BSGS |
+
+The [GPU quickstart](GPU_QUICKSTART.md) includes exact ranges and public fixtures.
+The [build matrix](BUILD.md#validated-gpu-builds) identifies tested stacks and
+partition limits. C23 will add further GPU modes; Bitcoin/HASH160/Ethereum/vanity
+and minikey GPU searches are not implemented. C22 portable offline assignment
+files are also planned; existing valid HTTPS leases and the durable outbox already
+support disconnected work between scheduled contacts.
+
+<a id="current-cpu-modes"></a>
+
+## Current CPU modes
 
 The main executable retains these original modes after C02. Support means the
 mode exists and the stated small characterization checks pass; it does not

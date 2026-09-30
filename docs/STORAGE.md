@@ -151,8 +151,9 @@ coverage containment, disjoint block states, and every persisted subtree count
 against independent prefix sums of authoritative assignments/finished runs.
 `compact()` checkpoints and vacuums physical storage without deleting retry
 receipts or audit history. Statistics expose file/WAL bytes, free pages and row
-counts. Retention/archival policy is future coordinator work; sparse state does
-not promise constant space for arbitrarily fragmented work or unlimited retries.
+counts. Automatic history archival is not implemented. C15 bounds the pending
+upload outbox but retains receipt history; sparse state does not promise constant
+space for arbitrarily fragmented work or unlimited retries.
 
 ## Repository validation
 
@@ -173,7 +174,7 @@ no transaction fault hook.
 ## Local commands
 
 Every action prints one JSON object. Failures print a diagnostic to stderr and
-exit 2. State operations are CPU-only in both CPU and HIP builds. For example:
+exit 2. State operations execute on the CPU in CPU, HIP and CUDA builds. For example:
 
 ~~~sh
 export KEYHUNT_STATE_DIR="$HOME/.local/state/keyhunt-c12"
@@ -255,7 +256,9 @@ An output failure occurs after a successful mutation may already be committed.
 
 Backup/restore destinations must not already contain a database. A restored
 journal is inspectable but cannot allocate, renew, recover, return or accept
-coverage. There is deliberately no activation override in this milestone.
+coverage. The local `state` CLI has no activation override. The separate
+[coordinator activation route](COORDINATOR.md#s05-recovery-and-coordinator-only-installation)
+requires stopped-authority/executor assertions and credential review.
 
 The CLI regression uses an independent Python manifest encoder and SQLite reader,
 checks project foreign keys, all four policies, simultaneous request retries,

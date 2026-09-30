@@ -4,7 +4,12 @@ C16 records the pre-tuning portable HIP baseline. Current kernel and batching
 changes are measured separately in [C17 tuning](HIP_TUNING.md). The [earlier audit](audits/C13_AUDIT.md) found that startup and different
 CLI output volumes can dominate small durability comparisons; this harness records
 those costs explicitly. See [checkpoint metrics](CHECKPOINTS.md#c16-execution-metrics)
-for the durable accounting contract.
+for the durable accounting contract. The same harness now accepts
+`--backend cuda --build-dir build/cuda-h200`; use a fresh `/var/tmp` output
+directory on the H200 host. ROCm profiler sections below apply only to HIP.
+C18/C19 tuning and C20 fleet results are linked in the
+[current performance guidance](OPERATIONS.md#interpreting-performance); the C16
+tables remain historical portable-HIP measurements.
 
 ## Reproduce an end-to-end run
 

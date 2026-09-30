@@ -829,40 +829,22 @@ computation explicitly instead of silently treating old-snapshot free ranges as
 unexplored. Reconcile revoked credentials before reopening access. Only one
 authoritative coordinator may issue assignments at any time.
 
-### Proposed CLI sketch
+### Implemented CLI and operations
 
-These names illustrate the intended interface; finalize them with CLI compatibility
-tests. All new range endpoints below are explicitly end-exclusive.
+The original CLI sketch has been superseded by tested commands:
 
-```sh
-# On the coordinator server; Apache exposes the authenticated HTTPS endpoint.
-keyhunt coordinator --state /var/lib/keyhunt-coordinator/progress.sqlite \
-  --listen-unix /run/keyhunt-coordinator/api.sock
+| Task | Implemented interface and guide |
+| --- | --- |
+| Finite exact GPU search | `keyhunt xpoint` / `keyhunt bsgs --backend hip\|cuda`; [complete examples](GPU_QUICKSTART.md) |
+| Canonical job and local assignment | `keyhunt checkpoint create`, `keyhunt state claim`; [checkpoint guide](CHECKPOINTS.md#public-commands) |
+| Durable execution and controls | `keyhunt checkpoint run\|pause\|resume\|stop\|status`; [controls and recovery](PAUSE_RESUME.md) |
+| Authenticated coordinator | `keyhunt-coordinator serve` / `admin`; [localhost setup](COORDINATOR.md#s06-isolated-localhost-operation) |
+| Concurrent workers | `keyhunt-worker` plus `keyhunt-supervise` (source: `tools/coordinator_worker.py`); [operations](OPERATIONS.md) |
 
-# On a remote worker after enrollment and a project-role grant.
-keyhunt devices --backend hip
-keyhunt worker --coordinator https://dbkeyprogress.rumahsimanis.bagus.my.id \
-  --project PROJECT_UUID --job JOB_DIGEST \
-  --tls-cert "$HOME/.config/keyhunt/worker.crt" \
-  --tls-key "$HOME/.config/keyhunt/worker.key" \
-  --backend hip --devices all --select random --sync-interval 2h \
-  --prefetch-blocks-per-gpu 1 --local-checkpoint-interval 10s
-
-# Optional standalone/offline operation, with state outside the repository.
-keyhunt job create --mode bsgs --targets targets.txt \
-  --range-start 0x1000 --range-end-exclusive 0x2000 --block-bits 8 \
-  --state "$HOME/.local/state/keyhunt/demo.sqlite"
-keyhunt run --state "$HOME/.local/state/keyhunt/demo.sqlite" \
-  --backend hip --block 0x3 --once
-keyhunt status --state "$HOME/.local/state/keyhunt/demo.sqlite"
-keyhunt pause --state "$HOME/.local/state/keyhunt/demo.sqlite"
-keyhunt resume --state "$HOME/.local/state/keyhunt/demo.sqlite" \
-  --backend hip --devices 0
-```
-
-The server plan specifies credential handling and authorization; active-process
-controls and command names still require implementation tests. Legacy search flags
-remain supported by a compatibility parser.
+Legacy `-m` flags retain their separate CPU paths. Scheduled machine sync is fixed
+at two hours; the optional `--sync-on-match` design above is not implemented.
+Restore activation currently supports only the stopped-authority/executor route,
+not a timeout-based automatic override. C22 file export/import remains planned.
 
 ## 9. README and supporting documentation
 

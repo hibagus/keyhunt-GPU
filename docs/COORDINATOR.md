@@ -29,7 +29,7 @@ sufficient for the operation. Rotation registers a second exact certificate
 against the same client; the old certificate can then be disabled. Identical
 common names do not identify the same client.
 
-Readers see project metadata and progress; workers will additionally submit
+Readers see project metadata and progress; workers additionally submit
 their own assigned work; project owners create jobs, manage memberships, pause
 jobs and inspect results. Progress access does not grant result-data access.
 An unauthorized project and an unknown project both return not found.
@@ -333,15 +333,18 @@ to loopback, with Unix sockets between Apache and the database service. This
 is process and state isolation, not a VM/container or a boundary against another
 process running as the same trusted Unix user.
 
-From the repository, with Apache installed (or `--apache-root` pointing to an
-extracted package root), start the reproducible environment:
+Build the chosen GPU preset with `KEYHUNT_ENABLE_COORDINATOR=ON` as described
+in [BUILD.md](BUILD.md#optional-tuning-and-workers). This supplies both the CPU
+service and native worker. From the repository, with Apache installed (or
+`--apache-root` pointing to an extracted package root), start the environment:
 
 ```sh
+build_dir="$PWD/build/hip-release"  # NVIDIA: "$PWD/build/cuda-h200"
+demo_dir="$HOME/.local/state/keyhunt-coordinator-demo"
 python3 tools/coordinator_local.py \
-  --directory /home/bagus/.local/state/keyhunt-coordinator-demo \
-  --coordinator build/coordinator-release/keyhunt-coordinator \
-  --worker build/hip-release/keyhunt-worker \
-  --port 8443
+  --directory "$demo_dir" \
+  --coordinator "$build_dir/keyhunt-coordinator" \
+  --worker "$build_dir/keyhunt-worker" --port 8443
 ```
 
 The launcher prints readiness after a real authenticated HTTPS read. It creates
@@ -362,20 +365,24 @@ Git and are intended for this isolated environment only.
 In a second terminal, while the launcher is running:
 
 ```sh
-build/hip-release/keyhunt-worker sync \
-  --state-dir /home/bagus/.local/state/keyhunt-coordinator-demo/alice-worker
+# Set these again: shell variables are not shared between terminals.
+backend=hip  # NVIDIA: cuda
+build_dir="$PWD/build/hip-release"  # NVIDIA: "$PWD/build/cuda-h200"
+demo_dir="$HOME/.local/state/keyhunt-coordinator-demo"
+"$build_dir/keyhunt-worker" sync --state-dir "$demo_dir/alice-worker"
 python3 tools/coordinator_worker.py \
-  --state-dir /home/bagus/.local/state/keyhunt-coordinator-demo/alice-worker \
-  --worker build/hip-release/keyhunt-worker --keyhunt build/hip-release/keyhunt --once
-build/hip-release/keyhunt-worker status \
-  --state-dir /home/bagus/.local/state/keyhunt-coordinator-demo/alice-worker
+  --state-dir "$demo_dir/alice-worker" --backend "$backend" \
+  --worker "$build_dir/keyhunt-worker" --keyhunt "$build_dir/keyhunt" --once
+"$build_dir/keyhunt-worker" status --state-dir "$demo_dir/alice-worker"
 ```
 
 After execution, status shows local completion awaiting sync. A subsequent manual
 `sync` uploads the durable outbox; the supervisor otherwise waits for its regular
 two-hour contact. The `bob-worker` configuration provides the second independent
-client. This demo's small blocks are for validation, not twelve-hour production
-calibration. Public DNS, TCP 443 ingress, ACME issuance/renewal and a physical
+client. Each demo worker has queue `0` only; it does not automatically configure
+eight queues. Use [fleet configuration and controls](OPERATIONS.md#concurrent-workers)
+for existing multi-queue jobs. This demo's small blocks are for validation, not
+twelve-hour production calibration. Public DNS, TCP 443 ingress, ACME issuance/renewal and a physical
 second host remain explicitly untested/deferred.
 
 The localhost gate also renews the server leaf under the test CA, gracefully

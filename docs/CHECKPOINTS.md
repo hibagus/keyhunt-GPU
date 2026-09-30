@@ -1,13 +1,17 @@
 # Verified local checkpoints (C13)
 
-C13 connects exact xpoint/BSGS execution to the C12 [local journal](STORAGE.md).
-The guarantee is at-least-once computation with exact locally acknowledged
-coverage and deduplicated CPU-verified matches. It is standalone storage on one
-host; no remote synchronization, server acknowledgment or distributed outbox is
-claimed. Those belong to C15. C14 adds
-[graceful signals and local pause controls](PAUSE_RESUME.md). Existing
-`keyhunt xpoint` and `keyhunt bsgs` commands retain their explicitly
-volatile C09/C11 behavior.
+The checkpoint commands connect exact HIP/CUDA xpoint and BSGS execution to the
+[local journal](STORAGE.md). The guarantee is at-least-once computation with exact
+locally acknowledged coverage and deduplicated CPU-verified matches. Start with
+the runnable [GPU quickstart](GPU_QUICKSTART.md). C13 introduced this contract;
+C18 validated it on CUDA. Historical acceptance results below retain their dates
+and scope; the current schema is [version 6](STORAGE.md#schema-and-migration).
+
+Standalone execution has no server acknowledgment. The optional
+[C15 coordinator](COORDINATOR.md) adds HTTPS synchronization and a durable worker
+outbox; [C20](MULTI_GPU.md) adds concurrent owners on both backends. C14's
+[graceful signals and controls](PAUSE_RESUME.md) apply to durable execution.
+Ordinary `keyhunt xpoint` and `keyhunt bsgs` commands remain volatile.
 
 ## Binding real inputs
 
@@ -36,6 +40,10 @@ Only the checkpoint owner can call the private result/coverage transaction.
 
 ## Schema version 2 and migration
 
+This section records the original C13 v1-to-v2 migration. Current upgrades
+retain one sealed backup before applying all missing migrations through v6; see
+[the current schema contract](STORAGE.md#schema-and-migration).
+
 `schema_v1.sql` remains byte-for-byte unchanged. Version 2 adds canonical search
 bindings, local executor generations, deduplicated results and retained checkpoint
 payloads. All carry project/job composite keys; result pagination uses a bounded
@@ -44,8 +52,9 @@ signed-64-bit row ID, while scalar/block values remain fixed-width 256-bit BLOBs
 An existing v1 journal is validated and backed up to a private `pre-v2-UUID` child
 directory before its schema changes. The writer reservation excludes concurrent
 mutations while a separate read connection creates the sealed snapshot. Migration
-and the new schema/version digest commit together. Fresh journals create both
-migrations in one transaction. Unsupported versions or changed migration hashes
+and the new schema/version digest commit together. C13 fresh journals created both
+migrations in one transaction; current fresh journals apply all migrations
+through v6 together. Unsupported versions or changed migration hashes
 fail. Pre-migration snapshots retain v1 and are quarantined; opening one with a
 new binary may itself migrate it, so use a read-only SQLite connection to inspect
 its original schema version without modification.
@@ -65,9 +74,10 @@ when resuming the same assignment.
 
 One stable `executor.lock` file per journal uses a nonblocking advisory lock.
 It is private, never unlinked during handoff, and released automatically on
-process exit. This deliberately permits one checkpoint owner per local journal
-in C13; multiple independent blocks/devices in one journal await the C20 supervisor.
-C12 allocation and inspection may still use concurrent connections. This is a
+process exit. Standalone `checkpoint run` permits one owner per local journal.
+The [C20 supervisor](MULTI_GPU.md#ownership-and-failure-boundaries) uses a shared
+journal guard and exclusive per-block guards for concurrent independent devices.
+Allocation and inspection may still use concurrent connections. This is a
 trusted local ownership guard, not remote authentication or protection against an
 operator bypassing the application protocol.
 
@@ -146,9 +156,9 @@ authentication. Full audits scale with retained history and matches; they run at
 preflight/explicit inspection, outside the GPU kernel loop.
 
 Checkpoint payloads and idempotency/audit history are retained through compaction.
-This preserves replay/audit evidence but grows with actual checkpoints; C15 must
-define any archival/retention protocol. There is no second filesystem progress
-journal. Results and intervals live in the same SQLite commit.
+This preserves replay/audit evidence but grows with actual checkpoints. The
+coordinator bounds its pending outbox, but no automatic receipt-history archival
+protocol is implemented. There is no second filesystem progress journal. Results and intervals live in the same SQLite commit.
 
 ## Initial verification
 
@@ -170,7 +180,7 @@ underlying storage hardware.
 
 `checkpoint create` resolves actual inputs on the CPU and registers the canonical
 binding. Use `state claim` to reserve a block, then `checkpoint run` to execute
-that grant on one HIP logical device. All actions accept `--state-dir` or the
+that grant on one HIP or CUDA logical device. All actions accept `--state-dir` or the
 C12 state-directory environment defaults.
 
 ~~~sh
@@ -213,7 +223,7 @@ printf '%s\n' 0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798
 | Action | Options |
 | --- | --- |
 | `create` | Required `--project`, `--mode xpoint\|bsgs`, `--range`, `--block-width`, `--targets`; BSGS requires `--table` and accepts `--host-memory` |
-| `run`, common | Required `--backend hip`, `--grant`, `--targets`; optional `--device` (0), `--candidate-capacity` (1024), `--checkpoint-seconds 0..60` (10) |
+| `run`, common | Required `--backend hip\|cuda`, `--grant`, `--targets`; optional `--device` (0), `--candidate-capacity` (1024), `--checkpoint-seconds 0..60` (10) |
 | `run`, xpoint | `--batch-size 1..1048576` (1048576), `--kernel stepped\|direct` (stepped); capacity 1..1048576 |
 | `run`, BSGS | Required `--table`; `--giant-batch` (16384), `--target-batch 1..64` (64), product at most 1048576; capacity 1..65536; `--group-size auto\|1\|8`; `--host-memory` (1073741824 bytes), `--reserve-bytes` (67108864 bytes) |
 | `results` | Required `--project`, `--job`; optional `--after` (0), `--limit 1..1000` (100) |
@@ -238,9 +248,10 @@ until `results` is empty; IDs are decimal strings. Each row includes its wide
 scalar/block, canonical target index and target bytes. IDs can have gaps.
 These local commands do not implement remote authentication.
 
-CPU-only builds support creation, claims, checks and result inspection. A HIP
-execution request on such a build fails explicitly. C14 adds CPU-compatible local
-control clients and graceful signal handling for `checkpoint run`. See the
+Use the CUDA binary and `--backend cuda` in place of the HIP binary/flag in
+these examples for NVIDIA. CPU-only builds support creation, claims, checks and
+result inspection; both HIP and CUDA execution requests fail explicitly. C14
+adds CPU-compatible local control clients and graceful signal handling for `checkpoint run`. See the
 [pause/resume guide](PAUSE_RESUME.md) for durable-pause acknowledgments, early-stop
 summaries, live status and recovery. Ordinary volatile search commands retain
 their existing signal behavior.

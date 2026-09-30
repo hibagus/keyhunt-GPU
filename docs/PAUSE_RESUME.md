@@ -1,9 +1,9 @@
 # Graceful pause and resume (C14)
 
-C14 extends the verified checkpoint owner with control boundaries before each
-bounded submission. It keeps C13's one owner, one assigned block and one HIP
-logical device per invocation. [C20](MULTI_GPU.md) adds concurrent supervised
-owners with separate block guards and per-device control sockets.
+The checkpoint owner has control boundaries before each bounded submission.
+Standalone execution uses one owner, one assigned block and one HIP or CUDA
+logical device per invocation (introduced in C14, validated on CUDA in C18/C20).
+[C20](MULTI_GPU.md) adds concurrent supervised owners with separate block guards and per-device control sockets.
 
 ## Owner contract
 
@@ -47,7 +47,9 @@ acknowledgment boundaries.
 ## Commands and signals
 
 Start a normal [checkpoint run](CHECKPOINTS.md). In another
-terminal, use the same private state directory:
+terminal, use the same private state directory (`state` below) and a built or
+installed `keyhunt` on PATH. These are live-process commands; the tiny quickstart
+may already have finished:
 
 ```sh
 keyhunt checkpoint pause  --state-dir "$state"
@@ -55,6 +57,11 @@ keyhunt checkpoint status --state-dir "$state"
 keyhunt checkpoint resume --state-dir "$state"
 keyhunt checkpoint stop   --state-dir "$state"
 ```
+
+For a C20 supervised queue, append `--slot QUEUE` to each command; for example,
+`keyhunt checkpoint status --state-dir "$state" --slot 0`. The queue is its
+persisted configuration ID, even if `--device-map` changed the runtime ordinal.
+Without `--slot`, commands address only the standalone owner.
 
 The command response has `accepted`, `state`, `requested`, `durably_paused`,
 `durability:"local"`, process ID, project/job/block, assignment generation, selected
@@ -80,8 +87,10 @@ block and is false after an early graceful stop; a successful stop exits 0.
 Handlers only update lock-free atomic `sig_atomic_t` flags. Force exit runs in the owner loop, so
 uncommitted work replays. Standard Unix signals can coalesce: two simultaneous
 signals are not guaranteed to be two delivered interrupts. If a driver is stuck
-inside a call, use `SIGKILL` for immediate process termination. `SIGSTOP` suspends
-the process without creating a checkpoint.
+inside a call, `SIGKILL` requests forced termination, but a process stuck in the
+kernel may survive it. Confirm the owner has exited and released its locks before
+replacement; [C20 supervision](MULTI_GPU.md#fleet-supervision) retains this rule.
+`SIGSTOP` suspends the process without creating a checkpoint.
 
 Control is local and requires neither network access nor coordinator contact.
 The private `control.sock` uses Linux Unix-domain `SOCK_SEQPACKET`, same-UID peer
@@ -130,7 +139,9 @@ keyhunt state restore --state-dir "$restored" --source "$snapshot"
 Online backups use SQLite's supported backup API, include committed WAL data,
 and publish a sealed snapshot with a new epoch. Do not copy the live main file
 alone. A restored snapshot supports inspection but remains quarantined; C15's
-coordinator reconciliation is still needed to activate recovered ownership.
+[coordinator recovery](COORDINATOR.md#s05-recovery-and-coordinator-only-installation)
+provides the stopped-authority/executor and credential-review activation route.
+There is no standalone `state` activation override.
 
 Restart `checkpoint run` with the existing valid grant to consume the exact
 saved complement. If expired or transferred, stop the old owner and use the

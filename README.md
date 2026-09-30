@@ -5,18 +5,15 @@
 A staged redesign of keyhunt for AMD HIP and NVIDIA CUDA, with reproducible
 correctness checks, resumable searches, and coordinated work across machines.
 
-**Current status:** the CPU engine has been characterized and reorganized.
-HIP discovery, arithmetic and bounded xpoint searches pass on MI300X, with CPU
-verification and candidate overflow replay. Versioned BSGS tables and bounded
-HIP BSGS range searches are implemented, including all targets and exact tails.
-The local journal now supports transactional assignments and CPU-verified durable
-HIP checkpoints, graceful local pause/resume and checkpoint-on-signal shutdown.
-Authenticated coordination now adds mTLS, project roles, durable machine sync,
-an offline outbox and fenced recovery, validated in an isolated localhost setup.
-Native CUDA now supports the same bounded xpoint/BSGS and local checkpoint
-contracts, validated on eight H200s with measured arithmetic and inline PTX tuning.
+**Current status:** native HIP (MI300X) and CUDA (H200) support exact bounded
+xpoint/BSGS searches, CPU-verified matches, durable checkpoints and pause/resume.
+Persistent workers run concurrently across eight GPUs on each validated host.
+Authenticated coordination adds mTLS, project roles, an offline outbox and fenced
+recovery; its deployment gate is isolated localhost. Other search modes retain
+the characterized CPU implementation. See the [mode matrix](docs/MODES.md).
 
-[Build guide](docs/BUILD.md) · [Usage](docs/USAGE.md) ·
+[Build guide](docs/BUILD.md) · [GPU quickstart](docs/GPU_QUICKSTART.md) ·
+[Operations](docs/OPERATIONS.md) · [CPU usage](docs/USAGE.md) ·
 [Implementation status](docs/IMPLEMENTATION_STATUS.md) ·
 [Report an issue](https://github.com/hibagus/keyhunt-GPU/issues)
 
@@ -25,8 +22,8 @@ contracts, validated on eight H200s with measured arithmetic and inline PTX tuni
 | Linux x86-64 CPU | Release and debug builds tested; 38 characterization checks pass |
 | CPU modes | Bitcoin address/HASH160, xpoint, BSGS, Ethereum address, vanity and minikeys; limitations documented |
 | Optional GMP legacy / bsgsd | Builds and selected compatibility checks pass; separate from the authenticated coordinator |
-| AMD HIP / MI300X | C07–C11 discovery, arithmetic, xpoint and BSGS searches validated on gfx942 |
-| NVIDIA CUDA | Native C18 backend; H200 build and validation in [CUDA_BACKEND.md](docs/CUDA_BACKEND.md) |
+| AMD HIP / MI300X | Validated on gfx942, eight SPX/NPS1 devices; C19 carry intrinsics opt-in; [tested stack and partition limits](docs/BUILD.md#validated-gpu-builds) |
+| NVIDIA CUDA / H200 | Validated native sm_90 backend and concurrent C20 execution on eight H200s; MIG unvalidated; [build and evidence](docs/CUDA_BACKEND.md) |
 | Local state | C12 project-scoped SQLite journal, sparse allocation, fenced assignments and sealed backups; [operations guide](docs/STORAGE.md) |
 | Durable GPU searches | C13/C18 verified local checkpoints and replay for HIP/CUDA xpoint and BSGS; [commands and recovery](docs/CHECKPOINTS.md), [CUDA usage](docs/CUDA_BACKEND.md) |
 | Pause/resume | C14 local commands, graceful signals, exact restart and live inspection; [operations guide](docs/PAUSE_RESUME.md) |
@@ -78,8 +75,10 @@ localhost scope. See the [GPU plan](docs/GPU_REDESIGN_PLAN.md) and [coordinator 
 - OpenSSL 3 and nlohmann JSON for optional coordination; libcurl for HTTPS
   workers and Apache for the mTLS deployment boundary.
 
-ROCm/HIP is optional for [device diagnostics](docs/HIP_BACKEND.md) and
-[bounded xpoint searches](docs/HIP_XPOINT.md). Native NVIDIA builds use the [H200 CUDA preset](docs/CUDA_BACKEND.md).
+GPU builds use separate native [HIP or CUDA presets](docs/BUILD.md#validated-gpu-builds).
+The recorded stacks are AMD clang 23.0.0git / HIP 7.15.26333 (ROCm Core 10.0),
+and CUDA 13.3.73 / driver 610.57.04 with GCC 11.4.0. These are tested combinations,
+not minimum SDK versions.
 CPU builds do not require a GPU SDK or network access.
 
 ## Getting started
@@ -126,6 +125,21 @@ Read the [usage guide](docs/USAGE.md) for input formats, bounded BSGS examples,
 output files and current interruption behavior. The [mode reference](docs/MODES.md)
 distinguishes active and removed modes. Avoid treating `-S` caches or a successful
 process exit as proof of saved search progress or exact coverage.
+
+### GPU searches and workers
+
+Build either native backend using [the validated GPU build guide](docs/BUILD.md#validated-gpu-builds).
+Then follow the [finite GPU quickstart](docs/GPU_QUICKSTART.md): it prepares the
+public scalar-1 fixture, searches both modes, creates durable jobs, claims blocks,
+and verifies completed-grant replay. GPU commands use `--backend hip` or `cuda`;
+legacy `-m` flags remain CPU paths.
+
+For longer work, use [operations](docs/OPERATIONS.md) for device/queue selection,
+sequential or random claims, pause/restart, memory budgets and performance limits.
+The [localhost coordinator demo](docs/COORDINATOR.md#s06-isolated-localhost-operation)
+provides reproducible worker enrollment and execution. Local completion and
+server acknowledgment are separate states; automatic machine sync is every two
+hours. C22 manual assignment export/import and C23 further GPU modes are planned.
 
 ## Roadmap
 
