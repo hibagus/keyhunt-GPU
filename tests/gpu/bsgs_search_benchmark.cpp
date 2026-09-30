@@ -9,10 +9,12 @@ using namespace keyhunt;
 using core::UInt256;
 int main(int argc,char** argv){
     try {
-        if(argc>4)throw std::invalid_argument("usage: hip_bsgs_search_benchmark [device] [m] [giants]");
+        if(argc>5)throw std::invalid_argument("usage: hip_bsgs_search_benchmark [device] [m] [giants] [capacity]");
         const int device=argc>1?std::stoi(argv[1]):0;
         const uint64_t m=argc>2?std::stoull(argv[2]):65537,giants=argc>3?std::stoull(argv[3]):32768;
         if(!m || m>1048576 || !giants || giants>32768)throw std::invalid_argument("m in [1,1048576], giants in [1,32768]");
+        const uint64_t capacity=argc>4?std::stoull(argv[4]):1024;
+        if(capacity<3 || capacity>65536)throw std::invalid_argument("capacity in [3,65536]");
         using Clock=std::chrono::steady_clock;
         const auto building=Clock::now();const auto table=bsgs::Table::build(m);
         const double build_ms=std::chrono::duration<double,std::milli>(Clock::now()-building).count();
@@ -37,7 +39,7 @@ int main(int argc,char** argv){
             core::BsgsBatch batch(interval,m,0,uint32_t(targets.values().size()),targets.digest(),table.checksum());
             std::unique_ptr<backend::HipBsgsExecutor> owners[3];double prep[3]{};
             for(unsigned kind=0;kind<3;++kind){
-                backend::BsgsSearchOptions options;options.group_size=kind==2?0:kind?8:1;
+                backend::BsgsSearchOptions options;options.candidate_capacity=uint32_t(capacity);options.group_size=kind==2?0:kind?8:1;
                 const auto start=Clock::now();owners[kind]=std::make_unique<backend::HipBsgsExecutor>(device,table,targets,cpu,options);
                 prep[kind]=std::chrono::duration<double,std::milli>(Clock::now()-start).count();
             }
@@ -53,6 +55,7 @@ int main(int argc,char** argv){
                 for(size_t i=0;i<expected.size();++i)if(result.matches[i].scalar!=expected[i])throw std::runtime_error("benchmark match differs");
                 std::cout<<(first?"":",")<<"{\"group_size\":"<<(kind==2?0:kind?8:1)<<",\"dispatched_group\":"<<result.group_size<<",\"sample\":"<<sample<<",\"kernel_ms\":"<<result.kernel_ms
                     <<",\"download_ms\":"<<result.download_ms<<",\"seed_ms\":"<<result.seed_ms<<",\"verification_ms\":"<<result.verification_ms
+                    <<",\"download_bytes\":"<<result.download_bytes<<",\"device_allocation_bytes\":"<<result.device_allocation_bytes
                     <<",\"wall_ms\":"<<result.wall_ms<<",\"device_steps\":"<<result.device_steps<<",\"matches\":"<<result.matches.size()<<'}';first=false;
             }
             std::cout<<"]}";

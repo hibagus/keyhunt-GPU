@@ -215,6 +215,9 @@ if(BUILD_TESTING)
     add_test(NAME gpu_benchmark_metrics COMMAND "${Python3_EXECUTABLE}"
         "${CMAKE_CURRENT_SOURCE_DIR}/tests/unit/gpu_metrics.py")
     set_tests_properties(gpu_benchmark_metrics PROPERTIES TIMEOUT 30 LABELS "cpu;benchmark")
+    add_test(NAME gpu_benchmark_pairs COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/unit/gpu_pair.py")
+    set_tests_properties(gpu_benchmark_pairs PROPERTIES TIMEOUT 30 LABELS "cpu;benchmark")
     include(cmake/OracleTests.cmake)
     include(cmake/GpuArithmeticTests.cmake)
     include(cmake/XPointTests.cmake)

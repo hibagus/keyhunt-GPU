@@ -11,10 +11,15 @@ using namespace keyhunt;
 using core::UInt256;
 int main(int argc,char** argv) {
     try {
-        if (argc>3) throw std::invalid_argument("usage: hip_xpoint_benchmark [device] [steps]");
+        if (argc>5) throw std::invalid_argument("usage: hip_xpoint_benchmark [device] [steps] [both|stepped|direct] [capacity]");
         const int device=argc>1 ? std::stoi(argv[1]) : 0;
         const uint64_t count=argc>2 ? std::stoull(argv[2]) : 1048576;
         if (!count || count>1048576) throw std::invalid_argument("steps must be in [1,1048576]");
+        const std::string selected=argc>3 ? argv[3] : "both";
+        const uint64_t capacity=argc>4 ? std::stoull(argv[4]) : 1024;
+        if ((selected!="both" && selected!="stepped" && selected!="direct") || capacity<3 || capacity>1048576)
+            throw std::invalid_argument("kernel selection invalid or capacity outside [3,1048576]");
+        const auto enabled=[&](unsigned kind){return selected=="both" || selected==(kind ? "stepped" : "direct");};
         core::XPointVerifier verifier;
         const auto begin=UInt256::from_hex("800000000000000000000000000000000000000000000000fffffffffffffff1");
         std::cout<<std::setprecision(9)<<"{\"device\":"<<device<<",\"count\":"<<count<<",\"begin\":\""<<begin.hex()<<"\",\"workloads\":[";
@@ -31,9 +36,13 @@ int main(int argc,char** argv) {
                 std::sort(expected.begin(),expected.end());
                 expected.erase(std::unique(expected.begin(),expected.end()),expected.end());
             } else {
-                // The direct baseline must confirm this presumed no-match set
-                // before timings are accepted; every unexpected candidate fails.
-                for (unsigned i=0;i<(workload==0 ? 1U : 32U);++i) values.push_back(UInt256(i).bytes());
+                // Known public scalars and their X-only partners n-k are outside
+                // this high-bit interval. The expected empty set is independent
+                // of whether the direct reference kernel is included in this run.
+                for (unsigned i=1;i<=(workload==0 ? 1U : 32U);++i) {
+                    const auto pub=verifier.derive(UInt256(i));
+                    core::XPointBytes x{};std::copy_n(pub.begin()+1,32,x.begin());values.push_back(x);
+                }
             }
             core::XPointTargets targets(values);
             scheduler::ExecutionIdentity id; id.target_digest=targets.digest();
@@ -44,7 +53,8 @@ int main(int argc,char** argv) {
             std::unique_ptr<backend::HipXPointExecutor> owners[2];
             double preparation[2]{};
             for (unsigned kind=0;kind<2;++kind) {
-                backend::XPointOptions options; options.max_steps=count; options.candidate_capacity=1024;
+                if (!enabled(kind)) continue;
+                backend::XPointOptions options; options.max_steps=count; options.candidate_capacity=uint32_t(capacity);
                 options.kernel=kind ? backend::XPointKernel::Stepped : backend::XPointKernel::Direct;
                 auto start=std::chrono::steady_clock::now();
                 owners[kind]=std::make_unique<backend::HipXPointExecutor>(device,targets,verifier,options);
@@ -58,6 +68,7 @@ int main(int argc,char** argv) {
             for (int sample=-1;sample<5;++sample) {
                 for (unsigned order=0;order<2;++order) {
                     const unsigned kind=sample>=0 && sample%2 ? 1-order : order;
+                    if (!enabled(kind)) continue;
                     auto& owner=*owners[kind];
                     auto ticket=owner.submit(batch); owner.drain(); auto result=owner.take(ticket);
                     if (result.overflow || result.verified_steps!=count || result.matches.size()!=expected.size())
@@ -69,6 +80,8 @@ int main(int argc,char** argv) {
                         <<"\",\"sample\":"<<sample<<",\"kernel_ms\":"<<result.kernel_ms
                         <<",\"download_ms\":"<<result.download_ms<<",\"seed_ms\":"<<result.seed_ms
                         <<",\"verification_ms\":"<<result.verification_ms<<",\"wall_ms\":"<<result.wall_ms
+                        <<",\"download_bytes\":"<<result.download_bytes
+                        <<",\"device_allocation_bytes\":"<<result.device_allocation_bytes
                         <<",\"device_steps\":"<<result.device_steps<<",\"matches\":"<<result.matches.size()<<'}';
                     first=false;
                 }
