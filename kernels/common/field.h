@@ -1,7 +1,11 @@
 #pragma once
 #include <cstdint>
+#if defined(__CUDACC__)
+#include "../cuda/carry.cuh"
+#endif
 
-// Shared integer arithmetic only: no HIP runtime, warp assumptions or ISA code.
+// Shared canonical integer arithmetic; CUDA carry chains have portable fallbacks.
+// No runtime headers or warp-size assumptions enter this interface.
 #if defined(__HIPCC__) || defined(__CUDACC__)
 #define KEYHUNT_HD __host__ __device__
 #else
@@ -30,12 +34,16 @@ KEYHUNT_HD inline bool less(const Field& a, const Field& b) {
 }
 KEYHUNT_HD inline Field subtract_words(const Field& a, const Field& b, uint32_t& borrow) {
     Field result{};
+#if defined(__CUDA_ARCH__) && !defined(KEYHUNT_CUDA_PORTABLE_CARRY)
+    cuda_field::subtract_words(result.limb, a.limb, b.limb, borrow);
+#else
     borrow = 0;
     for (unsigned i = 0; i < 8; ++i) {
         const uint64_t rhs = uint64_t(b.limb[i]) + borrow;
         result.limb[i] = uint32_t(uint64_t(a.limb[i]) - rhs);
         borrow = uint64_t(a.limb[i]) < rhs;
     }
+#endif
     return result;
 }
 // Any 256-bit integer is below 2p, so one subtraction suffices at ingress.
@@ -82,12 +90,16 @@ KEYHUNT_HD inline Field fold(Field low, uint64_t high) {
 }
 KEYHUNT_HD inline void add(Field& out, const Field& a, const Field& b) {
     Field result{};
-    uint64_t carry = 0;
+    uint32_t carry = 0;
+#if defined(__CUDA_ARCH__) && !defined(KEYHUNT_CUDA_PORTABLE_CARRY)
+    cuda_field::add_words(result.limb, a.limb, b.limb, carry);
+#else
     for (unsigned i = 0; i < 8; ++i) {
         const uint64_t sum = uint64_t(a.limb[i]) + b.limb[i] + carry;
         result.limb[i] = uint32_t(sum);
-        carry = sum >> 32;
+        carry = uint32_t(sum >> 32);
     }
+#endif
     out = fold(result, carry);
 }
 KEYHUNT_HD inline void sub(Field& out, const Field& a, const Field& b) {
@@ -95,12 +107,17 @@ KEYHUNT_HD inline void sub(Field& out, const Field& a, const Field& b) {
     Field result = subtract_words(a, b, borrow);
     if (borrow) {
         const auto p = prime();
-        uint64_t carry = 0;
+        uint32_t carry = 0;
+#if defined(__CUDA_ARCH__) && !defined(KEYHUNT_CUDA_PORTABLE_CARRY)
+        // Add p modulo 2^256; the carry is deliberately discarded here.
+        cuda_field::add_words(result.limb, result.limb, p.limb, carry);
+#else
         for (unsigned i = 0; i < 8; ++i) {
             const uint64_t sum = uint64_t(result.limb[i]) + p.limb[i] + carry;
             result.limb[i] = uint32_t(sum);
-            carry = sum >> 32;
+            carry = uint32_t(sum >> 32);
         }
+#endif
     }
     out = result;
 }

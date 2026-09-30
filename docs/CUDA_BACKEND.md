@@ -141,3 +141,22 @@ The retained default remains compiler-generated multiplication. The
 [reproduction patch](audits/C18_PTX_MULTIPLY.patch) and
 [raw measurements/resource evidence](baselines/C18_PTX_MULTIPLY.json) preserve
 this finding without shipping a slower default or an unused experimental kernel.
+
+## Accepted PTX carry chains
+
+`kernels/cuda/carry.cuh` implements 256-bit add/subtract with a single local
+carry chain, then exports a 0/1 carry or borrow. The shared code still performs
+canonical field reduction and alias-safe publication. Inputs remain live until
+all arithmetic finishes, avoiding an early output clobber if nvcc reuses registers.
+The compiler is free to eliminate unused results; no volatile or memory barrier
+is needed for this pure register operation. CPU/HIP retain the original C++ path.
+`-DCMAKE_CUDA_FLAGS=-DKEYHUNT_CUDA_PORTABLE_CARRY` selects the CUDA fallback.
+
+With the fixed inversion chain already enabled, median xpoint improvements were
+1.34–1.35x for the direct reference and 1.13–1.16x for stepped kernels. BSGS cases
+improved 1.08–1.16x; point doubling improved 1.20x. General multiplication and
+inversion microbenchmarks were within about 1% of their previous timings, as
+expected for this change. The independent field and point suites pass, including
+carry boundaries, normalization, aliasing, zero, and exceptional curve points.
+SASS contains native `IADD3.X` carry operations. Full raw samples, resource counts
+and oracle reports are in [C18_PTX_CARRY.json](baselines/C18_PTX_CARRY.json).
