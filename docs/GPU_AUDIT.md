@@ -1,7 +1,10 @@
 # CUDA/HIP port audit — 2026-09-29
 
-Latest follow-up: [C12–C13 audit and MI300X figures](audits/C13_AUDIT.md) checks
-durable GPU execution and reports current warm and whole-process throughput.
+Latest follow-up: [C14–C15 audit and refreshed MI300X figures](audits/C15_AUDIT.md)
+passes 57 HIP and 41 CPU tests, reproduces two supervisor pause/quarantine defects,
+and measures warm execution and coordinated block startup costs.
+The [C12–C13 audit](audits/C13_AUDIT.md) covers durable GPU execution and
+whole-process throughput with different checkpoint cadences.
 The earlier [C07–C11 HIP audit](audits/C11_AUDIT.md) reproduces three performance
 findings and measures a 1.48–1.51× xpoint kernel throughput improvement in an
 isolated launch-bound experiment.

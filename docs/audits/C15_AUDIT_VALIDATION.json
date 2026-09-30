@@ -1,0 +1,686 @@
+{
+  "recorded_utc": "2026-09-30T17:19:33.711230+00:00",
+  "revision": "33acd335cc1bc92753418f47d2b0bbaabbd2b69b",
+  "snapshot": "/tmp/keyhunt-c15-audit-yq2von8j/source",
+  "archive_sha256": "8409ebb5cfa97aaeb51e1d8a944a6219d851949e288fc81df5a2e50d1a286f58",
+  "scope": "C14 and C15, frozen before concurrent C16 work; audit artifacts only; HIP_VISIBLE_DEVICES=0; all network fixtures bind private localhost.",
+  "tests": {
+    "cpu": {
+      "count": 41,
+      "failed": 0,
+      "ctest_output": "Internal ctest changing into directory: /tmp/keyhunt-c15-audit-yq2von8j/cpu\nTest project /tmp/keyhunt-c15-audit-yq2von8j/cpu\n      Start  1: oracle_selftest\n 1/41 Test  #1: oracle_selftest ..................   Passed    0.88 sec\n      Start  2: cpu_field_oracle\n 2/41 Test  #2: cpu_field_oracle .................   Passed    0.25 sec\n      Start  3: cpu_point_oracle\n 3/41 Test  #3: cpu_point_oracle .................   Passed    0.68 sec\n      Start  4: bounded_search_oracle\n 4/41 Test  #4: bounded_search_oracle ............   Passed    1.63 sec\n      Start  5: portable_field_oracle\n 5/41 Test  #5: portable_field_oracle ............   Passed    0.32 sec\n      Start  6: portable_point_oracle\n 6/41 Test  #6: portable_point_oracle ............   Passed    1.35 sec\n      Start  7: xpoint_search_contract\n 7/41 Test  #7: xpoint_search_contract ...........   Passed    0.10 sec\n      Start  8: xpoint_cli\n 8/41 Test  #8: xpoint_cli .......................   Passed    0.08 sec\n      Start  9: bsgs_table_contract\n 9/41 Test  #9: bsgs_table_contract ..............   Passed    0.31 sec\n      Start 10: bsgs_table_oracle\n10/41 Test #10: bsgs_table_oracle ................   Passed    1.62 sec\n      Start 11: bsgs_table_devices\n11/41 Test #11: bsgs_table_devices ...............   Passed    0.08 sec\n      Start 12: bsgs_search_contract\n12/41 Test #12: bsgs_search_contract .............   Passed    0.14 sec\n      Start 13: bsgs_cli\n13/41 Test #13: bsgs_cli .........................   Passed    0.08 sec\n      Start 14: storage_database\n14/41 Test #14: storage_database .................   Passed    0.05 sec\n      Start 15: storage_journal\n15/41 Test #15: storage_journal ..................   Passed    0.62 sec\n      Start 16: storage_concurrency\n16/41 Test #16: storage_concurrency ..............   Passed    0.15 sec\n      Start 17: state_cli\n17/41 Test #17: state_cli ........................   Passed    0.58 sec\n      Start 18: storage_checkpoint\n18/41 Test #18: storage_checkpoint ...............   Passed    2.21 sec\n      Start 19: storage_checkpoint_failures\n19/41 Test #19: storage_checkpoint_failures ......   Passed    2.92 sec\n      Start 20: checkpoint_cli\n20/41 Test #20: checkpoint_cli ...................   Passed    0.63 sec\n      Start 21: storage_checkpoint_control\n21/41 Test #21: storage_checkpoint_control .......   Passed    2.54 sec\n      Start 22: checkpoint_controls\n22/41 Test #22: checkpoint_controls ..............   Passed    4.27 sec\n      Start 23: coordinator_registry\n23/41 Test #23: coordinator_registry .............   Passed    0.11 sec\n      Start 24: coordinator_tls\n24/41 Test #24: coordinator_tls ..................   Passed    0.60 sec\n      Start 25: coordinator_sync\n25/41 Test #25: coordinator_sync .................   Passed    0.32 sec\n      Start 26: coordinator_sync_failures\n26/41 Test #26: coordinator_sync_failures ........   Passed    0.67 sec\n      Start 27: coordinator_worker\n27/41 Test #27: coordinator_worker ...............   Passed    0.38 sec\n      Start 28: coordinator_worker_failures\n28/41 Test #28: coordinator_worker_failures ......   Passed    1.21 sec\n      Start 29: coordinator_https_worker\n29/41 Test #29: coordinator_https_worker .........   Passed    0.54 sec\n      Start 30: coordinator_recovery\n30/41 Test #30: coordinator_recovery .............   Passed    0.41 sec\n      Start 31: coordinator_local_launcher\n31/41 Test #31: coordinator_local_launcher .......   Passed    0.63 sec\n      Start 32: coordinator_budget\n32/41 Test #32: coordinator_budget ...............   Passed    0.36 sec\n      Start 33: hip_discovery_contract\n33/41 Test #33: hip_discovery_contract ...........   Passed    0.12 sec\n      Start 34: backend_cli\n34/41 Test #34: backend_cli ......................   Passed    0.05 sec\n      Start 35: exact_range\n35/41 Test #35: exact_range ......................   Passed    0.00 sec\n      Start 36: block_grid\n36/41 Test #36: block_grid .......................   Passed    0.09 sec\n      Start 37: work_unit\n37/41 Test #37: work_unit ........................   Passed    0.04 sec\n      Start 38: range_oracle\n38/41 Test #38: range_oracle .....................   Passed    1.86 sec\n      Start 39: result_verifier\n39/41 Test #39: result_verifier ..................   Passed    0.03 sec\n      Start 40: cpu_baseline\n40/41 Test #40: cpu_baseline .....................   Passed   28.41 sec\n      Start 41: target_loading\n41/41 Test #41: target_loading ...................   Passed    8.53 sec\n\n100% tests passed, 0 tests failed out of 41\n\nLabel Time Summary:\narithmetic     =   1.66 sec*proc (2 tests)\nbackend        =   0.41 sec*proc (5 tests)\nbaseline       =  28.41 sec*proc (1 test)\nbsgs           =   2.22 sec*proc (5 tests)\nbudget         =   0.36 sec*proc (1 test)\ncli            =   5.48 sec*proc (3 tests)\ncoordinator    =   5.24 sec*proc (10 tests)\ncore           =  10.79 sec*proc (8 tests)\ncpu            =  65.33 sec*proc (40 tests)\nintegration    =   1.78 sec*proc (3 tests)\noracle         =   6.73 sec*proc (7 tests)\nranges         =   1.99 sec*proc (4 tests)\nrecovery       =  15.09 sec*proc (10 tests)\nscheduler      =   0.78 sec*proc (2 tests)\nsecurity       =   1.25 sec*proc (3 tests)\nstorage        =  13.98 sec*proc (9 tests)\ntables         =   1.93 sec*proc (2 tests)\nxpoint         =   0.17 sec*proc (2 tests)\n\nTotal Test time (real) =  65.89 sec\n",
+      "cases": [
+        {
+          "name": "oracle_selftest",
+          "classname": "oracle_selftest",
+          "time": "0.880514",
+          "status": "run"
+        },
+        {
+          "name": "cpu_field_oracle",
+          "classname": "cpu_field_oracle",
+          "time": "0.250666",
+          "status": "run"
+        },
+        {
+          "name": "cpu_point_oracle",
+          "classname": "cpu_point_oracle",
+          "time": "0.681313",
+          "status": "run"
+        },
+        {
+          "name": "bounded_search_oracle",
+          "classname": "bounded_search_oracle",
+          "time": "1.63494",
+          "status": "run"
+        },
+        {
+          "name": "portable_field_oracle",
+          "classname": "portable_field_oracle",
+          "time": "0.315774",
+          "status": "run"
+        },
+        {
+          "name": "portable_point_oracle",
+          "classname": "portable_point_oracle",
+          "time": "1.34815",
+          "status": "run"
+        },
+        {
+          "name": "xpoint_search_contract",
+          "classname": "xpoint_search_contract",
+          "time": "0.0963536",
+          "status": "run"
+        },
+        {
+          "name": "xpoint_cli",
+          "classname": "xpoint_cli",
+          "time": "0.0774452",
+          "status": "run"
+        },
+        {
+          "name": "bsgs_table_contract",
+          "classname": "bsgs_table_contract",
+          "time": "0.307577",
+          "status": "run"
+        },
+        {
+          "name": "bsgs_table_oracle",
+          "classname": "bsgs_table_oracle",
+          "time": "1.62122",
+          "status": "run"
+        },
+        {
+          "name": "bsgs_table_devices",
+          "classname": "bsgs_table_devices",
+          "time": "0.079652",
+          "status": "run"
+        },
+        {
+          "name": "bsgs_search_contract",
+          "classname": "bsgs_search_contract",
+          "time": "0.135149",
+          "status": "run"
+        },
+        {
+          "name": "bsgs_cli",
+          "classname": "bsgs_cli",
+          "time": "0.0800125",
+          "status": "run"
+        },
+        {
+          "name": "storage_database",
+          "classname": "storage_database",
+          "time": "0.053798",
+          "status": "run"
+        },
+        {
+          "name": "storage_journal",
+          "classname": "storage_journal",
+          "time": "0.623033",
+          "status": "run"
+        },
+        {
+          "name": "storage_concurrency",
+          "classname": "storage_concurrency",
+          "time": "0.154104",
+          "status": "run"
+        },
+        {
+          "name": "state_cli",
+          "classname": "state_cli",
+          "time": "0.577032",
+          "status": "run"
+        },
+        {
+          "name": "storage_checkpoint",
+          "classname": "storage_checkpoint",
+          "time": "2.20709",
+          "status": "run"
+        },
+        {
+          "name": "storage_checkpoint_failures",
+          "classname": "storage_checkpoint_failures",
+          "time": "2.92038",
+          "status": "run"
+        },
+        {
+          "name": "checkpoint_cli",
+          "classname": "checkpoint_cli",
+          "time": "0.629485",
+          "status": "run"
+        },
+        {
+          "name": "storage_checkpoint_control",
+          "classname": "storage_checkpoint_control",
+          "time": "2.54412",
+          "status": "run"
+        },
+        {
+          "name": "checkpoint_controls",
+          "classname": "checkpoint_controls",
+          "time": "4.26981",
+          "status": "run"
+        },
+        {
+          "name": "coordinator_registry",
+          "classname": "coordinator_registry",
+          "time": "0.110701",
+          "status": "run"
+        },
+        {
+          "name": "coordinator_tls",
+          "classname": "coordinator_tls",
+          "time": "0.600576",
+          "status": "run"
+        },
+        {
+          "name": "coordinator_sync",
+          "classname": "coordinator_sync",
+          "time": "0.320837",
+          "status": "run"
+        },
+        {
+          "name": "coordinator_sync_failures",
+          "classname": "coordinator_sync_failures",
+          "time": "0.672899",
+          "status": "run"
+        },
+        {
+          "name": "coordinator_worker",
+          "classname": "coordinator_worker",
+          "time": "0.377931",
+          "status": "run"
+        },
+        {
+          "name": "coordinator_worker_failures",
+          "classname": "coordinator_worker_failures",
+          "time": "1.21473",
+          "status": "run"
+        },
+        {
+          "name": "coordinator_https_worker",
+          "classname": "coordinator_https_worker",
+          "time": "0.543216",
+          "status": "run"
+        },
+        {
+          "name": "coordinator_recovery",
+          "classname": "coordinator_recovery",
+          "time": "0.411086",
+          "status": "run"
+        },
+        {
+          "name": "coordinator_local_launcher",
+          "classname": "coordinator_local_launcher",
+          "time": "0.633474",
+          "status": "run"
+        },
+        {
+          "name": "coordinator_budget",
+          "classname": "coordinator_budget",
+          "time": "0.355455",
+          "status": "run"
+        },
+        {
+          "name": "hip_discovery_contract",
+          "classname": "hip_discovery_contract",
+          "time": "0.121014",
+          "status": "run"
+        },
+        {
+          "name": "backend_cli",
+          "classname": "backend_cli",
+          "time": "0.0474945",
+          "status": "run"
+        },
+        {
+          "name": "exact_range",
+          "classname": "exact_range",
+          "time": "0.00155624",
+          "status": "run"
+        },
+        {
+          "name": "block_grid",
+          "classname": "block_grid",
+          "time": "0.0927413",
+          "status": "run"
+        },
+        {
+          "name": "work_unit",
+          "classname": "work_unit",
+          "time": "0.0398191",
+          "status": "run"
+        },
+        {
+          "name": "range_oracle",
+          "classname": "range_oracle",
+          "time": "1.86005",
+          "status": "run"
+        },
+        {
+          "name": "result_verifier",
+          "classname": "result_verifier",
+          "time": "0.0326417",
+          "status": "run"
+        },
+        {
+          "name": "cpu_baseline",
+          "classname": "cpu_baseline",
+          "time": "28.4139",
+          "status": "run"
+        },
+        {
+          "name": "target_loading",
+          "classname": "target_loading",
+          "time": "8.53344",
+          "status": "run"
+        }
+      ]
+    },
+    "hip": {
+      "count": 57,
+      "failed": 0,
+      "ctest_output": "Internal ctest changing into directory: /tmp/keyhunt-c15-audit-yq2von8j/hip\nTest project /tmp/keyhunt-c15-audit-yq2von8j/hip\n      Start  1: oracle_selftest\n 1/57 Test  #1: oracle_selftest ..................   Passed    0.86 sec\n      Start  2: cpu_field_oracle\n 2/57 Test  #2: cpu_field_oracle .................   Passed    0.26 sec\n      Start  3: cpu_point_oracle\n 3/57 Test  #3: cpu_point_oracle .................   Passed    0.69 sec\n      Start  4: bounded_search_oracle\n 4/57 Test  #4: bounded_search_oracle ............   Passed    1.63 sec\n      Start  5: portable_field_oracle\n 5/57 Test  #5: portable_field_oracle ............   Passed    0.31 sec\n      Start  6: hip_field_oracle\n 6/57 Test  #6: hip_field_oracle .................   Passed    5.36 sec\n      Start  7: portable_point_oracle\n 7/57 Test  #7: portable_point_oracle ............   Passed    1.35 sec\n      Start  8: hip_point_oracle\n 8/57 Test  #8: hip_point_oracle .................   Passed    4.94 sec\n      Start  9: hip_arithmetic_devices\n 9/57 Test  #9: hip_arithmetic_devices ...........   Passed    0.81 sec\n      Start 10: xpoint_search_contract\n10/57 Test #10: xpoint_search_contract ...........   Passed    0.09 sec\n      Start 11: hip_xpoint_failures\n11/57 Test #11: hip_xpoint_failures ..............   Passed    0.73 sec\n      Start 12: hip_xpoint_executor\n12/57 Test #12: hip_xpoint_executor ..............   Passed    0.80 sec\n      Start 13: xpoint_cli\n13/57 Test #13: xpoint_cli .......................   Passed   26.06 sec\n      Start 14: xpoint_cli_direct\n14/57 Test #14: xpoint_cli_direct ................   Passed   29.46 sec\n      Start 15: bsgs_table_contract\n15/57 Test #15: bsgs_table_contract ..............   Passed    0.31 sec\n      Start 16: bsgs_table_oracle\n16/57 Test #16: bsgs_table_oracle ................   Passed    2.89 sec\n      Start 17: hip_bsgs_table\n17/57 Test #17: hip_bsgs_table ...................   Passed    0.68 sec\n      Start 18: bsgs_table_devices\n18/57 Test #18: bsgs_table_devices ...............   Passed    2.04 sec\n      Start 19: hip_bsgs_failures\n19/57 Test #19: hip_bsgs_failures ................   Passed    0.73 sec\n      Start 20: bsgs_search_contract\n20/57 Test #20: bsgs_search_contract .............   Passed    0.14 sec\n      Start 21: hip_bsgs_search\n21/57 Test #21: hip_bsgs_search ..................   Passed    0.91 sec\n      Start 22: hip_bsgs_search_failures\n22/57 Test #22: hip_bsgs_search_failures .........   Passed    0.87 sec\n      Start 23: bsgs_cli\n23/57 Test #23: bsgs_cli .........................   Passed   62.00 sec\n      Start 24: bsgs_cli_single\n24/57 Test #24: bsgs_cli_single ..................   Passed   61.28 sec\n      Start 25: bsgs_cli_grouped\n25/57 Test #25: bsgs_cli_grouped .................   Passed   58.57 sec\n      Start 26: storage_database\n26/57 Test #26: storage_database .................   Passed    0.05 sec\n      Start 27: storage_journal\n27/57 Test #27: storage_journal ..................   Passed    0.62 sec\n      Start 28: storage_concurrency\n28/57 Test #28: storage_concurrency ..............   Passed    0.14 sec\n      Start 29: state_cli\n29/57 Test #29: state_cli ........................   Passed    1.52 sec\n      Start 30: storage_checkpoint\n30/57 Test #30: storage_checkpoint ...............   Passed    2.20 sec\n      Start 31: storage_checkpoint_failures\n31/57 Test #31: storage_checkpoint_failures ......   Passed    2.92 sec\n      Start 32: checkpoint_cli\n32/57 Test #32: checkpoint_cli ...................   Passed   15.95 sec\n      Start 33: storage_checkpoint_control\n33/57 Test #33: storage_checkpoint_control .......   Passed    2.53 sec\n      Start 34: checkpoint_controls\n34/57 Test #34: checkpoint_controls ..............   Passed    4.55 sec\n      Start 35: checkpoint_pause_hip\n35/57 Test #35: checkpoint_pause_hip .............   Passed    7.48 sec\n      Start 36: coordinator_registry\n36/57 Test #36: coordinator_registry .............   Passed    0.11 sec\n      Start 37: coordinator_tls\n37/57 Test #37: coordinator_tls ..................   Passed    0.60 sec\n      Start 38: coordinator_sync\n38/57 Test #38: coordinator_sync .................   Passed    0.32 sec\n      Start 39: coordinator_sync_failures\n39/57 Test #39: coordinator_sync_failures ........   Passed    0.67 sec\n      Start 40: coordinator_worker\n40/57 Test #40: coordinator_worker ...............   Passed    0.38 sec\n      Start 41: coordinator_worker_failures\n41/57 Test #41: coordinator_worker_failures ......   Passed    1.20 sec\n      Start 42: coordinator_https_worker\n42/57 Test #42: coordinator_https_worker .........   Passed    6.49 sec\n      Start 43: coordinator_recovery\n43/57 Test #43: coordinator_recovery .............   Passed    0.41 sec\n      Start 44: coordinator_local_launcher\n44/57 Test #44: coordinator_local_launcher .......   Passed    0.67 sec\n      Start 45: coordinator_budget\n45/57 Test #45: coordinator_budget ...............   Passed    0.36 sec\n      Start 46: hip_discovery_contract\n46/57 Test #46: hip_discovery_contract ...........   Passed    0.12 sec\n      Start 47: hip_failures\n47/57 Test #47: hip_failures .....................   Passed    0.63 sec\n      Start 48: hip_executor\n48/57 Test #48: hip_executor .....................   Passed    0.68 sec\n      Start 49: hip_partitions\n49/57 Test #49: hip_partitions ...................   Passed    1.40 sec\n      Start 50: backend_cli\n50/57 Test #50: backend_cli ......................   Passed    1.47 sec\n      Start 51: exact_range\n51/57 Test #51: exact_range ......................   Passed    0.00 sec\n      Start 52: block_grid\n52/57 Test #52: block_grid .......................   Passed    0.09 sec\n      Start 53: work_unit\n53/57 Test #53: work_unit ........................   Passed    0.04 sec\n      Start 54: range_oracle\n54/57 Test #54: range_oracle .....................   Passed    1.86 sec\n      Start 55: result_verifier\n55/57 Test #55: result_verifier ..................   Passed    0.03 sec\n      Start 56: cpu_baseline\n56/57 Test #56: cpu_baseline .....................   Passed   29.13 sec\n      Start 57: target_loading\n57/57 Test #57: target_loading ...................   Passed    8.81 sec\n\n100% tests passed, 0 tests failed out of 57\n\nLabel Time Summary:\narithmetic     =  12.76 sec*proc (5 tests)\nbackend        =   1.60 sec*proc (2 tests)\nbaseline       =  29.13 sec*proc (1 test)\nbsgs           = 190.43 sec*proc (11 tests)\nbudget         =   0.36 sec*proc (1 test)\ncli            =  29.51 sec*proc (4 tests)\ncoordinator    =  11.20 sec*proc (10 tests)\ncore           =  11.07 sec*proc (8 tests)\ncpu            =  67.86 sec*proc (35 tests)\nhardware       = 289.34 sec*proc (22 tests)\nhip            = 289.34 sec*proc (22 tests)\nintegration    =   7.75 sec*proc (3 tests)\noracle         = 256.45 sec*proc (15 tests)\npartitions     =   1.40 sec*proc (1 test)\nranges         =   1.99 sec*proc (4 tests)\nrecovery       =  38.76 sec*proc (12 tests)\nscheduler      =   0.76 sec*proc (2 tests)\nsecurity       =   0.71 sec*proc (2 tests)\nstorage        =  37.97 sec*proc (10 tests)\ntables         =   6.65 sec*proc (5 tests)\nxpoint         =  57.13 sec*proc (5 tests)\n\nTotal Test time (real) = 357.22 sec\n",
+      "cases": [
+        {
+          "name": "oracle_selftest",
+          "classname": "oracle_selftest",
+          "time": "0.859534",
+          "status": "run"
+        },
+        {
+          "name": "cpu_field_oracle",
+          "classname": "cpu_field_oracle",
+          "time": "0.259261",
+          "status": "run"
+        },
+        {
+          "name": "cpu_point_oracle",
+          "classname": "cpu_point_oracle",
+          "time": "0.688409",
+          "status": "run"
+        },
+        {
+          "name": "bounded_search_oracle",
+          "classname": "bounded_search_oracle",
+          "time": "1.6267",
+          "status": "run"
+        },
+        {
+          "name": "portable_field_oracle",
+          "classname": "portable_field_oracle",
+          "time": "0.312476",
+          "status": "run"
+        },
+        {
+          "name": "hip_field_oracle",
+          "classname": "hip_field_oracle",
+          "time": "5.35877",
+          "status": "run"
+        },
+        {
+          "name": "portable_point_oracle",
+          "classname": "portable_point_oracle",
+          "time": "1.34648",
+          "status": "run"
+        },
+        {
+          "name": "hip_point_oracle",
+          "classname": "hip_point_oracle",
+          "time": "4.94033",
+          "status": "run"
+        },
+        {
+          "name": "hip_arithmetic_devices",
+          "classname": "hip_arithmetic_devices",
+          "time": "0.805583",
+          "status": "run"
+        },
+        {
+          "name": "xpoint_search_contract",
+          "classname": "xpoint_search_contract",
+          "time": "0.0943245",
+          "status": "run"
+        },
+        {
+          "name": "hip_xpoint_failures",
+          "classname": "hip_xpoint_failures",
+          "time": "0.727562",
+          "status": "run"
+        },
+        {
+          "name": "hip_xpoint_executor",
+          "classname": "hip_xpoint_executor",
+          "time": "0.79617",
+          "status": "run"
+        },
+        {
+          "name": "xpoint_cli",
+          "classname": "xpoint_cli",
+          "time": "26.0558",
+          "status": "run"
+        },
+        {
+          "name": "xpoint_cli_direct",
+          "classname": "xpoint_cli_direct",
+          "time": "29.4565",
+          "status": "run"
+        },
+        {
+          "name": "bsgs_table_contract",
+          "classname": "bsgs_table_contract",
+          "time": "0.307886",
+          "status": "run"
+        },
+        {
+          "name": "bsgs_table_oracle",
+          "classname": "bsgs_table_oracle",
+          "time": "2.88594",
+          "status": "run"
+        },
+        {
+          "name": "hip_bsgs_table",
+          "classname": "hip_bsgs_table",
+          "time": "0.684333",
+          "status": "run"
+        },
+        {
+          "name": "bsgs_table_devices",
+          "classname": "bsgs_table_devices",
+          "time": "2.04122",
+          "status": "run"
+        },
+        {
+          "name": "hip_bsgs_failures",
+          "classname": "hip_bsgs_failures",
+          "time": "0.730613",
+          "status": "run"
+        },
+        {
+          "name": "bsgs_search_contract",
+          "classname": "bsgs_search_contract",
+          "time": "0.137716",
+          "status": "run"
+        },
+        {
+          "name": "hip_bsgs_search",
+          "classname": "hip_bsgs_search",
+          "time": "0.914202",
+          "status": "run"
+        },
+        {
+          "name": "hip_bsgs_search_failures",
+          "classname": "hip_bsgs_search_failures",
+          "time": "0.871813",
+          "status": "run"
+        },
+        {
+          "name": "bsgs_cli",
+          "classname": "bsgs_cli",
+          "time": "61.9978",
+          "status": "run"
+        },
+        {
+          "name": "bsgs_cli_single",
+          "classname": "bsgs_cli_single",
+          "time": "61.2844",
+          "status": "run"
+        },
+        {
+          "name": "bsgs_cli_grouped",
+          "classname": "bsgs_cli_grouped",
+          "time": "58.5714",
+          "status": "run"
+        },
+        {
+          "name": "storage_database",
+          "classname": "storage_database",
+          "time": "0.0492532",
+          "status": "run"
+        },
+        {
+          "name": "storage_journal",
+          "classname": "storage_journal",
+          "time": "0.621762",
+          "status": "run"
+        },
+        {
+          "name": "storage_concurrency",
+          "classname": "storage_concurrency",
+          "time": "0.142005",
+          "status": "run"
+        },
+        {
+          "name": "state_cli",
+          "classname": "state_cli",
+          "time": "1.51666",
+          "status": "run"
+        },
+        {
+          "name": "storage_checkpoint",
+          "classname": "storage_checkpoint",
+          "time": "2.20217",
+          "status": "run"
+        },
+        {
+          "name": "storage_checkpoint_failures",
+          "classname": "storage_checkpoint_failures",
+          "time": "2.91658",
+          "status": "run"
+        },
+        {
+          "name": "checkpoint_cli",
+          "classname": "checkpoint_cli",
+          "time": "15.9531",
+          "status": "run"
+        },
+        {
+          "name": "storage_checkpoint_control",
+          "classname": "storage_checkpoint_control",
+          "time": "2.5345",
+          "status": "run"
+        },
+        {
+          "name": "checkpoint_controls",
+          "classname": "checkpoint_controls",
+          "time": "4.55435",
+          "status": "run"
+        },
+        {
+          "name": "checkpoint_pause_hip",
+          "classname": "checkpoint_pause_hip",
+          "time": "7.4823",
+          "status": "run"
+        },
+        {
+          "name": "coordinator_registry",
+          "classname": "coordinator_registry",
+          "time": "0.110475",
+          "status": "run"
+        },
+        {
+          "name": "coordinator_tls",
+          "classname": "coordinator_tls",
+          "time": "0.598335",
+          "status": "run"
+        },
+        {
+          "name": "coordinator_sync",
+          "classname": "coordinator_sync",
+          "time": "0.322516",
+          "status": "run"
+        },
+        {
+          "name": "coordinator_sync_failures",
+          "classname": "coordinator_sync_failures",
+          "time": "0.672455",
+          "status": "run"
+        },
+        {
+          "name": "coordinator_worker",
+          "classname": "coordinator_worker",
+          "time": "0.375347",
+          "status": "run"
+        },
+        {
+          "name": "coordinator_worker_failures",
+          "classname": "coordinator_worker_failures",
+          "time": "1.20104",
+          "status": "run"
+        },
+        {
+          "name": "coordinator_https_worker",
+          "classname": "coordinator_https_worker",
+          "time": "6.4865",
+          "status": "run"
+        },
+        {
+          "name": "coordinator_recovery",
+          "classname": "coordinator_recovery",
+          "time": "0.408578",
+          "status": "run"
+        },
+        {
+          "name": "coordinator_local_launcher",
+          "classname": "coordinator_local_launcher",
+          "time": "0.670126",
+          "status": "run"
+        },
+        {
+          "name": "coordinator_budget",
+          "classname": "coordinator_budget",
+          "time": "0.356005",
+          "status": "run"
+        },
+        {
+          "name": "hip_discovery_contract",
+          "classname": "hip_discovery_contract",
+          "time": "0.123395",
+          "status": "run"
+        },
+        {
+          "name": "hip_failures",
+          "classname": "hip_failures",
+          "time": "0.63211",
+          "status": "run"
+        },
+        {
+          "name": "hip_executor",
+          "classname": "hip_executor",
+          "time": "0.679802",
+          "status": "run"
+        },
+        {
+          "name": "hip_partitions",
+          "classname": "hip_partitions",
+          "time": "1.39619",
+          "status": "run"
+        },
+        {
+          "name": "backend_cli",
+          "classname": "backend_cli",
+          "time": "1.47452",
+          "status": "run"
+        },
+        {
+          "name": "exact_range",
+          "classname": "exact_range",
+          "time": "0.00176306",
+          "status": "run"
+        },
+        {
+          "name": "block_grid",
+          "classname": "block_grid",
+          "time": "0.0924886",
+          "status": "run"
+        },
+        {
+          "name": "work_unit",
+          "classname": "work_unit",
+          "time": "0.0396366",
+          "status": "run"
+        },
+        {
+          "name": "range_oracle",
+          "classname": "range_oracle",
+          "time": "1.85844",
+          "status": "run"
+        },
+        {
+          "name": "result_verifier",
+          "classname": "result_verifier",
+          "time": "0.0328166",
+          "status": "run"
+        },
+        {
+          "name": "cpu_baseline",
+          "classname": "cpu_baseline",
+          "time": "29.1289",
+          "status": "run"
+        },
+        {
+          "name": "target_loading",
+          "classname": "target_loading",
+          "time": "8.81339",
+          "status": "run"
+        }
+      ]
+    }
+  },
+  "sources": {
+    "tools/coordinator_worker.py": "be3e04faf850c3ab8fb3e6e9149777177e78ac2333a306cbed95fbe5b0be641d",
+    "src/coordinator/worker.cpp": "6f369739fa44a7d0919455a443a9e483a5269c7c681af5e15746d3c0371d96b4",
+    "src/coordinator/repository.cpp": "8f4f714ec69f31bf534af98f413be48aad2d91f6990e3ff5049173ae9f32d2d9",
+    "src/storage/journal.cpp": "f6aa6ed035e766915336b01cd82b4245aa6106893e4917b96e4ae68763c6bd3a",
+    "src/storage/checkpoint.cpp": "6832861e08ee0fca5b66caafd96690b5fcb120e062c299a6bf5dc94c27012643",
+    "src/backend/checkpoint_command.cpp": "c1f2ac8ce5721ae6bcd47ff02603d5003d32ba31c0f78ea373cf3fc07b121c68",
+    "src/backend/checkpoint_control.cpp": "cf48eabbd99d1cf1df1ad11c7fe6e3c395ebbac7df62db8d5c21828fec0428ef",
+    "kernels/hip/xpoint.h": "c0e7bbb838d4c2aaa0822a2ae29c4703dce35baa99567089c84e6628da4a4ce8",
+    "src/backend/hip/xpoint.hip": "e072942da7bb8aa9e9c0589e00706117d546ea240cfb72baa321f3dee0902796",
+    "src/backend/hip/bsgs_search.hip": "88e648c94f5d7a85f0249f0cb65a14ec61a8ed5bb4d4ae5e6db624209e72848d"
+  },
+  "builds": {
+    "cpu": {
+      "configuration": {
+        "CMAKE_BUILD_TYPE:STRING": "Release",
+        "CMAKE_PREFIX_PATH:UNINITIALIZED": "/tmp/keyhunt-c15-deps/root/usr",
+        "CURL_INCLUDE_DIR:PATH": "/tmp/keyhunt-c15-deps/root/usr/include/x86_64-linux-gnu",
+        "CURL_LIBRARY:UNINITIALIZED": "/tmp/keyhunt-c15-deps/root/usr/lib/x86_64-linux-gnu/libcurl.so",
+        "KEYHUNT_ENABLE_COORDINATOR:BOOL": "ON",
+        "KEYHUNT_ENABLE_HIP:BOOL": "OFF",
+        "KEYHUNT_ENABLE_HTTPS_WORKER:BOOL": "ON",
+        "KEYHUNT_TEST_APACHE_ROOT:PATH": "/tmp/keyhunt-c15-deps/root",
+        "SQLite3_INCLUDE_DIR:PATH": "/opt/rocm/core-10.0/lib/rocm_sysdeps/include",
+        "SQLite3_LIBRARY:FILEPATH": "/opt/rocm/core-10.0/lib/rocm_sysdeps/lib/librocm_sysdeps_sqlite3.so"
+      },
+      "binaries": {
+        "keyhunt": "890663acf7ccbdd3456c909554f46ca6c67842f7fc5f04f20a3f1cf7aa348d41",
+        "keyhunt-worker": "1ebc61facdef002652fe522e7f2bf4f563fd556d558050efe4ab0c48e4c9f953",
+        "keyhunt-coordinator": "69bdb8ee70a1ecb434269765b48d972fd8040b020236184370e18cf7207ade38"
+      },
+      "build_log_sha256": "1b580b7076e6ac74090b21e897601d8408c8bc3b4bbaca9b9710ad48471dad3d"
+    },
+    "hip": {
+      "configuration": {
+        "CMAKE_BUILD_TYPE:STRING": "Release",
+        "CMAKE_HIP_ARCHITECTURES:UNINITIALIZED": "gfx942",
+        "CMAKE_HIP_COMPILER:STRING": "/opt/rocm/core-10.0/lib/llvm/bin/clang++",
+        "CMAKE_PREFIX_PATH:UNINITIALIZED": "/tmp/keyhunt-c15-deps/root/usr",
+        "CURL_INCLUDE_DIR:PATH": "/tmp/keyhunt-c15-deps/root/usr/include/x86_64-linux-gnu",
+        "CURL_LIBRARY:UNINITIALIZED": "/tmp/keyhunt-c15-deps/root/usr/lib/x86_64-linux-gnu/libcurl.so",
+        "KEYHUNT_ENABLE_COORDINATOR:BOOL": "ON",
+        "KEYHUNT_ENABLE_HIP:BOOL": "ON",
+        "KEYHUNT_ENABLE_HTTPS_WORKER:BOOL": "ON",
+        "KEYHUNT_TEST_APACHE_ROOT:PATH": "/tmp/keyhunt-c15-deps/root",
+        "SQLite3_INCLUDE_DIR:PATH": "/opt/rocm/core-10.0/lib/rocm_sysdeps/include",
+        "SQLite3_LIBRARY:FILEPATH": "/opt/rocm/core-10.0/lib/rocm_sysdeps/lib/librocm_sysdeps_sqlite3.so"
+      },
+      "binaries": {
+        "keyhunt": "6d63976e52833b13517a97ec7ca20f369614baafea749d380672f01eb2c38905",
+        "keyhunt-worker": "c6de9d27a8c442098132fa86931b82b977d93cacbdc521100201b8b236fdc2a9",
+        "keyhunt-coordinator": "69bdb8ee70a1ecb434269765b48d972fd8040b020236184370e18cf7207ade38"
+      },
+      "build_log_sha256": "0598f4ccecc6990c5d3a7165dfc30d99ed0ca2eb3c74de77ae762be85463016a"
+    }
+  },
+  "kernel_diff_since_c13": "",
+  "additional_audit_probes": {
+    "evidence_file": "C15_MI300X_AUDIT_PROBES.json",
+    "evidence_sha256": "210cdc0c4d0c8df3dd883a5c0a1ac496da9a142e2058ae65f9927e7b9bf2b816",
+    "audit_tool_sha256": "99d9d7baea053b64b84c45957a12ccd59fd1cce0e737c27df2bcb9d40606326b",
+    "warm_processes": 6,
+    "supervised_two_block_jobs": 6,
+    "server_pause_cycles": 3,
+    "real_watchdog_cases": [
+      "62-second supervisor signal pause/resume: no quarantine",
+      "60-second watchdog after durable socket pause: false quarantine"
+    ],
+    "journal_integrity_checks": "passed after every supervised timing and pause fixture",
+    "findings": [
+      "A16 coordinator pause exits counted as hardware failures",
+      "A17 fresh process per grant and supervisor startup dominate short jobs",
+      "A18 C14 socket pause is invisible to supervisor watchdog"
+    ]
+  }
+}
