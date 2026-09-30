@@ -12,7 +12,8 @@ void require(bool ok,const char* message){if(!ok)throw std::runtime_error(messag
 template<class F>void rejects(F fn){try{fn();}catch(const std::exception&){return;}throw std::runtime_error("expected rejection");}
 int main(){
     try {
-        char temp[]="/tmp/keyhunt-c12-journal-XXXXXX";require(mkdtemp(temp),"mkdtemp");
+        // Honor TMPDIR so journal fixtures can live outside a managed checkout.
+        std::string temp=(std::filesystem::temp_directory_path()/"keyhunt-c12-journal-XXXXXX").string();require(mkdtemp(temp.data()),"mkdtemp");
         struct Cleanup {std::filesystem::path p;~Cleanup(){std::filesystem::remove_all(p);}} cleanup{temp};
         int64_t now=1000;
         Journal journal(temp,[&]{return now;});
