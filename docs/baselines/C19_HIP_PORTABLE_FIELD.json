@@ -1,0 +1,41 @@
+{
+  "seed": 3230604829,
+  "cases": 19357,
+  "cpu_comparisons": 9006,
+  "categories": {
+    "fadd": 2960,
+    "fsub": 2960,
+    "fmul": 2960,
+    "fmul16": 2960,
+    "fnorm": 300,
+    "fbytes": 300,
+    "fsquare": 300,
+    "fneg": 300,
+    "finv": 300,
+    "finvgroup": 40,
+    "flimits": 1,
+    "wadd": 2988,
+    "wsub": 2988
+  },
+  "boundary_batch_sizes": [
+    1,
+    127,
+    128,
+    129,
+    256,
+    257,
+    1024
+  ],
+  "binary_sha256": "c9e38e43936d1be65ba40633059954b4747f7b99d449f8ae0f0e93d057f98390",
+  "stats": {
+    "cases": 19357,
+    "batches": 76,
+    "kernel_ms": 105.984,
+    "wall_ms": 659.885,
+    "batch_capacity": 257,
+    "device": 0
+  },
+  "failure_count": 0,
+  "failures": [],
+  "cpu_failures": []
+}

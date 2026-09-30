@@ -27,6 +27,10 @@ option(KEYHUNT_BUILD_LEGACY "Build the separate GMP/OpenSSL legacy executable" O
 option(KEYHUNT_BUILD_BSGSD "Build the original local BSGS daemon" OFF)
 option(KEYHUNT_ENABLE_HIP "Build AMD HIP discovery, diagnostics and bounded xpoint search" OFF)
 option(KEYHUNT_ENABLE_CUDA "Build the native NVIDIA CUDA backend" OFF)
+option(KEYHUNT_GFX942_CARRY "Opt in to validated gfx942 field carry/borrow chains" OFF)
+if(KEYHUNT_GFX942_CARRY AND NOT KEYHUNT_ENABLE_HIP)
+    message(FATAL_ERROR "KEYHUNT_GFX942_CARRY requires the native AMD HIP backend.")
+endif()
 if(KEYHUNT_ENABLE_HIP AND KEYHUNT_ENABLE_CUDA)
     message(FATAL_ERROR "Select one native GPU backend per build directory: HIP or CUDA.")
 endif()
@@ -69,6 +73,18 @@ if(KEYHUNT_ENABLE_GPU)
         "$<$<COMPILE_LANGUAGE:HIP>:-Wall;-Wextra>")
     if(KEYHUNT_ENABLE_CUDA)
         target_link_libraries(keyhunt_gpu_options INTERFACE CUDA::cudart)
+    endif()
+    if(KEYHUNT_GFX942_CARRY)
+        if(NOT CMAKE_HIP_COMPILER_ID STREQUAL "Clang" OR
+           NOT "${CMAKE_HIP_ARCHITECTURES}" MATCHES "(^|;)gfx942(:[^;]+)?(;|$)")
+            message(FATAL_ERROR "KEYHUNT_GFX942_CARRY requires AMD Clang and a gfx942 code object.")
+        endif()
+        include(cmake/CheckGfx942Carry.cmake)
+        keyhunt_check_gfx942_carry()
+        # Other architectures in a multi-architecture HIP build retain portable
+        # arithmetic. Host sources never receive the device specialization flag.
+        target_compile_definitions(keyhunt_gpu_options INTERFACE
+            "$<$<COMPILE_LANGUAGE:HIP>:KEYHUNT_GFX942_CARRY=1>")
     endif()
 endif()
 

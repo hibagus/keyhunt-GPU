@@ -1,0 +1,120 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -27,6 +27,10 @@
+ option(KEYHUNT_BUILD_BSGSD "Build the original local BSGS daemon" OFF)
+ option(KEYHUNT_ENABLE_HIP "Build AMD HIP discovery, diagnostics and bounded xpoint search" OFF)
+ option(KEYHUNT_ENABLE_CUDA "Build the native NVIDIA CUDA backend" OFF)
++option(KEYHUNT_GFX942_CARRY "Opt in to validated gfx942 field carry/borrow chains" OFF)
++if(KEYHUNT_GFX942_CARRY AND NOT KEYHUNT_ENABLE_HIP)
++    message(FATAL_ERROR "KEYHUNT_GFX942_CARRY requires the native AMD HIP backend.")
++endif()
+ if(KEYHUNT_ENABLE_HIP AND KEYHUNT_ENABLE_CUDA)
+     message(FATAL_ERROR "Select one native GPU backend per build directory: HIP or CUDA.")
+ endif()
+@@ -69,6 +73,16 @@
+         "$<$<COMPILE_LANGUAGE:HIP>:-Wall;-Wextra>")
+     if(KEYHUNT_ENABLE_CUDA)
+         target_link_libraries(keyhunt_gpu_options INTERFACE CUDA::cudart)
++    endif()
++    if(KEYHUNT_GFX942_CARRY)
++        if(NOT CMAKE_HIP_COMPILER_ID STREQUAL "Clang" OR
++           NOT "${CMAKE_HIP_ARCHITECTURES}" MATCHES "(^|;)gfx942(:[^;]+)?(;|$)")
++            message(FATAL_ERROR "KEYHUNT_GFX942_CARRY requires AMD Clang and a gfx942 code object.")
++        endif()
++        # Other architectures in a multi-architecture HIP build retain portable
++        # arithmetic. Host sources never receive the device specialization flag.
++        target_compile_definitions(keyhunt_gpu_options INTERFACE
++            "$<$<COMPILE_LANGUAGE:HIP>:KEYHUNT_GFX942_CARRY=1>")
+     endif()
+ endif()
+ 
+--- a/kernels/common/field.h
++++ b/kernels/common/field.h
+@@ -1,5 +1,6 @@
+ #pragma once
+ #include <cstdint>
++#include "../arch/amd/gfx942/carry.h"
+ #if defined(__CUDACC__)
+ #include "../cuda/carry.cuh"
+ #endif
+@@ -36,6 +37,8 @@
+     Field result{};
+ #if defined(__CUDA_ARCH__) && !defined(KEYHUNT_CUDA_PORTABLE_CARRY)
+     cuda_field::subtract_words(result.limb, a.limb, b.limb, borrow);
++#elif defined(KEYHUNT_USE_GFX942_CARRY)
++    gfx942::subtract_words(result.limb, a.limb, b.limb, borrow);
+ #else
+     borrow = 0;
+     for (unsigned i = 0; i < 8; ++i) {
+@@ -93,6 +96,8 @@
+     uint32_t carry = 0;
+ #if defined(__CUDA_ARCH__) && !defined(KEYHUNT_CUDA_PORTABLE_CARRY)
+     cuda_field::add_words(result.limb, a.limb, b.limb, carry);
++#elif defined(KEYHUNT_USE_GFX942_CARRY)
++    gfx942::add_words(result.limb, a.limb, b.limb, carry);
+ #else
+     for (unsigned i = 0; i < 8; ++i) {
+         const uint64_t sum = uint64_t(a.limb[i]) + b.limb[i] + carry;
+@@ -111,6 +116,8 @@
+ #if defined(__CUDA_ARCH__) && !defined(KEYHUNT_CUDA_PORTABLE_CARRY)
+         // Add p modulo 2^256; the carry is deliberately discarded here.
+         cuda_field::add_words(result.limb, result.limb, p.limb, carry);
++#elif defined(KEYHUNT_USE_GFX942_CARRY)
++        gfx942::add_words(result.limb, result.limb, p.limb, carry);
+ #else
+         for (unsigned i = 0; i < 8; ++i) {
+             const uint64_t sum = uint64_t(result.limb[i]) + p.limb[i] + carry;
+--- /dev/null
++++ b/kernels/arch/amd/gfx942/carry.h
+@@ -0,0 +1,51 @@
++#pragma once
++#include <cstdint>
++
++// Assembly is opt-in and restricted to AMD Clang's gfx942 device pass. Host,
++// CUDA, and other HIP code objects keep the shared portable implementation.
++#if defined(KEYHUNT_GFX942_CARRY) && defined(__HIP_DEVICE_COMPILE__) && \
++    defined(__gfx942__) && defined(__clang__)
++#define KEYHUNT_USE_GFX942_CARRY 1
++namespace keyhunt::gpu::gfx942 {
++// One asm statement owns all eight limbs of a carry/borrow chain. VCC is a
++// per-lane carry mask, not a scalar carry shared between work items. Materialize
++// its last bit as 0/1 only after the final limb. No memory or EXEC state changes.
++// Early-clobber outputs cannot overlap inputs consumed by a later instruction;
++// the final limb and flag may overlap inputs because all have then been read.
++// Inputs are loaded before any output store, permitting exact in-place aliasing.
++
++__device__ inline __attribute__((always_inline))
++void add_words(uint32_t* out, const uint32_t* a, const uint32_t* b, uint32_t& flag) {
++    asm(
++        "v_add_co_u32 %0, vcc, %9, %17\n\t"
++        "v_addc_co_u32 %1, vcc, %10, %18, vcc\n\t"
++        "v_addc_co_u32 %2, vcc, %11, %19, vcc\n\t"
++        "v_addc_co_u32 %3, vcc, %12, %20, vcc\n\t"
++        "v_addc_co_u32 %4, vcc, %13, %21, vcc\n\t"
++        "v_addc_co_u32 %5, vcc, %14, %22, vcc\n\t"
++        "v_addc_co_u32 %6, vcc, %15, %23, vcc\n\t"
++        "v_addc_co_u32 %7, vcc, %16, %24, vcc\n\t"
++        "v_cndmask_b32 %8, 0, 1, vcc"
++        : "=&v"(out[0]), "=&v"(out[1]), "=&v"(out[2]), "=&v"(out[3]), "=&v"(out[4]), "=&v"(out[5]), "=&v"(out[6]), "=v"(out[7]), "=v"(flag)
++        : "v"(a[0]), "v"(a[1]), "v"(a[2]), "v"(a[3]), "v"(a[4]), "v"(a[5]), "v"(a[6]), "v"(a[7]), "v"(b[0]), "v"(b[1]), "v"(b[2]), "v"(b[3]), "v"(b[4]), "v"(b[5]), "v"(b[6]), "v"(b[7])
++        : "vcc");
++}
++
++__device__ inline __attribute__((always_inline))
++void subtract_words(uint32_t* out, const uint32_t* a, const uint32_t* b, uint32_t& flag) {
++    asm(
++        "v_sub_co_u32 %0, vcc, %9, %17\n\t"
++        "v_subb_co_u32 %1, vcc, %10, %18, vcc\n\t"
++        "v_subb_co_u32 %2, vcc, %11, %19, vcc\n\t"
++        "v_subb_co_u32 %3, vcc, %12, %20, vcc\n\t"
++        "v_subb_co_u32 %4, vcc, %13, %21, vcc\n\t"
++        "v_subb_co_u32 %5, vcc, %14, %22, vcc\n\t"
++        "v_subb_co_u32 %6, vcc, %15, %23, vcc\n\t"
++        "v_subb_co_u32 %7, vcc, %16, %24, vcc\n\t"
++        "v_cndmask_b32 %8, 0, 1, vcc"
++        : "=&v"(out[0]), "=&v"(out[1]), "=&v"(out[2]), "=&v"(out[3]), "=&v"(out[4]), "=&v"(out[5]), "=&v"(out[6]), "=v"(out[7]), "=v"(flag)
++        : "v"(a[0]), "v"(a[1]), "v"(a[2]), "v"(a[3]), "v"(a[4]), "v"(a[5]), "v"(a[6]), "v"(a[7]), "v"(b[0]), "v"(b[1]), "v"(b[2]), "v"(b[3]), "v"(b[4]), "v"(b[5]), "v"(b[6]), "v"(b[7])
++        : "vcc");
++}
++} // namespace keyhunt::gpu::gfx942
++#endif

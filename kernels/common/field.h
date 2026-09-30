@@ -1,10 +1,12 @@
 #pragma once
 #include <cstdint>
+#include "../arch/amd/gfx942/carry.h"
 #if defined(__CUDACC__)
 #include "../cuda/carry.cuh"
 #endif
 
-// Shared canonical integer arithmetic; CUDA carry chains have portable fallbacks.
+// Shared canonical arithmetic, with optional gfx942 and CUDA carry chains.
+// Architecture-specific word operations leave modular reduction shared.
 // No runtime headers or warp-size assumptions enter this interface.
 #if defined(__HIPCC__) || defined(__CUDACC__)
 #define KEYHUNT_HD __host__ __device__
@@ -36,6 +38,8 @@ KEYHUNT_HD inline Field subtract_words(const Field& a, const Field& b, uint32_t&
     Field result{};
 #if defined(__CUDA_ARCH__) && !defined(KEYHUNT_CUDA_PORTABLE_CARRY)
     cuda_field::subtract_words(result.limb, a.limb, b.limb, borrow);
+#elif defined(KEYHUNT_USE_GFX942_CARRY)
+    gfx942::subtract_words(result.limb, a.limb, b.limb, borrow);
 #else
     borrow = 0;
     for (unsigned i = 0; i < 8; ++i) {
@@ -93,6 +97,8 @@ KEYHUNT_HD inline void add(Field& out, const Field& a, const Field& b) {
     uint32_t carry = 0;
 #if defined(__CUDA_ARCH__) && !defined(KEYHUNT_CUDA_PORTABLE_CARRY)
     cuda_field::add_words(result.limb, a.limb, b.limb, carry);
+#elif defined(KEYHUNT_USE_GFX942_CARRY)
+    gfx942::add_words(result.limb, a.limb, b.limb, carry);
 #else
     for (unsigned i = 0; i < 8; ++i) {
         const uint64_t sum = uint64_t(a.limb[i]) + b.limb[i] + carry;
@@ -111,6 +117,8 @@ KEYHUNT_HD inline void sub(Field& out, const Field& a, const Field& b) {
 #if defined(__CUDA_ARCH__) && !defined(KEYHUNT_CUDA_PORTABLE_CARRY)
         // Add p modulo 2^256; the carry is deliberately discarded here.
         cuda_field::add_words(result.limb, result.limb, p.limb, carry);
+#elif defined(KEYHUNT_USE_GFX942_CARRY)
+        gfx942::add_words(result.limb, result.limb, p.limb, carry);
 #else
         for (unsigned i = 0; i < 8; ++i) {
             const uint64_t sum = uint64_t(result.limb[i]) + p.limb[i] + carry;

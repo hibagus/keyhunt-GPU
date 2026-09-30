@@ -1,0 +1,9 @@
+{
+  "passed": true,
+  "paired_reports": 6,
+  "metric_distributions": 327,
+  "command_log_pairs": 697,
+  "isa_files": 96,
+  "current_source_files": 129,
+  "final_binaries_equal_measured": true
+}

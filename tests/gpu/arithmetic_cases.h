@@ -3,7 +3,7 @@
 #include "multiply16.h"
 
 namespace keyhunt::gpu::test {
-enum class Op : uint32_t { Normalize, Add, Sub, Mul, Mul16, Square, Negate, Inverse, BatchInverse, Bytes, Limits, Public, PointAdd, PointMixed, PointDouble, PointNegate, PointReduce, PointMultiply, PointValid };
+enum class Op : uint32_t { Normalize, Add, Sub, Mul, Mul16, Square, Negate, Inverse, BatchInverse, Bytes, Limits, WordAdd, WordSub, Public, PointAdd, PointMixed, PointDouble, PointNegate, PointReduce, PointMultiply, PointValid };
 struct Request { Op op{}; uint32_t count = 0; Field values[32]{}; };
 struct Result { Field values[32]{}; uint32_t flags = 0; };
 
@@ -62,6 +62,26 @@ KEYHUNT_HD inline Result evaluate_point(const Request& request) {
     return result;
 }
 
+// Raw 256-bit words test the final carry/borrow before modular reduction can
+// hide it. Expected values come from Python integers, including both aliases.
+KEYHUNT_HD inline uint32_t evaluate_words(Field& out, const Field& a, const Field& b, bool subtract) {
+    uint32_t flag = 0;
+#if defined(KEYHUNT_USE_GFX942_CARRY)
+    if (subtract) gfx942::subtract_words(out.limb, a.limb, b.limb, flag);
+    else gfx942::add_words(out.limb, a.limb, b.limb, flag);
+#else
+    if (subtract) out = subtract_words(a, b, flag);
+    else {
+        for (unsigned i = 0; i < 8; ++i) {
+            const uint64_t sum = uint64_t(a.limb[i]) + b.limb[i] + flag;
+            out.limb[i] = uint32_t(sum);
+            flag = uint32_t(sum >> 32);
+        }
+    }
+#endif
+    return flag;
+}
+
 // Both host and device probes use this adapter. Expected results come from
 // independent Python/native oracles, never from this shared evaluation code.
 KEYHUNT_HD inline Result evaluate(const Request& request) {
@@ -70,6 +90,17 @@ KEYHUNT_HD inline Result evaluate(const Request& request) {
     const auto a = normalize(request.values[0]), b = normalize(request.values[1]);
     auto left = a, right = b;
     switch (request.op) {
+    case Op::WordAdd: case Op::WordSub: {
+        const auto& x = request.values[0]; const auto& y = request.values[1];
+        Field left_words = x, right_words = y;
+        const bool subtract = request.op == Op::WordSub;
+        result.flags = evaluate_words(result.values[0], x, y, subtract);
+        const auto left_flag = evaluate_words(left_words, left_words, y, subtract);
+        const auto right_flag = evaluate_words(right_words, x, right_words, subtract);
+        if (left_flag != result.flags || right_flag != result.flags) result.flags |= 0x80000000U;
+        result.values[1] = left_words; result.values[2] = right_words;
+        break;
+    }
     case Op::Normalize: result.values[0] = a; break;
     case Op::Add:
         add(result.values[0], a, b); add(left, left, b); add(right, a, right);

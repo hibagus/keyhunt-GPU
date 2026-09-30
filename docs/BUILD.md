@@ -52,6 +52,7 @@ cmake --build --preset cpu-sanitizers --parallel 4
 | `BUILD_TESTING` | ON | Python/CTest regression checks |
 | `KEYHUNT_ENABLE_HIP` | OFF | AMD HIP discovery, diagnostics, xpoint/BSGS searches and tables; requires ROCm AMD clang/runtime |
 | `KEYHUNT_ENABLE_CUDA` | OFF | Native NVIDIA discovery, xpoint, BSGS and checkpoints |
+| `KEYHUNT_GFX942_CARRY` | OFF | Opt-in AMD Clang carry/borrow intrinsics for gfx942; native HIP required; [measurements and fallback](GFX942_SPECIALIZATIONS.md) |
 | `KEYHUNT_ENABLE_COORDINATOR` | OFF | Registry, coordinator and durable HTTPS worker support; needs OpenSSL 3 and nlohmann JSON >=3.10 |
 | `KEYHUNT_ENABLE_HTTPS_WORKER` | ON | With coordination enabled, build the libcurl HTTPS worker and Python supervisor; disable for server-only builds |
 | `KEYHUNT_TEST_APACHE_ROOT` | Empty | Enable real Apache/mTLS integration tests using `/` or an extracted package root |

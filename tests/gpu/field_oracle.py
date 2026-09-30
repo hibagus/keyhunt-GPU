@@ -53,6 +53,16 @@ def main():
             expected=' '.join(f'{pow(v,-1,P) if v else 0:064x}' for v in values)
             case('finvgroup',values,'1'+(' '+expected if expected else ''),None)
     case('flimits',(),f'{0:064x}')
+    # Check raw carry/borrow output independently of field reduction, including
+    # ripple chains across every limb and aliases of both input arrays.
+    word_pairs = pairs.copy()
+    for bit in range(32, 256, 32):
+        word_pairs += [((1<<bit)-1, 1), (1, (1<<bit)-1), (1<<bit, 1), (1, 1<<bit)]
+    mask = (1<<256)-1
+    for a, b in word_pairs:
+        for op, value, flag in [('wadd', a+b, (a+b)>>256), ('wsub', a-b, int(a<b))]:
+            expected = ' '.join([f'{value & mask:064x}']*3)
+            case(op, (a,b), f'{flag} {expected}')
     stats_path=args.report.with_suffix('.stats.json')
     command=[str(args.binary.resolve()),'--device',args.device,'--batch','257','--stats',str(stats_path)]
     process=subprocess.run(command,input='\n'.join(c[1] for c in cases)+'\n',capture_output=True,text=True,timeout=150)
