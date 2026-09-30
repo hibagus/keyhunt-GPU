@@ -25,7 +25,12 @@ int main(){
         require(created["job"]==duplicate["job"],"identical manifests changed identity across projects");
         const std::string path="/api/v1/projects/"+project+"/jobs/"+created["job"].get<std::string>();
         require(repo.request(a,"GET","/api/v1/projects").size()==1,"project list leaked membership");
-        denied(404,[&]{repo.request(b,"GET",path+"/status");});
+        for(const auto* route:{"/status","/blocks/0x0000000000000000000000000000000000000000000000000000000000000000","/results","/results/0/1"})
+            denied(404,[&]{repo.request(b,"GET",path+route);});
+        for(const auto* route:{"/pause","/blocks/0x0000000000000000000000000000000000000000000000000000000000000000/recover"})
+            denied(404,[&]{repo.request(b,"POST",path+route,Json::object());});
+        denied(404,[&]{repo.request(b,"POST","/api/v1/projects/"+project+"/jobs",input);});
+        denied(404,[&]{repo.request(b,"POST","/api/v1/projects/"+project+"/memberships",Json::object());});
         denied(404,[&]{repo.request(b,"GET","/api/v1/projects/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa/jobs/"+created["job"].get<std::string>()+"/status");});
         repo.admin({{"operation","membership-set"},{"project",project},{"client",bob["client"]},{"role","reader"}});
         require(repo.request(b,"GET",path+"/status")["unexplored"]==UInt256(10).hex(),"reader status");
@@ -34,6 +39,8 @@ int main(){
         denied(403,[&]{repo.request(b,"POST","/api/v1/projects/"+project+"/jobs",input);});
         repo.request(a,"POST","/api/v1/projects/"+project+"/memberships",{{"client",bob["client"]},{"role","worker"}});
         denied(403,[&]{repo.request(b,"POST","/api/v1/projects/"+project+"/memberships",{{"client",bob["client"]},{"role","owner"}});});
+        denied(403,[&]{repo.request(b,"POST",path+"/blocks/"+UInt256().hex()+"/recover",Json::object());});
+        denied(403,[&]{repo.request(b,"GET",path+"/results/0/1");});
         require(repo.request(a,"POST",path+"/pause",{{"paused",true}})["paused"]==true,"owner pause");
         // Reauthorization happens on every call, even with the same parsed cert
         // object (the service can receive these on one persistent TLS connection).

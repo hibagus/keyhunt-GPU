@@ -27,7 +27,11 @@ public:
     explicit Repository(const std::string& directory,storage::Journal::Clock={});
     ~Repository();
     Json admin(const Json&);
+    Json control_snapshot(const Certificate&,const Json& sync_request);
     Json request(const Certificate&,const std::string& method,const std::string& path,const Json& body=Json::object());
+#ifdef KEYHUNT_TEST_STORAGE_FAILURES
+    void test_page_limit(bool constrained);
+#endif
     int64_t now() const;
     std::string directory() const;
 private:

@@ -164,11 +164,14 @@ int serve(const ServerOptions& options){
                 if(!request.headers.count("host")||(method=="GET"&&!request.body.empty())||
                    (method=="POST"&&(!request.headers.count("content-length")||request.headers.find("content-type")==request.headers.end()||request.headers.at("content-type")!="application/json")))
                     throw Error(400,"invalid request framing or content type");
-                Json body=request.body.empty()?Json::object():parse_json(request.body),value;
+                Json body=request.body.empty()?Json::object():parse_json(request.body),value,controls;
                 if(i==0){
                     if(method!="POST"||path!="/admin")throw Error(404,"not found");
                     value=repository.admin(body);
                 }else{
+                    const std::set<std::string> identity_headers{"x-keyhunt-cert","x-keyhunt-tls-sni","x-keyhunt-tls-protocol","x-keyhunt-tls-verify"};
+                    for(const auto& entry:request.headers)
+                        if(entry.first.rfind("x-keyhunt-",0)==0&&!identity_headers.count(entry.first))throw Error(400,"unknown identity header");
                     auto header=[&](const char* name){auto it=request.headers.find(name);if(it==request.headers.end())throw Error(401,"missing verified TLS identity");return it->second;};
                     if(header("host")!=options.authority||header("x-keyhunt-tls-sni")!=hostname)throw Error(421,"authority mismatch");
                     if(header("x-keyhunt-tls-verify")!="SUCCESS")throw Error(401,"client certificate not verified");
@@ -180,8 +183,12 @@ int serve(const ServerOptions& options){
                     auto& rate=rates.try_emplace(key,Rate{now,0}).first->second;
                     if(++rate.requests>120)throw Error(429,"client request limit exceeded");
                     value=repository.request(cert,method,path,body);
+                    if(method=="POST"&&path=="/api/v1/sync")controls=repository.control_snapshot(cert,body);
                 }
                 output={{"ok",true},{"server_time",repository.now()},{"value",value}};
+                // Current controls are transport metadata, like current time.
+                // They must not mutate the exact cached assignment receipt.
+                if(!controls.is_null())output["controls"]=controls;
             }catch(const Error& e){status=e.status;output={{"ok",false},{"error",e.what()}};}
             catch(const std::invalid_argument& e){status=400;output={{"ok",false},{"error",e.what()}};}
             catch(const std::exception& e){status=503;output={{"ok",false},{"error","coordinator state unavailable"}};std::cerr<<"coordinator: "<<e.what()<<'\n';}

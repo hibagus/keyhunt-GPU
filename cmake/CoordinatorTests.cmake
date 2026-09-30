@@ -51,7 +51,7 @@ keyhunt_configure_target(coordinator_worker_failures_test)
 add_test(NAME coordinator_worker_failures COMMAND coordinator_worker_failures_test)
 set_tests_properties(coordinator_worker_failures PROPERTIES TIMEOUT 120 LABELS "cpu;coordinator;recovery")
 
-if(KEYHUNT_TEST_APACHE_ROOT)
+if(KEYHUNT_TEST_APACHE_ROOT AND TARGET keyhunt-worker)
     set(coordinator_worker_options "")
     if(KEYHUNT_ENABLE_HIP)
         list(APPEND coordinator_worker_options --hip)
@@ -65,3 +65,13 @@ if(KEYHUNT_TEST_APACHE_ROOT)
         set_tests_properties(coordinator_https_worker PROPERTIES LABELS "hip;hardware;coordinator;integration")
     endif()
 endif()
+
+add_executable(coordinator_recovery_test tests/coordinator/recovery.cpp
+    src/coordinator/certificate.cpp src/coordinator/repository.cpp src/coordinator/worker.cpp
+    src/storage/sqlite.cpp src/storage/free_tree.cpp src/storage/journal.cpp src/storage/checkpoint_data.cpp src/storage/checkpoint.cpp)
+target_include_directories(coordinator_recovery_test PRIVATE src/storage src/coordinator "${CMAKE_CURRENT_BINARY_DIR}/generated")
+target_compile_definitions(coordinator_recovery_test PRIVATE KEYHUNT_TEST_STORAGE_FAILURES=1 KEYHUNT_SOURCE_ROOT="${CMAKE_CURRENT_SOURCE_DIR}")
+target_link_libraries(coordinator_recovery_test PRIVATE keyhunt_core SQLite::SQLite3 nlohmann_json::nlohmann_json OpenSSL::Crypto)
+keyhunt_configure_target(coordinator_recovery_test)
+add_test(NAME coordinator_recovery COMMAND coordinator_recovery_test)
+set_tests_properties(coordinator_recovery PROPERTIES TIMEOUT 120 LABELS "cpu;coordinator;recovery")

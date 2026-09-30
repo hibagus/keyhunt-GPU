@@ -216,3 +216,79 @@ CPU-verified result upload, and local-complete/server-in-progress separation.
 Hardware: existing MI300X SPX/NPS1; no partition settings changed. CPX/QPX retain
 the same visible-device/CU-aware execution paths, without claiming a new live
 CPX/QPX hardware test in this milestone.
+
+## S05: recovery and coordinator-only installation
+
+An owner can transfer an in-progress block with
+`POST /api/v1/projects/P/jobs/J/blocks/B/recover`. Its JSON fields are `client`,
+`instance`, `device`, `request` and `previous_executor_stopped: true`. The target
+client must have a current worker/owner membership. Even an expired transfer
+requires the stopped-executor assertion. The operation fences the old generation,
+retains accepted partial coverage/results and is replay-safe. Use a fresh worker
+journal/instance as the destination; its first sync imports accepted coverage and
+resumes the exact complement. Earlier accepted results remain on the server.
+Keep the old journal for unacknowledged data and audit; this release does not
+silently rewrite a live journal's generation or pending request.
+
+Owner-only results are paged with `GET .../results/AFTER/LIMIT` (1–1,000 rows);
+`GET .../results` remains the first 100 rows. Every route checks current project
+membership. Bounded per-credential, per-client and client/project budgets apply.
+An explicit online authorization/fencing refusal pauses local dispatch while
+retaining its pending request/outbox. Transport outages retain already-valid
+offline authority. Current pause controls travel outside the immutable sync
+receipt, so retrying an old response cannot bypass a newer pause.
+
+Local admin requests are JSON files, for example:
+
+```sh
+keyhunt-coordinator admin --socket /run/keyhunt-coordinator/admin.sock --request /private/request.json
+```
+
+Use `{"operation":"backup","destination":"/private/new-snapshot"}` for a
+consistent sealed snapshot. `keyhunt-coordinator restore --source SNAPSHOT
+--state-dir RESTORED` restores it into quarantine (see [STORAGE.md](STORAGE.md)). All remote reads/writes remain disabled while
+quarantined. The local `check` operation remains available.
+
+Activation deliberately supports only the conservative stopped-executor route:
+
+```json
+{"operation":"activate-restore","old_authority_stopped":true,"all_previous_executors_stopped":true,"access_review_complete":true}
+```
+
+These are operator assertions requiring actual reconciliation, not a way to make
+offline executors stop. If any old executor/authority might still run, leave the
+restore quarantined. No automatic timeout or duplicate-computation override is
+implemented. Activation disables **every** restored client and certificate;
+review memberships and explicitly enable clients/enroll fresh credentials before
+use. This prevents a backup from resurrecting later-revoked access. The new epoch
+fences old writes, but only stopped executors make old free space safe to reuse.
+
+Build/install only the CPU service:
+
+```sh
+cmake --preset coordinator-server
+cmake --build --preset coordinator-server -j12
+cmake --install build/coordinator-server --prefix /desired/prefix --component coordinator
+```
+
+This preset disables the HTTPS worker and needs no HIP/CUDA SDK or libcurl.
+Dependencies are a C++ compiler, SQLite >=3.51.3, OpenSSL 3 and nlohmann JSON >=3.10.
+The install component includes the binary, Apache/systemd templates and notices;
+it does not enable services or alter the host. Render the templates with a
+dedicated service UID, Apache UID/group, paths and authority. Socket parents are
+0750 service-owned/shared-group; API is 0660 and admin is 0600. Keep the database
+on local storage with free space for WAL and retained history. Configure writable
+backup destinations inside the service's allowed state storage, or use a reviewed
+systemd `ReadWritePaths` override for another local backup directory.
+
+An isolated install at `/tmp/keyhunt-c15-package` passed authenticated startup.
+This host supplies its CPU SQLite library from ROCm's sysdeps directory; its path
+was explicitly set as the test install RPATH. `ldd` shows no HIP/HSA/GPU runtime.
+A different host must supply its own compatible SQLite library/runtime search
+path; the temporary install is validation, not a portable binary distribution.
+
+S05 passed eight coordinator gates, including actual `SQLITE_FULL` during a
+fragmented checkpoint, old-backup quarantine, revoked-access reconciliation,
+expired partial transfer, stale-generation rejection and resumption without
+recomputing the accepted prefix. Dedicated test binaries contain failure hooks;
+the production executables do not.

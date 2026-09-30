@@ -1,0 +1,33 @@
+# Render deployment paths/IDs before installation. This unit is not installed or
+# enabled automatically; its Unix API socket must share Apache's group.
+[Unit]
+Description=Keyhunt authenticated project coordinator
+After=local-fs.target
+
+[Service]
+Type=simple
+User=@SERVICE_USER@
+Group=@PROXY_GROUP@
+UMask=0077
+RuntimeDirectory=keyhunt-coordinator
+RuntimeDirectoryMode=0750
+StateDirectory=keyhunt-coordinator
+StateDirectoryMode=0700
+ExecStart=@PREFIX@/bin/keyhunt-coordinator serve --state-dir /var/lib/keyhunt-coordinator --api-socket /run/keyhunt-coordinator/api.sock --admin-socket /run/keyhunt-coordinator/admin.sock --proxy-uid @PROXY_UID@ --authority @AUTHORITY@
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictAddressFamilies=AF_UNIX
+LockPersonality=true
+CapabilityBoundingSet=
+
+[Install]
+WantedBy=multi-user.target

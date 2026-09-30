@@ -16,7 +16,8 @@ int main(){try{
         {"jobs",{{{"project",project},{"job",job["job"]},{"devices",{"gpu0","gpu1"}},{"spares",1},{"policy","sequential"}}}}};
     Worker worker(local.path.string(),[&]{return now;},[&]{return monotonic;});worker.configure(config);
     size_t calls=0;Json first_body;
-    auto transport=[&](const Json& body){++calls;return Json{{"ok",true},{"server_time",now},{"value",repo.request(cert,"POST","/api/v1/sync",body)}};};
+    auto transport=[&](const Json& body){++calls;const auto value=repo.request(cert,"POST","/api/v1/sync",body);
+        return Json{{"ok",true},{"server_time",now},{"value",value},{"controls",repo.control_snapshot(cert,body)}};};
     rejects([&]{worker.synchronize([&](const Json& body)->Json{first_body=body;transport(body);throw std::runtime_error("lost reply");});});
     require(worker.status()["pending_request"]==true&&!worker.next("gpu0"),"unacknowledged grant executed before durable import");
     require(!worker.synchronize(transport)&&calls==1,"unscheduled retry contacted server");
@@ -73,5 +74,15 @@ int main(){try{
     Worker reopened(local.path.string(),[&]{return now;},[&]{return monotonic;});
     const auto count=calls;require(!reopened.synchronize(transport)&&calls==count,"restart reset contact schedule");
     monotonic+=7200;now+=7200;require(reopened.synchronize(transport)&&calls==count+1,"scheduled machine sync missing");
+    repo.admin({{"operation","membership-set"},{"project",project},{"client",client["client"]},{"role","none"}});
+    denied(404,[&]{reopened.synchronize(transport,true);});
+    require(!reopened.next("gpu0")&&reopened.status().contains("pause_reason"),"online authorization refusal did not stop dispatch");
+    repo.admin({{"operation","membership-set"},{"project",project},{"client",client["client"]},{"role","owner"}});
+    reopened.synchronize(transport,true);require(bool(reopened.next("gpu0")),"reviewed authorization did not resume queue");
+    rejects([&]{reopened.synchronize([&](const Json& body)->Json{transport(body);throw std::runtime_error("lost control reply");},true);});
+    repo.request(cert,"POST",path+"/pause",{{"paused",true}});
+    reopened.synchronize(transport,true);require(!reopened.next("gpu0"),"cached receipt bypassed current server pause");
+    repo.request(cert,"POST",path+"/pause",{{"paused",false}});
+    reopened.synchronize(transport,true);require(bool(reopened.next("gpu0")),"current controls did not release server pause");
     std::cout<<"Durable grant import, two mock GPUs, atomic outbox, schedule, retries and offline fencing passed\n";
 }catch(const std::exception& e){std::cerr<<e.what()<<'\n';return 1;}}

@@ -41,6 +41,7 @@ Bytes grant_payload(const Grant& g){Bytes b;append(b,g.block);text(b,g.owner);nu
 struct Journal::Impl {
     mutable Database db;
     Clock clock;
+    bool importing_remote=false;
     Impl(const std::string& path,Clock now):db(path),clock(std::move(now)){
         if(!clock)clock=[]{return std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();};
     }
@@ -104,7 +105,7 @@ struct Journal::Impl {
         auto current=assignment(g.scope,job,g.block,started);
         if(!current || current->owner!=g.owner || current->generation!=g.generation || current->interval.begin()!=g.interval.begin() || current->interval.end()!=g.interval.end())throw std::invalid_argument("stale or foreign assignment");
         if(current->expires<=now())throw std::invalid_argument("assignment expired; explicit recovery required");
-        if(remote(g.scope)){
+        if(remote(g.scope)&&!importing_remote){
             Statement q(db.handle(),"SELECT generation,boot,deadline,paused FROM worker_grants WHERE project=? AND job=? AND block=?");
             scope_bind(q,g.scope);q.bind(3,g.block);
             if(!q.step()||q.integer(0)!=g.generation||q.text(1)!=boot_id()||q.integer(2)<=boot_seconds())
@@ -236,7 +237,7 @@ void Journal::record_coverage(const Grant& grant,const std::vector<ScalarInterva
 }
 
 Grant Journal::import_remote(const Grant& remote,const Manifest& manifest,const Binding& input,
-    const std::string& encoded,const std::string& device,int64_t deadline,int64_t local_expiry,bool paused){
+    const std::string& encoded,const std::string& device,int64_t deadline,int64_t local_expiry,bool paused,const std::vector<ScalarInterval>& accepted){
     auto& s=*impl_;Transaction tx(s.db);s.db.writable();
     project_id(remote.scope.project);token(remote.owner);token(device);
     if(remote.generation==INT64_MAX || fixed(digest(encode(manifest)))!=remote.scope.job ||
@@ -250,7 +251,8 @@ Grant Journal::import_remote(const Grant& remote,const Manifest& manifest,const 
     create_job(remote.scope.project,manifest);bind_search(remote.scope,input);
     Statement job(s.db.handle(),"INSERT INTO worker_jobs VALUES(?,?) ON CONFLICT DO NOTHING");scope_bind(job,remote.scope);job.step();
     Statement previous(s.db.handle(),"SELECT generation FROM worker_grants WHERE project=? AND job=? AND block=?");scope_bind(previous,remote.scope);previous.bind(3,remote.block);
-    if(previous.step()&&previous.integer(0)!=remote.generation)
+    const bool new_import=!previous.step();
+    if(!new_import&&previous.integer(0)!=remote.generation)
         throw std::invalid_argument("recovered generation needs explicit stopped-worker reconciliation");
     Grant local=remote;local.epoch=s.db.metadata("epoch");local.expires=local_expiry;
     const auto state=block(remote.scope,remote.block);
@@ -266,6 +268,15 @@ Grant Journal::import_remote(const Grant& remote,const Manifest& manifest,const 
     Statement mapping(s.db.handle(),"INSERT INTO worker_grants VALUES(?,?,?,?,?,?,?,?,?,0) ON CONFLICT(project,job,block) DO UPDATE SET remote=excluded.remote,device=excluded.device,boot=excluded.boot,deadline=excluded.deadline,paused=excluded.paused");
     scope_bind(mapping,remote.scope);mapping.bind(3,remote.block);mapping.bind(4,remote.generation);mapping.bind(5,encoded);mapping.bind(6,device);
     mapping.bind(7,boot_id());mapping.bind(8,deadline);mapping.bind(9,int64_t(paused));mapping.step();
+    if(new_import&&!accepted.empty()&&local_expiry>s.now()&&deadline>boot_seconds()){
+        // A fresh recovery destination imports the coordinator's already durable
+        // coverage. Its local receipt is trusted server state, not new GPU work,
+        // so it is not put back into the upload outbox. Older results stay on the
+        // coordinator and remain accessible through its owner-only results API.
+        struct ImportGuard {bool& value;explicit ImportGuard(bool& v):value(v){value=true;}~ImportGuard(){value=false;}} guard(s.importing_remote);
+        const auto executor=begin_search(local);
+        commit_search(local,executor,accepted,{},"import-"+uuid());
+    }
     tx.commit();return local;
 }
 void Journal::bind_search(const Scope& scope,const Binding& binding){
@@ -329,7 +340,7 @@ void Journal::commit_search(const Grant& grant,int64_t executor,const std::vecto
     s.receipt(grant.scope,grant.owner,"checkpoint",request,payload,{});
     Statement record(s.db.handle(),"INSERT INTO checkpoints VALUES(?,?,?,'checkpoint',?,?)");
     scope_bind(record,grant.scope);record.bind(3,grant.owner);record.bind(4,request);record.bind(5,payload);record.step();
-    if(s.remote(grant.scope)){
+    if(s.remote(grant.scope)&&!s.importing_remote){
         // Coverage, results, audit receipt and upload pages share this commit.
         // Coverage goes on the last page so paged upload cannot finish a block
         // before all results from that checkpoint have reached the coordinator.

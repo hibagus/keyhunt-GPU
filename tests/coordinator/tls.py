@@ -74,6 +74,7 @@ def test(env):
         assert request(client, headers={"Host": "wrong.invalid"})[0] in (403, 421)
         assert request(client, "/admin", body='{"operation":"clients"}')[0] >= 400
         assert request(client, headers={"Early-Data": "1"})[0] == 425
+        assert request(client, headers={"X-Keyhunt-Client": "alice"})[0] == 400
         assert request(client, "/api/v1/projects/" + p + "/jobs", body="{}")[0] == 404
         assert request(client, "/api/v1/projects/" + p + "/jobs", body='{"a":1,"a":2}')[0] == 400
     # Mismatched SNI still supplies the correct Host; disable only the test's

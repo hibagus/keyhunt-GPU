@@ -65,7 +65,7 @@ struct Worker::Impl {
         tx.commit();return body;
     }
     void accept(const Json& envelope,const std::string& request){
-        fields(envelope,{"ok","server_time","value"});
+        fields(envelope,{"ok","server_time","value"},{"controls"});
         if(!boolean(envelope,"ok"))throw std::runtime_error("sync was not acknowledged");
         const auto server_time=integer(envelope,"server_time",1);const auto& value=envelope["value"];
         fields(value,{"protocol","client","instance","request","epoch","issued_at","sync_seconds","lifetime_seconds","accepted","jobs","grants"});
@@ -79,7 +79,8 @@ struct Worker::Impl {
         const auto body=parse_json(saved.text(0));
         if(value["instance"]!=body["instance"])throw std::runtime_error("worker instance changed in response");
         const auto epoch=unhex(str(value,"epoch",32),16);const auto client=str(value,"client",36);
-        Statement settings(db.handle(),"SELECT client,epoch FROM worker_settings WHERE singleton=1");settings.step();
+        Statement settings(db.handle(),"SELECT client,epoch,last_ack FROM worker_settings WHERE singleton=1");settings.step();
+        if(server_time<settings.integer(2))throw std::runtime_error("coordinator clock regressed; deadline revalidation required");
         if((!settings.text(0).empty()&&settings.text(0)!=client)||(!settings.blob(1).empty()&&settings.blob(1)!=epoch))
             throw std::runtime_error("coordinator/client identity changed; explicit reconciliation required");
         std::map<std::pair<std::string,Digest>,Json> jobs;
@@ -89,9 +90,18 @@ struct Worker::Impl {
             for(const auto& row:body["jobs"])if(wire::scope(row).project==scope.project&&wire::scope(row).job==scope.job)requested=true;
             if(!requested||!jobs.emplace(std::make_pair(scope.project,scope.job),info).second)throw std::runtime_error("unrequested response job");
         }
+        if(envelope.contains("controls")){
+            if(!envelope["controls"].is_array()||envelope["controls"].size()!=jobs.size())throw std::runtime_error("invalid current controls");
+            std::set<std::pair<std::string,Digest>> seen;
+            for(const auto& control:envelope["controls"]){
+                fields(control,{"project","job","paused"});const auto scope=wire::scope(control);const auto key=std::make_pair(scope.project,scope.job);
+                if(!jobs.count(key)||!seen.insert(key).second)throw std::runtime_error("invalid current control scope");
+                jobs.at(key)["paused"]=boolean(control,"paused");
+            }
+        }
         if(!value["grants"].is_array()||value["grants"].size()>128)throw std::runtime_error("invalid grant page");
         for(const auto& row:value["grants"]){
-            fields(row,{"device","grant"});const auto g=wire::grant(row["grant"]);
+            fields(row,{"device","grant"},{"covered"});const auto g=wire::grant(row["grant"]);
             const auto found=jobs.find({g.scope.project,g.scope.job});
             if(found==jobs.end()||g.owner!=client+"."+str(body,"instance",36)||g.epoch!=epoch)throw std::runtime_error("grant identity mismatch");
             const auto& info=found->second;const auto mode=str(info,"mode",8);
@@ -103,8 +113,14 @@ struct Worker::Impl {
             // Fresh envelope time prevents an old cached receipt from extending
             // offline execution. Subtract 60 seconds for bounded drain/transport.
             const auto remaining=std::max(int64_t(0),std::min(int64_t(2592000),g.expires-server_time)-60);
+            if(row.contains("covered")&&(!row["covered"].is_array()||row["covered"].size()>1024))throw std::runtime_error("invalid accepted coverage page");
+            std::vector<ScalarInterval> accepted;
+            for(const auto& interval:row.value("covered",Json::array())){fields(interval,{"begin","end_exclusive"});
+                accepted.emplace_back(wide(str(interval,"begin",66)),wide(str(interval,"end_exclusive",66)));
+                if(!g.interval.contains(accepted.back()))throw std::runtime_error("accepted coverage escaped grant");
+            }
             journal.import_remote(g,manifest,binding,row["grant"].dump(),str(row,"device",128),
-                saved.integer(3)+remaining,std::max(int64_t(1),journal.timestamp()+remaining),boolean(info,"paused"));
+                saved.integer(3)+remaining,std::max(int64_t(1),journal.timestamp()+remaining),boolean(info,"paused"),accepted);
         }
         for(const auto& row:value["accepted"]){
             fields(row,{"project","job","block","complete"});
@@ -124,6 +140,7 @@ struct Worker::Impl {
 #ifdef KEYHUNT_TEST_STORAGE_FAILURES
         if(transaction_test_hook)transaction_test_hook("worker_before_ack");
 #endif
+        db.exec("DELETE FROM metadata WHERE key='worker_sync_denial'");
         tx.commit();
 #ifdef KEYHUNT_TEST_STORAGE_FAILURES
         if(transaction_test_hook)transaction_test_hook("worker_after_ack");
@@ -159,7 +176,19 @@ bool Worker::synchronize(const Transport& transport,bool manual){
     #ifdef KEYHUNT_TEST_STORAGE_FAILURES
     if(transaction_test_hook)transaction_test_hook("worker_before_send");
 #endif
-    const auto response=transport(*request);
+    Json response;
+    try{response=transport(*request);}
+    catch(const Error& error){
+        if(error.status==401||error.status==403||error.status==404||error.status==409||error.status==426){
+            // A definite online authorization/fencing refusal differs from a
+            // transport outage. Stop this machine at the next bounded checkpoint
+            // boundary while retaining its immutable request and all upload data.
+            Transaction tx(s.db);s.db.exec("UPDATE worker_grants SET paused=1 WHERE acknowledged=0");
+            const std::string reason=std::to_string(error.status)+": "+error.what();
+            s.db.metadata("worker_sync_denial",Bytes(reason.begin(),reason.end()));tx.commit();
+        }
+        throw;
+    }
 #ifdef KEYHUNT_TEST_STORAGE_FAILURES
     if(transaction_test_hook)transaction_test_hook("worker_after_response");
 #endif
@@ -193,6 +222,8 @@ Json Worker::status()const{
     Json out{{"instance",q.text(0)},{"client",q.text(1)},{"last_ack_server_time",q.integer(2)},
         {"sync_due_in",q.text(4)==boot_id()?std::max(int64_t(0),q.integer(3)-s.timer()):0},
         {"outbox_bytes",q.integer(5)},{"outbox_limit",q.integer(6)},{"queues",Json::array()}};
+    Statement denied(s.db.handle(),"SELECT value FROM metadata WHERE key='worker_sync_denial'");
+    if(denied.step()){const auto reason=denied.blob(0);out["pause_reason"]=std::string(reason.begin(),reason.end());}
     Statement pending(s.db.handle(),"SELECT count(*) FROM worker_requests WHERE acknowledged=0");pending.step();out["pending_request"]=pending.integer(0)!=0;
     Statement grants(s.db.handle(),"SELECT project,job,block,device,boot,deadline,paused,acknowledged,remote FROM worker_grants ORDER BY project,job,block");
     while(grants.step()){

@@ -65,6 +65,16 @@
       "cacheVariables": {
         "KEYHUNT_ENABLE_COORDINATOR": "ON"
       }
+    },
+    {
+      "name": "coordinator-server",
+      "inherits": "cpu-release",
+      "displayName": "CPU-only coordinator package",
+      "cacheVariables": {
+        "KEYHUNT_ENABLE_COORDINATOR": "ON",
+        "KEYHUNT_ENABLE_HTTPS_WORKER": "OFF",
+        "BUILD_TESTING": "OFF"
+      }
     }
   ],
   "buildPresets": [
@@ -95,6 +105,13 @@
     {
       "name": "coordinator-sanitizers",
       "configurePreset": "coordinator-sanitizers"
+    },
+    {
+      "name": "coordinator-server",
+      "configurePreset": "coordinator-server",
+      "targets": [
+        "keyhunt-coordinator"
+      ]
     }
   ],
   "testPresets": [

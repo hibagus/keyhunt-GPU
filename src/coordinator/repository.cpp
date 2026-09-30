@@ -2,6 +2,8 @@
 #include "protocol.h"
 #include "keyhunt/storage/checkpoint.h"
 #include <sstream>
+#include <charconv>
+#include <chrono>
 namespace keyhunt::coordination {
 using namespace storage;
 using namespace storage::detail;
@@ -24,6 +26,15 @@ std::vector<std::string> split(const std::string& path){
 }
 struct Repository::Impl {
     Journal journal;Database& db;
+    struct Budget {std::chrono::steady_clock::time_point since;unsigned count=0;};
+    std::map<std::string,Budget> budgets;
+    void rate(const std::string& key,unsigned limit){
+        const auto time=std::chrono::steady_clock::now();
+        for(auto it=budgets.begin();it!=budgets.end();)if(time-it->second.since>std::chrono::minutes(1))it=budgets.erase(it);else ++it;
+        if(!budgets.count(key)&&budgets.size()>=16384)throw Error(429,"request budget table full");
+        auto& budget=budgets.try_emplace(key,Budget{time,0}).first->second;
+        if(++budget.count>limit)throw Error(429,"registered client/project request budget exceeded");
+    }
     explicit Impl(const std::string& dir,Journal::Clock clock):journal(dir,std::move(clock)),db(journal.database()){}
     int64_t now()const{return journal.timestamp();}
     void event(const std::string& actor,const Bytes& credential,const std::string& operation,const std::string& project,const std::string& detail){
@@ -90,6 +101,7 @@ struct Repository::Impl {
             fields(row, {"project", "job", "devices", "spares", "policy"});
             const auto scope = wire::scope(row);
             authorize(actor, scope.project, 2);
+            rate(actor.client+"/"+scope.project,120);
             journal.manifest(scope);
             if (!scopes.emplace(scope.project, scope.job).second) throw Error(400, "duplicate sync job");
             integer(row, "spares", 0, 1);
@@ -207,7 +219,10 @@ struct Repository::Impl {
             if (!scopes.count({scope.project, scope.job})) continue;
             const auto state = journal.block(scope, assigned.wide(2));
             if (!state.assignment) throw std::runtime_error("device mapping lost assignment");
-            grants.push_back({{"device", assigned.text(3)}, {"grant", wire::grant(*state.assignment)}});
+            Json covered=Json::array();
+            if(state.covered.size()>1024)throw Error(413,"recovery coverage requires a smaller reconciled page");
+            for(const auto& interval:state.covered)covered.push_back(wire::interval(interval));
+            grants.push_back({{"device", assigned.text(3)}, {"grant", wire::grant(*state.assignment)}, {"covered",covered}});
             if (grants.size() > 128) throw Error(409, "machine queue exceeds 128 assignments");
         }
         // Report the final transaction state, including newly allocated queues.
@@ -254,12 +269,34 @@ struct Repository::Impl {
 };
 Repository::Repository(const std::string& path,Journal::Clock clock):impl_(std::make_unique<Impl>(path,std::move(clock))){}
 Repository::~Repository()=default;
+#ifdef KEYHUNT_TEST_STORAGE_FAILURES
+void Repository::test_page_limit(bool constrained){
+    auto& db=impl_->db;Statement count(db.handle(),"PRAGMA page_count");count.step();
+    db.exec("PRAGMA max_page_count="+std::to_string(constrained?count.integer(0):4294967294LL));
+}
+#endif
 int64_t Repository::now()const{return impl_->now();}
 std::string Repository::directory()const{return impl_->journal.state_directory();}
 Json Repository::admin(const Json& body){
     auto& s=*impl_;const auto op=str(body,"operation",64);
-    if(op=="check"){fields(body,{"operation"});s.journal.check();return {{"integrity","ok"},{"epoch",hex(s.db.metadata("epoch"))}};}
+    if(op=="check"){fields(body,{"operation"});s.journal.check();return {{"integrity","ok"},{"epoch",hex(s.db.metadata("epoch"))},{"quarantined",s.db.metadata("quarantine")!=Bytes{0}}};}
     if(op=="backup"){fields(body,{"operation","destination"});s.journal.check();s.journal.backup(str(body,"destination",4096));return {{"backed_up",true},{"quarantined",true}};}
+    if(op=="activate-restore"){
+        fields(body,{"operation","old_authority_stopped","all_previous_executors_stopped","access_review_complete"});
+        if(!boolean(body,"old_authority_stopped")||!boolean(body,"all_previous_executors_stopped")||!boolean(body,"access_review_complete"))
+            throw Error(409,"restore activation requires stopped authority/executors and completed access review");
+        s.journal.check();Transaction tx(s.db);
+        if(s.db.metadata("quarantine")!=Bytes{1})throw Error(409,"journal is not a quarantined restore");
+        Statement worker(s.db.handle(),"SELECT count(*) FROM worker_settings");worker.step();
+        if(worker.integer(0))throw Error(409,"worker snapshots need worker reconciliation, not coordinator activation");
+        // Old snapshots can resurrect credentials revoked after their backup.
+        // Disable every restored credential/client before reopening allocation;
+        // the local operator must explicitly enroll/enable reviewed identities.
+        s.db.exec("UPDATE coordinator_credentials SET enabled=0; UPDATE coordinator_clients SET enabled=0");
+        s.db.metadata("quarantine",Bytes{0});
+        s.event("local-admin",{},op,"","all prior executors stopped; restored access disabled");
+        tx.commit();return {{"activated",true},{"restored_access_disabled",true},{"epoch",hex(s.db.metadata("epoch"))}};
+    }
     Transaction tx(s.db);s.db.writable();Json result;
     if(op=="bootstrap"||op=="client-add"){
         fields(body,{"operation","name","certificate"});
@@ -293,9 +330,22 @@ Json Repository::admin(const Json& body){
     // Audit identifiers and actions only: never private keys or result bodies.
     s.event("local-admin",{},op,body.value("project",std::string()),result.dump());tx.commit();return result;
 }
+Json Repository::control_snapshot(const Certificate& cert,const Json& body){
+    auto& s=*impl_;Transaction tx(s.db,false);
+    if(s.db.metadata("quarantine")!=Bytes{0})throw Error(503,"coordinator restore is quarantined");
+    const auto actor=s.authenticate(cert);Json controls=Json::array();
+    for(const auto& row:body.at("jobs")){
+        const auto scope=wire::scope(row);s.authorize(actor,scope.project,2);
+        Statement q(s.db.handle(),"SELECT paused FROM coordinator_controls WHERE project=? AND job=?");bind_scope(q,scope);
+        controls.push_back({{"project",scope.project},{"job",hex(bytes(scope.job))},{"paused",q.step()&&q.integer(0)!=0}});
+    }
+    tx.commit();return controls;
+}
 Json Repository::request(const Certificate& cert,const std::string& method,const std::string& path,const Json& body){
     auto& s=*impl_;const auto parts=split(path);Transaction tx(s.db,method!="GET");
+    if(s.db.metadata("quarantine")!=Bytes{0})throw Error(503,"coordinator restore is quarantined");
     const auto actor=s.authenticate(cert);
+    s.rate(actor.client,240);
     if(parts.size()<3||parts[0]!="api"||parts[1]!="v1")throw Error(404,"not found");
     Json out;
     if(parts==std::vector<std::string>{"api","v1","projects"}&&method=="GET"){
@@ -305,7 +355,7 @@ Json Repository::request(const Certificate& cert,const std::string& method,const
         s.db.writable();out=s.sync(actor,body);
     }else{
         if(parts.size()<5||parts[2]!="projects")throw Error(404,"not found");
-        const auto& project=parts[3];s.authorize(actor,project);
+        const auto& project=parts[3];s.authorize(actor,project);s.rate(actor.client+"/"+project,120);
         if(parts.size()==5&&parts[4]=="memberships"&&method=="POST"){
             s.db.writable();s.authorize(actor,project,3);fields(body,{"client","role"});
             s.member(project,str(body,"client",36),role(str(body,"role",8)));out={{"updated",true}};
@@ -319,9 +369,32 @@ Json Repository::request(const Certificate& cert,const std::string& method,const
                 s.db.writable();s.authorize(actor,project,3);fields(body,{"paused"});s.journal.manifest(scope);
                 Statement q(s.db.handle(),"INSERT INTO coordinator_controls VALUES(?,?,?) ON CONFLICT(project,job) DO UPDATE SET paused=excluded.paused");
                 bind_scope(q,scope);q.bind(3,int64_t(boolean(body,"paused")));q.step();out={{"paused",body["paused"]}};
-            }else if(parts.size()==7&&parts[6]=="results"&&method=="GET"){
+            }else if(parts.size()==9&&parts[6]=="blocks"&&parts[8]=="recover"&&method=="POST"){
+                s.db.writable();s.authorize(actor,project,3);
+                fields(body,{"client","instance","device","request","previous_executor_stopped"});
+                if(!boolean(body,"previous_executor_stopped"))throw Error(409,"confirm the previous executor stopped before transfer");
+                const auto client=str(body,"client",36),instance=str(body,"instance",36),device=str(body,"device",128),request=str(body,"request",64);
+                token(instance);token(device);token(request);s.client_exists(client);
+                s.authorize(Actor{client,{}},project,2);
+                Statement enabled(s.db.handle(),"SELECT enabled FROM coordinator_clients WHERE client=?");enabled.bind(1,client);enabled.step();
+                if(!enabled.integer(0))throw Error(409,"recovery client is disabled");
+                const auto grant=s.journal.recover(scope,wide(parts[7]),client+"."+instance,request,true);
+                const auto current=s.journal.block(scope,grant.block);
+                if(!current.assignment||current.assignment->owner!=grant.owner||current.assignment->generation!=grant.generation)
+                    throw Error(409,"recovery receipt has since been superseded");
+                Statement mapping(s.db.handle(),"INSERT INTO coordinator_devices VALUES(?,?,?,?,?,?) ON CONFLICT(project,job,block) DO UPDATE SET client=excluded.client,instance=excluded.instance,device=excluded.device");
+                bind_scope(mapping,scope);mapping.bind(3,grant.block);mapping.bind(4,client);mapping.bind(5,instance);mapping.bind(6,device);mapping.step();
+                out={{"grant",wire::grant(grant)},{"block",s.block(scope,grant.block)}};
+            }else if((parts.size()==7||parts.size()==9)&&parts[6]=="results"&&method=="GET"){
                 s.authorize(actor,project,3);out=Json::array();
-                for(const auto& row:s.journal.results(scope))out.push_back({{"id",row.id},{"block",row.block.hex()},{"scalar",row.scalar.hex()},{"target",row.target},{"target_bytes",hex(row.target_bytes)}});
+                int64_t after=0;uint32_t limit=100;
+                if(parts.size()==9){
+                    auto decimal=[](const std::string& text,int64_t maximum){int64_t n=0;const auto result=std::from_chars(text.data(),text.data()+text.size(),n);
+                        if(result.ec!=std::errc{}||result.ptr!=text.data()+text.size()||n<0||n>maximum||std::to_string(n)!=text)throw Error(400,"invalid result page");
+                        return n;};
+                    after=decimal(parts[7],INT64_MAX);limit=uint32_t(decimal(parts[8],1000));if(!limit)throw Error(400,"empty result page limit");
+                }
+                for(const auto& row:s.journal.results(scope,after,limit))out.push_back({{"id",row.id},{"block",row.block.hex()},{"scalar",row.scalar.hex()},{"target",row.target},{"target_bytes",hex(row.target_bytes)}});
             }else throw Error(404,"not found");
         }else throw Error(404,"not found");
         if(method!="GET")s.event(actor.client,actor.fingerprint,path,project,"authorized mutation");

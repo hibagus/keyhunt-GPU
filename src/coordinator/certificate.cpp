@@ -62,8 +62,10 @@ std::string unbase64(const std::string& input){
     std::string out(3*(input.size()/4),'\0');
     const int n=EVP_DecodeBlock(reinterpret_cast<unsigned char*>(out.data()),
         reinterpret_cast<const unsigned char*>(input.data()),int(input.size()));
-    if(n<0||size_t(n)<padding)throw Error(401,"invalid certificate encoding");out.resize(size_t(n)-padding);
-    if(base64(out)!=input)throw Error(401,"noncanonical certificate encoding");return out;
+    if(n<0||size_t(n)<padding)throw Error(401,"invalid certificate encoding");
+    out.resize(size_t(n)-padding);
+    if(base64(out)!=input)throw Error(401,"noncanonical certificate encoding");
+    return out;
 }
 Json parse_json(const std::string& input){
     if(input.size()>8*1024*1024)throw Error(413,"JSON body too large");
