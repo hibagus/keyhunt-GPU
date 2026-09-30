@@ -95,6 +95,9 @@ and four verified matches, foreign/conflicting/duplicate imports, invalid manife
 elapsed delivery time, superseded attempts, reboot, 130-checkpoint paging,
 checkpoints arriving after export, credential revocation, recovered generations
 and expired cached grants. The v6 upgrade retains one sealed v6 snapshot.
+A regressed local monotonic clock rejects both export retry and import without
+changing the pending transfer. Relaying that same machine request later retains
+its original server expiry and consumes elapsed time in the local deadline.
 Four child-process exit points around export/import COMMIT verify recovery;
 import faults include pending result/coverage outbox deletion in the transaction.
 

@@ -90,6 +90,15 @@ void reservation_and_union(){
 void formats_and_deadlines(){
     Scenario s;
     const auto request=s.worker.export_request();const auto origin=s.monotonic;
+    const auto immediate=s.relay(request);
+    // An uncertain local monotonic clock cannot refresh an export or authorize
+    // its response. Rejection must leave the original attempt intact for review.
+    --s.monotonic;
+    rejects([&]{s.worker.export_request();});
+    rejects([&]{s.worker.import_response(immediate);});
+    require(!s.worker.next("0"),"regressed clock imported an executable grant");
+    s.monotonic=origin;
+    require(s.worker.export_request()==request,"clock rejection changed pending transfer");
     s.monotonic+=300;s.now+=300;const auto response=s.relay(request);
     auto bad=response;bad["version"]=2;rejects([&]{s.worker.import_response(bad);});
     bad=response;bad["transfer"]="unknown";rejects([&]{s.worker.import_response(bad);});
@@ -99,7 +108,7 @@ void formats_and_deadlines(){
     bad=response;bad["body"]["value"]["grants"][0]["grant"]["end_exclusive"]=UInt256(1000).hex();
     rejects([&]{s.worker.import_response(bad);});
     s.monotonic+=600;s.now+=600;s.worker.import_response(response);
-    require(s.deadline()==origin+2592000-60,"delivery time restarted offline lease");
+    require(s.deadline()==origin+2592000-300-60,"delivery time restarted offline lease");
     s.monotonic=s.deadline();require(!s.worker.next("0"),"elapsed delivery lease still executable");
     // A new delivery attempt can use the same persisted machine snapshot, but
     // the old transfer ID must not gain the refreshed timing origin.
