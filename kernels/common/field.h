@@ -134,18 +134,34 @@ KEYHUNT_HD inline void mul(Field& out, const Field& a, const Field& b) {
     out = reduce_product(product);
 }
 KEYHUNT_HD inline void square(Field& out, const Field& a) { mul(out, a, a); }
+// Compute a^(2^squares) * b. Delay the output write so either input may alias it.
+// The short constant-count loops avoid expanding hundreds of squares in code.
+KEYHUNT_HD inline void square_multiply(Field& out, const Field& a, unsigned squares, const Field& b) {
+    Field result = a;
+    for (unsigned i = 0; i < squares; ++i) square(result,result);
+    mul(out,result,b);
+}
 KEYHUNT_HD inline bool inverse(Field& out, const Field& a) {
-    // Fermat inversion is a correctness baseline. Zero has no inverse; return
-    // false and an explicit zero, including when out aliases a.
     if (is_zero(a)) { out = Field{}; return false; }
-    Field exponent = prime();
-    exponent.limb[0] -= 2;
-    Field result = one();
-    for (int bit = 255; bit >= 0; --bit) {
-        square(result, result);
-        if ((exponent.limb[bit/32] >> (bit%32)) & 1) mul(result, result, a);
-    }
-    out = result;
+    // Fermat's a^(p-2), with x_k = a^(2^k-1): 255 squares + 15 multiplies
+    // instead of 256 + 249. Retain only the powers reused by later steps.
+    // The final exponent is 2^256 - 2^32 - 979, exactly p-2.
+    Field x2,x3,x22,x44,result;
+    square_multiply(x2,a,1,a);
+    square_multiply(x3,x2,1,a);
+    square_multiply(result,x3,3,x3);       // x6
+    square_multiply(result,result,3,x3);  // x9
+    square_multiply(result,result,2,x2);  // x11
+    square_multiply(x22,result,11,result);
+    square_multiply(x44,x22,22,x22);
+    square_multiply(result,x44,44,x44);    // x88
+    square_multiply(result,result,88,result); // x176
+    square_multiply(result,result,44,x44);    // x220
+    square_multiply(result,result,3,x3);      // x223
+    square_multiply(result,result,23,x22);
+    square_multiply(result,result,5,a);
+    square_multiply(result,result,3,x2);
+    square_multiply(out,result,2,a); // a is read before writing an aliased out
     return true;
 }
 

@@ -103,3 +103,28 @@ helped smaller workloads but regressed the 32-target group-8 kernel by about
 13% (auto by 11%); [raw evidence](baselines/C17_MIXED_REJECTED.json). Operation
 counts alone did not predict the compiled kernel behavior. That variant is not
 retained; BSGS keeps its existing cache representation and group-8 formula.
+
+## Accepted: shorter field inversion
+
+The portable inverse computes the same Fermat exponent with 255 squares and
+15 multiplies, replacing 256 squares and 249 multiplies. Define `x_k = 2^k-1`
+for the exponent of each retained power. The chain builds `x2, x3, x6, x9, x11,
+x22, x44, x88, x176, x220, x223`, then finishes with
+`((((x223*2^23+x22)*2^5+1)*2^3+x2)*2^2+1)`. Integer substitution gives
+`2^256-2^32-979 = p-2` exactly. Each square/multiply stage reads aliased inputs
+before writing output. Zero still returns false and explicit zero.
+
+[Five measured pairs](baselines/C17_INVERSE.json) show 1.417× kernel / 1.392×
+warm-executor improvement for 32-target xpoint; small-target xpoint, which does
+not invert, stays within 0.2%. BSGS kernels improve 1.313–1.515×, and warm
+executors 1.286–1.466×. The retained direct xpoint reference improves about
+1.069× at 65,536 scalars ([separate paired trial](baselines/C17_INVERSE_DIRECT.json)).
+
+Eight arithmetic/search/fault gates passed, including 13,381 field oracle cases
+and 1,278 point cases in both portable and HIP probes. These include zero,
+maximal carries, independent expected inverses, batch-zero behavior and aliasing.
+[Compiler xpoint](baselines/C17_INVERSE_XPOINT_RESOURCES.log) and
+[BSGS remarks](baselines/C17_INVERSE_BSGS_SEARCH_RESOURCES.log) show the tradeoff:
+inverting kernels use 248 VGPRs, with more private scratch and an estimated two
+waves/SIMD. The reduction in arithmetic work still wins in every measured
+inverting workload. No architecture-specific assembly is needed for this gain.
