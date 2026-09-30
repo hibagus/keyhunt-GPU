@@ -105,3 +105,13 @@ set_tests_properties(coordinator_supervisor PROPERTIES TIMEOUT 60 LABELS "cpu;co
 add_test(NAME coordinator_calibration COMMAND ${Python3_EXECUTABLE}
     ${PROJECT_SOURCE_DIR}/tests/coordinator/calibration.py)
 set_tests_properties(coordinator_calibration PROPERTIES TIMEOUT 30 LABELS "cpu;coordinator;scheduler")
+
+if(KEYHUNT_TEST_APACHE_ROOT AND TARGET keyhunt-worker AND KEYHUNT_ENABLE_GPU)
+    add_test(NAME coordinator_fleet COMMAND ${Python3_EXECUTABLE}
+        ${PROJECT_SOURCE_DIR}/tools/validate_fleet.py
+        --build-dir ${CMAKE_CURRENT_BINARY_DIR} --apache-root ${KEYHUNT_TEST_APACHE_ROOT}
+        --backend ${KEYHUNT_GPU_BACKEND} --counts 2 --repeat 1 --block-bits 20
+        --output ${CMAKE_CURRENT_BINARY_DIR}/coordinator-fleet-results.json)
+    set_tests_properties(coordinator_fleet PROPERTIES TIMEOUT 180 SKIP_RETURN_CODE 77
+        LABELS "${KEYHUNT_GPU_BACKEND};hardware;coordinator;recovery" RESOURCE_LOCK gpu_device)
+endif()
