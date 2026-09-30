@@ -74,8 +74,14 @@ def metadata(build, binary, oracle, output, device, inventory, load_note):
     # Preserve exact production flags, including shared host arithmetic, without
     # exporting arbitrary environment variables or credential-bearing settings.
     production = [r for r in compilation if "/src/" in r["file"] and "/tests/" not in r["file"]]
+    cache_text = (build / "CMakeCache.txt").read_text()
+    home = next(line.split("=", 1)[1] for line in cache_text.splitlines() if line.startswith("CMAKE_HOME_DIRECTORY:"))
+    require(Path(home).resolve() == ROOT, "build belongs to a different source checkout")
+    source_files = {p for folder in ("src", "include", "kernels", "cmake") for p in (ROOT / folder).rglob("*") if p.is_file()}
+    source_files.update(Path(e["file"]) for e in production)
+    source_files.add(ROOT / "CMakeLists.txt")
     cache = {}
-    for line in (build / "CMakeCache.txt").read_text().splitlines():
+    for line in cache_text.splitlines():
         if "=" in line and ":" in line and line.startswith(("CMAKE_BUILD_TYPE:", "CMAKE_CXX_COMPILER:",
              "CMAKE_HIP_COMPILER:", "CMAKE_HIP_ARCHITECTURES:", "KEYHUNT_", "SQLite3_LIBRARY:", "SQLite3_INCLUDE_DIR:")):
             key, value = line.split("=", 1)
@@ -86,6 +92,7 @@ def metadata(build, binary, oracle, output, device, inventory, load_note):
             "working_tree": probe(["git", "status", "--porcelain"]),
             "tracked_diff_sha256": hashlib.sha256(subprocess.check_output(["git", "diff", "HEAD", "--binary"], cwd=ROOT)).hexdigest(),
             "harness_sha256": {p: sha(ROOT / p) for p in sources}, "binary_sha256": sha(binary),
+            "source_files_sha256": {str(p.relative_to(ROOT)): sha(p) for p in sorted(source_files)},
             "oracle_binary_sha256": sha(oracle), "oracle_commit": check_source(),
             "compile_commands": production, "cmake_cache": cache,
             "hip_compiler": probe([compiler, "--version"]), "cmake": probe(["cmake", "--version"]),

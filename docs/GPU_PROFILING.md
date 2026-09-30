@@ -106,3 +106,39 @@ duplicate/missing target groups, false completion, device/table mismatch,
 missing/duplicate matches, overflow costs, durable unions, invalid timings and
 summary statistics. Performance measurements remain opt-in and have no timing
 threshold in correctness CI.
+
+## Separate profiler and compiler capture
+
+Use a passed benchmark report whose inputs are still present. Profiling repeats
+one volatile case, validates its coverage again, and never adds its duration to
+benchmark statistics. Availability/version/help output, raw trace CSVs, and a
+hashed artifact manifest are retained. Optional counter failures fail explicitly.
+The profiler supports the installed ROCprofiler-SDK command set; its help and
+available counters are queried before collecting data. See AMD's
+[rocprofv3 reference](https://rocm.docs.amd.com/projects/rocprofiler-sdk/en/latest/how-to/using-rocprofv3.html).
+
+```sh
+python3 tools/profile_gpu.py --benchmark /tmp/keyhunt-c16-run/report.json \
+  --case xpoint-no-match-1 --output-dir /tmp/keyhunt-c16-xpoint-profile --resources
+python3 tools/profile_gpu.py --benchmark /tmp/keyhunt-c16-run/report.json \
+  --case bsgs-no-match-1 --output-dir /tmp/keyhunt-c16-bsgs-profile
+```
+
+`--counter NAME` may be repeated for a compatible single-pass counter set; that
+collection is a second instrumented run, separate from timeline tracing. Choose
+names from the captured `available-counters.out`, not a different SDK's list.
+Trace kernel counts must agree with application search receipts. On this SDK,
+small copies and buffer clears can appear as internal `__amd_rocclr_*` kernels;
+these remain in the artifact but are excluded from the search-launch comparison.
+An absent SDMA copy CSV does not imply zero transfers: inspect HIP API calls and
+internal copy kernels too.
+
+`--resources` reuses recorded production compiler flags to write standalone
+AMDGPU assembly and `-Rpass-analysis=kernel-resource-usage` remarks for xpoint and
+BSGS. It verifies the current source hashes match the benchmark and leaves build
+objects and the executable intact. Assembly includes code-object metadata;
+remarks report registers, scratch/spills, LDS and estimated occupancy. These are
+compiler estimates, not measured occupancy or proof of a performance bottleneck.
+Benchmark metadata rejects a build belonging to another source checkout. Rebuild
+before measuring: source and binary hashes identify both artifacts, but do not
+prove that an arbitrary pre-existing executable was freshly built from that source.
