@@ -3,6 +3,10 @@
 Audited revision: `4febd4a`, frozen on **2026-09-30**. C12 commit `0c21349` and
 additional storage changes appeared during review; they are outside this audit.
 
+Source links follow the shared-kernel layout introduced by C18. Line numbers and
+findings refer to the audited revision; see [C17 tuning](../HIP_TUNING.md) for
+subsequent fixes and measurements.
+
 **No new coverage failure was found in the tested HIP paths.** All 37 HIP tests,
 22 CPU-only tests, and 22 additional runs of the earlier missed-target fixtures
 passed. The new HIP implementations recover every target missed in the C06
@@ -76,9 +80,9 @@ replay correctness but do not place a useful bound on this sparse-tail launch co
 
 Priority: **P2, measured optimization**.
 
-[xpoint.h](../../kernels/hip/xpoint.h), lines 40 and 62, declares both kernels
+[xpoint.h](../../kernels/search/xpoint.h), lines 40 and 62, declares both kernels
 without a launch bound. Every dispatch in
-[xpoint.hip](../../src/backend/hip/xpoint.hip), lines 143–156, uses 128 threads.
+[xpoint.cpp](../../src/backend/gpu/xpoint.cpp), lines 143–156, uses 128 threads.
 The C11 BSGS kernels already supply this information to the compiler.
 
 An isolated variant adds only `__launch_bounds__(128)` to `xpoint_direct` and
@@ -124,7 +128,7 @@ the measured ratios apply to this MI300X configuration and large-batch workload.
 
 Priority: **P2, measured configuration-dependent overhead**.
 
-[xpoint.hip](../../src/backend/hip/xpoint.hip), lines 42, 138 and 161, clears
+[xpoint.cpp](../../src/backend/gpu/xpoint.cpp), lines 42, 138 and 161, clears
 and downloads the entire allocated candidate slot on every batch. Traffic depends
 on the requested capacity even when there are zero candidates.
 
@@ -148,7 +152,7 @@ overflow behavior while avoiding impossible output allocation. Preserve the guar
 record, validation, and reported allocation accounting when changing the slot.
 
 The same pattern exists in
-[bsgs_search.hip](../../src/backend/hip/bsgs_search.hip), lines 47, 150 and 175.
+[bsgs_search.cpp](../../src/backend/gpu/bsgs_search.cpp), lines 47, 150 and 175.
 With the current exact signed-point table and bounded tile, each target can yield
 at most one candidate; a batch has at most 64 targets. The default capacity 1,024
 and maximum 65,536 exceed that possible output. This BSGS extension is a
