@@ -61,6 +61,12 @@ SelectedDevice select_cuda(int ordinal) {
     const int count = visible_count();
     if (ordinal < 0 || ordinal >= count)
         throw std::invalid_argument("GPU device ordinal is not visible");
-    return {describe(ordinal), size_t(count)};
+    // Keep the calling owner on its chosen device. Restoring an untouched
+    // default ordinal with CUDA 12+ could initialize that unrelated context.
+    gpu_check(cudaSetDevice(ordinal), "cudaSetDevice");
+    SelectedDevice result{describe(ordinal), size_t(count)};
+    gpu_check(cudaRuntimeGetVersion(&result.runtime_version), "cudaRuntimeGetVersion");
+    gpu_check(cudaDriverGetVersion(&result.driver_version), "cudaDriverGetVersion");
+    return result;
 }
 }

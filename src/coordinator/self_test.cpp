@@ -8,9 +8,10 @@ Json device_self_test(int ordinal){
     (void)ordinal;throw std::runtime_error("worker self-test requires a GPU build; there is no CPU execution fallback");
 #else
     using namespace keyhunt;using namespace core;
-    const auto inventory=backend::discover_gpu();
-    if(ordinal<0||size_t(ordinal)>=inventory.devices.size())throw std::invalid_argument("GPU ordinal is not visible");
-    const auto& device=inventory.devices[size_t(ordinal)];
+    // Device enumeration may initialize every visible runtime context. A
+    // per-device self-test must query only the device whose owner lock is held.
+    const auto selected=backend::select_gpu(ordinal);
+    const auto& device=selected.device;
     XPointVerifier verifier;std::vector<XPointBytes> xs;std::vector<UncompressedPublicKey> points;
     for(uint64_t scalar:{1,17,32,40}){
         const auto point=verifier.derive(UInt256(scalar));points.push_back(point);
@@ -44,7 +45,7 @@ Json device_self_test(int ordinal){
     }
     return {{"passed",true},{"ordinal",ordinal},{"uuid",device.uuid},{"pci_bus_id",device.pci_bus_id},
         {"compute_units",device.compute_units},{"compute_partition",device.compute_partition},
-        {"memory_partition",device.memory_partition},{"runtime",inventory.runtime_version},{"driver",inventory.driver_version}};
+        {"memory_partition",device.memory_partition},{"runtime",selected.runtime_version},{"driver",selected.driver_version}};
 #endif
 }
 }

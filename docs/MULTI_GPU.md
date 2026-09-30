@@ -140,3 +140,18 @@ completion-time guarantee for every device.
 Exact sizing/alignment/overflow tests and checkpoint, pause, concurrent ownership
 and live HTTPS/HIP regressions pass after adaptive sizing. Calibration tests
 cover rational rounding, BSGS units and rejection of unmeasured/mixed inputs.
+
+## Selected-device startup isolation (A20)
+
+The concurrent C17–C19 audit identified full discovery in each worker self-test.
+C20 now uses `select_gpu` for self-test metadata and runtime versions. HIP and
+CUDA selection query only the requested ordinal and leave the owner thread on
+that device. This also avoids restoring an untouched default CUDA ordinal, which
+could initialize its context. Full `devices` inventory remains an explicit
+all-device diagnostic operation.
+
+The discovery mock passes SPX/QPX/CPX layouts and visibility remapping with device
+0's memory query failing while selected device 1 succeeds. Only device 1 is
+queried. Real HIP selected-device self-tests and two-device fleet/HTTPS regressions
+pass. The CUDA path uses the existing selected-device API and version queries;
+new NVIDIA hardware validation is unavailable on this host and is not claimed.

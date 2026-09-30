@@ -88,6 +88,13 @@ void profile(const char* compute, const char* memory, int partitions) {
     fake_hip::selected = 1;
     check_inventory(sysfs.path);
     fake_hip::fail_memory_on = 0;
+    fake_hip::memory_queries.clear();
+    fake_hip::selected=0;
+    const auto selected=select_hip_at(sysfs.path,1);
+    require(selected.visible_devices==2 && selected.device.ordinal==1 &&
+        selected.device.pci_bus_id==fake_hip::devices[1].bdf,"selected device identity/remapping");
+    require(fake_hip::memory_queries==std::vector<int>{1},"selected query visited unrelated failing device");
+    require(fake_hip::selected==1,"selected query did not leave owner on its chosen device");
     try {
         (void)discover_hip_at(sysfs.path);
         throw std::logic_error("memory query failure was ignored");
