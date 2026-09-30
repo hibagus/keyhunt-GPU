@@ -201,7 +201,7 @@ if(KEYHUNT_ENABLE_COORDINATOR)
     install(FILES deploy/apache/keyhunt.conf.in DESTINATION share/keyhunt/apache COMPONENT coordinator)
     install(FILES deploy/systemd/keyhunt-coordinator.service.in DESTINATION share/keyhunt/systemd COMPONENT coordinator)
     install(FILES docs/COORDINATOR.md docs/COORDINATOR_SERVER_PLAN.md docs/COORDINATOR_VALIDATION.md
-        docs/STORAGE.md docs/BUILD.md docs/GPU_REDESIGN_PLAN.md LICENSE THIRD_PARTY_NOTICES.md
+        docs/STORAGE.md docs/BUILD.md docs/GPU_REDESIGN_PLAN.md docs/MULTI_GPU.md LICENSE THIRD_PARTY_NOTICES.md
         DESTINATION share/doc/keyhunt COMPONENT coordinator)
     install(DIRECTORY third_party/licenses/ DESTINATION share/doc/keyhunt/licenses COMPONENT coordinator)
     if(KEYHUNT_ENABLE_HTTPS_WORKER)

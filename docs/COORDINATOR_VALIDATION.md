@@ -36,7 +36,8 @@ Validation uses the existing MI300X SPX/NPS1 configuration. No GPU kernel or
 partition setting changed. CPX/QPX/SPX discovery contracts remain covered; a new
 live CPX/QPX run was not performed. Public ingress, a physical second host and
 ACME remain deferred. The local setup uses separate processes/private state under
-one trusted Unix user; simultaneous multi-GPU execution remains C20.
+one trusted Unix user. Subsequent concurrent execution and lifecycle validation
+are documented separately in [C20](MULTI_GPU.md).
 
 ## Sanitizer recovery fixture
 

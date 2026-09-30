@@ -182,8 +182,8 @@ pending payload. Restart, block completion, matches, an empty queue and remainin
 upload backlog do not trigger early contacts. An explicit manual sync can send
 or retry a page. Status distinguishes local completion awaiting sync from server
 acknowledgment, and reports outbox usage, last acknowledgment, expiry, pause and
-revalidation requirements. Simultaneous execution on multiple GPUs remains C20;
-these tests exercise distinct device queues with the existing bounded CPU runner.
+revalidation requirements. [C20 multi-GPU execution](MULTI_GPU.md) now consumes
+these machine queues concurrently through separate persistent device owners.
 
 S04b passed **11/11** focused gates, including two mock GPUs, lost replies,
 checkpoints arriving during HTTPS, boot/deadline fencing, outbox exhaustion and
@@ -195,7 +195,7 @@ coverage can finish a block. Existing C13/C14 storage/control gates still pass.
 ## S04c: HTTPS and process supervision
 
 `keyhunt-worker` provides `configure`, `configuration`, `status`, `sync`,
-`scheduled-sync`, `next`, `api` and `self-test`. Use `--state-dir DIR` for local
+`scheduled-sync`, `next`, `api`, `self-test` and `run-device`. Use `--state-dir DIR` for local
 state, `--config FILE` for initial configuration, `--request FILE` for an API
 request, and `--device N` for dispatch/self-test. `sync` is explicitly manual;
 `scheduled-sync` sends nothing before the persisted due time.
@@ -208,24 +208,37 @@ are 10/30 seconds; responses remain bounded to 8 MiB. The coordinator executable
 has no libcurl or GPU runtime dependency; the HTTPS worker is a separate target.
 
 `tools/coordinator_worker.py` (installed as `keyhunt-supervise`) owns a stable
-supervisor lock and starts separate network and GPU child processes. It runs
-fresh HIP self-tests before requesting work, covering hit/miss/boundary/tail
-vectors through both xpoint kernels and BSGS groups 1/8. Device visibility and
-partition discovery use the existing backend; no partition mode is hardcoded.
-It records the observed UUID, partition, CU count, runtime and driver privately.
+supervisor lock, one separate network child and a persistent native process per
+selected device. Each device process runs fresh xpoint/BSGS self-tests before
+execution. Device selection queries only its ordinal, records the observed UUID,
+partition, CU count and runtime/driver versions, and never changes partition modes.
 
-The supervisor keeps C14's one-executor-per-journal guard. Multiple device queues
-are supported and exercised with mocks, but production execution is serial
-across those queues until C20. Use one selected device for C15 production work.
-Default stepped xpoint and automatic BSGS group selection are retained. BSGS
-requires an explicit local `--table`; the service never loads that table.
+Each process transactionally claims a distinct block. Faster devices may take
+unstarted queued grants for the same job; active blocks remain owned until their
+process stops. Targets and GPU tables stay loaded across block handoffs. The
+standalone whole-journal guard is retained; supervised execution uses per-block
+guards plus per-device process locks. Default stepped xpoint and automatic BSGS
+group selection remain. BSGS requires a matching local `--table`.
 
-SIGUSR1/SIGUSR2 pause/resume the GPU child, and SIGINT/SIGTERM request a bounded
-drain. Three failed launches or a 300-second progress stall quarantine the device
-queue; `--retry-failed` explicitly clears saved failure counts after repair.
-No GPU reset is attempted. `--once` consumes saved queues and exits without an
-extra final sync. `supervisor.json`, `self-tests.json`, `execution.log` and
-`sync.log` live in the private worker state directory.
+`--devices 0,1` selects configured queues. `--device-map QUEUE=ORDINAL` handles
+visibility renumbering while retaining the UUID binding. A different physical or
+logical UUID requires `--rebind-device QUEUE` and a stopped old owner. Omitting a
+queue preserves its active block. `--host-memory` caps each device's table/target
+budget; `--host-memory-total` also bounds their sum. Runtime/SQLite overhead is
+additional. See [ownership, memory and calibration details](MULTI_GPU.md).
+
+SIGUSR1/SIGUSR2 pause/resume all selected owners; SIGINT/SIGTERM drain them. For
+one queue, use `keyhunt checkpoint pause|resume|stop|status --state-dir DIR
+--slot QUEUE`. A confirmed socket pause is excluded from the watchdog. Expected
+coordinator pause, expiry and fencing events do not count as GPU failures.
+Three execution failures or a 300-second progress stall quarantine that queue;
+`--retry-failed` clears saved counts after repair. Drain and kill waits are bounded
+across the fleet; no GPU reset is attempted and surviving owners retain OS locks.
+
+`--once` consumes executable saved queues without an extra final sync.
+`supervisor.json`, `self-tests.json`, `execution-QUEUE.log` and `sync.log` stay in
+the private worker directory. Device logs retain one rotated 8 MiB predecessor.
+Completed batches, not diagnostic output growth, drive progress detection.
 
 Native two-worker HTTPS tests passed with separate state/certificates, wrong-CA
 and hostname rejection, cross-project denial and persisted no-contact intervals.

@@ -2,7 +2,8 @@
 
 C14 extends the verified checkpoint owner with control boundaries before each
 bounded submission. It keeps C13's one owner, one assigned block and one HIP
-logical device per invocation. Multi-device supervision belongs to C20.
+logical device per invocation. [C20](MULTI_GPU.md) adds concurrent supervised
+owners with separate block guards and per-device control sockets.
 
 ## Owner contract
 
@@ -225,10 +226,10 @@ driver-failure tests, v1 migration snapshot checks and CPX/QPX/SPX discovery
 contracts. Current hardware is eight MI300X devices in SPX/NPS1. Live CPX/QPX
 searches were not run on this configuration.
 
-C14 is complete for standalone checkpoint execution. One journal still permits
-one active owner, block and logical GPU at a time. The changed-inventory tests
-prove compatible sequential restart; simultaneous multi-GPU supervision remains
-C20. [C15 now supplies](COORDINATOR.md) authenticated coordination, a local outbox,
+C14 is complete for standalone checkpoint execution, which keeps its exclusive
+whole-journal guard. The changed-inventory tests prove compatible sequential
+restart. [C20](MULTI_GPU.md) now adds simultaneous supervised execution with
+distinct block ownership and independent controls. [C15 now supplies](COORDINATOR.md) authenticated coordination, a local outbox,
 remote acceptance and restore reconciliation under the localhost validation scope.
 
 
