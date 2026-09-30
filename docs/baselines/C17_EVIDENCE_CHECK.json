@@ -1,0 +1,72 @@
+{
+  "recorded_utc": "2026-09-30T19:01:56.378065+00:00",
+  "passed": true,
+  "source_hashes_match_final_build": true,
+  "checks": {
+    "launch": {
+      "commands": 14,
+      "distributions": 45,
+      "report_sha256": "18badffb0df93d717a06b9c044ac36673e37f43f97f598a0cb768e3983561780",
+      "passed": true
+    },
+    "mixed": {
+      "commands": 26,
+      "distributions": 180,
+      "report_sha256": "22655bf0ef2954b4a6eba6901e59dbeba1e05c06179a3e33981a0f4064efe604",
+      "passed": true
+    },
+    "mixed-selective": {
+      "commands": 26,
+      "distributions": 180,
+      "report_sha256": "1a06790434ef8a19ffea74edfea8ec237f7515ade0c6c4d9cb60c6c0ab2f8f68",
+      "passed": true
+    },
+    "inverse": {
+      "commands": 26,
+      "distributions": 180,
+      "report_sha256": "1a7a4c993ccc756957aaf3b46a6cd5b1a256a2403482fb6efe815864b1cefef0",
+      "passed": true
+    },
+    "inverse-direct": {
+      "commands": 14,
+      "distributions": 45,
+      "report_sha256": "9a91e97d67de0a8ef96d5e8bd18f0b75e21fb6d5a3adcfd29e06d206009753ab",
+      "passed": true
+    },
+    "capacity": {
+      "commands": 26,
+      "distributions": 180,
+      "report_sha256": "33222168d37cea4451c3885cc46332f5df85446667658b98e9c0649d9537d3c0",
+      "passed": true
+    },
+    "capacity-large": {
+      "commands": 14,
+      "distributions": 45,
+      "report_sha256": "d20a650ffeac00bc868b499134a9d9b0a8c9b0e4eb7b6329c370701a752f3989",
+      "passed": true
+    },
+    "recovery": {
+      "commands": 98,
+      "distributions": 35,
+      "report_sha256": "04c770cf6d0d74d6afa4fa2d135826f9484c2e733bb4b85fc908a31342e40023",
+      "passed": true
+    },
+    "final": {
+      "commands": 1107,
+      "distributions": 498,
+      "report_sha256": "c1618deb9e13a1abc8b7dc22395381c74ddde4779cda9136c384d1144b2905c6",
+      "passed": true
+    },
+    "mixed_groups": {
+      "commands": 50,
+      "samples": 12,
+      "report_sha256": "504377f806d97223d0d280bfb5d57dc72a67185fc9d23752d0d1b7b5a5d7ba42",
+      "passed": true
+    },
+    "profile": {
+      "artifacts": 20,
+      "search_launches": 4,
+      "passed": true
+    }
+  }
+}

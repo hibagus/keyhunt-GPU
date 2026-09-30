@@ -1,5 +1,9 @@
 # CUDA/HIP port audit — 2026-09-29
 
+Current implementation: [C17 measured tuning](HIP_TUNING.md) addresses A12, A13,
+A14 and A19 with separate changes and retained paired evidence. The audits below
+remain scoped to their frozen revisions.
+
 Latest follow-up: [C16 profiling audit](audits/C16_AUDIT.md) passes 58 HIP and
 42 CPU tests, independently checks the retained benchmark evidence, reproduces a
 mixed-BSGS-group reporting defect, and measures periodic-checkpoint throughput.

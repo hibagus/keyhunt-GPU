@@ -49,16 +49,20 @@ executors. No unconsumed result is overwritten. Runtime or verification failures
 poison the owner; destruction drains its stream before releasing buffers.
 
 The device counts evaluated scalars and candidates and sets explicit overflow or
-invalid-point flags. A guard follows the output capacity. The host checks the
+invalid-point flags. C17 bounds the output allocation by the requested capacity,
+maximum batch steps and twice the unique target count. A guard follows that
+effective capacity. The host checks the
 count/flag relationships, guard, record bounds, uniqueness and CPU derivation.
 Full coverage means every scalar was evaluated against the complete target set;
 it does not mean CPU derivation was performed for nonmatches.
 
 An overflowing attempt returns zero verified steps and no matches. The CLI keeps
 its cursor fixed and retries with at most `min(capacity, attempted_steps/2)` steps,
-retaining this smaller limit for later batches. Because targets are unique, each
-scalar can produce at most one candidate; replay must therefore terminate without
-silently dropping the retained prefix. Already accepted intervals are not replayed.
+which guarantees the next attempt fits because each scalar emits at most one
+candidate. C17 then doubles the limit after half-full or emptier successful
+attempts, up to the original maximum; full buffers keep the smaller limit. This
+recovers throughput after a dense prefix while fully dense input remains bounded.
+Already accepted intervals are not replayed. See [C17 measurements](HIP_TUNING.md).
 
 Output is newline-delimited JSON: a `start` record, bounded `batch` records, then a
 `summary` only after the entire interval is accepted. Each accepted batch contains

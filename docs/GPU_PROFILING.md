@@ -1,7 +1,7 @@
 # C16 GPU profiling and reproducible benchmarks
 
-C16 measures the existing portable HIP implementation. Kernel changes remain C17
-or later. The [earlier audit](audits/C13_AUDIT.md) found that startup and different
+C16 records the pre-tuning portable HIP baseline. Current kernel and batching
+changes are measured separately in [C17 tuning](HIP_TUNING.md). The [earlier audit](audits/C13_AUDIT.md) found that startup and different
 CLI output volumes can dominate small durability comparisons; this harness records
 those costs explicitly. See [checkpoint metrics](CHECKPOINTS.md#c16-execution-metrics)
 for the durable accounting contract.

@@ -109,12 +109,18 @@ buffers, target copies/staging, bounded candidates/results and pinned memory;
 they are allocation planning budgets, not an OS-enforced process RSS limit.
 
 Because v1 contains every unique `jG` for `j < m < n`, each canonical full target
-has at most one in-range scalar. On overflow the CLI retries the same target
+has at most one in-range scalar. C17 therefore caps the output allocation at
+the minimum of requested capacity, executor steps, unique targets and 64 (the
+maximum batch subset), plus the guard. On overflow the CLI retries the same target
 cursor with `min(capacity, old_count/2)` targets. This terminates even at capacity
 one, without reducing m or crediting a partial attempt. Successful target subsets
 remain volatile; an interrupted process must restart its requested interval.
 
 ## Kernel selection
+
+C17 adds a shorter inversion chain and mixed point addition for group 1; group 8
+retains general additions because its measured mixed variant regressed.
+[Paired tuning evidence](HIP_TUNING.md) records accepted and rejected variants.
 
 All launches use 128 threads. The matching `__launch_bounds__(128)` declaration
 allows the compiler to allocate registers for the actual block size. The

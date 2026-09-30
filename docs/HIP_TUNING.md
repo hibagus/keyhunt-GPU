@@ -1,6 +1,6 @@
 # C17 measured HIP tuning
 
-C17 starts from the [C16 baseline](GPU_PROFILING.md). Each retained optimization
+C17 is complete, measured against the [C16 baseline](GPU_PROFILING.md). Each retained optimization
 gets an independent commit, arithmetic/search/recovery checks, compiler evidence
 where relevant, and alternating equivalent baseline/candidate trials. Raw
 measurements distinguish kernel, warm executor, and fresh-process rates. BSGS
@@ -59,8 +59,8 @@ occupancy.
 
 Architecture-specific assembly remains an option when whole-kernel measurements
 justify it; retain a portable reference. C19's broader ISA delivery gate remains
-separate from C17. This document will record accepted and rejected experiments
-and the final validation scope as measurements complete.
+separate from C17. Accepted and rejected experiments and the final validation
+scope are recorded below.
 
 ## Accepted: xpoint launch bounds (A13)
 
@@ -105,7 +105,9 @@ from two to three waves/SIMD, with zero private scratch. Retained remarks:
 helped smaller workloads but regressed the 32-target group-8 kernel by about
 13% (auto by 11%); [raw evidence](baselines/C17_MIXED_REJECTED.json). Operation
 counts alone did not predict the compiled kernel behavior. That variant is not
-retained; BSGS keeps its existing cache representation and group-8 formula.
+retained; BSGS keeps its existing cache representation and group-8 formula. The
+[rejected patch](baselines/C17_MIXED_REJECTED.patch), applied to `b5753be`,
+reconstructs all five changed source files with hashes matching its frozen report.
 
 ## Accepted: shorter field inversion
 
@@ -191,3 +193,87 @@ target subsets and a final short tile. The [live audit reproduction](baselines/C
 passes five measured repetitions plus warm-up for volatile and timed modes, each
 with exact coverage and 524,288 useful steps. Durable output correctly retains
 two group-8 and two group-1 launches instead of labeling the run only group 1.
+
+## Final C16 → C17 comparison
+
+The [final matrix](baselines/C17_MEASUREMENTS.json) compares unchanged C16
+production binary `a2823f732401…` with C17 `1fe9412d0a0d…` (code commit
+`863da3d`). It contains five measured alternating process pairs after one excluded
+warm-up pair: 180 measured CLI executions plus 36 warm-ups, and separate warm
+executor samples. Every CLI execution passes independent target-oracle, exact
+coverage and match checks; durable executions also reopen and audit the journal.
+
+Measured on one MI300X gfx942, 304 visible CUs, SPX/NPS1, wave64, physical PCI
+`0000:3d:00.0` under `HIP_VISIBLE_DEVICES=1` (runtime ordinal 0). ROCm compiler
+flags, exact binary/source hashes, CPU affinity, clocks/power snapshots and all raw
+commands/samples are in the report. The host is unreserved. No hardware settings
+were changed; the final timing window contains no regression or profiling jobs.
+
+| Workload | Kernel speedup | Warm executor speedup | Volatile process | Timed process | Every-batch process |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| xpoint no-match-1 | 1.936× | 1.873× | 1.234× | 1.255× | 1.255× |
+| xpoint boundary-3 | 1.981× | 1.905× | 1.286× | 1.265× | 1.247× |
+| xpoint no-match-32 | 2.330× | 2.281× | 1.648× | 1.626× | 1.538× |
+| bsgs no-match-1 | 1.694× | 1.663× | 1.132× | 1.155× | 1.143× |
+| bsgs boundary-3 | 1.314× | 1.309× | 1.089× | 1.107× | 1.094× |
+| bsgs no-match-32 | 1.328× | 1.347× | 1.134× | 1.138× | 1.114× |
+
+Ratios are medians of paired baseline/candidate elapsed times, so greater than
+one is faster. Xpoint uses 1,048,576 scalars per warm batch; BSGS uses `m=65537`,
+32,768 giants/target and automatic grouping (1 for the one-target case, 8 for the
+others). Explicit group-1 and group-8 warm samples are retained too; their kernel
+speedups range from 1.308× to 1.717×. Each CLI interval spans 512 bounded batches
+with an exact final tail. BSGS steps count target giants, not scalar coverage.
+
+Every warm kernel pair improves by at least 28.8%. Whole-process results include
+HIP startup, table preparation, output, verification, cleanup and storage, so
+they are smaller and noisier. Four BSGS process comparisons include individual
+pairs below 1× (down to 0.940×), despite improved medians; their process gains
+should not be treated as guarantees outside this host/workload. Xpoint process
+medians improve 1.234–1.648×, with every individual pair improving. The short
+512-batch timed runs need only final/match commits; they do not establish long
+periodic-checkpoint or multi-hour sustained rates. The C16 cadence evidence
+remains historical validation of that unchanged mechanism.
+
+The [separate final profile](baselines/C17_PROFILES.json) validates mixed BSGS
+dispatch counts and retains compiler-generated assembly/resource reports for
+both search translation units. Its instrumented timings are excluded from the
+benchmark. Register/private-memory numbers are compiler estimates, not measured
+occupancy. No handwritten ISA was retained: portable arithmetic and launch/buffer
+changes clear the measured gate; architecture-specific specialization remains C19.
+
+## Pause, validation and limits
+
+The [baseline pause run](baselines/C17_PAUSE_BASELINE.json) and
+[final pause run](baselines/C17_PAUSE.json) each take five measured warm samples
+after excluding startup, for small/default xpoint and BSGS geometry. Baseline
+median request-to-durably-paused times are 0.628/0.624 ms for xpoint and
+0.803/1.059 ms for BSGS. C17 medians are 0.456/0.534 ms and 0.404/0.415 ms; its
+maximum observed value is 0.774 ms. These are separate finite sample runs, not
+alternating latency pairs or universal response-time limits. Every saved interval
+union agrees with the stopped owner's accepted coverage, and journal checks pass.
+
+The [acceptance manifest](baselines/C17_VALIDATION.json) records **33/33 CPU
+release, 59/59 HIP/coordinator, 8/8 focused debug and 6/6 focused address/undefined
+sanitizer tests**, all passing. Debug/sanitizer gates include the changed portable
+arithmetic and checkpoint paths. HIP regression validation used the same one
+visible SPX/NPS1 device; concurrent CPU checks started only after timing, pause
+and profiling finished. Source and binary hashes match the final frozen build.
+
+The [evidence check](baselines/C17_EVIDENCE_CHECK.json) independently recalculates
+1,388 paired statistic distributions, verifies 1,401 command stdout/stderr hash
+pairs and 20 profiler artifacts, and checks all final production source hashes.
+[Raw logs and compiler artifacts](baselines/C17_RAW_LOGS.tar.gz) retain 2,913
+files under their `keyhunt-c17-*` temporary-directory prefixes, including the
+validation/check scripts and frozen snapshot metadata. Runtime journals, table
+caches and executable copies are excluded. Report paths map to the matching
+archive prefixes; rebuild executable snapshots from their recorded commits,
+source hashes and compile flags before repeating performance trials.
+
+C17 closes the standalone performance findings A12/A13/A14 and diagnostic A19.
+It does not establish a global hardware optimum, sustained multi-hour rates,
+multi-GPU scaling, CUDA performance or supervisor-level throughput. Existing
+A16/A17/A18 supervisor lifecycle findings remain tracked in the
+[C15 audit](audits/C15_AUDIT.md); standalone pause validation does not close them.
+Broader ISA specializations, cooperative inversion/group-size experiments and
+multiple-device scheduling retain their own gates.

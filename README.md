@@ -143,7 +143,8 @@ process exit as proof of saved search progress or exact coverage.
 - [x] C14: graceful local pause/resume, signals, inspection and device-independent restart.
 - [x] C15: authenticated coordination, durable machine sync, offline leases and localhost validation.
 - [x] C16: [reproducible GPU profiling and durability benchmarks](docs/GPU_PROFILING.md).
-- [ ] C17–C20: measured tuning, native CUDA, validated assembly and multiple GPUs.
+- [x] C17: [measured HIP arithmetic, buffer and overflow tuning](docs/HIP_TUNING.md).
+- [ ] C18–C20: native CUDA, validated assembly and multiple GPUs.
 - [ ] C21–C23: operations guides, offline assignments and further GPU modes.
 
 See [implementation status](docs/IMPLEMENTATION_STATUS.md) for evidence and

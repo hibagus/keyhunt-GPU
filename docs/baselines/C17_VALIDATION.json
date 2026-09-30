@@ -1,0 +1,217 @@
+{
+  "milestone": "C17",
+  "recorded_utc": "2026-09-30T19:03:48.451464+00:00",
+  "source_commit": "863da3da8d8a8b283b2c3876cb7ff0f7203913df",
+  "implementation_commits": [
+    "5b4bf32 perf: add alternating frozen-build HIP tuning trials",
+    "b5753be perf: eliminate xpoint register spills with actual launch bounds",
+    "4ddb5e3 perf: specialize cached affine additions where search kernels improve",
+    "daa2622 test: compare the direct xpoint reference in paired tuning trials",
+    "5a017e9 perf: invert the secp256k1 field with a short verified addition chain",
+    "09c5084 docs: preserve independent C16 profiling and dispatch audit",
+    "d928e90 perf: bound candidate transfers by exact possible match counts",
+    "6b72e65 test: measure overflow recovery after a dense target prefix",
+    "5a80167 perf: restore large xpoint batches after sparse overflow recovery",
+    "863da3d fix: retain all durable BSGS dispatch groups and their costs"
+  ],
+  "binary_sha256": "1fe9412d0a0d6f9614462a35bb9fa9650e1b9a3f97ae31cf83c4c28908e1f013",
+  "visibility": {
+    "HIP_VISIBLE_DEVICES": "1"
+  },
+  "tests": {
+    "cpu": {
+      "passed": 33,
+      "failed": 0,
+      "command": [
+        "ctest",
+        "--test-dir",
+        "build/cpu-release",
+        "--output-on-failure"
+      ],
+      "wall_seconds": 62.19364317902364,
+      "output": "Internal ctest changing into directory: /home/bagus/keyhunt-GPU/build/cpu-release\nTest project /home/bagus/keyhunt-GPU/build/cpu-release\n      Start  1: gpu_benchmark_metrics\n 1/33 Test  #1: gpu_benchmark_metrics ............   Passed    0.04 sec\n      Start  2: gpu_benchmark_pairs\n 2/33 Test  #2: gpu_benchmark_pairs ..............   Passed    0.05 sec\n      Start  3: oracle_selftest\n 3/33 Test  #3: oracle_selftest ..................   Passed    0.88 sec\n      Start  4: cpu_field_oracle\n 4/33 Test  #4: cpu_field_oracle .................   Passed    0.25 sec\n      Start  5: cpu_point_oracle\n 5/33 Test  #5: cpu_point_oracle .................   Passed    0.68 sec\n      Start  6: bounded_search_oracle\n 6/33 Test  #6: bounded_search_oracle ............   Passed    1.64 sec\n      Start  7: portable_field_oracle\n 7/33 Test  #7: portable_field_oracle ............   Passed    0.31 sec\n      Start  8: portable_point_oracle\n 8/33 Test  #8: portable_point_oracle ............   Passed    1.31 sec\n      Start  9: xpoint_search_contract\n 9/33 Test  #9: xpoint_search_contract ...........   Passed    0.09 sec\n      Start 10: xpoint_cli\n10/33 Test #10: xpoint_cli .......................   Passed    0.08 sec\n      Start 11: bsgs_table_contract\n11/33 Test #11: bsgs_table_contract ..............   Passed    0.31 sec\n      Start 12: bsgs_table_oracle\n12/33 Test #12: bsgs_table_oracle ................   Passed    1.62 sec\n      Start 13: bsgs_table_devices\n13/33 Test #13: bsgs_table_devices ...............   Passed    0.08 sec\n      Start 14: bsgs_search_contract\n14/33 Test #14: bsgs_search_contract .............   Passed    0.14 sec\n      Start 15: bsgs_cli\n15/33 Test #15: bsgs_cli .........................   Passed    0.08 sec\n      Start 16: storage_database\n16/33 Test #16: storage_database .................   Passed    0.05 sec\n      Start 17: storage_journal\n17/33 Test #17: storage_journal ..................   Passed    0.62 sec\n      Start 18: storage_concurrency\n18/33 Test #18: storage_concurrency ..............   Passed    0.14 sec\n      Start 19: state_cli\n19/33 Test #19: state_cli ........................   Passed    0.58 sec\n      Start 20: storage_checkpoint\n20/33 Test #20: storage_checkpoint ...............   Passed    3.69 sec\n      Start 21: storage_checkpoint_failures\n21/33 Test #21: storage_checkpoint_failures ......   Passed    2.93 sec\n      Start 22: checkpoint_cli\n22/33 Test #22: checkpoint_cli ...................   Passed    0.63 sec\n      Start 23: storage_checkpoint_control\n23/33 Test #23: storage_checkpoint_control .......   Passed    2.55 sec\n      Start 24: checkpoint_controls\n24/33 Test #24: checkpoint_controls ..............   Passed    4.27 sec\n      Start 25: hip_discovery_contract\n25/33 Test #25: hip_discovery_contract ...........   Passed    0.13 sec\n      Start 26: backend_cli\n26/33 Test #26: backend_cli ......................   Passed    0.05 sec\n      Start 27: exact_range\n27/33 Test #27: exact_range ......................   Passed    0.00 sec\n      Start 28: block_grid\n28/33 Test #28: block_grid .......................   Passed    0.09 sec\n      Start 29: work_unit\n29/33 Test #29: work_unit ........................   Passed    0.04 sec\n      Start 30: range_oracle\n30/33 Test #30: range_oracle .....................   Passed    1.85 sec\n      Start 31: result_verifier\n31/33 Test #31: result_verifier ..................   Passed    0.03 sec\n      Start 32: cpu_baseline\n32/33 Test #32: cpu_baseline .....................   Passed   28.40 sec\n      Start 33: target_loading\n33/33 Test #33: target_loading ...................   Passed    8.52 sec\n\n100% tests passed, 0 tests failed out of 33\n\nLabel Time Summary:\narithmetic    =   1.61 sec*proc (2 tests)\nbackend       =   0.42 sec*proc (5 tests)\nbaseline      =  28.40 sec*proc (1 test)\nbenchmark     =   0.10 sec*proc (2 tests)\nbsgs          =   2.23 sec*proc (5 tests)\ncli           =   5.48 sec*proc (3 tests)\ncore          =  10.78 sec*proc (8 tests)\ncpu           =  62.15 sec*proc (33 tests)\noracle        =   6.69 sec*proc (7 tests)\nranges        =   1.99 sec*proc (4 tests)\nrecovery      =  13.58 sec*proc (5 tests)\nscheduler     =   0.76 sec*proc (2 tests)\nstorage       =  15.46 sec*proc (9 tests)\ntables        =   1.93 sec*proc (2 tests)\nxpoint        =   0.18 sec*proc (2 tests)\n\nTotal Test time (real) =  62.18 sec\n"
+    },
+    "hip": {
+      "passed": 59,
+      "failed": 0,
+      "command": [
+        "ctest",
+        "--test-dir",
+        "build/hip-release",
+        "--output-on-failure"
+      ],
+      "wall_seconds": 342.4758150789421,
+      "output": "Internal ctest changing into directory: /home/bagus/keyhunt-GPU/build/hip-release\nTest project /home/bagus/keyhunt-GPU/build/hip-release\n      Start  1: gpu_benchmark_metrics\n 1/59 Test  #1: gpu_benchmark_metrics ............   Passed    0.04 sec\n      Start  2: gpu_benchmark_pairs\n 2/59 Test  #2: gpu_benchmark_pairs ..............   Passed    0.05 sec\n      Start  3: oracle_selftest\n 3/59 Test  #3: oracle_selftest ..................   Passed    0.87 sec\n      Start  4: cpu_field_oracle\n 4/59 Test  #4: cpu_field_oracle .................   Passed    0.25 sec\n      Start  5: cpu_point_oracle\n 5/59 Test  #5: cpu_point_oracle .................   Passed    0.68 sec\n      Start  6: bounded_search_oracle\n 6/59 Test  #6: bounded_search_oracle ............   Passed    1.64 sec\n      Start  7: portable_field_oracle\n 7/59 Test  #7: portable_field_oracle ............   Passed    0.31 sec\n      Start  8: hip_field_oracle\n 8/59 Test  #8: hip_field_oracle .................   Passed    6.82 sec\n      Start  9: portable_point_oracle\n 9/59 Test  #9: portable_point_oracle ............   Passed    1.31 sec\n      Start 10: hip_point_oracle\n10/59 Test #10: hip_point_oracle .................   Passed    4.48 sec\n      Start 11: hip_arithmetic_devices\n11/59 Test #11: hip_arithmetic_devices ...........   Passed    0.71 sec\n      Start 12: xpoint_search_contract\n12/59 Test #12: xpoint_search_contract ...........   Passed    0.10 sec\n      Start 13: hip_xpoint_failures\n13/59 Test #13: hip_xpoint_failures ..............   Passed    0.88 sec\n      Start 14: hip_xpoint_executor\n14/59 Test #14: hip_xpoint_executor ..............   Passed    0.74 sec\n      Start 15: xpoint_cli\n15/59 Test #15: xpoint_cli .......................   Passed   24.40 sec\n      Start 16: xpoint_cli_direct\n16/59 Test #16: xpoint_cli_direct ................   Passed   24.24 sec\n      Start 17: bsgs_table_contract\n17/59 Test #17: bsgs_table_contract ..............   Passed    0.31 sec\n      Start 18: bsgs_table_oracle\n18/59 Test #18: bsgs_table_oracle ................   Passed    2.88 sec\n      Start 19: hip_bsgs_table\n19/59 Test #19: hip_bsgs_table ...................   Passed    0.64 sec\n      Start 20: bsgs_table_devices\n20/59 Test #20: bsgs_table_devices ...............   Passed    1.87 sec\n      Start 21: hip_bsgs_failures\n21/59 Test #21: hip_bsgs_failures ................   Passed    0.65 sec\n      Start 22: bsgs_search_contract\n22/59 Test #22: bsgs_search_contract .............   Passed    0.14 sec\n      Start 23: hip_bsgs_search\n23/59 Test #23: hip_bsgs_search ..................   Passed    0.83 sec\n      Start 24: hip_bsgs_search_failures\n24/59 Test #24: hip_bsgs_search_failures .........   Passed    1.01 sec\n      Start 25: bsgs_cli\n25/59 Test #25: bsgs_cli .........................   Passed   55.86 sec\n      Start 26: bsgs_cli_single\n26/59 Test #26: bsgs_cli_single ..................   Passed   55.71 sec\n      Start 27: bsgs_cli_grouped\n27/59 Test #27: bsgs_cli_grouped .................   Passed   53.96 sec\n      Start 28: storage_database\n28/59 Test #28: storage_database .................   Passed    0.05 sec\n      Start 29: storage_journal\n29/59 Test #29: storage_journal ..................   Passed    0.62 sec\n      Start 30: storage_concurrency\n30/59 Test #30: storage_concurrency ..............   Passed    0.15 sec\n      Start 31: state_cli\n31/59 Test #31: state_cli ........................   Passed    1.51 sec\n      Start 32: storage_checkpoint\n32/59 Test #32: storage_checkpoint ...............   Passed    3.67 sec\n      Start 33: storage_checkpoint_failures\n33/59 Test #33: storage_checkpoint_failures ......   Passed    2.91 sec\n      Start 34: checkpoint_cli\n34/59 Test #34: checkpoint_cli ...................   Passed   23.29 sec\n      Start 35: storage_checkpoint_control\n35/59 Test #35: storage_checkpoint_control .......   Passed    2.55 sec\n      Start 36: checkpoint_controls\n36/59 Test #36: checkpoint_controls ..............   Passed    4.55 sec\n      Start 37: checkpoint_pause_hip\n37/59 Test #37: checkpoint_pause_hip .............   Passed    6.92 sec\n      Start 38: coordinator_registry\n38/59 Test #38: coordinator_registry .............   Passed    0.11 sec\n      Start 39: coordinator_tls\n39/59 Test #39: coordinator_tls ..................   Passed    0.59 sec\n      Start 40: coordinator_sync\n40/59 Test #40: coordinator_sync .................   Passed    0.32 sec\n      Start 41: coordinator_sync_failures\n41/59 Test #41: coordinator_sync_failures ........   Passed    0.67 sec\n      Start 42: coordinator_worker\n42/59 Test #42: coordinator_worker ...............   Passed    0.38 sec\n      Start 43: coordinator_worker_failures\n43/59 Test #43: coordinator_worker_failures ......   Passed    1.20 sec\n      Start 44: coordinator_https_worker\n44/59 Test #44: coordinator_https_worker .........   Passed    5.96 sec\n      Start 45: coordinator_recovery\n45/59 Test #45: coordinator_recovery .............   Passed    0.41 sec\n      Start 46: coordinator_local_launcher\n46/59 Test #46: coordinator_local_launcher .......   Passed    0.67 sec\n      Start 47: coordinator_budget\n47/59 Test #47: coordinator_budget ...............   Passed    0.35 sec\n      Start 48: hip_discovery_contract\n48/59 Test #48: hip_discovery_contract ...........   Passed    0.12 sec\n      Start 49: hip_failures\n49/59 Test #49: hip_failures .....................   Passed    0.59 sec\n      Start 50: hip_executor\n50/59 Test #50: hip_executor .....................   Passed    0.60 sec\n      Start 51: hip_partitions\n51/59 Test #51: hip_partitions ...................   Passed    1.56 sec\n      Start 52: backend_cli\n52/59 Test #52: backend_cli ......................   Passed    1.43 sec\n      Start 53: exact_range\n53/59 Test #53: exact_range ......................   Passed    0.00 sec\n      Start 54: block_grid\n54/59 Test #54: block_grid .......................   Passed    0.09 sec\n      Start 55: work_unit\n55/59 Test #55: work_unit ........................   Passed    0.04 sec\n      Start 56: range_oracle\n56/59 Test #56: range_oracle .....................   Passed    1.86 sec\n      Start 57: result_verifier\n57/59 Test #57: result_verifier ..................   Passed    0.03 sec\n      Start 58: cpu_baseline\n58/59 Test #58: cpu_baseline .....................   Passed   29.08 sec\n      Start 59: target_loading\n59/59 Test #59: target_loading ...................   Passed    8.77 sec\n\n100% tests passed, 0 tests failed out of 59\n\nLabel Time Summary:\narithmetic     =  13.62 sec*proc (5 tests)\nbackend        =   1.55 sec*proc (2 tests)\nbaseline       =  29.08 sec*proc (1 test)\nbenchmark      =   0.10 sec*proc (2 tests)\nbsgs           = 173.85 sec*proc (11 tests)\nbudget         =   0.35 sec*proc (1 test)\ncli            =  36.27 sec*proc (4 tests)\ncoordinator    =  10.66 sec*proc (10 tests)\ncore           =  11.03 sec*proc (8 tests)\ncpu            =  69.27 sec*proc (37 tests)\nhardware       = 273.14 sec*proc (22 tests)\nhip            = 273.14 sec*proc (22 tests)\nintegration    =   7.22 sec*proc (3 tests)\noracle         = 234.10 sec*proc (15 tests)\npartitions     =   1.56 sec*proc (1 test)\nranges         =   1.99 sec*proc (4 tests)\nrecovery       =  47.02 sec*proc (12 tests)\nscheduler      =   0.77 sec*proc (2 tests)\nsecurity       =   0.70 sec*proc (2 tests)\nstorage        =  46.23 sec*proc (10 tests)\ntables         =   6.35 sec*proc (5 tests)\nxpoint         =  50.35 sec*proc (5 tests)\n\nTotal Test time (real) = 342.44 sec\n"
+    },
+    "debug": {
+      "passed": 8,
+      "failed": 0,
+      "command": [
+        "ctest",
+        "--test-dir",
+        "build/cpu-debug",
+        "--output-on-failure",
+        "-R",
+        "^(gpu_benchmark_metrics|gpu_benchmark_pairs|portable_(field|point)_oracle|storage_checkpoint|storage_checkpoint_failures|storage_checkpoint_control|checkpoint_cli)$"
+      ],
+      "wall_seconds": 26.748887120047584,
+      "output": "Internal ctest changing into directory: /home/bagus/keyhunt-GPU/build/cpu-debug\nTest project /home/bagus/keyhunt-GPU/build/cpu-debug\n    Start  1: gpu_benchmark_metrics\n1/8 Test  #1: gpu_benchmark_metrics ............   Passed    0.04 sec\n    Start  2: gpu_benchmark_pairs\n2/8 Test  #2: gpu_benchmark_pairs ..............   Passed    0.05 sec\n    Start  7: portable_field_oracle\n3/8 Test  #7: portable_field_oracle ............   Passed    0.77 sec\n    Start  8: portable_point_oracle\n4/8 Test  #8: portable_point_oracle ............   Passed    2.27 sec\n    Start 20: storage_checkpoint\n5/8 Test #20: storage_checkpoint ...............   Passed    9.15 sec\n    Start 21: storage_checkpoint_failures\n6/8 Test #21: storage_checkpoint_failures ......   Passed    6.90 sec\n    Start 22: checkpoint_cli\n7/8 Test #22: checkpoint_cli ...................   Passed    1.27 sec\n    Start 23: storage_checkpoint_control\n8/8 Test #23: storage_checkpoint_control .......   Passed    6.24 sec\n\n100% tests passed, 0 tests failed out of 8\n\nLabel Time Summary:\narithmetic    =   3.04 sec*proc (2 tests)\nbenchmark     =   0.10 sec*proc (2 tests)\ncli           =   1.27 sec*proc (1 test)\ncpu           =  26.69 sec*proc (8 tests)\noracle        =   3.04 sec*proc (2 tests)\nrecovery      =  22.29 sec*proc (3 tests)\nstorage       =  23.56 sec*proc (4 tests)\n\nTotal Test time (real) =  26.71 sec\n"
+    },
+    "sanitizers": {
+      "passed": 6,
+      "failed": 0,
+      "command": [
+        "ctest",
+        "--test-dir",
+        "build/cpu-sanitizers",
+        "--output-on-failure",
+        "-R",
+        "^(gpu_benchmark_metrics|gpu_benchmark_pairs|portable_(field|point)_oracle|storage_checkpoint|storage_checkpoint_control)$"
+      ],
+      "wall_seconds": 32.505721376976,
+      "output": "Internal ctest changing into directory: /home/bagus/keyhunt-GPU/build/cpu-sanitizers\nTest project /home/bagus/keyhunt-GPU/build/cpu-sanitizers\n    Start  1: gpu_benchmark_metrics\n1/6 Test  #1: gpu_benchmark_metrics ............   Passed    0.04 sec\n    Start  2: gpu_benchmark_pairs\n2/6 Test  #2: gpu_benchmark_pairs ..............   Passed    0.05 sec\n    Start  7: portable_field_oracle\n3/6 Test  #7: portable_field_oracle ............   Passed    1.43 sec\n    Start  8: portable_point_oracle\n4/6 Test  #8: portable_point_oracle ............   Passed    4.56 sec\n    Start 20: storage_checkpoint\n5/6 Test #20: storage_checkpoint ...............   Passed   15.42 sec\n    Start 23: storage_checkpoint_control\n6/6 Test #23: storage_checkpoint_control .......   Passed   10.95 sec\n\n100% tests passed, 0 tests failed out of 6\n\nLabel Time Summary:\narithmetic    =   5.99 sec*proc (2 tests)\nbenchmark     =   0.10 sec*proc (2 tests)\ncpu           =  32.45 sec*proc (6 tests)\noracle        =   5.99 sec*proc (2 tests)\nrecovery      =  26.37 sec*proc (2 tests)\nstorage       =  26.37 sec*proc (2 tests)\n\nTotal Test time (real) =  32.47 sec\n"
+    }
+  },
+  "commands": {
+    "profile": {
+      "command": [
+        "python3",
+        "tools/profile_gpu.py",
+        "--benchmark",
+        "/tmp/keyhunt-c17-groups-live/report.json",
+        "--case",
+        "bsgs-no-match-32",
+        "--output-dir",
+        "/tmp/keyhunt-c17-final-profile",
+        "--resources"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 29.399146905867383,
+      "log": "/tmp/keyhunt-c17-final-profile.log"
+    },
+    "hip-tests": {
+      "command": [
+        "ctest",
+        "--test-dir",
+        "build/hip-release",
+        "--output-on-failure"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 342.4758150789421,
+      "log": "/tmp/keyhunt-c17-hip-tests.log"
+    },
+    "cpu-release-build": {
+      "command": [
+        "cmake",
+        "--build",
+        "build/cpu-release",
+        "-j8"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 9.977048058994114,
+      "log": "/tmp/keyhunt-c17-cpu-release-build.log"
+    },
+    "cpu-release-tests": {
+      "command": [
+        "ctest",
+        "--test-dir",
+        "build/cpu-release",
+        "--output-on-failure"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 62.19364317902364,
+      "log": "/tmp/keyhunt-c17-cpu-release-tests.log"
+    },
+    "cpu-debug-build": {
+      "command": [
+        "cmake",
+        "--build",
+        "build/cpu-debug",
+        "-j8"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 5.872189949033782,
+      "log": "/tmp/keyhunt-c17-cpu-debug-build.log"
+    },
+    "cpu-debug-tests": {
+      "command": [
+        "ctest",
+        "--test-dir",
+        "build/cpu-debug",
+        "--output-on-failure",
+        "-R",
+        "^(gpu_benchmark_metrics|gpu_benchmark_pairs|portable_(field|point)_oracle|storage_checkpoint|storage_checkpoint_failures|storage_checkpoint_control|checkpoint_cli)$"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 26.748887120047584,
+      "log": "/tmp/keyhunt-c17-cpu-debug-tests.log"
+    },
+    "cpu-sanitizers-build": {
+      "command": [
+        "cmake",
+        "--build",
+        "build/cpu-sanitizers",
+        "-j8"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 9.276913043111563,
+      "log": "/tmp/keyhunt-c17-cpu-sanitizers-build.log"
+    },
+    "cpu-sanitizers-tests": {
+      "command": [
+        "ctest",
+        "--test-dir",
+        "build/cpu-sanitizers",
+        "--output-on-failure",
+        "-R",
+        "^(gpu_benchmark_metrics|gpu_benchmark_pairs|portable_(field|point)_oracle|storage_checkpoint|storage_checkpoint_control)$"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 32.505721376976,
+      "log": "/tmp/keyhunt-c17-cpu-sanitizers-tests.log"
+    }
+  },
+  "scope": "One gfx942 MI300X SPX/NPS1 logical device; unreserved host. CPU regressions ran concurrently with HIP correctness tests only, after isolated performance, pause and profiling runs.",
+  "archive": {
+    "file": "docs/baselines/C17_RAW_LOGS.tar.gz",
+    "files": 2913,
+    "bytes": 5687211,
+    "sha256": "4113b9c9b2e4adc7b77281aec4a6e5455889f43bd4261820dd32f731b759d5f2",
+    "excludes": [
+      "runtime journals",
+      "table caches",
+      "executables"
+    ]
+  },
+  "harness_sha256": {
+    "tools/benchmark_gpu_pair.py": "0ac8255b2533ec69750b405e8c1cc19e3c8519931d38a0084b624786bb45c50a",
+    "tools/benchmark_gpu.py": "f0250e5a468b46eef6620eadffda2712a78ebaa269c968b16daa9e010081935a",
+    "benchmarks/gpu_metrics.py": "1b361c150edc393bee6aff66b6c0258b029278eb1cf6ce4fc3e0532e899e7a80",
+    "tools/profile_gpu.py": "8f1f82753268027ff8619fbec2ab9197cd5bfb3db468c025d3a8fffdc38d5e4a",
+    "tools/measure_c14_pause.py": "ca3f1d211ed48a5f4f1a9d12a5ab96ea3f8bd59afa34d120e6bc13ff3fbf8d99"
+  },
+  "evidence_sha256": {
+    "C17_CAPACITY.json": "33222168d37cea4451c3885cc46332f5df85446667658b98e9c0649d9537d3c0",
+    "C17_CAPACITY_LARGE.json": "d20a650ffeac00bc868b499134a9d9b0a8c9b0e4eb7b6329c370701a752f3989",
+    "C17_EVIDENCE_CHECK.json": "21582449527dd785b54c03004e041d703745ed1df9cb0e99feff2d45b5ede4ee",
+    "C17_GROUPS.json": "504377f806d97223d0d280bfb5d57dc72a67185fc9d23752d0d1b7b5a5d7ba42",
+    "C17_INVERSE.json": "1a7a4c993ccc756957aaf3b46a6cd5b1a256a2403482fb6efe815864b1cefef0",
+    "C17_INVERSE_BSGS_SEARCH_RESOURCES.log": "211496644127a2bf4036a33056a5997aa54c99cf7dd15209212910c42d9b0631",
+    "C17_INVERSE_DIRECT.json": "9a91e97d67de0a8ef96d5e8bd18f0b75e21fb6d5a3adcfd29e06d206009753ab",
+    "C17_INVERSE_XPOINT_RESOURCES.log": "eeb96799e1fd7f119317d40c2cc22c22a41bc360371045e31a50244db565b01c",
+    "C17_LAUNCH.json": "18badffb0df93d717a06b9c044ac36673e37f43f97f598a0cb768e3983561780",
+    "C17_LAUNCH_RESOURCES.log": "7461271fcdd19e7ede5b214fad76199d18614bd16d0eec2844b671942fce4279",
+    "C17_MEASUREMENTS.json": "c1618deb9e13a1abc8b7dc22395381c74ddde4779cda9136c384d1144b2905c6",
+    "C17_MIXED.json": "1a06790434ef8a19ffea74edfea8ec237f7515ade0c6c4d9cb60c6c0ab2f8f68",
+    "C17_MIXED_BSGS_SEARCH_RESOURCES.log": "cb042bda8a51a3d768112b7ac94fb50619c8053ad3fb201282449010650608d5",
+    "C17_MIXED_REJECTED.json": "22655bf0ef2954b4a6eba6901e59dbeba1e05c06179a3e33981a0f4064efe604",
+    "C17_MIXED_REJECTED.patch": "853d81acc11947f373ef2202b053b50e29850ec4a36790365245ff1298a376eb",
+    "C17_MIXED_XPOINT_RESOURCES.log": "9bd010c2a7288159701757a8b283dc73f78b86189ff8a34b4874c50cd235db19",
+    "C17_PAUSE.json": "c0ce91ce57cdca9a4c662cc6db20d62c0db4c4f7e5ae957a9090e0b060d18110",
+    "C17_PAUSE_BASELINE.json": "6b784831101a997b8026a16e094f8f7b31f9ea4590614c3a06ad0075b20ac4a4",
+    "C17_PROFILES.json": "6be782babc14338124d723305bf69512c4fd4f1def4e5cd182ab7b1e1558c2a0",
+    "C17_RAW_LOGS.tar.gz": "4113b9c9b2e4adc7b77281aec4a6e5455889f43bd4261820dd32f731b759d5f2",
+    "C17_RECOVERY.json": "04c770cf6d0d74d6afa4fa2d135826f9484c2e733bb4b85fc908a31342e40023"
+  },
+  "passed": true
+}

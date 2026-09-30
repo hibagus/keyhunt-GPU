@@ -1,0 +1,189 @@
+--- a/kernels/common/point.h
++++ b/kernels/common/point.h
+@@ -96,10 +96,26 @@
+     out = result;
+ }
+ KEYHUNT_HD inline void point_add_mixed(Point& out, const Point& a, const Affine& b) {
+-    // Use the complete general path first; a tuned mixed formula can replace it
+-    // only after identical exceptional/aliasing cases and workload measurements.
+-    const Point right = from_affine(b);
+-    point_add(out,a,right);
++    if (b.infinity) { out = is_infinity(a) ? Point{} : a; return; }
++    if (is_infinity(a)) { out = from_affine(b); return; }
++    // The affine operand has Z=1. Specializing the general formula removes
++    // four multiplies and one square, without losing equal/opposite handling.
++    // Keep the result separate until all reads of a (possibly out) are done.
++    Field zz,u2,s2,h,r,hh,hhh,v,temp;
++    square(zz,a.z); mul(u2,b.x,zz);
++    mul(s2,b.y,a.z); mul(s2,s2,zz);
++    sub(h,u2,a.x); sub(r,s2,a.y);
++    if (is_zero(h)) {
++        if (is_zero(r)) point_double(out,a);
++        else out = Point{};
++        return;
++    }
++    square(hh,h); mul(hhh,hh,h); mul(v,a.x,hh);
++    Point result;
++    square(result.x,r); sub(result.x,result.x,hhh); add(temp,v,v); sub(result.x,result.x,temp);
++    sub(temp,v,result.x); mul(result.y,r,temp); mul(temp,a.y,hhh); sub(result.y,result.y,temp);
++    mul(result.z,a.z,h);
++    out = result;
+ }
+ KEYHUNT_HD inline void point_multiply(Point& out, const Point& point, const Scalar& scalar) {
+     Point result{};
+--- a/kernels/hip/xpoint.h
++++ b/kernels/hip/xpoint.h
+@@ -61,7 +61,7 @@
+ // Disjoint lane groups cover [0,count) exactly, including the final partial group.
+ constexpr unsigned xpoint_group = 8;
+ template<bool SmallTargets>
+-__global__ __launch_bounds__(128) void xpoint_stepped(Point base, uint64_t count, const Point* powers,
++__global__ __launch_bounds__(128) void xpoint_stepped(Point base, uint64_t count, const Affine* powers,
+     const Field* targets, uint32_t target_count, core::XPointCandidate* output,
+     uint32_t capacity, XPointCounters* counters) {
+     const uint64_t first = (uint64_t(blockIdx.x)*blockDim.x+threadIdx.x)*xpoint_group;
+@@ -69,7 +69,7 @@
+     const unsigned steps = unsigned(count-first < xpoint_group ? count-first : xpoint_group);
+     Point current = base;
+     for (unsigned bit=0;bit<20;++bit)
+-        if ((first >> bit)&1) point_add(current,current,powers[bit]);
++        if ((first >> bit)&1) point_add_mixed(current,current,powers[bit]);
+     Field xs[xpoint_group], zs[xpoint_group];
+     for (unsigned i=0;i<steps;++i) {
+         if (is_infinity(current)) { atomicExch(&counters->invalid,1U); return; }
+@@ -85,7 +85,7 @@
+         } else {
+             xs[i] = current.x; zs[i] = current.z;
+         }
+-        if (i+1 < steps) point_add(current,current,powers[0]);
++        if (i+1 < steps) point_add_mixed(current,current,powers[0]);
+     }
+     if constexpr (!SmallTargets) {
+         // One Fermat inversion for the whole lane group. Only X and Z are kept;
+--- a/src/backend/hip/xpoint.hip
++++ b/src/backend/hip/xpoint.hip
+@@ -22,7 +22,7 @@
+     hipStream_t stream = nullptr;
+     hipEvent_t start = nullptr, kernel_done = nullptr, done = nullptr;
+     gpu::Field* device_targets = nullptr;
+-    gpu::Point* device_powers = nullptr;
++    gpu::Affine* device_powers = nullptr;
+     size_t powers_bytes = 0;
+     double seed_ms = 0;
+     core::XPointCandidate *device_output = nullptr, *host_output = nullptr;
+@@ -38,7 +38,7 @@
+             throw std::invalid_argument("xpoint candidate capacity must be in [1, 1048576]");
+         if (options.kernel != XPointKernel::Direct && options.kernel != XPointKernel::Stepped)
+             throw std::invalid_argument("unsupported HIP xpoint kernel");
+-        powers_bytes = options.kernel == XPointKernel::Stepped ? 20*sizeof(gpu::Point) : 0;
++        powers_bytes = options.kernel == XPointKernel::Stepped ? 20*sizeof(gpu::Affine) : 0;
+         output_bytes = (uint64_t(options.candidate_capacity)+1)*sizeof(*device_output);
+         target_bytes = targets.values().size()*sizeof(gpu::Field);
+         DeviceScope selected(device);
+@@ -70,8 +70,12 @@
+             // batches use only this executor's nonblocking stream and pinned buffers.
+             hip_check(hipMemcpy(device_targets,upload.data(),target_bytes,hipMemcpyHostToDevice),"hipMemcpy(targets)");
+             if (powers_bytes) {
+-                gpu::Point powers[20];
+-                for (unsigned bit=0;bit<20;++bit) powers[bit] = seed(core::UInt256::power_of_two(bit));
++                // CPU-derived powers are finite affine points; omit the redundant Z.
++                gpu::Affine powers[20];
++                for (unsigned bit=0;bit<20;++bit) {
++                    const auto point = seed(core::UInt256::power_of_two(bit));
++                    powers[bit] = {point.x,point.y,false};
++                }
+                 hip_check(hipMalloc(&device_powers,powers_bytes),"hipMalloc(powers)");
+                 hip_check(hipMemcpy(device_powers,powers,powers_bytes,hipMemcpyHostToDevice),"hipMemcpy(powers)");
+             }
+--- a/kernels/hip/bsgs_search.h
++++ b/kernels/hip/bsgs_search.h
+@@ -15,20 +15,20 @@
+ // All launch sites use 128 threads. Exposing that bound lets gfx942 allocate
+ // registers for this block size instead of spilling for hypothetical larger blocks.
+ static __global__ __launch_bounds__(128) void bsgs_search(Point negative_start,uint64_t giants,uint64_t last_babies,
+-    const Point* targets,uint32_t first_target,const Point* powers,bsgs::View table,
++    const Affine* targets,uint32_t first_target,const Affine* powers,bsgs::View table,
+     core::BsgsCandidate* output,uint32_t capacity,BsgsCounters* counters) {
+     const uint64_t first=(uint64_t(blockIdx.x)*blockDim.x+threadIdx.x)*Group;
+     if (first>=giants) return;
+     const uint32_t target=first_target+blockIdx.y;
+     const unsigned count=unsigned(giants-first<Group?giants-first:Group);
+     Point current;
+-    point_add(current,targets[target],negative_start);
++    point_add_mixed(current,negative_start,targets[target]);
+     for (unsigned bit=0;bit<20;++bit)
+-        if ((first>>bit)&1) point_add(current,current,powers[bit]);
++        if ((first>>bit)&1) point_add_mixed(current,current,powers[bit]);
+     Field xs[Group],ys[Group],zs[Group];
+     for (unsigned i=0;i<count;++i) {
+         xs[i]=current.x; ys[i]=current.y; zs[i]=current.z;
+-        if (i+1<count) point_add(current,current,powers[0]);
++        if (i+1<count) point_add_mixed(current,current,powers[0]);
+     }
+     if constexpr (Group==1) inverse(zs[0],zs[0]);
+     else batch_inverse<Group>(zs,zs,count);
+--- a/src/backend/hip/bsgs_search.hip
++++ b/src/backend/hip/bsgs_search.hip
+@@ -26,8 +26,8 @@
+     std::optional<core::BsgsBatch> batch;
+     hipStream_t stream = nullptr;
+     hipEvent_t start = nullptr, kernel_done = nullptr, done = nullptr;
+-    gpu::Point* device_targets = nullptr;
+-    gpu::Point* device_powers = nullptr;
++    gpu::Affine* device_targets = nullptr;
++    gpu::Affine* device_powers = nullptr;
+     size_t powers_bytes = 0;
+     double seed_ms = 0;
+     core::BsgsCandidate *device_output = nullptr, *host_output = nullptr;
+@@ -43,12 +43,12 @@
+             throw std::invalid_argument("BSGS candidate capacity must be in [1,65536]");
+         if (options.group_size!=0 && options.group_size!=1 && options.group_size!=8)
+             throw std::invalid_argument("BSGS group size must be auto (0), 1 or 8");
+-        powers_bytes=20*sizeof(gpu::Point);
++        powers_bytes=20*sizeof(gpu::Affine);
+         output_bytes=(uint64_t(options.candidate_capacity)+1)*sizeof(*device_output);
+-        target_bytes=targets.values().size()*sizeof(gpu::Point);
++        target_bytes=targets.values().size()*sizeof(gpu::Affine);
+         // Conservative host peak covers the resident table, caller and owned
+         // targets, upload staging, copied candidates/results and pinned buffers.
+-        const uint64_t extra=2*targets.values().size()*(sizeof(gpu::Point)+sizeof(core::UncompressedPublicKey))
++        const uint64_t extra=2*targets.values().size()*(sizeof(gpu::Affine)+sizeof(core::UncompressedPublicKey))
+             +3*output_bytes+1024*1024;
+         if (extra>options.host_memory_bytes || table.memory().host_peak_bytes>options.host_memory_bytes-extra)
+             throw std::invalid_argument("BSGS search exceeds host memory budget");
+@@ -73,25 +73,27 @@
+             hip_check(hipMalloc(&device_count,sizeof(*device_count)),"bsgs hipMalloc(count)");
+             hip_check(hipHostMalloc(&host_output,output_bytes),"bsgs hipHostMalloc(output)");
+             hip_check(hipHostMalloc(&host_count,sizeof(*host_count)),"bsgs hipHostMalloc(count)");
+-            std::vector<gpu::Point> upload;
++            std::vector<gpu::Affine> upload;
+             upload.reserve(targets.values().size());
+             for (const auto& pub : targets.values()) upload.push_back(point(pub));
+             hip_check(hipMemcpy(device_targets,upload.data(),target_bytes,hipMemcpyHostToDevice),"bsgs hipMemcpy(targets)");
+-            gpu::Point powers[20];
++            // Seeds are affine: store only X/Y and use mixed addition in the kernel.
++            gpu::Affine powers[20];
+             for (unsigned bit=0;bit<20;++bit) {
+-                powers[bit]=seed(core::UInt256(table.memory().m).multiply(core::UInt256::power_of_two(bit)));
+-                gpu::point_negate(powers[bit],powers[bit]);
++                const auto value=seed(core::UInt256(table.memory().m).multiply(core::UInt256::power_of_two(bit)));
++                powers[bit]={value.x,value.y,false};
++                gpu::neg(powers[bit].y,powers[bit].y);
+             }
+             hip_check(hipMalloc(&device_powers,powers_bytes),"bsgs hipMalloc(powers)");
+             hip_check(hipMemcpy(device_powers,powers,powers_bytes,hipMemcpyHostToDevice),"bsgs hipMemcpy(powers)");
+         } catch (...) { release(); throw; }
+     }
+-    gpu::Point seed(const core::UInt256& scalar) const { return point(verifier.derive(scalar)); }
+-    static gpu::Point point(const core::UncompressedPublicKey& pub) {
+-        gpu::Point result;
++    gpu::Point seed(const core::UInt256& scalar) const { return gpu::from_affine(point(verifier.derive(scalar))); }
++    static gpu::Affine point(const core::UncompressedPublicKey& pub) {
++        gpu::Affine result;
+         if (!gpu::from_bytes_checked(result.x,pub.data()+1) || !gpu::from_bytes_checked(result.y,pub.data()+33))
+             throw std::runtime_error("noncanonical CPU seed point");
+-        result.z = gpu::one();
++        result.infinity = false;
+         return result;
+     }
+     ~Impl() {

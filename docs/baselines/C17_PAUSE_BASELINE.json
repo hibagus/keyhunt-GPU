@@ -1,0 +1,307 @@
+{
+  "recorded_utc": "2026-09-30T18:56:32.576160+00:00",
+  "binary_sha256": "a2823f7324012c7746f19340c29aa421483fdd9295fbccc668d7c411f8ae150e",
+  "oracle_commit": "0cdc758a56360bf58a851fe91085a327ec97685a",
+  "inventory": {
+    "backend": "hip",
+    "runtime_version": 71526333,
+    "driver_version": 71526333,
+    "devices": [
+      {
+        "ordinal": 0,
+        "name": "AMD Instinct MI300X",
+        "architecture": "gfx942:sramecc+:xnack-",
+        "uuid": "30393337633864376335303031303365",
+        "pci_bus_id": "0000:3d:00.0",
+        "physical_id": "0937c8d7c500103e",
+        "physical_id_source": "sysfs.unique_id",
+        "compute_partition": "SPX",
+        "memory_partition": "NPS1",
+        "memory_allocation_mode": "CAPPING",
+        "numa_node": 0,
+        "compute_units": 304,
+        "warp_size": 64,
+        "property_memory_bytes": 206141652992,
+        "total_memory_bytes": 206141652992,
+        "free_memory_bytes": 205533478912,
+        "warnings": []
+      }
+    ]
+  },
+  "samples": [
+    {
+      "mode": "xpoint",
+      "geometry": "small",
+      "options": [
+        "--batch-size",
+        "128"
+      ],
+      "targets": 4,
+      "bsgs_m": null,
+      "samples": [
+        {
+          "request_to_paused_ms": 0.627546,
+          "owner_observation_to_paused_ms": 0.359953
+        },
+        {
+          "request_to_paused_ms": 0.593606,
+          "owner_observation_to_paused_ms": 0.373376
+        },
+        {
+          "request_to_paused_ms": 0.690283,
+          "owner_observation_to_paused_ms": 0.388696
+        },
+        {
+          "request_to_paused_ms": 0.639505,
+          "owner_observation_to_paused_ms": 0.340708
+        },
+        {
+          "request_to_paused_ms": 0.620323,
+          "owner_observation_to_paused_ms": 0.345767
+        }
+      ],
+      "median_ms": 0.627546,
+      "maximum_ms": 0.690283,
+      "summary": {
+        "type": "summary",
+        "complete": false,
+        "durability": "local",
+        "durable_coverage": true,
+        "resumed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "computed_scalars": "0x000000000000000000000000000000000000000000000000000000000001e600",
+        "device_steps": "0x000000000000000000000000000000000000000000000000000000000001e600",
+        "match_observations": 0,
+        "batches": 972,
+        "overflow_replays": 0,
+        "checkpoints": 6,
+        "checkpoint_ms": 1.921897,
+        "metrics_version": 1,
+        "device": 0,
+        "uuid": "30393337633864376335303031303365",
+        "mode": "xpoint",
+        "checkpoint_seconds": 10,
+        "bsgs_group_size": 0,
+        "verified_device_steps": "0x000000000000000000000000000000000000000000000000000000000001e600",
+        "kernel_ms": 239.769060433,
+        "download_ms": 34.298749445,
+        "seed_ms": 4.735849,
+        "verification_ms": 0.059734,
+        "revalidation_ms": 0.020422,
+        "executor_wall_ms": 297.359944,
+        "replay_kernel_ms": 0,
+        "download_bytes": "0x0000000000000000000000000000000000000000000000000000000000f397e0",
+        "peak_device_allocation_bytes": 18472,
+        "peak_pinned_allocation_bytes": 16424,
+        "preparation_ms": 689.037098,
+        "executor_setup_ms": 533.054365,
+        "table_upload_ms": 0,
+        "wall_ms": 1296.238781
+      }
+    },
+    {
+      "mode": "xpoint",
+      "geometry": "default",
+      "options": [],
+      "targets": 4,
+      "bsgs_m": null,
+      "samples": [
+        {
+          "request_to_paused_ms": 0.900809,
+          "owner_observation_to_paused_ms": 0.348355
+        },
+        {
+          "request_to_paused_ms": 0.533244,
+          "owner_observation_to_paused_ms": 0.347035
+        },
+        {
+          "request_to_paused_ms": 0.624387,
+          "owner_observation_to_paused_ms": 0.372213
+        },
+        {
+          "request_to_paused_ms": 0.563924,
+          "owner_observation_to_paused_ms": 0.333016
+        },
+        {
+          "request_to_paused_ms": 0.773905,
+          "owner_observation_to_paused_ms": 0.337879
+        }
+      ],
+      "median_ms": 0.624387,
+      "maximum_ms": 0.900809,
+      "summary": {
+        "type": "summary",
+        "complete": false,
+        "durability": "local",
+        "durable_coverage": true,
+        "resumed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000018d00000",
+        "device_steps": "0x0000000000000000000000000000000000000000000000000000000018d00000",
+        "match_observations": 0,
+        "batches": 397,
+        "overflow_replays": 0,
+        "checkpoints": 6,
+        "checkpoint_ms": 1.817199,
+        "metrics_version": 1,
+        "device": 0,
+        "uuid": "30393337633864376335303031303365",
+        "mode": "xpoint",
+        "checkpoint_seconds": 10,
+        "bsgs_group_size": 0,
+        "verified_device_steps": "0x0000000000000000000000000000000000000000000000000000000018d00000",
+        "kernel_ms": 287.879296482,
+        "download_ms": 20.2614687607,
+        "seed_ms": 2.008301,
+        "verification_ms": 0.026344,
+        "revalidation_ms": 0.008348,
+        "executor_wall_ms": 318.157553,
+        "replay_kernel_ms": 0,
+        "download_bytes": "0x0000000000000000000000000000000000000000000000000000000000637e08",
+        "peak_device_allocation_bytes": 18472,
+        "peak_pinned_allocation_bytes": 16424,
+        "preparation_ms": 471.666898,
+        "executor_setup_ms": 293.71045,
+        "table_upload_ms": 0,
+        "wall_ms": 1084.386056
+      }
+    },
+    {
+      "mode": "bsgs",
+      "geometry": "small",
+      "options": [
+        "--giant-batch",
+        "1",
+        "--target-batch",
+        "1"
+      ],
+      "targets": 4,
+      "bsgs_m": 257,
+      "samples": [
+        {
+          "request_to_paused_ms": 0.818372,
+          "owner_observation_to_paused_ms": 0.351033
+        },
+        {
+          "request_to_paused_ms": 0.787674,
+          "owner_observation_to_paused_ms": 0.336562
+        },
+        {
+          "request_to_paused_ms": 0.846634,
+          "owner_observation_to_paused_ms": 0.387287
+        },
+        {
+          "request_to_paused_ms": 0.779789,
+          "owner_observation_to_paused_ms": 0.334986
+        },
+        {
+          "request_to_paused_ms": 0.80293,
+          "owner_observation_to_paused_ms": 0.336096
+        }
+      ],
+      "median_ms": 0.80293,
+      "maximum_ms": 0.846634,
+      "summary": {
+        "type": "summary",
+        "complete": false,
+        "durability": "local",
+        "durable_coverage": true,
+        "resumed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "computed_scalars": "0x000000000000000000000000000000000000000000000000000000000000a3a3",
+        "device_steps": "0x000000000000000000000000000000000000000000000000000000000000028e",
+        "match_observations": 0,
+        "batches": 654,
+        "overflow_replays": 0,
+        "checkpoints": 6,
+        "checkpoint_ms": 1.82529,
+        "metrics_version": 1,
+        "device": 0,
+        "uuid": "30393337633864376335303031303365",
+        "mode": "bsgs",
+        "checkpoint_seconds": 10,
+        "bsgs_group_size": 1,
+        "verified_device_steps": "0x000000000000000000000000000000000000000000000000000000000000028e",
+        "kernel_ms": 270.845739067,
+        "download_ms": 26.6442532446,
+        "seed_ms": 2.096851,
+        "verification_ms": 0.051658,
+        "revalidation_ms": 0.013083,
+        "executor_wall_ms": 311.757338,
+        "replay_kernel_ms": 0,
+        "download_bytes": "0x0000000000000000000000000000000000000000000000000000000000f5cf10",
+        "peak_device_allocation_bytes": 40921,
+        "peak_pinned_allocation_bytes": 24737,
+        "preparation_ms": 525.313182,
+        "executor_setup_ms": 311.60239,
+        "table_upload_ms": 0.0244960002601,
+        "wall_ms": 1140.066291
+      }
+    },
+    {
+      "mode": "bsgs",
+      "geometry": "default",
+      "options": [],
+      "targets": 4,
+      "bsgs_m": 257,
+      "samples": [
+        {
+          "request_to_paused_ms": 0.99742,
+          "owner_observation_to_paused_ms": 0.352026
+        },
+        {
+          "request_to_paused_ms": 1.058533,
+          "owner_observation_to_paused_ms": 0.331443
+        },
+        {
+          "request_to_paused_ms": 1.174454,
+          "owner_observation_to_paused_ms": 0.375118
+        },
+        {
+          "request_to_paused_ms": 1.082228,
+          "owner_observation_to_paused_ms": 0.335703
+        },
+        {
+          "request_to_paused_ms": 1.025938,
+          "owner_observation_to_paused_ms": 0.3413
+        }
+      ],
+      "median_ms": 1.058533,
+      "maximum_ms": 1.174454,
+      "summary": {
+        "type": "summary",
+        "complete": false,
+        "durability": "local",
+        "durable_coverage": true,
+        "resumed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "computed_scalars": "0x000000000000000000000000000000000000000000000000000000005d5d0000",
+        "device_steps": "0x0000000000000000000000000000000000000000000000000000000001740000",
+        "match_observations": 0,
+        "batches": 372,
+        "overflow_replays": 0,
+        "checkpoints": 6,
+        "checkpoint_ms": 1.819277,
+        "metrics_version": 1,
+        "device": 0,
+        "uuid": "30393337633864376335303031303365",
+        "mode": "bsgs",
+        "checkpoint_seconds": 10,
+        "bsgs_group_size": 1,
+        "verified_device_steps": "0x0000000000000000000000000000000000000000000000000000000001740000",
+        "kernel_ms": 291.808628857,
+        "download_ms": 21.7943901066,
+        "seed_ms": 1.994756,
+        "verification_ms": 0.033088,
+        "revalidation_ms": 0.007664,
+        "executor_wall_ms": 322.854907,
+        "replay_kernel_ms": 0,
+        "download_bytes": "0x00000000000000000000000000000000000000000000000000000000008bd160",
+        "peak_device_allocation_bytes": 40921,
+        "peak_pinned_allocation_bytes": 24737,
+        "preparation_ms": 527.017084,
+        "executor_setup_ms": 312.615268,
+        "table_upload_ms": 0.0255779996514,
+        "wall_ms": 1144.865877
+      }
+    }
+  ],
+  "scope": "warm single HIP device; external local-socket pause request through durably-paused status; one startup pause excluded; no universal latency bound",
+  "passed": true
+}

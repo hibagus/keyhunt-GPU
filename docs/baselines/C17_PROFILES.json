@@ -1,0 +1,395 @@
+{
+  "schema_version": 1,
+  "recorded_utc": "2026-09-30T18:56:45.024096+00:00",
+  "passed": true,
+  "timing_sample": false,
+  "commands": [
+    {
+      "argv": [
+        "/home/bagus/keyhunt-GPU/build/hip-release/keyhunt",
+        "devices",
+        "--backend",
+        "hip"
+      ],
+      "cwd": "/home/bagus/keyhunt-GPU",
+      "exit_code": 0,
+      "stdout": "inventory.out",
+      "stderr": "inventory.err"
+    },
+    {
+      "argv": [
+        "rocprofv3",
+        "--version"
+      ],
+      "cwd": "/home/bagus/keyhunt-GPU",
+      "exit_code": 0,
+      "stdout": "profiler-version.out",
+      "stderr": "profiler-version.err"
+    },
+    {
+      "argv": [
+        "rocprofv3",
+        "--help"
+      ],
+      "cwd": "/home/bagus/keyhunt-GPU",
+      "exit_code": 0,
+      "stdout": "profiler-help.out",
+      "stderr": "profiler-help.err"
+    },
+    {
+      "argv": [
+        "rocprofv3",
+        "--list-avail"
+      ],
+      "cwd": "/home/bagus/keyhunt-GPU",
+      "exit_code": 0,
+      "stdout": "available-counters.out",
+      "stderr": "available-counters.err"
+    },
+    {
+      "argv": [
+        "rocprofv3",
+        "--kernel-trace",
+        "--memory-copy-trace",
+        "--hip-runtime-trace",
+        "--scratch-memory-trace",
+        "--output-format",
+        "csv",
+        "--output-directory",
+        "/tmp/keyhunt-c17-final-profile/trace",
+        "--output-file",
+        "capture",
+        "--",
+        "/home/bagus/keyhunt-GPU/build/hip-release/keyhunt",
+        "bsgs",
+        "--range",
+        "100000000000000000000000000000011:100000000000000000000000000044010",
+        "--targets",
+        "/tmp/keyhunt-c17-groups-live/bsgs-no-match-32.txt",
+        "--table",
+        "/tmp/keyhunt-c17-groups-live/babies.khb",
+        "--backend",
+        "hip",
+        "--device",
+        "0",
+        "--candidate-capacity",
+        "1024",
+        "--giant-batch",
+        "8192",
+        "--target-batch",
+        "31",
+        "--group-size",
+        "auto"
+      ],
+      "cwd": "/home/bagus/keyhunt-GPU",
+      "exit_code": 0,
+      "stdout": "trace-command.out",
+      "stderr": "trace-command.err"
+    },
+    {
+      "argv": [
+        "/opt/rocm/core-10.0/lib/llvm/bin/clang++",
+        "-D__HIP_ROCclr__=1",
+        "-I/home/bagus/keyhunt-GPU/kernels",
+        "-I/home/bagus/keyhunt-GPU/kernels/hip",
+        "-I/home/bagus/keyhunt-GPU/include",
+        "-I/home/bagus/keyhunt-GPU/third_party",
+        "-O3",
+        "-DNDEBUG",
+        "--offload-arch=gfx942",
+        "-Wall",
+        "-Wextra",
+        "-std=gnu++17",
+        "-x",
+        "hip",
+        "/home/bagus/keyhunt-GPU/src/backend/hip/xpoint.hip",
+        "--offload-device-only",
+        "-S",
+        "-Rpass-analysis=kernel-resource-usage",
+        "-o",
+        "/tmp/keyhunt-c17-final-profile/xpoint.s"
+      ],
+      "cwd": "/home/bagus/keyhunt-GPU/build/hip-release",
+      "exit_code": 0,
+      "stdout": "xpoint-resources.out",
+      "stderr": "xpoint-resources.err"
+    },
+    {
+      "argv": [
+        "/opt/rocm/core-10.0/lib/llvm/bin/clang++",
+        "-D__HIP_ROCclr__=1",
+        "-I/home/bagus/keyhunt-GPU/kernels",
+        "-I/home/bagus/keyhunt-GPU/kernels/hip",
+        "-I/home/bagus/keyhunt-GPU/include",
+        "-I/home/bagus/keyhunt-GPU/third_party",
+        "-O3",
+        "-DNDEBUG",
+        "--offload-arch=gfx942",
+        "-Wall",
+        "-Wextra",
+        "-std=gnu++17",
+        "-x",
+        "hip",
+        "/home/bagus/keyhunt-GPU/src/backend/hip/bsgs_search.hip",
+        "--offload-device-only",
+        "-S",
+        "-Rpass-analysis=kernel-resource-usage",
+        "-o",
+        "/tmp/keyhunt-c17-final-profile/bsgs_search.s"
+      ],
+      "cwd": "/home/bagus/keyhunt-GPU/build/hip-release",
+      "exit_code": 0,
+      "stdout": "bsgs_search-resources.out",
+      "stderr": "bsgs_search-resources.err"
+    }
+  ],
+  "failures": [],
+  "artifacts": [
+    {
+      "path": "available-counters.err",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "available-counters.out",
+      "bytes": 1185184,
+      "sha256": "549f3324f98caf1f2a0e0d0d36c9a03e56c8580d7d0adda8c705bbe0f353e99f"
+    },
+    {
+      "path": "bsgs_search-resources.err",
+      "bytes": 2939,
+      "sha256": "211496644127a2bf4036a33056a5997aa54c99cf7dd15209212910c42d9b0631"
+    },
+    {
+      "path": "bsgs_search-resources.out",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "bsgs_search.s",
+      "bytes": 2280351,
+      "sha256": "8624a3fdb73b2b726b106ff0e93872b503fb8cd6cb4978f8b9603010e323d2ba"
+    },
+    {
+      "path": "inventory.err",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "inventory.out",
+      "bytes": 562,
+      "sha256": "8af5d8d29c9779b63495beb809a329eb7376b0158df5138449e5b8f5ce4bc52f"
+    },
+    {
+      "path": "profiler-help.err",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "profiler-help.out",
+      "bytes": 20273,
+      "sha256": "0b133c6d3ccf257452e5eec3ff44fb0e3f449aa8fa843b229924b1671ca243be"
+    },
+    {
+      "path": "profiler-version.err",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "profiler-version.out",
+      "bytes": 334,
+      "sha256": "ad224f8e9219d895dc43a641a2792d5b3ef4e500538fe46ba5046f3fec7e0fe8"
+    },
+    {
+      "path": "trace/capture_agent_info.csv",
+      "bytes": 3423,
+      "sha256": "dfb43239ec36018dec639ef3b290c9bfb33b617b7f8471ecf3fd38467753b8f8"
+    },
+    {
+      "path": "trace/capture_hip_api_trace.csv",
+      "bytes": 16984,
+      "sha256": "f49f67fe562a0b25f794f6208c9527f8fc9058c00d93c4bbd889caed934768aa"
+    },
+    {
+      "path": "trace/capture_kernel_trace.csv",
+      "bytes": 4723,
+      "sha256": "2065c9e6230540006cef5a48276bbca1df4a3db942eaef0dff199fb1cbb9ec16"
+    },
+    {
+      "path": "trace/capture_scratch_memory_trace.csv",
+      "bytes": 224,
+      "sha256": "b458e74c82336f76c9b08a76d35504f8ea1eedb4d6fa077dc774dfbcfacbd41a"
+    },
+    {
+      "path": "trace-command.err",
+      "bytes": 2752,
+      "sha256": "a8a16e195749f67a497cbee9a278b1973026647a0636825477608bec3e5190e7"
+    },
+    {
+      "path": "trace-command.out",
+      "bytes": 3890,
+      "sha256": "8d62ce9ee3a9c3fc9c39bae6c96003839cd72f4fac8c139a7c4c2d6a42996d68"
+    },
+    {
+      "path": "xpoint-resources.err",
+      "bytes": 4192,
+      "sha256": "eeb96799e1fd7f119317d40c2cc22c22a41bc360371045e31a50244db565b01c"
+    },
+    {
+      "path": "xpoint-resources.out",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "xpoint.s",
+      "bytes": 3368498,
+      "sha256": "1cc99b4c3e12f841f6a4a4d88bd38cdce0a81d31ba18265cd147caa46f8a7d85"
+    }
+  ],
+  "benchmark_sha256": "504377f806d97223d0d280bfb5d57dc72a67185fc9d23752d0d1b7b5a5d7ba42",
+  "binary_sha256": "1fe9412d0a0d6f9614462a35bb9fa9650e1b9a3f97ae31cf83c4c28908e1f013",
+  "case": "bsgs-no-match-32",
+  "selected_device": {
+    "ordinal": 0,
+    "name": "AMD Instinct MI300X",
+    "architecture": "gfx942:sramecc+:xnack-",
+    "uuid": "30393337633864376335303031303365",
+    "pci_bus_id": "0000:3d:00.0",
+    "physical_id": "0937c8d7c500103e",
+    "physical_id_source": "sysfs.unique_id",
+    "compute_partition": "SPX",
+    "memory_partition": "NPS1",
+    "memory_allocation_mode": "CAPPING",
+    "numa_node": 0,
+    "compute_units": 304,
+    "warp_size": 64,
+    "property_memory_bytes": 206141652992,
+    "total_memory_bytes": 206141652992,
+    "free_memory_bytes": 205533478912,
+    "warnings": []
+  },
+  "cpu_affinity": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57,
+    58,
+    59,
+    60,
+    61,
+    62,
+    63,
+    64,
+    65,
+    66,
+    67,
+    68,
+    69,
+    70,
+    71,
+    72,
+    73,
+    74,
+    75,
+    76,
+    77,
+    78,
+    79,
+    80,
+    81,
+    82,
+    83,
+    84,
+    85,
+    86,
+    87,
+    88,
+    89,
+    90,
+    91,
+    92,
+    93,
+    94,
+    95
+  ],
+  "trace_search_launches": 4,
+  "trace_kernel_counts": {
+    "__amd_rocclr_copyBuffer": 13,
+    "__amd_rocclr_fillBufferUnAligned": 8,
+    "void keyhunt::gpu::bsgs_search<8u>(keyhunt::gpu::Point, unsigned long, unsigned long, keyhunt::gpu::Point const*, unsigned int, keyhunt::gpu::Point const*, keyhunt::bsgs::View, keyhunt::core::BsgsCandidate*, unsigned int, keyhunt::gpu::BsgsCounters*)": 2,
+    "void keyhunt::gpu::bsgs_search<1u>(keyhunt::gpu::Point, unsigned long, unsigned long, keyhunt::gpu::Point const*, unsigned int, keyhunt::gpu::Point const*, keyhunt::bsgs::View, keyhunt::core::BsgsCandidate*, unsigned int, keyhunt::gpu::BsgsCounters*)": 2
+  },
+  "search_summary": {
+    "type": "summary",
+    "complete": true,
+    "durable_coverage": false,
+    "verified_scalars": "0x0000000000000000000000000000000000000000000000000000000000043fff",
+    "verified_target_steps": "0x0000000000000000000000000000000000000000000000000000000000080000",
+    "device_steps": "0x0000000000000000000000000000000000000000000000000000000000080000",
+    "matches": "0x0000000000000000000000000000000000000000000000000000000000000000",
+    "launch_count": 4,
+    "overflow_replays": 0,
+    "tiles": 2,
+    "kernel_ms": 29.2749628,
+    "download_ms": 0.0521189999,
+    "verification_ms": 0.000653,
+    "seed_ms": 0.02114,
+    "wall_ms": 576.936777
+  },
+  "resource_source_commit": "863da3da8d8a8b283b2c3876cb7ff0f7203913df",
+  "resource_working_tree": " M docs/CHECKPOINTS.md\n M docs/GPU_ARITHMETIC.md\n M docs/GPU_PROFILING.md\n M docs/HIP_BSGS.md\n M docs/HIP_XPOINT.md\n"
+}

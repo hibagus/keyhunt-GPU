@@ -108,7 +108,10 @@ though that tile has no accepted scalar coverage yet. A crash during the tile
 therefore replays all its groups; unique `(project,job,scalar,target)` result keys
 deduplicate repeated matches. Candidate overflow reduces the group size and
 replays the same target cursor. Xpoint overflow similarly reduces the scalar
-batch size without crediting its retained candidate prefix.
+batch size without crediting its retained candidate prefix. C17 restores larger
+xpoint batches after half-full or emptier successes, up to the configured limit;
+full buffers retain a stable smaller size. This tuning does not change receipts
+or the persisted interval union.
 
 On restart, planning starts from the complement of committed intervals, not the
 previous process's counters or stdout. Partial BSGS group cursors are intentionally

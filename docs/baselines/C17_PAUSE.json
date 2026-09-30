@@ -1,0 +1,329 @@
+{
+  "recorded_utc": "2026-09-30T18:56:38.600504+00:00",
+  "binary_sha256": "1fe9412d0a0d6f9614462a35bb9fa9650e1b9a3f97ae31cf83c4c28908e1f013",
+  "oracle_commit": "0cdc758a56360bf58a851fe91085a327ec97685a",
+  "inventory": {
+    "backend": "hip",
+    "runtime_version": 71526333,
+    "driver_version": 71526333,
+    "devices": [
+      {
+        "ordinal": 0,
+        "name": "AMD Instinct MI300X",
+        "architecture": "gfx942:sramecc+:xnack-",
+        "uuid": "30393337633864376335303031303365",
+        "pci_bus_id": "0000:3d:00.0",
+        "physical_id": "0937c8d7c500103e",
+        "physical_id_source": "sysfs.unique_id",
+        "compute_partition": "SPX",
+        "memory_partition": "NPS1",
+        "memory_allocation_mode": "CAPPING",
+        "numa_node": 0,
+        "compute_units": 304,
+        "warp_size": 64,
+        "property_memory_bytes": 206141652992,
+        "total_memory_bytes": 206141652992,
+        "free_memory_bytes": 205533478912,
+        "warnings": []
+      }
+    ]
+  },
+  "samples": [
+    {
+      "mode": "xpoint",
+      "geometry": "small",
+      "options": [
+        "--batch-size",
+        "128"
+      ],
+      "targets": 4,
+      "bsgs_m": null,
+      "samples": [
+        {
+          "request_to_paused_ms": 0.422773,
+          "owner_observation_to_paused_ms": 0.347218
+        },
+        {
+          "request_to_paused_ms": 0.44281,
+          "owner_observation_to_paused_ms": 0.34289
+        },
+        {
+          "request_to_paused_ms": 0.51146,
+          "owner_observation_to_paused_ms": 0.388112
+        },
+        {
+          "request_to_paused_ms": 0.455524,
+          "owner_observation_to_paused_ms": 0.335726
+        },
+        {
+          "request_to_paused_ms": 0.467479,
+          "owner_observation_to_paused_ms": 0.336711
+        }
+      ],
+      "median_ms": 0.455524,
+      "maximum_ms": 0.51146,
+      "summary": {
+        "type": "summary",
+        "complete": false,
+        "durability": "local",
+        "durable_coverage": true,
+        "resumed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "computed_scalars": "0x000000000000000000000000000000000000000000000000000000000002d600",
+        "device_steps": "0x000000000000000000000000000000000000000000000000000000000002d600",
+        "match_observations": 0,
+        "batches": 1452,
+        "overflow_replays": 0,
+        "checkpoints": 6,
+        "checkpoint_ms": 1.829535,
+        "metrics_version": 2,
+        "device": 0,
+        "uuid": "30393337633864376335303031303365",
+        "mode": "xpoint",
+        "checkpoint_seconds": 10,
+        "bsgs_group_size": 0,
+        "verified_device_steps": "0x000000000000000000000000000000000000000000000000000000000002d600",
+        "kernel_ms": 214.624642849,
+        "download_ms": 17.3815830536,
+        "seed_ms": 7.024457,
+        "verification_ms": 0.105365,
+        "revalidation_ms": 0.028535,
+        "executor_wall_ms": 265.563677,
+        "replay_kernel_ms": 0,
+        "download_bytes": "0x000000000000000000000000000000000000000000000000000000000003b8e0",
+        "peak_device_allocation_bytes": 1656,
+        "peak_pinned_allocation_bytes": 168,
+        "preparation_ms": 469.252322,
+        "executor_setup_ms": 295.914939,
+        "table_upload_ms": 0,
+        "wall_ms": 1054.590766,
+        "bsgs_groups": []
+      }
+    },
+    {
+      "mode": "xpoint",
+      "geometry": "default",
+      "options": [],
+      "targets": 4,
+      "bsgs_m": null,
+      "samples": [
+        {
+          "request_to_paused_ms": 0.737212,
+          "owner_observation_to_paused_ms": 0.35216
+        },
+        {
+          "request_to_paused_ms": 0.77447,
+          "owner_observation_to_paused_ms": 0.385073
+        },
+        {
+          "request_to_paused_ms": 0.446539,
+          "owner_observation_to_paused_ms": 0.381235
+        },
+        {
+          "request_to_paused_ms": 0.533573,
+          "owner_observation_to_paused_ms": 0.349382
+        },
+        {
+          "request_to_paused_ms": 0.445681,
+          "owner_observation_to_paused_ms": 0.343913
+        }
+      ],
+      "median_ms": 0.533573,
+      "maximum_ms": 0.77447,
+      "summary": {
+        "type": "summary",
+        "complete": false,
+        "durability": "local",
+        "durable_coverage": true,
+        "resumed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "computed_scalars": "0x000000000000000000000000000000000000000000000000000000002b800000",
+        "device_steps": "0x000000000000000000000000000000000000000000000000000000002b800000",
+        "match_observations": 0,
+        "batches": 696,
+        "overflow_replays": 0,
+        "checkpoints": 6,
+        "checkpoint_ms": 1.894381,
+        "metrics_version": 2,
+        "device": 0,
+        "uuid": "30393337633864376335303031303365",
+        "mode": "xpoint",
+        "checkpoint_seconds": 10,
+        "bsgs_group_size": 0,
+        "verified_device_steps": "0x000000000000000000000000000000000000000000000000000000002b800000",
+        "kernel_ms": 262.923699051,
+        "download_ms": 8.42746002879,
+        "seed_ms": 3.454582,
+        "verification_ms": 0.047086,
+        "revalidation_ms": 0.013936,
+        "executor_wall_ms": 287.707744,
+        "replay_kernel_ms": 0,
+        "download_bytes": "0x000000000000000000000000000000000000000000000000000000000001c8c0",
+        "peak_device_allocation_bytes": 1656,
+        "peak_pinned_allocation_bytes": 168,
+        "preparation_ms": 477.865228,
+        "executor_setup_ms": 301.463286,
+        "table_upload_ms": 0,
+        "wall_ms": 1064.884191,
+        "bsgs_groups": []
+      }
+    },
+    {
+      "mode": "bsgs",
+      "geometry": "small",
+      "options": [
+        "--giant-batch",
+        "1",
+        "--target-batch",
+        "1"
+      ],
+      "targets": 4,
+      "bsgs_m": 257,
+      "samples": [
+        {
+          "request_to_paused_ms": 0.404012,
+          "owner_observation_to_paused_ms": 0.343742
+        },
+        {
+          "request_to_paused_ms": 0.397996,
+          "owner_observation_to_paused_ms": 0.342591
+        },
+        {
+          "request_to_paused_ms": 0.436669,
+          "owner_observation_to_paused_ms": 0.37231
+        },
+        {
+          "request_to_paused_ms": 0.611581,
+          "owner_observation_to_paused_ms": 0.32771
+        },
+        {
+          "request_to_paused_ms": 0.388879,
+          "owner_observation_to_paused_ms": 0.33395
+        }
+      ],
+      "median_ms": 0.404012,
+      "maximum_ms": 0.611581,
+      "summary": {
+        "type": "summary",
+        "complete": false,
+        "durability": "local",
+        "durable_coverage": true,
+        "resumed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "computed_scalars": "0x000000000000000000000000000000000000000000000000000000000001100f",
+        "device_steps": "0x000000000000000000000000000000000000000000000000000000000000043f",
+        "match_observations": 0,
+        "batches": 1087,
+        "overflow_replays": 0,
+        "checkpoints": 6,
+        "checkpoint_ms": 1.822117,
+        "metrics_version": 2,
+        "device": 0,
+        "uuid": "30393337633864376335303031303365",
+        "mode": "bsgs",
+        "checkpoint_seconds": 10,
+        "bsgs_group_size": 1,
+        "verified_device_steps": "0x000000000000000000000000000000000000000000000000000000000000043f",
+        "kernel_ms": 243.339628696,
+        "download_ms": 8.40244100476,
+        "seed_ms": 3.547949,
+        "verification_ms": 0.090344,
+        "revalidation_ms": 0.022722,
+        "executor_wall_ms": 275.909863,
+        "replay_kernel_ms": 0,
+        "download_bytes": "0x00000000000000000000000000000000000000000000000000000000000153b0",
+        "peak_device_allocation_bytes": 16369,
+        "peak_pinned_allocation_bytes": 185,
+        "preparation_ms": 527.169956,
+        "executor_setup_ms": 316.89983,
+        "table_upload_ms": 0.0288650002331,
+        "wall_ms": 1114.682104,
+        "bsgs_groups": [
+          {
+            "group_size": 1,
+            "batches": 1087,
+            "overflow_replays": 0,
+            "device_steps": "0x000000000000000000000000000000000000000000000000000000000000043f",
+            "verified_device_steps": "0x000000000000000000000000000000000000000000000000000000000000043f",
+            "kernel_ms": 243.339628696
+          }
+        ]
+      }
+    },
+    {
+      "mode": "bsgs",
+      "geometry": "default",
+      "options": [],
+      "targets": 4,
+      "bsgs_m": 257,
+      "samples": [
+        {
+          "request_to_paused_ms": 0.41803,
+          "owner_observation_to_paused_ms": 0.347153
+        },
+        {
+          "request_to_paused_ms": 0.391069,
+          "owner_observation_to_paused_ms": 0.337325
+        },
+        {
+          "request_to_paused_ms": 0.454571,
+          "owner_observation_to_paused_ms": 0.368748
+        },
+        {
+          "request_to_paused_ms": 0.385385,
+          "owner_observation_to_paused_ms": 0.324941
+        },
+        {
+          "request_to_paused_ms": 0.415335,
+          "owner_observation_to_paused_ms": 0.333107
+        }
+      ],
+      "median_ms": 0.415335,
+      "maximum_ms": 0.454571,
+      "summary": {
+        "type": "summary",
+        "complete": false,
+        "durability": "local",
+        "durable_coverage": true,
+        "resumed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000093930000",
+        "device_steps": "0x00000000000000000000000000000000000000000000000000000000024c0000",
+        "match_observations": 0,
+        "batches": 588,
+        "overflow_replays": 0,
+        "checkpoints": 6,
+        "checkpoint_ms": 1.810117,
+        "metrics_version": 2,
+        "device": 0,
+        "uuid": "30393337633864376335303031303365",
+        "mode": "bsgs",
+        "checkpoint_seconds": 10,
+        "bsgs_group_size": 1,
+        "verified_device_steps": "0x00000000000000000000000000000000000000000000000000000000024c0000",
+        "kernel_ms": 270.302494466,
+        "download_ms": 5.31460902374,
+        "seed_ms": 3.053295,
+        "verification_ms": 0.0464,
+        "revalidation_ms": 0.012179,
+        "executor_wall_ms": 289.959816,
+        "replay_kernel_ms": 0,
+        "download_bytes": "0x0000000000000000000000000000000000000000000000000000000000015d20",
+        "peak_device_allocation_bytes": 16441,
+        "peak_pinned_allocation_bytes": 257,
+        "preparation_ms": 525.360876,
+        "executor_setup_ms": 316.952153,
+        "table_upload_ms": 0.0283840000629,
+        "wall_ms": 1112.332816,
+        "bsgs_groups": [
+          {
+            "group_size": 1,
+            "batches": 588,
+            "overflow_replays": 0,
+            "device_steps": "0x00000000000000000000000000000000000000000000000000000000024c0000",
+            "verified_device_steps": "0x00000000000000000000000000000000000000000000000000000000024c0000",
+            "kernel_ms": 270.302494466
+          }
+        ]
+      }
+    }
+  ],
+  "scope": "warm single HIP device; external local-socket pause request through durably-paused status; one startup pause excluded; no universal latency bound",
+  "passed": true
+}

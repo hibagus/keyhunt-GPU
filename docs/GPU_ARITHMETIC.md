@@ -32,9 +32,9 @@ above Capacity returns false before touching the output; arbitrary partially
 overlapping arrays are outside the contract. An empty group succeeds.
 
 This is variable-time arithmetic for public search inputs. It is not a
-constant-time signing or secret-key handling API. Fermat inversion and serial
-batch inversion are a correctness baseline, with optimization deferred until
-measured. The 8x32 layout is provisional, not an asserted MI300X optimum.
+constant-time signing or secret-key handling API. C17 retains Fermat inversion and serial batch inversion, but computes `p-2`
+with a measured 255-square/15-multiply addition chain; see
+[arithmetic tuning evidence](HIP_TUNING.md#accepted-shorter-field-inversion). The 8x32 layout is provisional, not an asserted MI300X optimum.
 
 ## Field differential validation
 
@@ -81,8 +81,9 @@ infinity and Y=0 explicitly. The general formulas and Jacobian convention are
 standard [short Weierstrass arithmetic](https://hyperelliptic.org/EFD/g1p/auto-shortw-jacobian.html);
 the implementation and special-case handling were written for this repository.
 Outputs are assigned after all input reads, preserving both input aliases.
-Mixed addition initially wraps the same complete general path with affine Z=1.
-It has no separately advertised speed advantage.
+C17 specializes mixed addition for affine Z=1, preserving the same exceptional
+and alias cases. It removes four multiplies and one square and is used only in
+[search paths where measured throughput improves](HIP_TUNING.md#accepted-measured-mixed-point-addition).
 
 `Scalar` stores unsigned 256-bit scalar bits separately from field elements.
 `point_multiply` handles all bit patterns, including zero and n, by bounded
