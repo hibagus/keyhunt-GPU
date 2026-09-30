@@ -37,6 +37,28 @@ def private_log(path):
     return os.fdopen(fd, "ab", buffering=0)
 
 
+def stop_children(children, deadline=None):
+    """Share drain/kill deadlines even if several kernel-held PIDs never reap."""
+    for child in children:
+        if child.poll() is None:
+            child.terminate()
+    if deadline is None:
+        deadline = time.monotonic() + 30
+    for child in children:
+        try:
+            child.wait(timeout=max(0, deadline - time.monotonic()))
+        except subprocess.TimeoutExpired:
+            child.kill()
+    reap_deadline = time.monotonic() + 5
+    survivors = []
+    for child in children:
+        try:
+            child.wait(timeout=max(0, reap_deadline - time.monotonic()))
+        except subprocess.TimeoutExpired:
+            survivors.append(child)
+    return survivors
+
+
 @dataclass
 class Device:
     queue: str
@@ -49,6 +71,7 @@ class Device:
     last_progress: float = 0
     sequence: int = 0
     drain_at: object = None
+    kill_sent: bool = False
     retry_at: float = 0
     done: bool = False
     ready: bool = False
@@ -161,6 +184,7 @@ def main():
             device.done, device.state = True, "quarantined"
     network = network_log = None
     paused = stopping = False
+    shutdown_deadline = None
     initial_sync_checked = False
     last_status = 0
     last_network_error = None
@@ -170,9 +194,11 @@ def main():
     self_tests = {}
 
     def control(signum, _frame):
-        nonlocal paused, stopping
+        nonlocal paused, stopping, shutdown_deadline
         if signum in (signal.SIGINT, signal.SIGTERM):
             stopping = True
+            if shutdown_deadline is None:
+                shutdown_deadline = time.monotonic() + 30
             forward = signal.SIGTERM
         else:
             paused = signum == signal.SIGUSR1
@@ -242,7 +268,7 @@ def main():
         selector.register(device.child.stdout, selectors.EVENT_READ, device)
         device.buffer, device.sequence = b"", 0
         device.last_progress, device.state, device.ready = now, "pending", False
-        device.drain_at = None
+        device.drain_at, device.kill_sent = None, False
 
     try:
         while True:
@@ -272,8 +298,11 @@ def main():
                         device.error = "execution stalled; bounded drain started"
                         device.child.terminate()
                         device.drain_at = now
-                    if device.drain_at is not None and now - device.drain_at >= 30:
+                    if device.drain_at is not None and now - device.drain_at >= 30 and not device.kill_sent:
                         device.child.kill()
+                        device.kill_sent, device.done = True, True
+                        device.state = "quarantined"
+                        failures[device.queue] = 3
             if network and network.poll() is not None:
                 network_log.close()
                 last_network_error = None if network.returncode == 0 else (root / "sync.log").read_text()[-2048:]
@@ -282,7 +311,7 @@ def main():
                 sync_due = now + status["sync_due_in"]
                 initial_sync_checked = True
             if stopping:
-                if not any(device.child for device in devices.values()):
+                if not any(device.child for device in devices.values()) or now >= shutdown_deadline:
                     break
             else:
                 if network is None and (now >= sync_due or not initial_sync_checked):
@@ -307,20 +336,14 @@ def main():
         # cannot multiply shutdown time by the fleet size. Kernel-held device and
         # block locks still prevent a new owner if an uninterruptible PID survives.
         children = [device.child for device in devices.values() if device.child] + ([network] if network else [])
-        for child in children:
-            if child.poll() is None:
-                child.terminate()
-        deadline = time.monotonic() + 30
-        for child in children:
-            try:
-                child.wait(timeout=max(0, deadline - time.monotonic()))
-            except subprocess.TimeoutExpired:
-                child.kill()
-        for child in children:
-            try:
-                child.wait(timeout=5)
-            except subprocess.TimeoutExpired:
-                pass  # Its OS owner locks remain held; no unsafe takeover follows.
+        deadline = shutdown_deadline
+        if children and all(device.child is None or device.kill_sent for device in devices.values()) and network is None:
+            deadline = time.monotonic() # the execution watchdog already spent the drain budget
+        survivors = stop_children(children, deadline)
+        for device in devices.values():
+            if device.child in survivors:
+                failures[device.queue] = 3
+                device.state, device.error = "quarantined", "owner did not exit; OS locks retained"
         selector.close()
         for device in devices.values():
             if device.log:

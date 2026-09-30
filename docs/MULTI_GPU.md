@@ -167,3 +167,10 @@ file. Durable matches/coverage remain in SQLite and the outbox, not these logs.
 A CPU process test feeds over 10 MiB of diagnostics and verifies rotation,
 independent healthy completion, and aggregate memory-budget division. The real
 two-device xpoint/BSGS fleet test passes with throttled output.
+
+A shutdown review also covered driver-held processes that survive SIGKILL.
+The main loop now exits after its shared drain deadline instead of waiting
+indefinitely for such a PID. Reaping shares a further five-second budget across
+the fleet, surviving owners are visibly quarantined, and their OS locks prevent
+replacement. A deterministic 64-child test proves the maximum shared wait is
+35 seconds, without assuming SIGKILL can interrupt a kernel driver.

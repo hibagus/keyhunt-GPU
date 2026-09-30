@@ -29,6 +29,25 @@ assert device.stalled(1000062, 60)
 device.event({"type": "blocked", "reason": "server-paused"}, 1000063)
 assert not device.stalled(2000000, 60)
 
+# An uninterruptible driver PID can survive SIGKILL. Model that OS behavior and
+# prove the fleet shares 30 + 5 seconds, independent of its device count.
+clock = [0.0]
+real_clock = module.time.monotonic
+module.time.monotonic = lambda: clock[0]
+class Unreapable:
+    def poll(self): return None
+    def terminate(self): pass
+    def kill(self): pass
+    def wait(self, timeout):
+        clock[0] += timeout
+        raise subprocess.TimeoutExpired("kernel-held-owner", timeout)
+try:
+    children = [Unreapable() for _ in range(64)]
+    assert module.stop_children(children) == children
+    assert clock[0] == 35, "shutdown deadline multiplied by GPU count"
+finally:
+    module.time.monotonic = real_clock
+
 FAKE = r'''#!/usr/bin/env python3
 import json, pathlib, sys, time
 args = dict(zip(sys.argv[2::2], sys.argv[3::2]))
