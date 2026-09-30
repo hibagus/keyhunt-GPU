@@ -22,8 +22,9 @@ were needed. On other installations set `HIPCXX` to AMD clang++ and, if needed,
 `CMAKE_HIP_COMPILER_ROCM_ROOT` to the SDK containing `lib/cmake/hip-lang`.
 Do not use hipcc as CMake's HIP compiler. The backend uses CMake's HIP language;
 legacy CPU flags and per-source LTO do not reach its translation units.
-CPU-only builds neither enable HIP nor probe its SDK. CUDA remains an explicit
-configuration error (C18), as does the unvalidated HIP+sanitizers combination.
+CPU-only builds neither enable HIP nor probe its SDK. Native CUDA is supported
+in a separate [CUDA build](CUDA_BACKEND.md); enabling both backends together is
+a configuration error, as is the unvalidated HIP+sanitizers combination.
 
 `devices --backend hip` prints JSON. Ordinals refer to the current process's
 visible devices. Identity includes the raw HIP UUID bytes encoded as hex, PCI
@@ -41,9 +42,9 @@ reports eight devices, 304 CUs each, and 206,141,652,992 HIP total bytes per dev
 (about 192 GiB). All eight now expose package and partition metadata.
 
 Neither snapshot is an application constant. We do not infer parents by clearing
-BDF bits or multiply a logical memory budget into a package budget. Complete
-physical mapping and shared-memory contention remain prerequisites for C20
-scaling claims. See [partition compatibility](#cpx-qpx-and-spx-compatibility) for
+BDF bits or multiply a logical memory budget into a package budget. The [C20 fleet measurements](MULTI_GPU.md#measured-fleet-scaling) use eight
+physical packages exposed as eight SPX devices; they do not measure partition
+scaling or sibling-partition memory contention. See [partition compatibility](#cpx-qpx-and-spx-compatibility) for
 the current hardware and simulated test coverage.
 
 No visible devices yields an empty list. Runtime failures include the HIP
@@ -116,8 +117,8 @@ not key-search throughput, and no transfer/kernel overlap is claimed. There is
 no host-to-device bulk upload: the starting scalar is a kernel argument.
 A single slot intentionally provides backpressure. C09 retains this ownership
 model in its separate candidate-result executor. C13 connects durable verification;
-C14 adds [local pause and resume controls](PAUSE_RESUME.md). C20 must isolate genuine
-device hangs in supervised processes. A HIP call/destructor may block on broken hardware;
+C14 adds [local pause and resume controls](PAUSE_RESUME.md). [C20](MULTI_GPU.md) isolates device owners in supervised processes and tests
+a stopped process, not a genuine driver hang. A HIP call/destructor may block on broken hardware;
 run diagnostics under an external timeout in automation.
 
 ## Execution validation

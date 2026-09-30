@@ -21,10 +21,10 @@ cmake --build --preset cuda-h200 --parallel 12
 TMPDIR=/var/tmp ctest --preset cuda-h200 --parallel 8
 build/cuda-h200/keyhunt devices --backend cuda
 build/cuda-h200/keyhunt gpu-smoke --backend cuda --steps 257
-build/cuda-h200/keyhunt xpoint --backend cuda --range 1:10001 --targets targets.txt
 ```
 
-If SQLite is outside the normal SDK paths, pass `SQLite3_INCLUDE_DIR` and
+Use the [usage guide](USAGE.md) for finite searches with explicit fixture setup
+and durable checkpoints. If SQLite is outside the normal SDK paths, pass `SQLite3_INCLUDE_DIR` and
 `SQLite3_LIBRARY` as in [BUILD.md](BUILD.md). Validation built SQLite 3.51.3 in
 `/tmp/keyhunt-c18-deps` from the official amalgamation; no system packages were
 changed. See [the temporary-directory finding](C18_TEST_ENVIRONMENT.md).
@@ -39,8 +39,9 @@ on this host. Memory budgets use runtime free/total memory for the selected devi
 
 `tools/benchmark_gpu.py` and `tools/coordinator_worker.py` accept `--backend cuda`;
 HIP remains their default for existing invocations. The optional HTTPS worker
-self-test uses the selected native build. CUDA coordination deployment is a
-separate optional integration configuration, not implied by local GPU validation.
+self-test uses the selected native build. Enable `KEYHUNT_ENABLE_COORDINATOR=ON` for workers; the [C20 acceptance](C20_CUDA_VALIDATION.md)
+validates that optional configuration with localhost mTLS, eight concurrent
+owners and recovery. Public ingress/cross-host coordination remains outside that gate.
 
 ## Shared implementation and failure contracts
 

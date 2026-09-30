@@ -9,7 +9,8 @@ probe or download either GPU SDK.
 Use CMake 3.22+, GCC/G++ (11.4.0 tested), Make, SQLite 3.51.3+ development
 headers/library, and Python 3.9+ for tests. A
 production-only build can omit Python with `-DBUILD_TESTING=OFF`. No dependencies
-are fetched by the build. Clang is accepted but is not yet validated here.
+are fetched by the build. Non-HIP Clang host builds have not been validated here; the HIP compiler
+combination is recorded below.
 
 ```sh
 cmake --preset cpu-release
@@ -47,6 +48,83 @@ ctest --preset cpu-debug
 cmake --preset cpu-sanitizers
 cmake --build --preset cpu-sanitizers --parallel 4
 ```
+
+## Validated GPU builds
+
+Use a separate build directory for each backend. HIP and CUDA cannot be enabled
+in the same configuration. The GPU preset still builds the CPU verifier and
+legacy CPU modes; `-m` flags never select a GPU. Both native backends support the
+same exact xpoint, BSGS, checkpoint and supervised execution commands.
+
+These are recorded working combinations, not minimum SDK or driver versions:
+
+| Backend | Validated stack | Hardware and scope |
+| --- | --- | --- |
+| CPU | Ubuntu 22.04, GCC 11.4.0, CMake 3.22.1, Python 3.10.12, SQLite 3.51.3 | Linux x86-64 with SSSE3; no GPU SDK required |
+| HIP | ROCm Core 10.0; AMD clang 23.0.0git; HIP 7.15.26333; GCC 11.4.0 host; CMake 3.22.1 | Eight physical MI300X, eight logical `gfx942` devices in SPX/NPS1; [C20 evidence](MULTI_GPU.md) |
+| CUDA | CUDA 13.3.73; NVIDIA driver 610.57.04; GCC 11.4.0; CMake 3.22.1 | Eight physical H200, eight logical `sm_90` devices, MIG disabled; [C20 evidence](C20_CUDA_VALIDATION.md) |
+
+MI300X CPX discovery/diagnostics were also tested historically; QPX has simulated
+discovery coverage only. Full search/fleet acceptance uses SPX/NPS1. Neither
+logical-device counts nor their memory budgets establish physical-package
+throughput. CUDA MIG execution remains unvalidated. See the
+[partition matrix](HIP_BACKEND.md#cpx-qpx-and-spx-compatibility).
+
+For AMD:
+
+```sh
+cmake --preset hip-release
+cmake --build --preset hip-release --parallel 4
+TMPDIR=/var/tmp ctest --preset hip-release --output-on-failure
+build/hip-release/keyhunt devices --backend hip
+```
+
+For NVIDIA (adjust the toolkit path to the installed SDK):
+
+```sh
+cmake --preset cuda-h200 -DCMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc
+cmake --build --preset cuda-h200 --parallel 4
+TMPDIR=/var/tmp ctest --preset cuda-h200 --output-on-failure
+build/cuda-h200/keyhunt devices --backend cuda
+```
+
+Supply the same explicit SQLite paths as for CPU if required. HIP compiler/root
+overrides are described in [HIP_BACKEND.md](HIP_BACKEND.md#build-and-discovery).
+`cuda-h200` selects architecture 90 (native code and PTX); other hardware/toolchain
+combinations require their own validation. `TMPDIR` must be outside every Git
+checkout: an enclosing `/tmp/.git` caused journal tests to reject `/tmp` on the
+H200 host ([finding](C18_TEST_ENVIRONMENT.md)).
+
+Hardware tests require visible devices and fail when execution is unavailable.
+For focused native checks, use `ctest --preset hip-release -L hardware` or
+`ctest --preset cuda-h200 -L hardware`. Run benchmarks only after tests finish.
+The [finite GPU quickstart](USAGE.md#gpu-discovery-and-launch-check) links the
+search and checkpoint commands for either build.
+
+### Optional tuning and workers
+
+The HIP default uses portable arithmetic. Enable the C19 gfx942 carry/borrow
+intrinsics explicitly with `-DKEYHUNT_GFX942_CARRY=ON`; the configuration checks
+compiler support and the hardware suite includes the portable fallback. C19 did
+not retain handwritten AMD assembly. CUDA uses the accepted C18 optimizations
+by default. Keep kernel, process and fleet measurements separate; see
+[HIP tuning](HIP_TUNING.md), [gfx942 decisions](GFX942_SPECIALIZATIONS.md), and
+[CUDA accepted/rejected experiments](CUDA_BACKEND.md#h200-tuning-method).
+
+To add persistent device workers and HTTPS to either GPU preset, append
+`-DKEYHUNT_ENABLE_COORDINATOR=ON` when configuring. Install OpenSSL 3, nlohmann
+JSON >=3.10 and libcurl development files first. Append
+`-DKEYHUNT_TEST_APACHE_ROOT=/` only when Apache and its modules are installed and
+you want live localhost TLS tests; an extracted package root also works. The
+[coordinator build section](#authenticated-coordination-c15) describes custom
+prefixes. GPU builds without this option have local checkpoints but no worker.
+
+`cmake --install build/hip-release --prefix /desired/prefix` (or the CUDA build
+directory) installs `bin/keyhunt`, and with workers enabled, `bin/keyhunt-worker`,
+`bin/keyhunt-supervise` and `bin/keyhunt-calibrate-blocks`. No service is started.
+The installed binaries still need their native runtime and any custom dependency
+library paths. See [worker setup](COORDINATOR.md#s06-isolated-localhost-operation)
+and [concurrent ownership](MULTI_GPU.md) before starting multiple queues.
 
 ## Options
 
@@ -95,7 +173,7 @@ The daemon test binds a per-process `127.77.x.y` loopback address on port 8080,
 sends three synthetic requests, and always terminates the daemon. The original
 `bsgsd` ignores its `-p` value when binding; this known defect remains unchanged
 in the mechanical migration. Do not expose this old unauthenticated daemon as
-the planned coordinator. See [BSGSD.md](../BSGSD.md) for its existing protocol.
+the authenticated coordinator. See [BSGSD.md](../BSGSD.md) for its existing protocol.
 
 ## Make compatibility and local installation
 
@@ -247,7 +325,8 @@ ctest --preset hip-release -R 'bsgs_cli|hip_bsgs_search|bsgs_search_contract'
 
 The search benchmark compares one/eight/automatic giant grouping with fixed m
 and target sets. Actual target giant steps/s and effective scalar-range coverage/s
-must be reported separately. Current search receipts are volatile.
+must be reported separately. The `bsgs` command has volatile receipts; use `checkpoint run` for durable
+coverage on either GPU backend ([checkpoint guide](CHECKPOINTS.md)).
 
 
 ## Local journal and assignments
@@ -271,8 +350,8 @@ startup, transaction, JSON and close/checkpoint; it is not GPU throughput.
 
 ## Verified local checkpoints
 
-C13 adds `storage_checkpoint` and `storage_checkpoint_failures` to every CPU/HIP
-suite. `checkpoint_cli` tests canonical job creation and explicit backend rejection
+C13 adds `storage_checkpoint` and `storage_checkpoint_failures` to CPU, HIP and CUDA
+suites. `checkpoint_cli` tests canonical job creation and explicit backend rejection
 in CPU builds, and actual HIP crash/restart, overflow and result inspection in HIP
 builds. These checks are included in the focused sanitizer selector.
 
@@ -290,7 +369,7 @@ timing scope, known limits and acceptance evidence.
 C14 adds `storage_checkpoint_control` and `checkpoint_controls` to every preset.
 They test the owner state machine and real Linux command/signal processes using
 a bounded CPU fixture. The production executable has no test execution switch.
-HIP builds also run `checkpoint_pause_hip` for real GPU pause, online snapshots,
+HIP builds also run `checkpoint_pause_hip` (CUDA: `checkpoint_pause_cuda`) for real GPU pause, online snapshots,
 graceful shutdown and exact restart with changed visible device counts.
 
 ```sh
