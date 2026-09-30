@@ -20,3 +20,8 @@ target_link_libraries(storage_concurrency_test PRIVATE keyhunt_core SQLite::SQLi
 keyhunt_configure_target(storage_concurrency_test)
 add_test(NAME storage_concurrency COMMAND storage_concurrency_test)
 set_tests_properties(storage_concurrency PROPERTIES TIMEOUT 180 LABELS "cpu;storage;scheduler;recovery")
+
+add_test(NAME state_cli COMMAND "${Python3_EXECUTABLE}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/state_cli.py"
+    --binary $<TARGET_FILE:keyhunt> --report "${CMAKE_CURRENT_BINARY_DIR}/state-cli-results.json")
+set_tests_properties(state_cli PROPERTIES TIMEOUT 180 LABELS "cpu;storage;cli")

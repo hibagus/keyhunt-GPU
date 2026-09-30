@@ -157,3 +157,95 @@ writer processes test disjoint concurrent allocations and concurrent retries of
 one request. These are process-crash checks, not a simulated host power failure
 or a certification of the underlying storage hardware. Production binaries have
 no transaction fault hook.
+
+## Local commands
+
+Every action prints one JSON object. Failures print a diagnostic to stderr and
+exit 2. State operations are CPU-only in both CPU and HIP builds. For example:
+
+~~~sh
+export KEYHUNT_STATE_DIR="$HOME/.local/state/keyhunt-c12"
+./build/cpu-release/keyhunt state init
+./build/cpu-release/keyhunt state project-create --name "Local project"
+~~~
+
+Use the returned UUID as `PROJECT`. A synthetic job can then be registered using
+explicit input/configuration digests; these sample digests do not identify real
+target files:
+
+~~~sh
+./build/cpu-release/keyhunt state job-create --project "$PROJECT" \
+  --mode xpoint --range 1:10001 --block-width 100 \
+  --target-digest 1111111111111111111111111111111111111111111111111111111111111111 \
+  --algorithm-digest 2222222222222222222222222222222222222222222222222222222222222222
+~~~
+
+Use the returned 64-digit ID as `JOB`. Numeric range endpoints, block widths,
+block IDs and window widths are hexadecimal; ranges are half-open. Counts,
+lifetimes and generations are decimal. Wide output values are fixed-width hex
+strings; generation numbers are decimal strings to avoid JSON integer truncation.
+
+~~~sh
+./build/cpu-release/keyhunt state claim --project "$PROJECT" --job "$JOB" \
+  --owner workstation --request allocation-001 --policy sequential --count 8
+./build/cpu-release/keyhunt state inspect --project "$PROJECT" --job "$JOB"
+./build/cpu-release/keyhunt state block --project "$PROJECT" --job "$JOB" --block 0
+./build/cpu-release/keyhunt state check
+~~~
+
+The claim response includes a `grant` token for each assignment. Store the entire
+token as `GRANT`; it contains project, job, owner, epoch, generation, expiry and
+block ID. It is local fence data, not a password or authenticated credential.
+
+~~~sh
+./build/cpu-release/keyhunt state renew --grant "$GRANT" --request renewal-001
+./build/cpu-release/keyhunt state return --grant "$GRANT" --request return-001
+./build/cpu-release/keyhunt state recover --project "$PROJECT" --job "$JOB" \
+  --block 0 --owner workstation --request recovery-001 --previous-stopped yes
+~~~
+
+Use `--previous-stopped yes` only after the previous executor has actually stopped.
+An expired assignment can be explicitly recovered without this flag. Recovery
+retains its accepted coverage and creates a fresh generation. Returning requires
+an unstarted spare; C12's commands cannot start a search or credit coverage.
+
+| Action | Additional options |
+| --- | --- |
+| `init` | None |
+| `project-create` | Required `--name` |
+| `job-create` | Required `--project`, `--mode xpoint\|bsgs`, `--range`, `--block-width`, `--target-digest`, `--algorithm-digest`; optional fixed 64-digit `--seed` for reproducible selection |
+| `claim` | Required `--project`, `--job`, `--owner`, `--request`; optional `--policy sequential\|random\|random-window\|manual`, decimal `--count 1..256`, `--lifetime 1..2592000`; manual requires `--block` and count 1; random-window accepts `--window` (default hex 1000) |
+| `inspect` | Required `--project`, `--job`; reports state counts and physical storage statistics |
+| `block` | Required `--project`, `--job`, `--block`; reports assignment and exact coverage/complement |
+| `renew` | Required `--grant`, `--request`; optional `--lifetime` |
+| `return` | Required `--grant`, `--request` |
+| `recover` | Required `--project`, `--job`, `--block`, `--owner`, `--request`; optional `--previous-stopped yes\|no`, `--lifetime` |
+| `check`, `compact` | None; operate on the whole journal |
+| `backup` | Required absolute `--destination` directory |
+| `restore` | Required absolute `--source` directory and explicit destination `--state-dir` |
+
+All actions accept `--state-dir` to override the environment. Duplicate/unknown
+options and options belonging to another action fail. Owner and request tokens
+are 1..128 ASCII letters, digits, `-`, `_`, `.`, or `@`. Project names are 1..256
+printable ASCII characters. Digests are exactly 64 hex digits, without `0x`.
+Initialization/project creation are local setup operations; project creation
+generates a new UUID on every call. Allocation/lifecycle operations require a
+request key; retry the exact original payload and key after uncertain output.
+An output failure occurs after a successful mutation may already be committed.
+
+~~~sh
+./build/cpu-release/keyhunt state backup --destination /absolute/private/snapshot
+./build/cpu-release/keyhunt state restore --source /absolute/private/snapshot \
+  --state-dir /absolute/private/restored
+./build/cpu-release/keyhunt state check --state-dir /absolute/private/restored
+./build/cpu-release/keyhunt state compact
+~~~
+
+Backup/restore destinations must not already contain a database. A restored
+journal is inspectable but cannot allocate, renew, recover, return or accept
+coverage. There is deliberately no activation override in this milestone.
+
+The CLI regression uses an independent Python manifest encoder and SQLite reader,
+checks project foreign keys, all four policies, simultaneous request retries,
+lost stdout via `/dev/full`, sealed restore, environment precedence and high-bit
+IDs. Run the storage gates with `ctest --preset cpu-release -L storage`.

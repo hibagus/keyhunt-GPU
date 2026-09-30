@@ -55,6 +55,7 @@ public:
     ~Journal();
     Journal(const Journal&)=delete;
     Journal& operator=(const Journal&)=delete;
+    std::string state_directory() const;
     std::string create_project(const std::string& name);
     Scope create_job(const std::string& project,const Manifest& manifest,std::optional<Digest> seed={});
     Manifest manifest(const Scope& scope) const;

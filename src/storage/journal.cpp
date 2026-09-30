@@ -274,6 +274,7 @@ void Journal::check()const{
     }
     tx.commit();
 }
+std::string Journal::state_directory()const{return impl_->db.directory().string();}
 void Journal::compact(){auto& db=impl_->db;db.writable();{Statement q(db.handle(),"PRAGMA wal_checkpoint(TRUNCATE)");if(!q.step()||q.integer(0)!=0)throw std::runtime_error("checkpoint busy; retry compaction later");}db.exec("VACUUM");{Statement q(db.handle(),"PRAGMA wal_checkpoint(TRUNCATE)");if(!q.step()||q.integer(0)!=0)throw std::runtime_error("checkpoint busy after compaction");}}
 void Journal::backup(const std::string& destination)const{impl_->db.backup(destination);}
 void Journal::restore(const std::string& source,const std::string& destination){Database::restore(source,destination);}
