@@ -1,0 +1,136 @@
+
+member /home/bagus/keyhunt-GPU/build/cuda-h200/libkeyhunt_backend.a:availability.cpp.o:
+
+member /home/bagus/keyhunt-GPU/build/cuda-h200/libkeyhunt_backend.a:executor.cpp.o:
+
+Fatbin ptx code:
+================
+arch = sm_90
+code version = [9,3]
+host = linux
+compile_size = 64bit
+compressed
+identifier = /home/bagus/keyhunt-GPU/src/backend/gpu/executor.cpp
+ptxasOptions =  --generate-line-info 
+
+Fatbin elf code:
+================
+arch = sm_90
+code version = [1,8]
+host = linux
+compile_size = 64bit
+identifier = /home/bagus/keyhunt-GPU/src/backend/gpu/executor.cpp
+
+Resource usage:
+ Common:
+  GLOBAL:0
+ Function _ZN7keyhunt7backend18diagnostic_indicesENS0_16DiagnosticScalarEmPS1_Py:
+  REG:32 STACK:0 SHARED:0 LOCAL:0 CONSTANT[0]:584 TEXTURE:0 SURFACE:0 SAMPLER:0
+
+member /home/bagus/keyhunt-GPU/build/cuda-h200/libkeyhunt_backend.a:xpoint.cpp.o:
+
+Fatbin ptx code:
+================
+arch = sm_90
+code version = [9,3]
+host = linux
+compile_size = 64bit
+compressed
+identifier = /home/bagus/keyhunt-GPU/src/backend/gpu/xpoint.cpp
+ptxasOptions =  --generate-line-info 
+
+Fatbin elf code:
+================
+arch = sm_90
+code version = [1,8]
+host = linux
+compile_size = 64bit
+identifier = /home/bagus/keyhunt-GPU/src/backend/gpu/xpoint.cpp
+
+Resource usage:
+ Common:
+  GLOBAL:0
+ Function _ZN7keyhunt3gpu14xpoint_steppedILb0EEEvNS0_5PointEmPKS2_PKNS0_5FieldEjPNS_4core15XPointCandidateEjPNS0_14XPointCountersE:
+  REG:110 STACK:768 SHARED:0 LOCAL:0 CONSTANT[0]:680 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function _ZN7keyhunt3gpu14xpoint_steppedILb1EEEvNS0_5PointEmPKS2_PKNS0_5FieldEjPNS_4core15XPointCandidateEjPNS0_14XPointCountersE:
+  REG:122 STACK:0 SHARED:0 LOCAL:0 CONSTANT[0]:680 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function _ZN7keyhunt3gpu13xpoint_directENS0_6ScalarEmPKNS0_5FieldEjPNS_4core15XPointCandidateEjPNS0_14XPointCountersE:
+  REG:94 STACK:64 SHARED:0 LOCAL:0 CONSTANT[0]:608 TEXTURE:0 SURFACE:0 SAMPLER:0
+
+member /home/bagus/keyhunt-GPU/build/cuda-h200/libkeyhunt_backend.a:bsgs_table.cpp.o:
+
+Fatbin ptx code:
+================
+arch = sm_90
+code version = [9,3]
+host = linux
+compile_size = 64bit
+compressed
+identifier = /home/bagus/keyhunt-GPU/src/backend/gpu/bsgs_table.cpp
+ptxasOptions =  --generate-line-info 
+
+Fatbin elf code:
+================
+arch = sm_90
+code version = [1,8]
+host = linux
+compile_size = 64bit
+identifier = /home/bagus/keyhunt-GPU/src/backend/gpu/bsgs_table.cpp
+
+Resource usage:
+ Common:
+  GLOBAL:0
+ Function _ZN7keyhunt3gpu10bsgs_probeENS_4bsgs4ViewEPKNS1_3KeyEmPNS_7backend12BsgsProbeHitEPyb:
+  REG:50 STACK:0 SHARED:0 LOCAL:0 CONSTANT[0]:609 TEXTURE:0 SURFACE:0 SAMPLER:0
+
+member /home/bagus/keyhunt-GPU/build/cuda-h200/libkeyhunt_backend.a:bsgs_search.cpp.o:
+
+Fatbin ptx code:
+================
+arch = sm_90
+code version = [9,3]
+host = linux
+compile_size = 64bit
+compressed
+identifier = /home/bagus/keyhunt-GPU/src/backend/gpu/bsgs_search.cpp
+ptxasOptions =  --generate-line-info 
+
+Fatbin elf code:
+================
+arch = sm_90
+code version = [1,8]
+host = linux
+compile_size = 64bit
+identifier = /home/bagus/keyhunt-GPU/src/backend/gpu/bsgs_search.cpp
+
+Resource usage:
+ Common:
+  GLOBAL:0
+ Function _ZN7keyhunt3gpu11bsgs_searchILj8EEEvNS0_5PointEmmPKS2_jS4_NS_4bsgs4ViewEPNS_4core13BsgsCandidateEjPNS0_12BsgsCountersE:
+  REG:92 STACK:1024 SHARED:0 LOCAL:0 CONSTANT[0]:736 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function _ZN7keyhunt3gpu11bsgs_searchILj1EEEvNS0_5PointEmmPKS2_jS4_NS_4bsgs4ViewEPNS_4core13BsgsCandidateEjPNS0_12BsgsCountersE:
+  REG:108 STACK:32 SHARED:0 LOCAL:0 CONSTANT[0]:736 TEXTURE:0 SURFACE:0 SAMPLER:0
+
+member /home/bagus/keyhunt-GPU/build/cuda-h200/libkeyhunt_backend.a:discovery.cu.o:
+
+Fatbin ptx code:
+================
+arch = sm_90
+code version = [9,3]
+host = linux
+compile_size = 64bit
+compressed
+identifier = /home/bagus/keyhunt-GPU/src/backend/cuda/discovery.cu
+ptxasOptions =  --generate-line-info 
+
+Fatbin elf code:
+================
+arch = sm_90
+code version = [1,8]
+host = linux
+compile_size = 64bit
+identifier = /home/bagus/keyhunt-GPU/src/backend/cuda/discovery.cu
+
+Resource usage:
+ Common:
+  GLOBAL:0

@@ -4,6 +4,9 @@ The main executable retains these original modes after C02. Support means the
 mode exists and the stated small characterization checks pass; it does not
 certify every flag combination or exact coverage. These legacy flags remain CPU
 paths; C09 adds a separate [HIP xpoint subcommand](HIP_XPOINT.md).
+C18 adds native [CUDA xpoint and BSGS subcommands](CUDA_BACKEND.md) with the same
+exact range and local checkpoint contracts. CUDA does not accelerate the legacy
+CPU mode flags listed below.
 
 | Mode | Target file contents | Characterization |
 | --- | --- | --- |

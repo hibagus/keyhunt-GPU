@@ -13,6 +13,8 @@ The local journal now supports transactional assignments and CPU-verified durabl
 HIP checkpoints, graceful local pause/resume and checkpoint-on-signal shutdown.
 Authenticated coordination now adds mTLS, project roles, durable machine sync,
 an offline outbox and fenced recovery, validated in an isolated localhost setup.
+Native CUDA now supports the same bounded xpoint/BSGS and local checkpoint
+contracts, validated on eight H200s with measured arithmetic and inline PTX tuning.
 
 [Build guide](docs/BUILD.md) · [Usage](docs/USAGE.md) ·
 [Implementation status](docs/IMPLEMENTATION_STATUS.md) ·
@@ -26,7 +28,7 @@ an offline outbox and fenced recovery, validated in an isolated localhost setup.
 | AMD HIP / MI300X | C07–C11 discovery, arithmetic, xpoint and BSGS searches validated on gfx942 |
 | NVIDIA CUDA | Native C18 backend; H200 build and validation in [CUDA_BACKEND.md](docs/CUDA_BACKEND.md) |
 | Local state | C12 project-scoped SQLite journal, sparse allocation, fenced assignments and sealed backups; [operations guide](docs/STORAGE.md) |
-| Durable HIP searches | C13 verified local checkpoints and replay for xpoint/BSGS; [commands and recovery](docs/CHECKPOINTS.md) |
+| Durable GPU searches | C13/C18 verified local checkpoints and replay for HIP/CUDA xpoint and BSGS; [commands and recovery](docs/CHECKPOINTS.md), [CUDA usage](docs/CUDA_BACKEND.md) |
 | Pause/resume | C14 local commands, graceful signals, exact restart and live inspection; [operations guide](docs/PAUSE_RESUME.md) |
 | Distributed blocks | C15 authenticated coordination and supervised workers; [localhost setup](docs/COORDINATOR.md#s06-isolated-localhost-operation). Simultaneous multi-GPU execution remains C20 |
 
@@ -54,8 +56,8 @@ C06 corrected arithmetic and the tested BSGS start-boundary miss. See
 This repository builds on [AlbertoBSD's keyhunt](https://github.com/albertobsd/keyhunt)
 for secp256k1 search experiments and public puzzle fixtures. The redesign separates
 application code, shared headers, CPU arithmetic, device kernels and work storage.
-AMD HIP is the first GPU delivery target; native CUDA follows after the shared
-arithmetic and search contracts are validated.
+AMD HIP and native NVIDIA CUDA implement the shared arithmetic and bounded
+search contracts, with hardware-specific tuning validated independently.
 
 The distribution design gives each selected GPU its own block, sized for roughly
 12 hours on a reference device, with local checkpoints and a 30-day renewable
@@ -142,7 +144,9 @@ process exit as proof of saved search progress or exact coverage.
 - [x] C13: CPU-verified durable HIP checkpoints and exact replay after interruption.
 - [x] C14: graceful local pause/resume, signals, inspection and device-independent restart.
 - [x] C15: authenticated coordination, durable machine sync, offline leases and localhost validation.
-- [ ] C16–C20: measured tuning, native CUDA, validated assembly and multiple GPUs.
+- [ ] C16–C17: further measured tuning and profiling acceptance.
+- [x] C18: native CUDA, H200 parity/recovery, measured arithmetic and inline PTX tuning.
+- [ ] C19–C20: gfx942 assembly specializations and simultaneous multi-GPU scheduling.
 - [ ] C21–C23: operations guides, offline assignments and further GPU modes.
 
 See [implementation status](docs/IMPLEMENTATION_STATUS.md) for evidence and

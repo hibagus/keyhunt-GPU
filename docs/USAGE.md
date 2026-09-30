@@ -114,7 +114,7 @@ The [historical README](HISTORICAL_README.md) preserves the previous lengthy mod
 examples, original acknowledgments and historical speed discussions. Consult
 current validation records before relying on those older claims.
 
-## HIP discovery and launch check
+## GPU discovery and launch check
 
 ```sh
 ./build/hip-release/keyhunt devices --backend hip
@@ -129,3 +129,14 @@ launch checks exact scalar indices on the GPU and verifies them on the host;
 its output explicitly reports that it provides no search coverage. No target
 file or result file is involved. CPU-only builds reject both HIP requests.
 See [the HIP contract](HIP_BACKEND.md) for bounds, timings and limitations.
+
+For NVIDIA, build the [H200 CUDA preset](CUDA_BACKEND.md) and use:
+
+```sh
+./build/cuda-h200/keyhunt devices --backend cuda
+./build/cuda-h200/keyhunt gpu-smoke --backend cuda --device 0 --steps 257
+```
+
+Native CUDA also supports the exact `xpoint`, `bsgs`, `bsgs-table validate`, and
+`checkpoint run` commands with `--backend cuda`. CPU-only builds reject CUDA
+requests explicitly. The legacy `-m` flags continue to select CPU modes.

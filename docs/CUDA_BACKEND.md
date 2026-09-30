@@ -239,3 +239,40 @@ CUDA_VISIBLE_DEVICES=7 TMPDIR=/var/tmp python3 tools/benchmark_gpu.py \
 
 Choose a new output directory outside all checkouts. Runtime journals and target
 files remain there; only measurement reports are committed under `docs/`.
+
+
+## Final H200 acceptance
+
+C18 is complete for native CUDA on the recorded H200/CUDA 13.3 stack.
+[The validation report](baselines/C18_VALIDATION.json) retains test identities,
+corpora, binary hashes, sanitizer output and device/recovery evidence.
+
+- All 32 CPU tests pass. The CUDA build passes all 47 distinct tests: 39 from the
+  initial run and eight completed after correcting the BSGS corpus timeout.
+  The original 300-second timeout and interrupted superseded run are recorded;
+  the new 600-second limit retains all cases and the 90-second child watchdog.
+- Field and point suites pass 13,381 and 1,278 cases respectively. A further 129
+  mixed arithmetic cases pass on each of eight H200s. Xpoint direct and stepped
+  each pass 48 CLI cases; BSGS auto, group 1 and group 8 each pass 95 cases and 37
+  rejection checks, including searches on every visible device.
+- Candidate capacity, overflow/replay, output corruption, partial construction,
+  queue errors and executor ownership checks pass. Checkpoint kill/restart,
+  journal integrity, local controls, and pause/resume across 2/1/3 visible-device
+  layouts pass. NUMA metadata agrees with Linux sysfs; selected UUID identity
+  survives visibility remapping.
+- NVIDIA Compute Sanitizer passes ten memory/leak runs and two uninitialized-read
+  runs. The three lifecycle fixtures that deliberately select device `-1` disable
+  API-error reporting for their memory checks; valid search benchmarks retain it.
+  Initial expected invalid-device diagnostics are documented, not counted as
+  memory defects. Failure-injection cleanup has zero reported leaks.
+- The optional worker's production self-test passes against the final CUDA
+  libraries. This validation does not start an HTTPS service or claim a full CUDA
+  coordinator deployment. A fresh AMD HIP build and MIG validation were not
+  available on this host; CPU HIP-discovery contract checks pass.
+
+The final [resource report](baselines/C18_FINAL_RESOURCES.txt) records 122 registers
+and no stack for small-target stepped xpoint, 110 registers/768 bytes of stack for
+larger target sets, and 92 registers/1024 bytes of stack for grouped BSGS. Native
+SASS retains `IADD3.X` carry instructions; its hash and reproduction command are
+recorded in the validation report. These measurements leave room for further
+workload-specific tuning; they do not establish a globally optimal kernel.

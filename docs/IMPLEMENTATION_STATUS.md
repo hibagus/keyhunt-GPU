@@ -23,7 +23,7 @@ change is committed separately. Analysis and validation evidence live under
 | C14: graceful pause, resume and inspection | Completed | [Controls, operations and measurements](PAUSE_RESUME.md); graceful signals, private local commands, bounded drain, resume fencing, online snapshots and real HIP restart across 2/1/3 visible devices; [acceptance evidence](baselines/C14_VALIDATION.json) |
 | C15: authenticated project-scoped coordination | Completed (localhost scope) | [Implementation and operations](COORDINATOR.md), [findings and validation](COORDINATOR_VALIDATION.md); required mTLS, registry/roles, atomic machine sync, durable outbox, offline fences, supervised HIP execution and reconciled restore. User-selected localhost gate replaces second-host/public ingress; those remain deferred. |
 | C16–C17 | In progress / planned | Repeated durability benchmark harness is available; tuning acceptance remains separate |
-| C18: native CUDA | Implemented; H200 acceptance in progress | [CUDA build and contracts](CUDA_BACKEND.md); native CUDA 13.3 compilation, field/point oracles on eight H200s, CPU regression and initial GPU failure/ownership checks pass |
+| C18: native CUDA | Completed | [CUDA build, tuning and acceptance](CUDA_BACKEND.md); 47 CUDA-build and 32 CPU tests, eight H200s, exact xpoint/BSGS parity, checkpoint recovery, 12 sanitizer runs and measured PTX/mixed-coordinate optimizations; [validation evidence](baselines/C18_VALIDATION.json) |
 | C19–C23 | Planned | Acceptance gates remain in the redesign plan |
 
 C01 records the original CPU boundary/stride defects. C06 fixes modular/point
