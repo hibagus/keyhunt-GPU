@@ -11,7 +11,6 @@
 namespace keyhunt::backend {
 namespace {
 using Clock = std::chrono::steady_clock;
-std::atomic<uint64_t> next_executor{1};
 double milliseconds(Clock::duration value) {
     return std::chrono::duration<double, std::milli>(value).count();
 }
@@ -19,7 +18,7 @@ double milliseconds(Clock::duration value) {
 struct HipDiagnosticExecutor::Impl {
     int device;
     ExecutorOptions options;
-    uint64_t id = next_executor.fetch_add(1), sequence = 0;
+    uint64_t id = next_executor_id.fetch_add(1), sequence = 0;
     bool failed = false;
     std::optional<scheduler::KernelBatch> batch;
     hipStream_t stream = nullptr;

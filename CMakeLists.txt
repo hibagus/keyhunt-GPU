@@ -25,7 +25,7 @@ option(KEYHUNT_ENABLE_LTO "Preserve the original per-source LTO selection in opt
 option(KEYHUNT_ENABLE_SANITIZERS "Enable address and undefined behavior sanitizers" OFF)
 option(KEYHUNT_BUILD_LEGACY "Build the separate GMP/OpenSSL legacy executable" OFF)
 option(KEYHUNT_BUILD_BSGSD "Build the original local BSGS daemon" OFF)
-option(KEYHUNT_ENABLE_HIP "Build AMD HIP discovery and bounded diagnostics" OFF)
+option(KEYHUNT_ENABLE_HIP "Build AMD HIP discovery, diagnostics and bounded xpoint search" OFF)
 option(KEYHUNT_ENABLE_CUDA "Request the future CUDA backend" OFF)
 if(KEYHUNT_ENABLE_CUDA)
     message(FATAL_ERROR "CUDA is not implemented yet (C18). Use a CPU or HIP build.")
@@ -89,24 +89,25 @@ keyhunt_configure_target(keyhunt_ranges)
 add_library(keyhunt_core STATIC
     src/core/config.cpp
     src/core/cpu_targets.cpp
-    src/core/result_verifier.cpp)
+    src/core/result_verifier.cpp
+    src/core/xpoint_search.cpp)
 target_link_libraries(keyhunt_core PUBLIC keyhunt_cpu_crypto keyhunt_ranges)
 keyhunt_configure_target(keyhunt_core)
 
 # These targets deliberately do not use the legacy CPU compiler-options helper.
 # HIP language compilation receives no x86 SIMD, native tuning, LTO or fast-math.
 if(KEYHUNT_ENABLE_HIP)
-    add_library(keyhunt_backend STATIC src/backend/hip/discovery.hip src/backend/hip/executor.hip)
-    target_include_directories(keyhunt_backend PRIVATE kernels/hip)
-    target_link_libraries(keyhunt_backend PUBLIC keyhunt_ranges)
+    add_library(keyhunt_backend STATIC src/backend/hip/discovery.hip src/backend/hip/executor.hip src/backend/hip/xpoint.hip)
+    target_include_directories(keyhunt_backend PRIVATE kernels kernels/hip)
+    target_link_libraries(keyhunt_backend PUBLIC keyhunt_core)
     set_target_properties(keyhunt_backend PROPERTIES INTERPROCEDURAL_OPTIMIZATION OFF)
     target_compile_options(keyhunt_backend PRIVATE -Wall -Wextra)
 else()
     add_library(keyhunt_backend STATIC src/backend/hip/unavailable.cpp)
 endif()
 target_include_directories(keyhunt_backend PUBLIC include)
-add_library(keyhunt_backend_commands STATIC src/backend/commands.cpp)
-target_link_libraries(keyhunt_backend_commands PUBLIC keyhunt_backend)
+add_library(keyhunt_backend_commands STATIC src/backend/commands.cpp src/backend/xpoint_command.cpp)
+target_link_libraries(keyhunt_backend_commands PUBLIC keyhunt_backend keyhunt_core)
 target_compile_options(keyhunt_backend_commands PRIVATE -Wall -Wextra)
 if(KEYHUNT_ENABLE_SANITIZERS)
     target_compile_options(keyhunt_backend_commands PRIVATE -fsanitize=address,undefined -fno-omit-frame-pointer)
@@ -151,6 +152,7 @@ if(BUILD_TESTING)
     find_package(Python3 3.9 REQUIRED COMPONENTS Interpreter)
     include(cmake/OracleTests.cmake)
     include(cmake/GpuArithmeticTests.cmake)
+    include(cmake/XPointTests.cmake)
     # This discovery contract test uses a private, minimal API double. It needs
     # no GPU SDK; actual HIP compilation and hardware tests remain separate.
     add_executable(hip_discovery_test tests/unit/hip_discovery.cpp)

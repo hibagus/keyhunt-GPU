@@ -1,0 +1,33 @@
+add_executable(xpoint_search_test tests/unit/xpoint_search.cpp)
+target_link_libraries(xpoint_search_test PRIVATE keyhunt_core)
+keyhunt_configure_target(xpoint_search_test)
+add_test(NAME xpoint_search_contract COMMAND xpoint_search_test)
+set_tests_properties(xpoint_search_contract PROPERTIES TIMEOUT 30 LABELS "cpu;core;xpoint")
+if(KEYHUNT_ENABLE_HIP)
+    add_executable(hip_xpoint_executor_test tests/gpu/xpoint_executor.cpp)
+    target_link_libraries(hip_xpoint_executor_test PRIVATE keyhunt_backend)
+    set_target_properties(hip_xpoint_executor_test PROPERTIES LINKER_LANGUAGE CXX)
+    add_executable(hip_xpoint_failure_test tests/gpu/xpoint_failures.hip src/backend/hip/xpoint.hip)
+    target_include_directories(hip_xpoint_failure_test PRIVATE kernels kernels/hip src/backend/hip)
+    target_compile_definitions(hip_xpoint_failure_test PRIVATE KEYHUNT_TEST_HIP_FAILURES=1)
+    target_compile_options(hip_xpoint_failure_test PRIVATE -Wall -Wextra)
+    target_link_libraries(hip_xpoint_failure_test PRIVATE keyhunt_core)
+    # The preserved CPU archives contain GCC LTO objects. Link with the host C++
+    # driver, as the application does, while retaining HIP compilation for kernels.
+    set_target_properties(hip_xpoint_failure_test PROPERTIES INTERPROCEDURAL_OPTIMIZATION OFF LINKER_LANGUAGE CXX)
+    add_test(NAME hip_xpoint_failures COMMAND hip_xpoint_failure_test)
+    add_test(NAME hip_xpoint_executor COMMAND hip_xpoint_executor_test)
+    set_tests_properties(hip_xpoint_executor hip_xpoint_failures PROPERTIES TIMEOUT 120 LABELS "hip;hardware;xpoint" RESOURCE_LOCK hip_device)
+endif()
+set(xpoint_cli_args)
+if(KEYHUNT_ENABLE_HIP)
+    list(APPEND xpoint_cli_args --hip)
+endif()
+add_test(NAME xpoint_cli COMMAND "${Python3_EXECUTABLE}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/xpoint_cli.py"
+    --binary $<TARGET_FILE:keyhunt> --oracle $<TARGET_FILE:secp256k1_oracle>
+    --report "${CMAKE_CURRENT_BINARY_DIR}/xpoint-cli-results.json" ${xpoint_cli_args})
+set_tests_properties(xpoint_cli PROPERTIES TIMEOUT 300 LABELS "cpu;backend;xpoint")
+if(KEYHUNT_ENABLE_HIP)
+    set_tests_properties(xpoint_cli PROPERTIES LABELS "hip;hardware;xpoint;oracle" RESOURCE_LOCK hip_device)
+endif()
