@@ -134,9 +134,15 @@ KEYHUNT_HD inline void mul(Field& out, const Field& a, const Field& b) {
     out = reduce_product(product);
 }
 KEYHUNT_HD inline void square(Field& out, const Field& a) { mul(out, a, a); }
-KEYHUNT_HD inline bool inverse(Field& out, const Field& a) {
-    // Fermat inversion is a correctness baseline. Zero has no inverse; return
-    // false and an explicit zero, including when out aliases a.
+template<unsigned Count>
+KEYHUNT_HD inline void square_n(Field& out, const Field& a) {
+    Field result = a;
+    for (unsigned i = 0; i < Count; ++i) square(result, result);
+    out = result;
+}
+// Keep the binary algorithm as an independent device reference and as the
+// CPU/HIP implementation. Zero and exact in-place output have the same contract.
+KEYHUNT_HD inline bool inverse_binary(Field& out, const Field& a) {
     if (is_zero(a)) { out = Field{}; return false; }
     Field exponent = prime();
     exponent.limb[0] -= 2;
@@ -147,6 +153,34 @@ KEYHUNT_HD inline bool inverse(Field& out, const Field& a) {
     }
     out = result;
     return true;
+}
+KEYHUNT_HD inline bool inverse(Field& out, const Field& a) {
+#if defined(__CUDA_ARCH__) && !defined(KEYHUNT_CUDA_PORTABLE_INVERSE)
+    if (is_zero(a)) { out = Field{}; return false; }
+    // Fixed addition chain for p-2: 255 squares and 15 multiplies, versus
+    // 256 squares and 249 multiplies in the portable binary reference below.
+    // xK denotes a^(2^K-1). Preserve a until the last write for in-place calls.
+    Field x2, x3, x6, x9, x11, x22, x44, x88, x176, x220, x223, result;
+    square(x2, a); mul(x2, x2, a);
+    square(x3, x2); mul(x3, x3, a);
+    square_n<3>(x6, x3); mul(x6, x6, x3);
+    square_n<3>(x9, x6); mul(x9, x9, x3);
+    square_n<2>(x11, x9); mul(x11, x11, x2);
+    square_n<11>(x22, x11); mul(x22, x22, x11);
+    square_n<22>(x44, x22); mul(x44, x44, x22);
+    square_n<44>(x88, x44); mul(x88, x88, x44);
+    square_n<88>(x176, x88); mul(x176, x176, x88);
+    square_n<44>(x220, x176); mul(x220, x220, x44);
+    square_n<3>(x223, x220); mul(x223, x223, x3);
+    square_n<23>(result, x223); mul(result, result, x22); // 2^246 - 2^22 - 1
+    square_n<5>(result, result); mul(result, result, a);  // 2^251 - 2^27 - 31
+    square_n<3>(result, result); mul(result, result, x2); // 2^254 - 2^30 - 245
+    square_n<2>(result, result); mul(result, result, a);  // 2^256 - 2^32 - 979
+    out = result;
+    return true;
+#else
+    return inverse_binary(out, a);
+#endif
 }
 
 // One serial group per caller. Exact in-place operation is supported; partially

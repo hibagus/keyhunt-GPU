@@ -100,3 +100,26 @@ GPUs visible (unreserved host). This is a startup result, not a kernel speedup.
 Raw observations are in [C18_DEVICE_SELECTION.json](baselines/C18_DEVICE_SELECTION.json).
 The CLI checks cover hidden devices, invalid/unbuilt backends, `1,0` visibility
 remapping and selected UUID identity.
+
+## Fixed inversion chain
+
+CUDA `inverse()` uses an explicit chain for `p-2 = 2^256 - 2^32 - 979`:
+255 squarings and 15 multiplications, versus 256 and 249 for binary exponentiation.
+Names `xK` denote `a^(2^K-1)` and the last four exponents are annotated in code.
+Zero, in-place output and zero-containing batch inversion retain their contracts.
+CPU and HIP retain binary inversion; CUDA can use that fallback with
+`-DCMAKE_CUDA_FLAGS=-DKEYHUNT_CUDA_PORTABLE_INVERSE`.
+
+The H200 microbenchmark median improved from 0.2550 to 0.1365 ms (1.87x).
+At 32,768 xpoint scalars the 32-target stepped case improved 1.18x; one/three
+small-target kernels do no inversion and remained unchanged. BSGS at `m=257`,
+8,192 giants/target improved about 1.06–1.33x depending on grouping/target count.
+All expected matches and coverage were checked, with one warm-up and five
+samples per variant. Field and point oracle suites passed on GPU 7.
+
+Applying the chain to direct xpoint raised registers from 92 to 124 and stack
+from 64 to 224 bytes/thread, regressing that reference by about 19%. That dispatch
+is rejected: direct xpoint explicitly retains `inverse_binary()`, restoring its
+baseline timing. This preserves a distinct normalization reference for search
+parity. [C18_INVERSION.json](baselines/C18_INVERSION.json) retains both the rejected
+measurement and the corrected dispatch, together with independent oracle reports.

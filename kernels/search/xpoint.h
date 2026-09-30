@@ -49,7 +49,9 @@ __global__ void xpoint_direct(Scalar begin, uint64_t count, const Field* targets
     }
     // Only X is needed: avoid the extra multiplication to normalize Y.
     Field zi,zz,x;
-    inverse(zi,point.z); square(zz,zi); mul(x,point.x,zz);
+    // Keep this differential reference on binary inversion. The addition chain
+    // increases register pressure in the full scalar-multiplication kernel.
+    inverse_binary(zi,point.z); square(zz,zi); mul(x,point.x,zz);
     xpoint_lookup(x,index,targets,target_count,output,capacity,counters);
     atomicAdd(&counters->steps,1ULL);
 }
