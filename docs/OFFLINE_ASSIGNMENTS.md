@@ -25,7 +25,7 @@ values. Delivery time consumes the lease: importing or copying a file cannot
 restart a thirty-day clock. A changed boot requires a new exchange. Superseded
 responses cannot reactivate work; exact duplicate imports are no-ops.
 
-Files are bounded, versioned JSON. Publication writes a private temporary file,
+Files are versioned JSON bounded to 8 MiB. Publication writes a private temporary file,
 syncs it, atomically publishes without replacing an existing destination, and
 syncs the parent directory. Export/import paths remain outside Git checkouts.
 Transfers contain public targets and found scalars, so use private storage and a
@@ -63,3 +63,12 @@ quarantined under the existing stopped-authority and access-review procedure.
   host sanitizer checks, documentation and artifact validation.
 
 Commands, raw evidence and final acceptance will be added with the implementation.
+
+## File codec validation
+
+The first native gate, `coordinator_offline_files`, passes on the CPU release
+build. It checks exact JSON/checksum round trips, preservation of an existing
+destination, invalid checksums, duplicate JSON fields, size bounds, public
+permissions, symlinks, hardlinks and nonblocking rejection of a FIFO. Failed
+publication leaves no staging file. Linux `renameat2(RENAME_NOREPLACE)` provides
+exclusive publication without a transient second hardlink.

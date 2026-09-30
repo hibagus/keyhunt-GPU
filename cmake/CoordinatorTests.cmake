@@ -127,3 +127,11 @@ if(TARGET keyhunt-worker AND KEYHUNT_ENABLE_CUDA)
     set_tests_properties(coordinator_cuda_contexts PROPERTIES TIMEOUT 60 SKIP_RETURN_CODE 77
         LABELS "cuda;hardware;coordinator" RESOURCE_LOCK gpu_device)
 endif()
+
+# File transport has no GPU/network dependency; exercise real filesystem rules.
+add_executable(coordinator_offline_files_test tests/coordinator/offline_files.cpp)
+target_include_directories(coordinator_offline_files_test PRIVATE src/storage src/coordinator)
+target_link_libraries(coordinator_offline_files_test PRIVATE keyhunt_coordination)
+keyhunt_configure_target(coordinator_offline_files_test)
+add_test(NAME coordinator_offline_files COMMAND coordinator_offline_files_test)
+set_tests_properties(coordinator_offline_files PROPERTIES TIMEOUT 30 LABELS "cpu;coordinator;recovery")

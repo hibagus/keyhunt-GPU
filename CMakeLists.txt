@@ -189,7 +189,7 @@ option(KEYHUNT_ENABLE_HTTPS_WORKER "Build HTTPS worker executable and supervisor
 if(KEYHUNT_ENABLE_COORDINATOR)
     find_package(OpenSSL 3.0 REQUIRED)
     find_package(nlohmann_json 3.10 REQUIRED)
-    add_library(keyhunt_coordination STATIC src/coordinator/certificate.cpp src/coordinator/repository.cpp src/coordinator/worker.cpp)
+    add_library(keyhunt_coordination STATIC src/coordinator/certificate.cpp src/coordinator/repository.cpp src/coordinator/worker.cpp src/coordinator/offline.cpp)
     target_include_directories(keyhunt_coordination PUBLIC include PRIVATE src/coordinator src/storage)
     target_link_libraries(keyhunt_coordination PUBLIC keyhunt_storage nlohmann_json::nlohmann_json OpenSSL::Crypto)
     keyhunt_configure_target(keyhunt_coordination)
