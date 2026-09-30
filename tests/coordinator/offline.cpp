@@ -27,6 +27,7 @@ struct Scenario {
         config={{"endpoint","https://test.invalid"},{"transport","file"},
                 {"jobs",{{{"project",project},{"job",job["job"]},{"devices",{"0","1"}},{"spares",1},{"policy","sequential"}}}}};
         worker.configure(config);
+        require(worker.status()["sync_due_in"].is_null(),"file worker advertised automatic synchronization");
     }
     Json relay(const Json& request){return repo.request(cert,"POST","/api/v1/offline-sync",request);}
     void exchange(){worker.import_response(relay(worker.export_request()));}

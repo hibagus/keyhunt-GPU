@@ -192,7 +192,7 @@ def main():
     last_status = 0
     last_network_error = None
     status = read("status")
-    sync_due = time.monotonic() + status["sync_due_in"]
+    sync_due = time.monotonic() + status["sync_due_in"] if network_enabled else None
     selector = selectors.DefaultSelector()
     self_tests = {}
 

@@ -388,6 +388,9 @@ Json Worker::status()const{
             {"server_expires",parse_json(grants.text(8))["expires"]}});
     }
     out["transport"]=s.configuration().value("transport",std::string("https"));
+    // A file-only worker has no automatic contact deadline. Do not display the
+    // retained HTTPS schedule as if a courier exchange would happen by itself.
+    if(out["transport"]=="file")out["sync_due_in"]=nullptr;
     Statement transfer(s.db.handle(),"SELECT transfer FROM worker_file_transfers WHERE state='pending'");
     out["pending_file_transfer"]=transfer.step()?Json(transfer.text(0)):Json(nullptr);
     out["dispatch"]=Json::array();

@@ -132,3 +132,7 @@ The CPU localhost CLI gate covers real mTLS, wrong CA/authority and checksum
 rejection, exclusive file publication, duplicate imports, credential revocation
 and reviewed reactivation for both xpoint and BSGS jobs. The supervisor fixture
 also verifies two concurrent file-only owners without a network child.
+
+File-only status reports `sync_due_in:null`, making the lack of automatic contacts
+explicit. The supervisor handles that value without creating a network child.
+Native offline, fault, live CLI and two-owner supervisor gates pass this contract.

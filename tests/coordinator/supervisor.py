@@ -57,7 +57,7 @@ def emit(**event): print(json.dumps(event), flush=True)
 if action == "configuration":
     emit(jobs=[dict(devices=["0", "1"])], transport="file" if (root / "file-only").exists() else "https")
 elif action == "status":
-    emit(sync_due_in=7200, queues=[])
+    emit(sync_due_in=None if (root / "file-only").exists() else 7200, queues=[])
 elif action == "scheduled-sync":
     path = root / "sync-count"
     path.write_text(str(int(path.read_text()) + 1) if path.exists() else "1")

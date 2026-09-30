@@ -134,7 +134,7 @@ def main():
                 received = relay(reviewed_request, reviewed_response, reviewed['sha256'])
                 invoke(state, 'file-import', '--input', reviewed_response, '--sha256', received['sha256'])
                 before = invoke(state, 'status')
-                assert 'pause_reason' not in before
+                assert 'pause_reason' not in before and before['sync_due_in'] is None
 
                 case = dict(mode=mode, reserved_blocks=2, response_sha256=delivered['sha256'])
                 if args.hardware:
