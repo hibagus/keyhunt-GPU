@@ -174,7 +174,7 @@ mode-independent discovery contract remains tested separately.
 
 C08 does not implement compressed point decoding, cryptographic signing, arbitrary
 scalar modular operations, lookup tables, a GPU search, candidate-buffer replay,
-checkpoints or throughput tuning. C09 must integrate these primitives with exact
-range planning, result ownership and CPU verification. C10/C11 must validate the
+checkpoints or throughput tuning. [C09](HIP_XPOINT.md) now integrates these
+primitives with exact range planning, result ownership and CPU verification. C10/C11 must validate the
 BSGS table/filter/mapping contracts independently. The pinned oracle remains
 test-only and is never linked into the application.

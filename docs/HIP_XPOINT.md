@@ -182,3 +182,11 @@ visible SPX/NPS1 devices. Thirty-one runtime/corruption boundaries pass, includi
 the extra seed-table allocation/upload. CPX/QPX compatibility remains mode-independent
 by construction and covered by C07 discovery tests; actual C09 CPX/QPX hardware
 search validation is pending. Partition settings remain unchanged.
+
+
+[Milestone acceptance](baselines/C09_VALIDATION.json) records 26/26 HIP release,
+17/17 CPU release, 17/17 CPU debug and 15/15 focused sanitizer tests, together with
+build output and the documentation check. The sanitizer run retains the existing
+`cpu_baseline|target_loading` exclusions for known legacy application defects.
+C09 is complete; C10's versioned BSGS tables are next. Durable coverage, multi-GPU
+scheduling and later ISA/occupancy tuning remain separate milestones.

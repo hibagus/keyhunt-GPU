@@ -2,7 +2,8 @@
 
 The main executable retains these original modes after C02. Support means the
 mode exists and the stated small characterization checks pass; it does not
-certify every flag combination or exact coverage. No mode executes on a GPU yet.
+certify every flag combination or exact coverage. These legacy flags remain CPU
+paths; C09 adds a separate [HIP xpoint subcommand](HIP_XPOINT.md).
 
 | Mode | Target file contents | Characterization |
 | --- | --- | --- |
@@ -27,9 +28,10 @@ address mode and uses its own hash/encoding path.
 
 This mode compares public point x coordinates. A shared x coordinate alone does
 not distinguish the two possible y signs, so it is not a full public-key or
-Bitcoin address check. Its first GPU implementation is planned under C09 after
-the arithmetic and exact-range gates. Existing CPU stride and endomorphism
-behavior must not be assumed to map to exact GPU coverage.
+Bitcoin address check. C09 implements the separate `xpoint --backend hip`
+subcommand with full 32-byte targets, exact half-open ranges and CPU-verified
+results. Existing CPU stride and endomorphism behavior must not be assumed to map
+to exact GPU coverage; those flags are not accepted by the HIP command.
 
 ## BSGS
 

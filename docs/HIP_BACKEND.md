@@ -1,9 +1,10 @@
 # HIP backend foundation (C07)
 
 C07 adds optional AMD HIP discovery and bounded diagnostic execution. It does not
-implement a GPU search or mark any interval as searched. C08 now supplies
-[portable field/point arithmetic](GPU_ARITHMETIC.md); the first xpoint search
-remains C09 work.
+implement a GPU search or mark any interval as searched. C08 supplies
+[portable field/point arithmetic](GPU_ARITHMETIC.md), and C09 implements the separate
+[bounded xpoint search](HIP_XPOINT.md). The diagnostic commands retain their
+transport-only meaning.
 
 ## Build and discovery
 
@@ -112,8 +113,8 @@ it excludes executor preparation. Launch count, device indices, allocation bytes
 and download bytes are explicit. These atomically counted diagnostic indices are
 not key-search throughput, and no transfer/kernel overlap is claimed. There is
 no host-to-device bulk upload: the starting scalar is a kernel argument.
-A single slot intentionally provides backpressure until C09 introduces candidate
-results. C13 will connect durable verification; C20 must isolate genuine device
+A single slot intentionally provides backpressure. C09 retains this ownership
+model in its separate candidate-result executor. C13 will connect durable verification; C20 must isolate genuine device
 hangs in supervised processes. A HIP call/destructor may block on broken hardware;
 run diagnostics under an external timeout in automation.
 

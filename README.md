@@ -6,8 +6,9 @@ A staged redesign of keyhunt for AMD HIP and NVIDIA CUDA, with reproducible
 correctness checks, resumable searches, and coordinated work across machines.
 
 **Current status:** the CPU engine has been characterized and reorganized.
-HIP discovery, bounded diagnostic launches and portable arithmetic pass on MI300X. GPU searches,
-checkpoints, and the coordinator are still planned.
+HIP discovery, arithmetic and bounded xpoint searches pass on MI300X, with CPU
+verification and candidate overflow replay. BSGS, checkpoints and the coordinator
+remain planned.
 
 [Build guide](docs/BUILD.md) · [Usage](docs/USAGE.md) ·
 [Implementation status](docs/IMPLEMENTATION_STATUS.md) ·
@@ -18,7 +19,7 @@ checkpoints, and the coordinator are still planned.
 | Linux x86-64 CPU | Release and debug builds tested; 38 characterization checks pass |
 | CPU modes | Bitcoin address/HASH160, xpoint, BSGS, Ethereum address, vanity and minikeys; limitations documented |
 | Optional GMP legacy / bsgsd | Builds and selected compatibility checks pass; separate from the future coordinator |
-| AMD HIP / MI300X | C07/C08 discovery, diagnostics and arithmetic validated on gfx942; GPU searches remain planned |
+| AMD HIP / MI300X | C07–C09 discovery, arithmetic and bounded xpoint search validated on gfx942 |
 | NVIDIA CUDA | Planned at C18; NVIDIA compiler/device validation remains outstanding |
 | Pause/resume and distributed blocks | Planned at C12–C15 and C20; no durable progress tracking yet |
 
@@ -63,7 +64,8 @@ HTTPS coordinator. These are design decisions, not current CLI features. See the
 - Python's standard library for the regression and benchmark harnesses.
 - GMP and OpenSSL for the optional legacy executable only.
 
-ROCm/HIP is optional for [device diagnostics](docs/HIP_BACKEND.md). CUDA and SQLite
+ROCm/HIP is optional for [device diagnostics](docs/HIP_BACKEND.md) and
+[bounded xpoint searches](docs/HIP_XPOINT.md). CUDA and SQLite
 remain planned. CPU builds do not require a GPU SDK or network access.
 
 ## Getting started
@@ -118,14 +120,16 @@ process exit as proof of saved search progress or exact coverage.
 - [x] C06: independent arithmetic/search oracle and CPU arithmetic corrections.
 - [x] C07: HIP device discovery and bounded asynchronous diagnostics.
 - [x] C08: portable GPU field/point arithmetic with independent oracle validation.
-- [ ] C09–C11: GPU xpoint and BSGS searches.
+- [x] C09: bounded HIP xpoint search, CPU verification and overflow replay.
+- [ ] C10–C11: GPU BSGS table preparation and searches.
 - [ ] C12–C15: durable coverage, local pause/resume and authenticated coordination.
 - [ ] C16–C20: measured tuning, native CUDA, validated assembly and multiple GPUs.
 - [ ] C21–C23: operations guides, offline assignments and further GPU modes.
 
 See [implementation status](docs/IMPLEMENTATION_STATUS.md) for evidence and
 [acceptance gates](docs/GPU_REDESIGN_PLAN.md#10-commit-sized-implementation-sequence)
-for each commit-sized milestone. No GPU throughput claim is published yet.
+for each commit-sized milestone. Initial paired xpoint measurements and their
+limits are recorded in [HIP_XPOINT.md](docs/HIP_XPOINT.md).
 
 ## Contributing
 

@@ -358,7 +358,7 @@ CpuTargetTable targets(config);
 Secp256K1 *secp;
 
 int main(int argc, char **argv)	{
-	// Handle backend diagnostics before initializing the legacy CPU search.
+	// Handle backend subcommands before initializing the legacy CPU search.
 	const int backend_status = keyhunt::backend::dispatch_command(argc, argv);
 	if (backend_status >= 0) return backend_status;
 	char buffer[2048];

@@ -1,8 +1,9 @@
 # Usage
 
 Run these commands from the repository root after following [BUILD.md](BUILD.md).
-Search commands use the preserved CPU engine; HIP provides device discovery and
-bounded diagnostics. Job, checkpoint and coordinator commands remain planned.
+The legacy `-m` search commands use the preserved CPU engine. HIP provides device
+discovery, bounded diagnostics and the separate [bounded xpoint search](HIP_XPOINT.md).
+Job, checkpoint and coordinator commands remain planned.
 
 ## A finite address search
 

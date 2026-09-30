@@ -1,9 +1,9 @@
 # Build and test
 
-The search backend is the original Linux x86-64 CPU engine. Its assembly and
-hashes require SSSE3. Optional HIP discovery and bounded diagnostics are now
-implemented; GPU searches remain planned. `KEYHUNT_ENABLE_CUDA` still fails
-configuration with an explicit C18 message. CPU builds never probe or download
+The preserved CPU engine requires Linux x86-64 and SSSE3 for its assembly and
+hashes. Optional HIP discovery, diagnostics and bounded xpoint searches are
+implemented. `KEYHUNT_ENABLE_CUDA` still fails configuration with an explicit C18
+message. CPU builds never probe or download
 either GPU SDK.
 
 Use CMake 3.22+, GCC/G++ (11.4.0 tested), Make, and Python 3.9+ for tests. A
@@ -41,7 +41,7 @@ cmake --build --preset cpu-sanitizers --parallel 4
 | `KEYHUNT_BUILD_LEGACY` | OFF | Separate GMP/OpenSSL executable |
 | `KEYHUNT_BUILD_BSGSD` | OFF | Original local BSGS daemon |
 | `BUILD_TESTING` | ON | Python/CTest regression checks |
-| `KEYHUNT_ENABLE_HIP` | OFF | AMD HIP discovery and diagnostic executor; requires ROCm AMD clang/runtime |
+| `KEYHUNT_ENABLE_HIP` | OFF | AMD HIP discovery, diagnostics and xpoint search; requires ROCm AMD clang/runtime |
 | `KEYHUNT_ENABLE_CUDA` | OFF | Explicitly rejected until C18 |
 
 Changing tuning does not make the existing x86 engine portable to ARM. Release
@@ -174,3 +174,21 @@ a small corpus on each visible logical device. Benchmark output is JSON with
 warm-up, raw kernel-event samples and checked results; timing never decides a
 CTest pass. See [GPU_ARITHMETIC.md](GPU_ARITHMETIC.md) for exact representation,
 zero/infinity/aliasing contracts, benchmark interpretation and validation scope.
+
+
+## HIP xpoint search
+
+C09 adds `keyhunt xpoint --backend hip` with exact half-open ranges, full 32-byte
+X targets, CPU-verified matches and automatic candidate overflow replay. See
+[the command, output contract and measurements](HIP_XPOINT.md). CPU-only builds
+reject the HIP command explicitly; the legacy `-m xpoint` path remains separate.
+
+```sh
+ctest --preset hip-release -R xpoint
+./build/hip-release/hip_xpoint_benchmark 0 65536 > /tmp/keyhunt-xpoint-benchmark.json
+```
+
+The opt-in benchmark compares direct multiplication with the default stepping
+kernel after warm-up. It checks every result and reports preparation, seed,
+kernel, download, CPU verification and submit-to-take wall timing. It measures
+one logical device with volatile coverage, not durable or multi-device throughput.
