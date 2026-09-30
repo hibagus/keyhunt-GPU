@@ -36,3 +36,24 @@ no partition, power, or clock settings were changed. Frozen executable/source
 hashes, flags, device identity, every sample, and alternating order are in the
 report. Results are finite synthetic workload measurements, not sustained or
 multi-GPU performance claims.
+
+## Exact-binary ISA evidence
+
+[The capture tool](../tools/capture_hip_isa.py) extracts code objects from the
+actual executable, disassembles them, and retains ELF kernel resource notes.
+It hashes the executable, code objects, stdout and stderr, records every command,
+and refuses existing or repository-local output directories. Extraction uses a
+private copy because this LLVM version writes bundles alongside its input.
+Compiler register/private-memory allocations are not measured occupancy.
+
+```sh
+python3 tools/capture_hip_isa.py \
+  --binary /tmp/keyhunt-c19-before/keyhunt \
+  --llvm-bin /opt/rocm/core-10.0/lib/llvm/bin \
+  --output-dir /tmp/keyhunt-c19-isa-before
+```
+
+Validation: four embedded gfx942 objects were extracted from both the frozen
+portable binary and carry-chain trial binary; all disassembled successfully.
+A CPU-only binary correctly failed with no gfx942 objects, and an existing output
+directory was rejected. Captures are separate from GPU timing trials.
