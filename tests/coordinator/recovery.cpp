@@ -16,7 +16,13 @@ int main(){try{
     const Json config{{"endpoint","https://test.invalid"},{"ca","/ca"},{"certificate","/cert"},{"key","/key"},
         {"jobs",{{{"project",project},{"job",job["job"]},{"devices",{"gpu"}},{"spares",0},{"policy","sequential"}}}}};
     Worker owner(first.path.string(),[&]{return now;});owner.configure(config);
-    auto transport=[&](const Json& body){return Json{{"ok",true},{"server_time",now},{"value",repo.request(cert,"POST","/api/v1/sync",body)}};};
+    auto transport=[&](const Json& body){
+        // Finish the throwing repository call before constructing JSON's nested
+        // initializer-list wrappers. This also models a real transport: an HTTP
+        // error has no successful response envelope under construction.
+        const auto value=repo.request(cert,"POST","/api/v1/sync",body);
+        return Json{{"ok",true},{"server_time",now},{"value",value}};
+    };
     owner.synchronize(transport);const auto original=*owner.next("gpu");
     bool stop=false;CheckpointControl control;control.poll=[&]{return stop?CheckpointRequest::Stop:CheckpointRequest::Run;};
     CheckpointOptions options;options.xpoint_steps=5;options.checkpoint_seconds=0;
