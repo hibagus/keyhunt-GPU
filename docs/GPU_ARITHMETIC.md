@@ -65,3 +65,54 @@ The event and host times in these reports are correctness-run measurements, not
 a benchmark or end-to-end key throughput. [Field evidence](baselines/C08_FIELD.json)
 records the HIP, host and sanitizer results. Point arithmetic follows in a
 separate C08 change.
+
+## Points, scalars and exceptional cases
+
+`Point` uses Jacobian coordinates `x = X/Z^2, y = Y/Z^3`, not the legacy CPU
+engine's homogeneous projective representation. Every Z=0 input is infinity;
+point operations produce the canonical all-zero infinity. Finite inputs must
+already be valid curve points with canonical field coordinates. `on_curve`
+checks canonical affine coordinates against `y^2 = x^3 + 7`; it is not a
+compressed-key parser. `from_affine` assumes that validation has already happened.
+
+The addition formula computes scaled U/S coordinates, then H=U2-U1 and R=S2-S1.
+H=0 dispatches to doubling when R=0, or infinity otherwise. Doubling handles
+infinity and Y=0 explicitly. The general formulas and Jacobian convention are
+standard [short Weierstrass arithmetic](https://hyperelliptic.org/EFD/g1p/auto-shortw-jacobian.html);
+the implementation and special-case handling were written for this repository.
+Outputs are assigned after all input reads, preserving both input aliases.
+Mixed addition initially wraps the same complete general path with affine Z=1.
+It has no separately advertised speed advantage.
+
+`Scalar` stores unsigned 256-bit scalar bits separately from field elements.
+`point_multiply` handles all bit patterns, including zero and n, by bounded
+256-bit double-and-add; the group law naturally accounts for the curve order.
+`public_key` rejects zero and values >=n, clears its output on failure, and uses
+the fixed generator on success. It does not reduce rejected private scalars or
+apply field reduction to scalar bits. This API does not yet supply arbitrary
+scalar modular add/multiply primitives, window tables or constant-time signing.
+
+## Point differential validation
+
+`portable_point_oracle` and `hip_point_oracle` compare public scalar derivation,
+Jacobian normalization, negation, doubling, general/mixed addition and arbitrary
+point multiplication. The pinned libsecp256k1 probe supplies public keys and
+point sums; Python's independent affine model agrees with those results and
+supplies the other expected values. The legacy CPU adapter is also compared.
+
+Cases include zero/n/n+1/maximal scalars, high-bit scalars, infinity, equal/opposite
+points, differing nontrivial projective scales, left/right/self aliases, invalid
+affine coordinates, canonical infinity output, and partial point workgroups.
+Field tests additionally check that empty/oversized inversion groups preserve
+output ownership. The GPU returns canonical affine results computed on the GPU;
+host-side serialization does not redo curve math to conceal a device failure.
+
+```sh
+ctest --preset hip-release -L arithmetic
+ASAN_OPTIONS=detect_leaks=1 UBSAN_OPTIONS=halt_on_error=1 \
+  ctest --preset cpu-sanitizers -L arithmetic
+```
+
+[Point evidence](baselines/C08_POINT.json) contains both point reports, focused
+field/point CTest output and sanitizer results. No legacy arithmetic or range
+semantics were changed in this milestone.

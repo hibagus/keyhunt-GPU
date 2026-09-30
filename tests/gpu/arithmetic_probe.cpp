@@ -29,11 +29,55 @@ std::string encode(const Field& value) {
     for (auto byte : bytes) { text += "0123456789abcdef"[byte>>4]; text += "0123456789abcdef"[byte&15]; }
     return text;
 }
+void decode_point(Request& request, unsigned offset, const std::string& text) {
+    if (text == "inf") return;
+    if (text.size() != 130 || text.substr(0,2) != "04") throw std::invalid_argument("expected full affine point");
+    request.values[offset] = decode(text.substr(2,64));
+    request.values[offset+1] = decode(text.substr(66,64));
+    request.values[offset+2] = one();
+}
+Request parse_point(const std::string& op, std::istringstream& words) {
+    Request request;
+    request.values[6] = request.values[7] = one();
+    std::vector<std::string> args;
+    for (std::string word; words >> word;) args.push_back(word);
+    if (op == "pub") {
+        if (args.size() != 1) throw std::invalid_argument("pub arity");
+        request.op = Op::Public; request.values[8] = decode(args[0]); return request;
+    }
+    if (args.empty()) throw std::invalid_argument("missing point");
+    decode_point(request,0,args[0]);
+    if (op == "pvalid") {
+        if (args.size() != 1 || args[0] == "inf") throw std::invalid_argument("pvalid requires finite coordinates");
+        request.op = Op::PointValid; return request;
+    }
+    if (op == "pmul") {
+        if (args.size() != 2) throw std::invalid_argument("pmul arity");
+        request.op = Op::PointMultiply; request.values[8] = decode(args[1]); return request;
+    }
+    if (op == "padd" || op == "pmixed") {
+        if (args.size() != 4) throw std::invalid_argument("point addition arity");
+        request.op = op == "padd" ? Op::PointAdd : Op::PointMixed;
+        decode_point(request,3,args[1]); request.values[6] = decode(args[2]); request.values[7] = decode(args[3]);
+    } else {
+        if (args.size() != 2) throw std::invalid_argument("point unary arity");
+        if (op == "pdouble") request.op = Op::PointDouble;
+        else if (op == "pneg") request.op = Op::PointNegate;
+        else if (op == "preduce") request.op = Op::PointReduce;
+        else throw std::invalid_argument("unknown point operation");
+        request.values[6] = decode(args[1]);
+    }
+    if (is_zero(normalize(request.values[6])) || is_zero(normalize(request.values[7])))
+        throw std::invalid_argument("zero projective scale");
+    return request;
+}
 Request parse(const std::string& line) {
     Request request;
     std::istringstream words(line);
     std::string op, word;
     words >> op;
+    if (!op.empty() && op[0] == 'p') return parse_point(op,words);
+    if (op == "flimits") { request.op = Op::Limits; return request; }
     if (op == "fnorm") request.op = Op::Normalize;
     else if (op == "fbytes") request.op = Op::Bytes;
     else if (op == "fadd") request.op = Op::Add;
@@ -56,6 +100,18 @@ Request parse(const std::string& line) {
 std::string format(const Request& request, const Result& result) {
     unsigned count = 1;
     std::string text;
+    if (request.op >= Op::Public) {
+        if (request.op == Op::PointValid) return std::to_string(result.flags);
+        if (result.flags & 0x80000000U) return "invalid";
+        if (result.flags & 0x40000000U) return "noncanonical-point";
+        count = request.op == Op::PointAdd ? 3 :
+            (request.op == Op::Public || request.op == Op::PointReduce ? 1 : 2);
+        for (unsigned i = 0; i < count; ++i) {
+            if (i) text += ' ';
+            text += result.flags & (1U<<i) ? "inf" : "04"+encode(result.values[2*i])+encode(result.values[2*i+1]);
+        }
+        return text;
+    }
     switch (request.op) {
     case Op::Add: case Op::Sub: case Op::Mul: count = 3; break;
     case Op::Square: case Op::Negate: count = 2; break;

@@ -52,6 +52,7 @@ def main():
                 if pattern=='all_zero' or (pattern=='first_zero' and i==0) or (pattern=='last_zero' and i==count-1) or (pattern=='alternating' and i%2): values[i]=0
             expected=' '.join(f'{pow(v,-1,P) if v else 0:064x}' for v in values)
             case('finvgroup',values,'1'+(' '+expected if expected else ''),None)
+    case('flimits',(),f'{0:064x}')
     stats_path=args.report.with_suffix('.stats.json')
     command=[str(args.binary.resolve()),'--device',args.device,'--batch','257','--stats',str(stats_path)]
     process=subprocess.run(command,input='\n'.join(c[1] for c in cases)+'\n',capture_output=True,text=True,timeout=150)

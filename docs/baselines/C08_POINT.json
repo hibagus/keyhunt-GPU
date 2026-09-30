@@ -1,0 +1,112 @@
+{
+  "recorded_utc": "2026-09-30T01:39:31.666839+00:00",
+  "reports": {
+    "host": {
+      "seed": 201850903,
+      "oracle_commit": "0cdc758a56360bf58a851fe91085a327ec97685a",
+      "cases": 1278,
+      "cpu_comparisons": 1270,
+      "categories": {
+        "pub": 100,
+        "preduce": 45,
+        "pdouble": 45,
+        "pneg": 45,
+        "pmul": 135,
+        "padd": 450,
+        "pmixed": 450,
+        "pvalid": 8
+      },
+      "boundary_batch_sizes": [
+        1,
+        127,
+        128,
+        129,
+        257
+      ],
+      "binary_sha256": "f6ef1853935f6205a3c8db7e9722ce6b847801e8679c4b0f601be92c21473ea5",
+      "stats": {
+        "cases": 1278,
+        "batches": 5,
+        "kernel_ms": 0,
+        "wall_ms": 142.251,
+        "batch_capacity": 257,
+        "device": 0
+      },
+      "failure_count": 0,
+      "failures": [],
+      "cpu_failures": []
+    },
+    "hip": {
+      "seed": 201850903,
+      "oracle_commit": "0cdc758a56360bf58a851fe91085a327ec97685a",
+      "cases": 1278,
+      "cpu_comparisons": 1270,
+      "categories": {
+        "pub": 100,
+        "preduce": 45,
+        "pdouble": 45,
+        "pneg": 45,
+        "pmul": 135,
+        "padd": 450,
+        "pmixed": 450,
+        "pvalid": 8
+      },
+      "boundary_batch_sizes": [
+        1,
+        127,
+        128,
+        129,
+        257
+      ],
+      "binary_sha256": "697da4e27a642b7e1542cfd96a11e53f69cc112cb7ef4625a4d17d70d0f9f93d",
+      "stats": {
+        "cases": 1278,
+        "batches": 5,
+        "kernel_ms": 71.2444,
+        "wall_ms": 416.839,
+        "batch_capacity": 257,
+        "device": 0
+      },
+      "failure_count": 0,
+      "failures": [],
+      "cpu_failures": []
+    },
+    "sanitizers": {
+      "seed": 201850903,
+      "oracle_commit": "0cdc758a56360bf58a851fe91085a327ec97685a",
+      "cases": 1278,
+      "cpu_comparisons": 1270,
+      "categories": {
+        "pub": 100,
+        "preduce": 45,
+        "pdouble": 45,
+        "pneg": 45,
+        "pmul": 135,
+        "padd": 450,
+        "pmixed": 450,
+        "pvalid": 8
+      },
+      "boundary_batch_sizes": [
+        1,
+        127,
+        128,
+        129,
+        257
+      ],
+      "binary_sha256": "21a9d271bf6136fa1a081718ff9273ca0d737f878e60cee77deba58d4996ee4a",
+      "stats": {
+        "cases": 1278,
+        "batches": 5,
+        "kernel_ms": 0,
+        "wall_ms": 2186.1,
+        "batch_capacity": 257,
+        "device": 0
+      },
+      "failure_count": 0,
+      "failures": [],
+      "cpu_failures": []
+    }
+  },
+  "ctest": "Test project /home/bagus/keyhunt-GPU/build/hip-release\n    Start 5: portable_field_oracle\n1/4 Test #5: portable_field_oracle ............   Passed    0.29 sec\n    Start 6: hip_field_oracle\n2/4 Test #6: hip_field_oracle .................   Passed    4.86 sec\n    Start 7: portable_point_oracle\n3/4 Test #7: portable_point_oracle ............   Passed    1.33 sec\n    Start 8: hip_point_oracle\n4/4 Test #8: hip_point_oracle .................   Passed    4.73 sec\n\n100% tests passed, 0 tests failed out of 4\n\nLabel Time Summary:\narithmetic    =  11.21 sec*proc (4 tests)\ncpu           =   1.62 sec*proc (2 tests)\nhardware      =   9.59 sec*proc (2 tests)\nhip           =   9.59 sec*proc (2 tests)\noracle        =  11.21 sec*proc (4 tests)\n\nTotal Test time (real) =  11.21 sec\n",
+  "sanitizer_ctest": "Test project /home/bagus/keyhunt-GPU/build/cpu-sanitizers\n    Start 5: portable_field_oracle\n1/2 Test #5: portable_field_oracle ............   Passed    1.50 sec\n    Start 6: portable_point_oracle\n2/2 Test #6: portable_point_oracle ............   Passed    5.37 sec\n\n100% tests passed, 0 tests failed out of 2\n\nLabel Time Summary:\narithmetic    =   6.87 sec*proc (2 tests)\ncpu           =   6.87 sec*proc (2 tests)\noracle        =   6.87 sec*proc (2 tests)\n\nTotal Test time (real) =   6.88 sec\n"
+}
