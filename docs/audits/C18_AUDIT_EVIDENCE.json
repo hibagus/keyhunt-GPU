@@ -1,0 +1,43 @@
+{
+  "recorded_utc": "2026-09-30T21:53:57.531812+00:00",
+  "passed": true,
+  "archive_files_checked": 443,
+  "archive_sha256": "eb4444a29c0dd9a101e3a4e77fb36ea5439c3f1df9147f60e8d5f879eed7ba4f",
+  "paired": {
+    "warm": {
+      "passed": true,
+      "commands": 26,
+      "measured_pairs": 5,
+      "warmup_pairs": 1,
+      "metric_comparisons": 60,
+      "warm_processes": 24,
+      "cli_processes": 0
+    }
+  },
+  "matrices": {
+    "cadence": {
+      "measured": 5,
+      "warmups": 1,
+      "distributions": 20,
+      "raw_logs_checked": true,
+      "commands": 43
+    },
+    "mixed": {
+      "measured": 10,
+      "warmups": 2,
+      "distributions": 40,
+      "raw_logs_checked": true,
+      "commands": 50
+    },
+    "dense": {
+      "measured": 10,
+      "warmups": 2,
+      "distributions": 39,
+      "raw_logs_checked": true,
+      "commands": 49
+    }
+  },
+  "baseline_source_hashes": 129,
+  "candidate_source_hashes": 129,
+  "benchmark_source_hashes": 2
+}

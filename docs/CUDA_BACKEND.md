@@ -117,7 +117,8 @@ CUDA `inverse()` uses an explicit chain for `p-2 = 2^256 - 2^32 - 979`:
 255 squarings and 15 multiplications, versus 256 and 249 for binary exponentiation.
 Names `xK` denote `a^(2^K-1)` and the last four exponents are annotated in code.
 Zero, in-place output and zero-containing batch inversion retain their contracts.
-CPU and HIP retain binary inversion; CUDA can use that fallback with
+The merged C17 CPU/HIP path uses its short inversion chain. CUDA can use the
+binary fallback with
 `-DCMAKE_CUDA_FLAGS=-DKEYHUNT_CUDA_PORTABLE_INVERSE`.
 
 The H200 microbenchmark median improved from 0.2550 to 0.1365 ms (1.87x).
@@ -300,3 +301,13 @@ It does not simulate a driver hang or certify MIG behavior.
 TMPDIR=/var/tmp ctest --test-dir build/cuda-c20 \
   -R coordinator_cuda_contexts --verbose
 ```
+
+## Independent merged-revision audit
+
+The [C17–C18 H200 audit](audits/C18_AUDIT.md) freshly builds `b765880` with NVCC
+and passes 55 CUDA-build tests plus 12 Compute Sanitizer runs. It verifies C17's
+shared compact-buffer, overflow-recovery and mixed-group accounting changes on
+CUDA, measures warm and periodic-checkpoint throughput, and checks the A20 fix
+separately at `fb57428`. Raw logs, source/binary fingerprints and independent
+statistic checks are retained with that report; full CUDA fleet acceptance and
+MIG remain separate.

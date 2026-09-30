@@ -11,6 +11,11 @@ worker self-tests initializing every visible device. Current-tree CUDA hardware
 acceptance remains unverified here; the retained H200 results cover an earlier
 revision.
 
+Follow-up: the [C17–C18 H200 audit](C18_AUDIT.md) freshly builds and tests this
+same merged revision with NVCC, closing the NVIDIA validation gap below. It also
+reproduces A20 on `b765880` and verifies the fix separately at `fb57428`. The
+original results and revision-specific findings here remain unchanged.
+
 ## A20 — worker self-tests still discover every visible CUDA device
 
 **P2, startup cost and failure isolation; established from source, not a new

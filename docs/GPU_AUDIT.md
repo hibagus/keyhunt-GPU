@@ -2,17 +2,26 @@
 
 Current implementation: [C20 concurrent execution](MULTI_GPU.md) addresses A16,
 A17 and A18, and corrects the selected-device startup path identified by A20.
-HIP/mock evidence is recorded; new NVIDIA hardware acceptance remains a follow-up.
+HIP fleet evidence is recorded. The independent H200 follow-up below verifies
+A20 context isolation; full CUDA fleet acceptance remains separate.
 [C17 measured tuning](HIP_TUNING.md) addresses A12, A13,
 A14 and A19 with separate changes and retained paired evidence. The audits below
 remain scoped to their frozen revisions.
 
-Latest follow-up: [C17–C19 audit](audits/C19_AUDIT.md) passes 61 carry-enabled
+Latest follow-up: [C17–C18 H200 audit](audits/C18_AUDIT.md) closes the earlier
+merged-revision CUDA validation gap at `b765880`: 55 CUDA-build tests and 12
+Compute Sanitizer runs pass. Fresh paired kernels confirm the accepted CUDA
+optimizations; periodic-checkpoint xpoint measures **1.015 billion scalars/s**
+whole-process. A20 is reproduced on the old revision and independently verified
+fixed at `fb57428` with only the selected GPU context active.
+
+The [C17–C19 MI300X audit](audits/C19_AUDIT.md) passes 61 carry-enabled
 HIP/coordinator tests, 43 CPU/coordinator tests and 18 focused default-HIP checks.
 It closes A12, A13, A14 and A19, checks the retained tuning evidence, and measures
 **2.484 billion xpoint scalars/s** over a finite MI300X run with periodic
 checkpoints. A20 identifies full CUDA discovery in each worker self-test; NVIDIA
-validation of the merged C19 revision remains an acceptance gap on this HIP host.
+validation of the merged C19 revision was an acceptance gap subsequently closed
+by the H200 follow-up.
 
 The [C16 profiling audit](audits/C16_AUDIT.md) passes 58 HIP and 42 CPU tests,
 independently checks its retained benchmark evidence, reproduces the earlier
