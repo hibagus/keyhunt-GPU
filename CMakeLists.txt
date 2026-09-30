@@ -211,6 +211,10 @@ endif()
 include(CTest)
 if(BUILD_TESTING)
     find_package(Python3 3.9 REQUIRED COMPONENTS Interpreter)
+    # Benchmark acceptance logic runs in CPU CI; throughput runs stay opt-in.
+    add_test(NAME gpu_benchmark_metrics COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/unit/gpu_metrics.py")
+    set_tests_properties(gpu_benchmark_metrics PROPERTIES TIMEOUT 30 LABELS "cpu;benchmark")
     include(cmake/OracleTests.cmake)
     include(cmake/GpuArithmeticTests.cmake)
     include(cmake/XPointTests.cmake)
