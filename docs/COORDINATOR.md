@@ -93,3 +93,46 @@ socket peer rejection, framing/body limits, admin isolation, rotation and
 revocation on the **same persistent frontend TLS connection**. Certificates,
 keys and databases are removed with the fixture. Public TCP 443 and ACME
 renewal remain outside this localhost gate.
+
+## S04a: atomic machine synchronization
+
+`POST /api/v1/sync` accepts protocol 1 with the exact capability list
+`["checkpoint-v1", "offline-lease-v1"]`. A request identifies a persistent worker
+instance and idempotency key, authorized jobs with device queues, checkpoint
+pages, and returned unstarted spares. The authenticated client UUID plus instance
+identifies ownership; supplying a different owner in a grant is rejected.
+
+Each device has one active block and optionally one spare. Selection is sequential,
+random or random-window, always from unexplored space. Completed, paused and
+expired assignments are not normally claimable. The default assignment lifetime
+is 2,592,000 seconds; routine sync is 7,200 seconds. Block width remains an explicit
+job input to calibrate toward about twelve hours on the reference GPU.
+
+Schema 4 adds machine/device mappings and immutable sync receipts. Every included
+project requires a current worker/owner role, including on retries. Progress,
+CPU-verified matches, completion, renewals, returns, replacement claims and the
+exact response commit in one transaction. Reusing a key with different content
+fails. Retrying identical content returns the original response and expiry,
+including after a lost completion or renewal acknowledgment. The HTTP envelope
+supplies a fresh server time independently of that immutable receipt.
+
+Pages are bounded to 64 checkpoints and 4,096 match observations per request,
+128 assignment updates/returns and 64 device queues. Exact target relations are
+verified before committing coverage. Authenticated workers remain responsible
+for honest exhaustive no-match coverage. Checkpoint receipts retain the existing
+C13 audit representation; no second implementation of the coverage union or
+allocator was introduced. Jobs and progress remain scoped by project even when
+their immutable manifest hashes are identical.
+
+The worker's durable import, bounded outbox and scheduler are the next S04 slice;
+this server transaction alone does not yet provide offline worker operation.
+
+S04a validation passed `coordinator_sync` and `coordinator_sync_failures`:
+concurrent two-client claims, two mock device queues, identical jobs in separate
+projects, reader denial, mixed-project rollback, forged ownership, incompatible
+protocol, invalid-match rollback, partial/full coverage, unstarted returns,
+twenty-day pause/renewal, thirty-day expiry, and exact lost-response retries.
+Four additional child-process exit points cover results, coverage, pre-COMMIT
+and post-COMMIT; reopening and retrying preserves one replacement assignment.
+The existing database, migration, checkpoint CLI, registry and live TLS gates
+also passed after the schema upgrade.

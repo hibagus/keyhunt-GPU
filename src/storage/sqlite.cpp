@@ -2,6 +2,7 @@
 #include "schema_v1.h"
 #include "schema_v2.h"
 #include "schema_v3.h"
+#include "schema_v4.h"
 #include "keyhunt/crypto/hash/sha256.h"
 #include <algorithm>
 #include <cerrno>
@@ -138,7 +139,7 @@ Database::Database(const std::string& directory){
         {
             Transaction tx(*this);
             auto version=scalar(db_,"PRAGMA user_version");const auto app=scalar(db_,"PRAGMA application_id");
-            const std::vector<const char*> schemas{schema_v1,schema_v2,schema_v3};
+            const std::vector<const char*> schemas{schema_v1,schema_v2,schema_v3,schema_v4};
             const int64_t latest=int64_t(schemas.size());
             const bool fresh=version==0 && app==0 &&
                 scalar(db_,"SELECT count(*) FROM sqlite_schema WHERE name NOT LIKE 'sqlite_%'")==0;
@@ -193,7 +194,7 @@ void Database::restore(const std::string& source,const std::string& destination)
     sqlite3* check=nullptr;
     try {
         open(&check,file,SQLITE_OPEN_READONLY);
-        if(scalar(check,"PRAGMA application_id")!=application_id || (scalar(check,"PRAGMA user_version")<1 || scalar(check,"PRAGMA user_version")>3))
+        if(scalar(check,"PRAGMA application_id")!=application_id || (scalar(check,"PRAGMA user_version")<1 || scalar(check,"PRAGMA user_version")>4))
             throw std::runtime_error("restore source is not a supported journal");
         sqlite3_close(check);check=nullptr;
     }catch(...){if(check)sqlite3_close(check);throw;}

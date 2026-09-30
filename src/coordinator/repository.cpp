@@ -9,8 +9,11 @@ using namespace wire;
 namespace {
 struct Actor{std::string client;Bytes fingerprint;};
 int role(const std::string& value){
-    if(value=="reader")return 1;if(value=="worker")return 2;if(value=="owner")return 3;
-    if(value=="none")return 0;throw Error(400,"role must be reader, worker, owner or none");
+    if(value=="reader")return 1;
+    if(value=="worker")return 2;
+    if(value=="owner")return 3;
+    if(value=="none")return 0;
+    throw Error(400,"role must be reader, worker, owner or none");
 }
 std::vector<std::string> split(const std::string& path){
     if(path.empty()||path[0]!='/'||path.find_first_of("%?#\\")!=std::string::npos)throw Error(404,"not found");
@@ -37,8 +40,10 @@ struct Repository::Impl {
     }
     int authorize(const Actor& actor,const std::string& project,int minimum=1)const{
         Statement q(db.handle(),"SELECT role FROM coordinator_memberships WHERE project=? AND client=?");q.bind(1,project);q.bind(2,actor.client);
-        if(!q.step())throw Error(404,"not found");const int r=int(q.integer(0));
-        if(r<minimum)throw Error(403,"operation requires a higher project role");return r;
+        if(!q.step())throw Error(404,"not found");
+        const int r=int(q.integer(0));
+        if(r<minimum)throw Error(403,"operation requires a higher project role");
+        return r;
     }
     void client_exists(const std::string& client)const{
         Statement q(db.handle(),"SELECT 1 FROM coordinator_clients WHERE client=?");q.bind(1,client);if(!q.step())throw Error(404,"client not found");
@@ -56,7 +61,8 @@ struct Repository::Impl {
     }
     Json block(const Scope& scope,const UInt256& id){
         const auto b=journal.block(scope,id);Json covered=Json::array(),remaining=Json::array();
-        for(const auto& v:b.covered)covered.push_back(interval(v));for(const auto& v:b.remaining)remaining.push_back(interval(v));
+        for(const auto& v:b.covered)covered.push_back(interval(v));
+        for(const auto& v:b.remaining)remaining.push_back(interval(v));
         return {{"state",b.state},{"started",b.started},{"expired",b.expired},
             {"assignment",b.assignment?wire::grant(*b.assignment):Json(nullptr)},{"covered",covered},{"remaining",remaining}};
     }
@@ -66,6 +72,161 @@ struct Repository::Impl {
         result["assignments"]=stats.assignments;result["quarantined"]=stats.quarantined;
         Statement q(db.handle(),"SELECT paused FROM coordinator_controls WHERE project=? AND job=?");bind_scope(q,scope);
         result["paused"]=q.step()&&q.integer(0)!=0;return result;
+    }
+    Json sync(const Actor& actor, const Json& body) {
+        fields(body, {"protocol", "capabilities", "instance", "request", "jobs", "updates", "returns"});
+        if (integer(body, "protocol") != 1 || body["capabilities"] != Json({"checkpoint-v1", "offline-lease-v1"}))
+            throw Error(426, "protocol 1 and checkpoint-v1/offline-lease-v1 capabilities required");
+        const auto instance = str(body, "instance", 36), request = str(body, "request", 64);
+        token(instance); token(request);
+        const auto owner = actor.client + "." + instance;
+        for (const auto* name : {"jobs", "updates", "returns"})
+            if (!body[name].is_array() || body[name].size() > 128) throw Error(400, "invalid sync collection");
+        if (body["jobs"].empty() || body["jobs"].size() > 64) throw Error(400, "sync needs 1..64 jobs");
+
+        std::set<std::pair<std::string, Digest>> scopes;
+        std::set<std::string> devices;
+        for (const auto& row : body["jobs"]) {
+            fields(row, {"project", "job", "devices", "spares", "policy"});
+            const auto scope = wire::scope(row);
+            authorize(actor, scope.project, 2);
+            journal.manifest(scope);
+            if (!scopes.emplace(scope.project, scope.job).second) throw Error(400, "duplicate sync job");
+            integer(row, "spares", 0, 1);
+            const auto policy = str(row, "policy", 16);
+            if (policy != "sequential" && policy != "random" && policy != "random-window")
+                throw Error(400, "unsupported queue policy");
+            if (!row["devices"].is_array() || row["devices"].size() > 64) throw Error(400, "invalid devices");
+            for (const auto& device : row["devices"]) {
+                if (!device.is_string()) throw Error(400, "invalid device token");
+                const auto name = device.get<std::string>(); token(name);
+                if (!devices.insert(name).second || devices.size() > 64) throw Error(400, "device assigned to multiple jobs");
+            }
+        }
+        auto owned = [&](const Json& row) {
+            auto g = wire::grant(row);
+            if (!scopes.count({g.scope.project, g.scope.job})) throw Error(400, "grant scope missing from sync jobs");
+            if (g.owner != owner) throw Error(403, "grant belongs to another machine");
+            return g;
+        };
+        // Check the authorization of every scope before looking up a cached
+        // receipt. Revoked membership must not disclose an old response.
+        for (const auto& row : body["updates"]) {
+            fields(row, {"grant", "started", "checkpoints"}); owned(row["grant"]);
+            boolean(row, "started");
+            if (!row["checkpoints"].is_array()) throw Error(400, "invalid checkpoint page");
+        }
+        for (const auto& row : body["returns"]) owned(row);
+        const auto text = body.dump();
+        if (text.size() > 8 * 1024 * 1024) throw Error(413, "sync request exceeds bounded page");
+        const Bytes payload(text.begin(), text.end());
+        Statement prior(db.handle(), "SELECT payload,response,epoch FROM coordinator_syncs WHERE client=? AND instance=? AND request=?");
+        prior.bind(1, actor.client); prior.bind(2, instance); prior.bind(3, request);
+        if (prior.step()) {
+            if (prior.blob(0) != storage::detail::digest(payload)) throw Error(409, "sync key reused with changed payload");
+            if (prior.blob(2) != db.metadata("epoch")) throw Error(409, "sync receipt belongs to an old coordinator epoch");
+            return parse_json(prior.text(1));
+        }
+        Json accepted = Json::array(); size_t page_count = 0, match_count = 0, ordinal = 0;
+        std::set<std::string> changed;
+        auto unique_grant = [&](const Grant& g) {
+            const auto key = g.scope.project + hex(bytes(g.scope.job)) + g.block.hex();
+            if (!changed.insert(key).second) throw Error(400, "grant repeated in sync mutations");
+        };
+        for (const auto& row : body["updates"]) {
+            const auto g = owned(row["grant"]); unique_grant(g);
+            const auto state = journal.block(g.scope, g.block);
+            if (!state.assignment || state.assignment->generation != g.generation || state.assignment->owner != owner ||
+                g.epoch != db.metadata("epoch") || state.assignment->interval.begin() != g.interval.begin() ||
+                state.assignment->interval.end() != g.interval.end()) throw Error(409, "stale assignment");
+            if (state.expired) throw Error(409, "assignment expired; explicit recovery required");
+            if (!row["checkpoints"].empty() && !boolean(row, "started")) throw Error(400, "checkpoints require started activity");
+            Statement binding(db.handle(), "SELECT configuration,targets FROM search_bindings WHERE project=? AND job=?");
+            bind_scope(binding, g.scope); if (!binding.step()) throw Error(409, "job lacks canonical search inputs");
+            const auto input = decode_binding(journal.manifest(g.scope), binding.blob(0), binding.blob(1));
+            core::XPointVerifier verifier;
+            std::vector<CheckpointData> pages;
+            for (const auto& encoded : row["checkpoints"]) {
+                if (++page_count > 64 || !encoded.is_string()) throw Error(413, "too many checkpoint pages");
+                auto page = decode_checkpoint(unhex(encoded.get<std::string>(), 2 * 1024 * 1024));
+                if (page.block != g.block || page.generation != uint64_t(g.generation) || page.epoch != g.epoch)
+                    throw Error(409, "checkpoint assignment mismatch");
+                match_count += page.matches.size();
+                if (match_count > 4096 || page.coverage.size() > 1024) throw Error(413, "checkpoint page exceeds work budget");
+                for (const auto& interval : page.coverage)
+                    if (!g.interval.contains(interval)) throw Error(400, "coverage outside assignment");
+                for (const auto& match : page.matches) {
+                    if (!g.interval.contains(match.scalar)) throw Error(400, "match outside assignment");
+                    input.verify(verifier, match.scalar, match.target);
+                }
+                pages.push_back(std::move(page));
+            }
+            // The existing checkpoint journal retains canonical payloads and
+            // audit receipts. Its savepoints remain inside this machine commit.
+            int64_t executor = 0;
+            if (boolean(row, "started")) executor = journal.begin_search(g);
+            for (const auto& page : pages)
+                journal.commit_search(g, executor, page.coverage, page.matches, request + ".c" + std::to_string(ordinal++));
+            const bool complete = journal.block(g.scope, g.block).state == "finished";
+            if (!complete) journal.renew(g, request + ".r" + std::to_string(ordinal++));
+            accepted.push_back({{"project", g.scope.project}, {"job", hex(bytes(g.scope.job))},
+                                {"block", g.block.hex()}, {"complete", complete}});
+        }
+        for (const auto& row : body["returns"]) {
+            const auto g = owned(row); unique_grant(g);
+            journal.return_unstarted(g, request + ".u" + std::to_string(ordinal++));
+        }
+        Json jobs = Json::array(), grants = Json::array();
+        for (const auto& row : body["jobs"]) {
+            const auto scope = wire::scope(row); auto info = job(scope);
+            Statement binding(db.handle(), "SELECT configuration,targets FROM search_bindings WHERE project=? AND job=?");
+            bind_scope(binding, scope); if (!binding.step()) throw Error(409, "job lacks canonical search inputs");
+            info["configuration"] = hex(binding.blob(0)); info["targets"] = hex(binding.blob(1)); jobs.push_back(info);
+            if (info["paused"].get<bool>()) continue;
+            for (const auto& device : row["devices"]) {
+                const auto name = device.get<std::string>();
+                Statement count(db.handle(), "SELECT count(*) FROM coordinator_devices WHERE client=? AND instance=? AND device=?");
+                count.bind(1, actor.client); count.bind(2, instance); count.bind(3, name); count.step();
+                const int64_t needed = 1 + integer(row, "spares", 0, 1) - count.integer(0);
+                if (needed <= 0) continue;
+                Selection selection; selection.count = uint32_t(needed);
+                const auto policy = str(row, "policy");
+                selection.policy = policy == "random" ? Policy::Random : policy == "random-window" ? Policy::RandomWindow : Policy::Sequential;
+                for (const auto& g : journal.claim(scope, owner, request + ".q" + std::to_string(ordinal++), selection)) {
+                    Statement add(db.handle(), "INSERT INTO coordinator_devices VALUES(?,?,?,?,?,?)");
+                    bind_scope(add, scope); add.bind(3, g.block); add.bind(4, actor.client); add.bind(5, instance); add.bind(6, name); add.step();
+                }
+            }
+        }
+        // Return only this machine's grants within the authorized request scope.
+        // Old device queues still count toward the cap until explicitly returned.
+        Statement assigned(db.handle(), "SELECT project,job,block,device FROM coordinator_devices WHERE client=? AND instance=? ORDER BY project,job,device,block");
+        assigned.bind(1, actor.client); assigned.bind(2, instance);
+        while (assigned.step()) {
+            const Scope scope{assigned.text(0), wire::digest(hex(assigned.blob(1)))};
+            if (!scopes.count({scope.project, scope.job})) continue;
+            const auto state = journal.block(scope, assigned.wide(2));
+            if (!state.assignment) throw std::runtime_error("device mapping lost assignment");
+            grants.push_back({{"device", assigned.text(3)}, {"grant", wire::grant(*state.assignment)}});
+            if (grants.size() > 128) throw Error(409, "machine queue exceeds 128 assignments");
+        }
+        // Report the final transaction state, including newly allocated queues.
+        for (auto& info : jobs) {
+            const auto current = job(wire::scope(info));
+            for (const auto* key : {"unexplored", "finished", "assignments"}) info[key] = current[key];
+        }
+        Json result{{"protocol", 1}, {"client", actor.client}, {"instance", instance}, {"request", request},
+                    {"epoch", hex(db.metadata("epoch"))}, {"issued_at", now()}, {"sync_seconds", 7200},
+                    {"lifetime_seconds", 2592000}, {"accepted", accepted}, {"jobs", jobs}, {"grants", grants}};
+        const auto response = result.dump();
+        if (response.size() > 7 * 1024 * 1024) throw Error(413, "sync response exceeds bounded page");
+        Statement insert(db.handle(), "INSERT INTO coordinator_syncs VALUES(?,?,?,?,?,?,?)");
+        insert.bind(1, actor.client); insert.bind(2, instance); insert.bind(3, request);
+        insert.bind(4, storage::detail::digest(payload)); insert.bind(5, response); insert.bind(6, db.metadata("epoch")); insert.bind(7, now()); insert.step();
+        Statement issued(db.handle(), "UPDATE coordinator_settings SET last_issued=MAX(last_issued,?) WHERE singleton=1");
+        issued.bind(1, now()); issued.step();
+        event(actor.client, actor.fingerprint, "sync", "", Json({{"instance", instance}, {"request", request}, {"pages", page_count}}).dump());
+        return result;
     }
     Json create_job(const std::string& project,const Json& body){
         fields(body,{"mode","begin","end_exclusive","block_width","configuration","targets"});
@@ -114,7 +275,8 @@ Json Repository::admin(const Json& body){
     }else if(op=="credential-set"){
         fields(body,{"operation","fingerprint","enabled"});const auto fp=bytes(wire::digest(str(body,"fingerprint",64)));
         Statement q(s.db.handle(),"UPDATE coordinator_credentials SET enabled=? WHERE fingerprint=?");q.bind(1,int64_t(boolean(body,"enabled")));q.bind(2,fp);q.step();
-        if(!sqlite3_changes(s.db.handle()))throw Error(404,"credential not found");result={{"updated",true}};
+        if(!sqlite3_changes(s.db.handle()))throw Error(404,"credential not found");
+        result={{"updated",true}};
     }else if(op=="client-set"){
         fields(body,{"operation","client","enabled"});const auto client=str(body,"client",36);s.client_exists(client);
         Statement q(s.db.handle(),"UPDATE coordinator_clients SET enabled=? WHERE client=?");q.bind(1,int64_t(boolean(body,"enabled")));q.bind(2,client);q.step();result={{"updated",true}};
@@ -139,6 +301,8 @@ Json Repository::request(const Certificate& cert,const std::string& method,const
     if(parts==std::vector<std::string>{"api","v1","projects"}&&method=="GET"){
         out=Json::array();Statement q(s.db.handle(),"SELECT p.project,p.name,m.role FROM projects p JOIN coordinator_memberships m USING(project) WHERE m.client=? ORDER BY p.project");
         q.bind(1,actor.client);while(q.step())out.push_back({{"project",q.text(0)},{"name",q.text(1)},{"role",q.integer(2)}});
+    }else if(parts==std::vector<std::string>{"api","v1","sync"}&&method=="POST"){
+        s.db.writable();out=s.sync(actor,body);
     }else{
         if(parts.size()<5||parts[2]!="projects")throw Error(404,"not found");
         const auto& project=parts[3];s.authorize(actor,project);

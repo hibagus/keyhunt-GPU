@@ -1,0 +1,4 @@
+#pragma once
+namespace keyhunt::storage::detail {
+inline constexpr char schema_v4[]=R"KHSQL(@KEYHUNT_SCHEMA_V4@)KHSQL";
+}

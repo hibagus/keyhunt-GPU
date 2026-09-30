@@ -15,3 +15,21 @@ if(KEYHUNT_TEST_APACHE_ROOT)
         --apache-root ${KEYHUNT_TEST_APACHE_ROOT})
     set_tests_properties(coordinator_tls PROPERTIES TIMEOUT 120 LABELS "cpu;coordinator;security;integration")
 endif()
+
+add_executable(coordinator_sync_test tests/coordinator/sync.cpp)
+target_include_directories(coordinator_sync_test PRIVATE src/storage src/coordinator)
+target_link_libraries(coordinator_sync_test PRIVATE keyhunt_coordination)
+keyhunt_configure_target(coordinator_sync_test)
+add_test(NAME coordinator_sync COMMAND coordinator_sync_test)
+set_tests_properties(coordinator_sync PROPERTIES TIMEOUT 120 LABELS "cpu;coordinator;recovery")
+
+# The production server never includes these process-exit injection hooks.
+add_executable(coordinator_sync_failures_test tests/coordinator/sync.cpp
+    src/coordinator/certificate.cpp src/coordinator/repository.cpp
+    src/storage/sqlite.cpp src/storage/free_tree.cpp src/storage/journal.cpp src/storage/checkpoint_data.cpp)
+target_include_directories(coordinator_sync_failures_test PRIVATE src/storage src/coordinator "${CMAKE_CURRENT_BINARY_DIR}/generated")
+target_compile_definitions(coordinator_sync_failures_test PRIVATE KEYHUNT_TEST_STORAGE_FAILURES=1 KEYHUNT_SOURCE_ROOT="${CMAKE_CURRENT_SOURCE_DIR}")
+target_link_libraries(coordinator_sync_failures_test PRIVATE keyhunt_core SQLite::SQLite3 nlohmann_json::nlohmann_json OpenSSL::Crypto)
+keyhunt_configure_target(coordinator_sync_failures_test)
+add_test(NAME coordinator_sync_failures COMMAND coordinator_sync_failures_test)
+set_tests_properties(coordinator_sync_failures PROPERTIES TIMEOUT 120 LABELS "cpu;coordinator;recovery")
