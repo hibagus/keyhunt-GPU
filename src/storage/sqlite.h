@@ -2,11 +2,19 @@
 #include "keyhunt/core/exact_range.h"
 #include <sqlite3.h>
 #include <filesystem>
+#ifdef KEYHUNT_TEST_STORAGE_FAILURES
+#include <functional>
+#endif
 #include <string>
 #include <vector>
 
 namespace keyhunt::storage::detail {
 using Bytes=std::vector<uint8_t>;
+#ifdef KEYHUNT_TEST_STORAGE_FAILURES
+// Dedicated test binaries can terminate at a transaction boundary. No hook
+// or environment-variable control exists in the production library.
+inline std::function<void(const char*)> transaction_test_hook;
+#endif
 Bytes digest(Bytes data);
 Bytes random_bytes(size_t count);
 std::string uuid();

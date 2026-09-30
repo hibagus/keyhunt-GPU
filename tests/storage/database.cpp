@@ -20,6 +20,8 @@ int main(){
   {Statement s(db.handle(),"SELECT count(*) FROM projects");require(s.step()&&s.integer(0)==0,"rollback");}
   {Transaction tx(db);db.exec("INSERT INTO projects VALUES('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa','retained')");tx.commit();}
   db.backup((root/"backup").string());rejects([&]{db.backup((root/"backup").string());});
+  sqlite3* raw=nullptr;require(sqlite3_open_v2((root/"backup/progress.sqlite").c_str(),&raw,SQLITE_OPEN_READONLY,nullptr)==SQLITE_OK,"open snapshot");
+  {Statement mode(raw,"PRAGMA journal_mode");require(mode.step()&&mode.text(0)=="delete","snapshot needs WAL");}sqlite3_close(raw);
   Database backup((root/"backup").string());backup.check();rejects([&]{backup.writable();});require(backup.metadata("epoch")!=epoch,"backup epoch");
   Database::restore((root/"backup").string(),(root/"restored").string());
   Database restored((root/"restored").string());restored.check();rejects([&]{restored.writable();});

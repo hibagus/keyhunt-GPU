@@ -68,6 +68,7 @@ void copy_snapshot(sqlite3* source,const fs::path& destination){
     const fs::path temporary=destination.string()+".tmp-"+uuid();
     try {
         reserve_file(temporary,true);open(&target,temporary,SQLITE_OPEN_READWRITE);
+        if(sqlite3_exec(target,"PRAGMA synchronous=FULL",nullptr,nullptr,nullptr)!=SQLITE_OK)error(target,"backup synchronous mode");
         auto* copy=sqlite3_backup_init(target,"main",source,"main");
         if(!copy)error(target,"initialize backup");
         int result=SQLITE_OK; unsigned retries=0;
@@ -84,6 +85,10 @@ void copy_snapshot(sqlite3* source,const fs::path& destination){
         {Statement s(target,"UPDATE metadata SET value=? WHERE key='quarantine'");s.bind(1,Bytes{1});s.step();}
         {Statement s(target,"UPDATE metadata SET value=? WHERE key='epoch'");s.bind(1,random_bytes(16));s.step();}
         if(sqlite3_exec(target,"COMMIT",nullptr,nullptr,&message)!=SQLITE_OK){sqlite3_free(message);error(target,"seal backup commit");}
+        // A published snapshot is one self-contained file. Explicitly drain
+        // any copied WAL mode before publication; close alone cannot certify a
+        // successful checkpoint after an I/O failure.
+        {Statement mode(target,"PRAGMA journal_mode=DELETE");if(!mode.step() || mode.text(0)!="delete")throw std::runtime_error("backup still depends on WAL");}
         check_result(target,sqlite3_close(target),"close backup");target=nullptr;
         int fd=::open(temporary.c_str(),O_RDONLY|O_CLOEXEC|O_NOFOLLOW);
         if(fd<0)throw std::runtime_error("open backup for sync failed");
@@ -171,5 +176,13 @@ void Database::restore(const std::string& source,const std::string& destination)
 }
 Transaction::Transaction(Database& db,bool write):db_(db){db_.exec(write?"BEGIN IMMEDIATE":"BEGIN");}
 Transaction::~Transaction(){if(active_)try{db_.exec("ROLLBACK");}catch(...) {}}
-void Transaction::commit(){db_.exec("COMMIT");active_=false;}
+void Transaction::commit(){
+#ifdef KEYHUNT_TEST_STORAGE_FAILURES
+    if(transaction_test_hook)transaction_test_hook("before_commit");
+#endif
+    db_.exec("COMMIT");active_=false;
+#ifdef KEYHUNT_TEST_STORAGE_FAILURES
+    if(transaction_test_hook)transaction_test_hook("after_commit");
+#endif
+}
 } // namespace keyhunt::storage::detail
