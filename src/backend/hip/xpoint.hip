@@ -28,6 +28,7 @@ struct HipXPointExecutor::Impl {
     core::XPointCandidate *device_output = nullptr, *host_output = nullptr;
     gpu::XPointCounters *device_count = nullptr, *host_count = nullptr;
     size_t output_bytes = 0, target_bytes = 0;
+    uint32_t capacity = 0; // Effective allocation bound; requested replay semantics stay unchanged.
     Clock::time_point submitted;
 
     Impl(int ordinal, core::XPointTargets values, const core::XPointVerifier& cpu, XPointOptions config)
@@ -39,7 +40,10 @@ struct HipXPointExecutor::Impl {
         if (options.kernel != XPointKernel::Direct && options.kernel != XPointKernel::Stepped)
             throw std::invalid_argument("unsupported HIP xpoint kernel");
         powers_bytes = options.kernel == XPointKernel::Stepped ? 20*sizeof(gpu::Affine) : 0;
-        output_bytes = (uint64_t(options.candidate_capacity)+1)*sizeof(*device_output);
+        // A unique full X has at most two scalars in [1,n): k and n-k.
+        // No batch can emit more than its scalar count or twice the target count.
+        capacity = uint32_t(std::min<uint64_t>({options.candidate_capacity,options.max_steps,2*targets.values().size()}));
+        output_bytes = (uint64_t(capacity)+1)*sizeof(*device_output);
         target_bytes = targets.values().size()*sizeof(gpu::Field);
         DeviceScope selected(device);
         size_t free = 0, total = 0;
@@ -146,18 +150,18 @@ Ticket HipXPointExecutor::submit(const scheduler::KernelBatch& batch) {
         if (s.options.kernel == XPointKernel::Direct) {
             hipLaunchKernelGGL(gpu::xpoint_direct,dim3((batch.step_count()+127)/128),dim3(128),0,s.stream,
                 begin,batch.step_count(),s.device_targets,uint32_t(s.targets.values().size()),
-                s.device_output,s.options.candidate_capacity,s.device_count);
+                s.device_output,s.capacity,s.device_count);
         } else {
             const auto lanes = (batch.step_count()+gpu::xpoint_group-1)/gpu::xpoint_group;
             const dim3 blocks((lanes+127)/128);
             if (s.targets.values().size() <= 4) {
                 hipLaunchKernelGGL(gpu::xpoint_stepped<true>,blocks,dim3(128),0,s.stream,
                     base,batch.step_count(),s.device_powers,s.device_targets,uint32_t(s.targets.values().size()),
-                    s.device_output,s.options.candidate_capacity,s.device_count);
+                    s.device_output,s.capacity,s.device_count);
             } else {
                 hipLaunchKernelGGL(gpu::xpoint_stepped<false>,blocks,dim3(128),0,s.stream,
                     base,batch.step_count(),s.device_powers,s.device_targets,uint32_t(s.targets.values().size()),
-                    s.device_output,s.options.candidate_capacity,s.device_count);
+                    s.device_output,s.capacity,s.device_count);
             }
         }
         hip_check(hipGetLastError(),"xpoint launch");
@@ -193,7 +197,7 @@ XPointResult HipXPointExecutor::take(Ticket ticket) {
             if (fault == "steps") s.host_count->steps = 0;
             if (fault == "count") s.host_count->candidates = s.batch->step_count()+1;
             if (fault == "overflow") s.host_count->overflow = 1;
-            if (fault == "guard") s.host_output[s.options.candidate_capacity].offset = 0;
+            if (fault == "guard") s.host_output[s.capacity].offset = 0;
             if (fault == "offset") s.host_output[0].offset = s.batch->step_count();
             if (fault == "target") s.host_output[0].target = uint32_t(s.targets.values().size());
             if (fault == "false_match") s.host_output[0].offset = 1;
@@ -209,11 +213,11 @@ XPointResult HipXPointExecutor::take(Ticket ticket) {
         hip_check(hipEventElapsedTime(&result.kernel_ms,s.start,s.kernel_done),"hipEventElapsedTime(kernel)");
         hip_check(hipEventElapsedTime(&result.download_ms,s.kernel_done,s.done),"hipEventElapsedTime(download)");
         const auto verify_start = Clock::now();
-        const auto* guard = reinterpret_cast<const unsigned char*>(s.host_output+s.options.candidate_capacity);
+        const auto* guard = reinterpret_cast<const unsigned char*>(s.host_output+s.capacity);
         if (!std::all_of(guard,guard+sizeof(*s.host_output),[](unsigned char c){return c==0xa5;}))
             throw std::runtime_error("HIP xpoint candidate guard overwritten");
-        if (counters.invalid || counters.steps != s.batch->step_count() || counters.candidates > counters.steps ||
-            counters.overflow > 1 || result.overflow != (counters.candidates > s.options.candidate_capacity))
+        if (counters.invalid || counters.steps != s.batch->step_count() || counters.candidates > std::min<uint64_t>(counters.steps,2*s.targets.values().size()) ||
+            counters.overflow > 1 || result.overflow != (counters.candidates > s.capacity))
             throw std::runtime_error("HIP xpoint execution counters are inconsistent");
         if (!result.overflow) {
             result.matches = s.verifier.verify(*s.batch,s.targets,

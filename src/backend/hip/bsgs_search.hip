@@ -33,6 +33,7 @@ struct HipBsgsExecutor::Impl {
     core::BsgsCandidate *device_output = nullptr, *host_output = nullptr;
     gpu::BsgsCounters *device_count = nullptr, *host_count = nullptr;
     size_t output_bytes = 0, target_bytes = 0;
+    uint32_t capacity = 0; // Effective allocation bound; requested replay semantics stay unchanged.
     Clock::time_point submitted;
 
     Impl(int ordinal,const bsgs::Table& host,core::BsgsPublicKeyTargets values,const core::XPointVerifier& cpu,BsgsSearchOptions config)
@@ -44,7 +45,10 @@ struct HipBsgsExecutor::Impl {
         if (options.group_size!=0 && options.group_size!=1 && options.group_size!=8)
             throw std::invalid_argument("BSGS group size must be auto (0), 1 or 8");
         powers_bytes=20*sizeof(gpu::Point);
-        output_bytes=(uint64_t(options.candidate_capacity)+1)*sizeof(*device_output);
+        // Full public keys have one scalar in [1,n). A batch covers at most
+        // 64 distinct targets, so larger output buffers cannot hold useful data.
+        capacity=uint32_t(std::min<uint64_t>({options.candidate_capacity,options.max_steps,targets.values().size(),64}));
+        output_bytes=(uint64_t(capacity)+1)*sizeof(*device_output);
         target_bytes=targets.values().size()*sizeof(gpu::Point);
         // Conservative host peak covers the resident table, caller and owned
         // targets, upload staging, copied candidates/results and pinned buffers.
@@ -164,11 +168,11 @@ Ticket HipBsgsExecutor::submit(const core::BsgsBatch& batch) {
         if (s.active_group==1) {
             hipLaunchKernelGGL(gpu::bsgs_search<1>,blocks,dim3(128),0,s.stream,
                 base,batch.giants(),batch.last_babies(),s.device_targets,batch.first_target(),s.device_powers,
-                s.prepared->device_view(),s.device_output,s.options.candidate_capacity,s.device_count);
+                s.prepared->device_view(),s.device_output,s.capacity,s.device_count);
         } else {
             hipLaunchKernelGGL(gpu::bsgs_search<8>,blocks,dim3(128),0,s.stream,
                 base,batch.giants(),batch.last_babies(),s.device_targets,batch.first_target(),s.device_powers,
-                s.prepared->device_view(),s.device_output,s.options.candidate_capacity,s.device_count);
+                s.prepared->device_view(),s.device_output,s.capacity,s.device_count);
         }
         hip_check(hipGetLastError(),"BSGS launch");
         hip_check(hipEventRecord(s.kernel_done,s.stream),"bsgs hipEventRecord(kernel_done)");
@@ -203,7 +207,7 @@ BsgsSearchResult HipBsgsExecutor::take(Ticket ticket) {
             if (fault == "steps") s.host_count->steps = 0;
             if (fault == "count") s.host_count->candidates = s.batch->target_count()+1;
             if (fault == "overflow") s.host_count->overflow = 1;
-            if (fault == "guard") s.host_output[s.options.candidate_capacity].giant = 0;
+            if (fault == "guard") s.host_output[s.capacity].giant = 0;
             if (fault == "giant") s.host_output[0].giant = s.batch->giants();
             if (fault == "baby") s.host_output[0].baby = s.batch->m();
             if (fault == "reserved") s.host_output[0].reserved = 1;
@@ -223,11 +227,11 @@ BsgsSearchResult HipBsgsExecutor::take(Ticket ticket) {
         hip_check(hipEventElapsedTime(&result.kernel_ms,s.start,s.kernel_done),"bsgs hipEventElapsedTime(kernel)");
         hip_check(hipEventElapsedTime(&result.download_ms,s.kernel_done,s.done),"bsgs hipEventElapsedTime(download)");
         const auto verify_start = Clock::now();
-        const auto* guard = reinterpret_cast<const unsigned char*>(s.host_output+s.options.candidate_capacity);
+        const auto* guard = reinterpret_cast<const unsigned char*>(s.host_output+s.capacity);
         if (!std::all_of(guard,guard+sizeof(*s.host_output),[](unsigned char c){return c==0xa5;}))
             throw std::runtime_error("HIP BSGS candidate guard overwritten");
         if (counters.invalid || counters.steps != s.batch->steps() || counters.candidates > s.batch->target_count() || counters.tail_rejections > s.batch->target_count() ||
-            counters.overflow > 1 || result.overflow != (counters.candidates > s.options.candidate_capacity))
+            counters.overflow > 1 || result.overflow != (counters.candidates > s.capacity))
             throw std::runtime_error("HIP BSGS execution counters are inconsistent");
         if (!result.overflow) {
             result.matches = core::verify_bsgs(*s.batch,s.targets,s.verifier,

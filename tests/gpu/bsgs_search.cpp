@@ -43,6 +43,15 @@ int main(){
             require(found==129 && steps==2470,"all-target replay coverage");
             {backend::HipBsgsExecutor pending(0,table,targets,cpu,options);pending.submit(make(0,1));}
         }
+        // More than 64 uploaded targets still need room for the whole selected
+        // subset, but never for all targets at once. Reuse the compact slot.
+        backend::BsgsSearchOptions compact_options;compact_options.candidate_capacity=65536;
+        backend::HipBsgsExecutor compact(0,table,targets,cpu,compact_options);
+        for(uint32_t first:{0U,64U}){
+            auto t=compact.submit(make(first,64));compact.drain();auto result=compact.take(t);
+            require(!result.overflow && result.matches.size()>=63,"compact output lost target subset");
+            require(result.download_bytes<2048,"oversized BSGS output");
+        }
         options.host_memory_bytes=1;rejects([&]{backend::HipBsgsExecutor e(0,table,targets,cpu,options);});
         options={};options.memory_reserve_bytes=UINT64_MAX;rejects([&]{backend::HipBsgsExecutor e(0,table,targets,cpu,options);});
         options={};options.max_steps=1;backend::HipBsgsExecutor small(0,table,targets,cpu,options);rejects([&]{small.submit(batch);});

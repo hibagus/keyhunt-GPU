@@ -52,6 +52,27 @@ int main() {
             require(!r.overflow && r.device_steps==count && r.verified_steps==count && r.matches.size()==count,"tail coverage failure");
             for (unsigned i=0;i<count;++i) require(r.matches[i].scalar==begin.add(UInt256(i)),"gap or duplicate scalar");
         }
+        // Around n/2, k and n-k are adjacent and have exactly the same full X.
+        // Compact output must keep both signs, even with a huge requested buffer.
+        const auto half=core::scalar_order().divmod(UInt256(2)).first;
+        const auto half_pub=verifier.derive(half);
+        core::XPointBytes half_x{};std::copy_n(half_pub.begin()+1,32,half_x.begin());
+        const core::XPointTargets paired({half_x});
+        backend::XPointOptions compact_options;compact_options.max_steps=3;
+        compact_options.candidate_capacity=1048576;
+        for(auto kernel:{backend::XPointKernel::Direct,backend::XPointKernel::Stepped}){
+            compact_options.kernel=kernel;
+            backend::HipXPointExecutor compact(0,paired,verifier,compact_options);
+            auto t=compact.submit(plan(half,3,paired));compact.drain();auto result=compact.take(t);
+            require(!result.overflow && result.matches.size()==2 && result.verified_steps==3,"compact buffer lost opposite signs");
+            require(result.matches[0].scalar==half && result.matches[1].scalar==half.add(UInt256(1)),"wrong opposite-sign scalars");
+            require(result.download_bytes<256 && result.pinned_allocation_bytes<256,"oversized compact output");
+            compact_options.candidate_capacity=1;
+            backend::HipXPointExecutor bounded(0,paired,verifier,compact_options);
+            t=bounded.submit(plan(half,3,paired));bounded.drain();result=bounded.take(t);
+            require(result.overflow && result.candidate_count==2 && result.matches.empty(),"requested overflow bound ignored");
+            compact_options.candidate_capacity=1048576;
+        }
         auto small_options=options; small_options.candidate_capacity=1;
         backend::HipXPointExecutor small(0,targets,verifier,small_options);
         auto overflow=small.submit(first); small.drain(); const auto r=small.take(overflow);

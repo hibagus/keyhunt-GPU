@@ -128,3 +128,24 @@ maximal carries, independent expected inverses, batch-zero behavior and aliasing
 inverting kernels use 248 VGPRs, with more private scratch and an estimated two
 waves/SIMD. The reduction in arithmetic work still wins in every measured
 inverting workload. No architecture-specific assembly is needed for this gain.
+
+## Accepted: exact candidate-buffer bounds (A14)
+
+Xpoint allocates `min(requested capacity, max steps, 2*unique X targets)` records
+plus the guard. A full X has at most the two scalar preimages `k` and `n-k` in
+`[1,n)`. BSGS allocates `min(requested capacity, max steps, unique public keys,64)`
+plus the guard: a full public key has one scalar preimage and a batch has at most
+64 targets. These bounds cannot truncate a valid nonoverflowing result. Smaller
+requested capacities still overflow and discard the entire attempt as before.
+Counter consistency, CPU verification and the guard remain mandatory.
+
+[Default-capacity pairs](baselines/C17_CAPACITY.json) show warm-executor ratios
+of 0.997–1.033×: this is primarily a memory/transfer improvement, not a claimed
+5% default speedup. One-target downloads fall from 16,424 to 72 bytes for xpoint
+and from 24,632 to 80 bytes for BSGS. At xpoint's maximum requested capacity,
+[paired trials](baselines/C17_CAPACITY_LARGE.json) show 1.269–2.013× warm-executor
+improvement and reduce the old 16,777,256-byte download to 72–1,064 bytes.
+The measured capacity-dependent gain, predictable allocation reduction and lack
+of material default regression justify retaining this below-threshold default
+change. Four HIP search/fault tests pass, including both `n/2` sign matches,
+capacity-one overflow, repeated 64-target subsets and guard corruption.
