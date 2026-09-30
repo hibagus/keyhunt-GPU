@@ -123,3 +123,21 @@ is rejected: direct xpoint explicitly retains `inverse_binary()`, restoring its
 baseline timing. This preserves a distinct normalization reference for search
 parity. [C18_INVERSION.json](baselines/C18_INVERSION.json) retains both the rejected
 measurement and the corrected dispatch, together with independent oracle reports.
+
+## Rejected PTX multiply experiment
+
+A full-product PTX implementation added each 8x32 product row using separate
+low/high `mad.cc`/`madc` carry chains. It kept all carries inside one asm statement
+and delayed output writes until inputs were dead. Independent field/point oracles
+passed, but complete searches regressed despite about an 8% isolated multiply
+gain. SASS inspection showed that virtual PTX carry instructions still expand
+into native multiply/add/condition operations; fewer PTX statements do not imply
+fewer H200 cycles.
+
+Leaving squaring in C++ improved the candidate, but did not recover the search
+losses: stepped xpoint remained up to 8% slower and the 32-target, group-1 BSGS
+case about 24% slower than the inversion-chain build. Both dispatches are rejected.
+The retained default remains compiler-generated multiplication. The
+[reproduction patch](audits/C18_PTX_MULTIPLY.patch) and
+[raw measurements/resource evidence](baselines/C18_PTX_MULTIPLY.json) preserve
+this finding without shipping a slower default or an unused experimental kernel.
