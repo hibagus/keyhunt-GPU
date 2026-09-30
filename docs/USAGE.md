@@ -6,6 +6,7 @@ discovery, bounded diagnostics and the separate [bounded xpoint search](HIP_XPOI
 C10 adds [versioned BSGS table preparation](BSGS_TABLES.md), including HIP lookup
 validation, and C11 implements [bounded HIP BSGS range search](HIP_BSGS.md).
 C12/C13 add [local state](STORAGE.md) and [verified checkpoint commands](CHECKPOINTS.md).
+C14 adds [graceful pause, resume and signal controls](PAUSE_RESUME.md).
 Authenticated coordinator commands remain planned.
 
 ## A finite address search
@@ -80,11 +81,14 @@ continues after finding matches; scalar `-r` bounds do not make it finite.
 
 For the ordinary legacy/C09/C11 commands, Ctrl-C stops the process without a
 durable progress checkpoint. An OS stop/continue can suspend and resume that same
-live process, but its memory does not survive failure. Graceful checkpoint-on-signal
-controls remain C14 work. C12 provides local assignment ownership and thirty-day
-expiry through [`keyhunt state`](STORAGE.md). C13 adds the separate
+live process, but its memory does not survive failure. C12 provides local
+assignment ownership and thirty-day expiry through [`keyhunt state`](STORAGE.md). C13 adds the separate
 [`keyhunt checkpoint` commands](CHECKPOINTS.md), which persist verified HIP results
 and accepted coverage and resume the committed complement after process failure.
+For `checkpoint run`, C14 makes SIGINT/SIGTERM checkpoint and exit, SIGUSR1 pause,
+and SIGUSR2 resume. The `checkpoint pause|resume|stop|status` commands provide the
+same local controls. Wait for `durably_paused:true` before relying on a pause;
+[the operations guide](PAUSE_RESUME.md) explains bounded drain and ownership checks.
 The ordinary legacy and C09/C11 search commands retain their volatile behavior.
 
 `bsgsd` is the old local table daemon, not the authenticated coordinator. Its

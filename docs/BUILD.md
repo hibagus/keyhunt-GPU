@@ -272,3 +272,22 @@ python3 tools/measure_c13_checkpoints.py --binary build/hip-release/keyhunt --or
 
 See [CHECKPOINTS.md](CHECKPOINTS.md) for schema migration, command examples,
 timing scope, known limits and acceptance evidence.
+
+## Graceful checkpoint controls
+
+C14 adds `storage_checkpoint_control` and `checkpoint_controls` to every preset.
+They test the owner state machine and real Linux command/signal processes using
+a bounded CPU fixture. The production executable has no test execution switch.
+HIP builds also run `checkpoint_pause_hip` for real GPU pause, online snapshots,
+graceful shutdown and exact restart with changed visible device counts.
+
+```sh
+ctest --preset cpu-release -R 'checkpoint|storage_database'
+ctest --preset hip-release -R 'checkpoint|storage_database'
+python3 tools/measure_c14_pause.py --binary build/hip-release/keyhunt --oracle build/hip-release/secp256k1_oracle --report /tmp/keyhunt-c14-pause.json
+```
+
+Run timing tools after hardware tests finish. The opt-in measurement excludes a
+startup pause and retains five warm request-to-paused samples for each mode at
+small and default launch sizes. [The operations guide](PAUSE_RESUME.md) records
+the timing scope, hardware, recovery behavior and acceptance results.

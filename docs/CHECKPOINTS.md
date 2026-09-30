@@ -4,8 +4,9 @@ C13 connects exact xpoint/BSGS execution to the C12 [local journal](STORAGE.md).
 The guarantee is at-least-once computation with exact locally acknowledged
 coverage and deduplicated CPU-verified matches. It is standalone storage on one
 host; no remote synchronization, server acknowledgment or distributed outbox is
-claimed. Those belong to C15. Graceful signal handling and pause controls remain
-C14. Existing `keyhunt xpoint` and `keyhunt bsgs` commands retain their explicitly
+claimed. Those belong to C15. C14 adds
+[graceful signals and local pause controls](PAUSE_RESUME.md). Existing
+`keyhunt xpoint` and `keyhunt bsgs` commands retain their explicitly
 volatile C09/C11 behavior.
 
 ## Binding real inputs
@@ -235,9 +236,11 @@ scalar/block, canonical target index and target bytes. IDs can have gaps.
 These local commands do not implement remote authentication.
 
 CPU-only builds support creation, claims, checks and result inspection. A HIP
-execution request on such a build fails explicitly. Signals retain ordinary
-process-exit behavior in C13; only already committed progress survives. Graceful
-drain/checkpoint controls are C14 work.
+execution request on such a build fails explicitly. C14 adds CPU-compatible local
+control clients and graceful signal handling for `checkpoint run`. See the
+[pause/resume guide](PAUSE_RESUME.md) for durable-pause acknowledgments, early-stop
+summaries, live status and recovery. Ordinary volatile search commands retain
+their existing signal behavior.
 
 ## End-to-end verification
 
@@ -330,6 +333,6 @@ Documentation link/anchor/fence and whitespace checks also pass.
 
 Real hardware validation uses MI300X SPX/NPS1. CPX/QPX/SPX discovery contracts
 remain supported; live CPX/QPX searches were not performed on this configuration.
-C13 is complete. C14 is next for graceful signal/control-driven pause, bounded
-drain and resume operations; authenticated coordination and remote acceptance
-remain C15.
+This section records C13 acceptance. C14 subsequently adds
+[graceful controls, bounded drain and resume](PAUSE_RESUME.md); authenticated
+coordination and remote acceptance remain C15.

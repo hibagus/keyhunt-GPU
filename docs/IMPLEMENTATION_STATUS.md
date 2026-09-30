@@ -20,8 +20,9 @@ change is committed separately. Analysis and validation evidence live under
 | C11: complete HIP BSGS range search | Completed | [Search mapping and evidence](HIP_BSGS.md); exhaustive tiny/seeded high-offset cases, signed points/infinity, exact tails, all-target replay, eight SPX devices and measured grouping |
 | C12: sparse coverage and transactional assignments | Completed | [Storage contracts, commands and measurements](STORAGE.md); private versioned SQLite, exact sparse rank selection, merged coverage, fenced ownership, concurrent/idempotent claims and quarantined backup/restore; [acceptance evidence](baselines/C12_VALIDATION.json) |
 | C13: checkpoint verified progress and replay incomplete work | Completed | [Checkpoint contracts, commands and findings](CHECKPOINTS.md); canonical input binding, atomic verified matches/coverage, fourteen process-exit faults, real HIP restart, migration/corruption gates and a corrected BSGS type collision; [acceptance evidence](baselines/C13_VALIDATION.json) |
-| C14: graceful pause, resume and inspection | Next | Signal/control path, bounded drain, checkpoint-on-pause, resume controls and operational recovery checks |
-| C15–C23 | Planned | Acceptance gates remain in the redesign plan |
+| C14: graceful pause, resume and inspection | Completed | [Controls, operations and measurements](PAUSE_RESUME.md); graceful signals, private local commands, bounded drain, resume fencing, online snapshots and real HIP restart across 2/1/3 visible devices; [acceptance evidence](baselines/C14_VALIDATION.json) |
+| C15: authenticated project-scoped coordination | Next | Separate S02–S06 changes for mTLS, project roles, reservations, local outbox, scheduled synchronization, fencing and restore reconciliation |
+| C16–C23 | Planned | Acceptance gates remain in the redesign plan |
 
 C01 records the original CPU boundary/stride defects. C06 fixes modular/point
 arithmetic and the tested BSGS start miss; tail overrun and stride defects remain.
@@ -32,6 +33,7 @@ legacy defects remain documented follow-up work. C09 uses the exact planner for
 HIP xpoint search; C11 adds a separate exact BSGS tile mapping. C12 supplies the
 local storage foundation; C13 adds verified durable GPU checkpoint execution through
 separate commands. C13 also fixes the legacy/canonical BSGS target type-name collision
-found by debug and sanitizer creation tests. Graceful pause controls, authenticated
-coordination and deployment remain unimplemented. CPX/QPX/SPX contracts remain
+found by debug and sanitizer creation tests. C14 adds durable local pause/resume,
+graceful signals and live control inspection. Authenticated coordination and
+deployment remain unimplemented. CPX/QPX/SPX contracts remain
 supported, with current hardware validation on SPX/NPS1 and no partition changes.

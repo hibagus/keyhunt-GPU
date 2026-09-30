@@ -115,8 +115,9 @@ and download bytes are explicit. These atomically counted diagnostic indices are
 not key-search throughput, and no transfer/kernel overlap is claimed. There is
 no host-to-device bulk upload: the starting scalar is a kernel argument.
 A single slot intentionally provides backpressure. C09 retains this ownership
-model in its separate candidate-result executor. C13 will connect durable verification; C20 must isolate genuine device
-hangs in supervised processes. A HIP call/destructor may block on broken hardware;
+model in its separate candidate-result executor. C13 connects durable verification;
+C14 adds [local pause and resume controls](PAUSE_RESUME.md). C20 must isolate genuine
+device hangs in supervised processes. A HIP call/destructor may block on broken hardware;
 run diagnostics under an external timeout in automation.
 
 ## Execution validation

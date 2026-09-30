@@ -911,7 +911,7 @@ implementation evidence in [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md).
 | C11 | `feat: implement complete HIP BSGS range search` | C09, C10 | Tiny exhaustive and seeded large-offset BSGS cases match CPU/oracle, including tile ends and all targets |
 | C12 | `feat: persist sparse coverage and transactional assignments` | C05 | External state directories, project-scoped schema, lazy allocation, interval merging, selection policies, wide IDs, and concurrent claims pass |
 | C13 | `feat: checkpoint verified progress and replay incomplete work` | C09, C11, C12 | Faults at every commit boundary preserve matches and coverage; mismatched/corrupt jobs rejected |
-| C14 | `feat: add graceful pause resume and state inspection` | C13 | Signals/control path, bounded drain, resume with changed device count, backup and migration checks pass |
+| C14 | `feat: add graceful pause resume and state inspection` | C13 | Signals/control path, bounded drain, resume with changed device count, backup and migration checks pass; [C14 implementation and evidence](PAUSE_RESUME.md) |
 | C15 | `feat: coordinate authenticated project-scoped workers` | C12–C14 | Separate S02–S06 commits: mTLS, project roles, batched block reservations, scheduled machine sync, local outbox, fencing, low-contact two-host operation, and restore pass |
 | C16 | `perf: add reproducible GPU profiling and benchmark harness` | C11, C14 | Comparable timing/coverage metrics, raw repeated samples, hardware and durability metadata recorded |
 | C17 | `perf: tune HIP batching arithmetic and memory layout` | C16 | One measured optimization per commit; correctness, pause latency, and throughput gates preserved |

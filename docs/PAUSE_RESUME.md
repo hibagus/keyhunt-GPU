@@ -76,7 +76,7 @@ block and is false after an early graceful stop; a successful stop exits 0.
 | `SIGINT` or `SIGTERM` | Checkpoint and exit |
 | Second `SIGINT`/`SIGTERM` | Force exit at the next owner control boundary, exit 128 + signal |
 
-Handlers only set `sig_atomic_t` flags. Force exit runs in the owner loop, so
+Handlers only update lock-free atomic `sig_atomic_t` flags. Force exit runs in the owner loop, so
 uncommitted work replays. Standard Unix signals can coalesce: two simultaneous
 signals are not guaranteed to be two delivered interrupts. If a driver is stuck
 inside a call, use `SIGKILL` for immediate process termination. `SIGSTOP` suspends
@@ -100,8 +100,8 @@ silent clients; disconnected clients cannot block output or cause SIGPIPE.
 Controls are serviced between bounded synchronous batches, including overflow
 retries and each BSGS target group. At most one admitted batch remains before the
 owner can force the local checkpoint. The bound is work, not a universal
-millisecond deadline: GPU execution, candidate verification, filesystem sync and
-driver stalls determine wall time. Reduce `--batch-size`, `--giant-batch` and
+millisecond deadline: GPU execution, candidate verification, filesystem sync,
+output backpressure and driver stalls determine wall time. Reduce `--batch-size`, `--giant-batch` and
 `--target-batch` to reduce this bound. GPU kernels and their existing blocking
 completion path are unchanged; the running owner adds a nonblocking control
 check per batch, with no fixed sleep or per-batch forced fsync.
@@ -168,10 +168,10 @@ include the binary hash, inventory, options and verified work counts.
 
 | Mode | Batch configuration | Median request-to-paused ms | Maximum observed ms |
 | --- | --- | ---: | ---: |
-| xpoint | 128 scalars | 0.634 | 0.698 |
-| xpoint | 1,048,576 scalars (default) | 0.738 | 0.918 |
-| bsgs | 1 giant × 1 target | 0.804 | 0.834 |
-| bsgs | 16,384 giants; target limit 64 (default), 4 actual targets | 0.535 | 0.580 |
+| xpoint | 128 scalars | 0.683 | 0.689 |
+| xpoint | 1,048,576 scalars (default) | 0.666 | 0.779 |
+| bsgs | 1 giant × 1 target | 0.789 | 0.798 |
+| bsgs | 16,384 giants; target limit 64 (default), 4 actual targets | 0.948 | 0.991 |
 
 BSGS uses m=257. These are external Unix-socket request-to-durable-status
 measurements, including the remainder of an admitted batch, commit and control
@@ -190,17 +190,50 @@ variant, rotating order, one no-match target and 2^20 scalars. Xpoint uses
 
 | Mode | Persistence | Median process wall ms | Median checkpoint transaction ms |
 | --- | --- | ---: | ---: |
-| xpoint | volatile | 573.264 | 0.000 |
-| xpoint | timed | 621.381 | 0.472 |
-| xpoint | every-batch | 625.000 | 3.717 |
-| bsgs | volatile | 880.782 | 0.000 |
-| bsgs | timed | 679.374 | 0.478 |
-| bsgs | every-batch | 666.343 | 3.841 |
+| xpoint | volatile | 585.746 | 0.000 |
+| xpoint | timed | 617.339 | 0.471 |
+| xpoint | every-batch | 619.343 | 3.648 |
+| bsgs | volatile | 636.849 | 0.000 |
+| bsgs | timed | 652.370 | 0.460 |
+| bsgs | every-batch | 674.067 | 3.598 |
 
 [Raw checkpoint samples](baselines/C14_CHECKPOINT_TIMING.json) retain all counts.
 Timed runs still coalesce sixteen no-match batches into one final commit;
 every-batch mode commits sixteen times. These process times include startup,
-preparation, execution, output and cleanup. The volatile BSGS median being above
-the durable variants illustrates the startup/scheduling noise: do not infer a
+preparation, execution, output and cleanup. Variation in process medians includes
+startup/scheduling noise: do not infer a
 kernel speedup or regression from these short process samples. C16 provides the
 broader profiling baseline; C14 changes no kernels or arithmetic.
+
+## Final C14 acceptance
+
+[C14_VALIDATION.json](baselines/C14_VALIDATION.json) records the full test logs,
+source/binary/schema hashes, process-control reports and real-device recovery
+results. All builds completed without new compiler warnings.
+
+| Gate | Result |
+| --- | ---: |
+| CPU release | 31/31 |
+| CPU debug | 31/31 |
+| Focused ASAN/UBSAN | 29/29 |
+| HIP release, gfx942 | 47/47 |
+
+The sanitizer selector excludes only the pre-existing legacy `cpu_baseline` and
+`target_loading` gates. Every checkpoint/control gate is included. The full HIP
+suite also retains the independent arithmetic/search oracles, overflow and
+driver-failure tests, v1 migration snapshot checks and CPX/QPX/SPX discovery
+contracts. Current hardware is eight MI300X devices in SPX/NPS1. Live CPX/QPX
+searches were not run on this configuration.
+
+C14 is complete for standalone checkpoint execution. One journal still permits
+one active owner, block and logical GPU at a time. The changed-inventory tests
+prove compatible sequential restart; simultaneous multi-GPU supervision remains
+C20. C15 is next for authenticated coordination, local outbox, remote acceptance
+and restore reconciliation.
+
+
+## Signal-thread review finding
+
+A [final signal review](C14_SIGNAL_THREAD_FINDING.md) found and fixed a
+cross-thread flag-consumption race. The process regression now raises pause,
+resume and terminate on helper threads as well as through external commands.
