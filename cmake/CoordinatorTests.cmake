@@ -115,3 +115,15 @@ if(KEYHUNT_TEST_APACHE_ROOT AND TARGET keyhunt-worker AND KEYHUNT_ENABLE_GPU)
     set_tests_properties(coordinator_fleet PROPERTIES TIMEOUT 180 SKIP_RETURN_CODE 77
         LABELS "${KEYHUNT_GPU_BACKEND};hardware;coordinator;recovery" RESOURCE_LOCK gpu_device)
 endif()
+
+if(TARGET keyhunt-worker AND KEYHUNT_ENABLE_CUDA)
+    # Link the production self-test into a fresh process and inspect CUDA's
+    # primary-context state without initializing the other visible devices.
+    add_executable(cuda_worker_self_test tests/coordinator/cuda_self_test.cpp src/coordinator/self_test.cpp)
+    target_include_directories(cuda_worker_self_test PRIVATE src/coordinator)
+    target_link_libraries(cuda_worker_self_test PRIVATE keyhunt_coordination keyhunt_backend_commands CUDA::cuda_driver)
+    keyhunt_configure_target(cuda_worker_self_test)
+    add_test(NAME coordinator_cuda_contexts COMMAND cuda_worker_self_test)
+    set_tests_properties(coordinator_cuda_contexts PROPERTIES TIMEOUT 60 SKIP_RETURN_CODE 77
+        LABELS "cuda;hardware;coordinator" RESOURCE_LOCK gpu_device)
+endif()

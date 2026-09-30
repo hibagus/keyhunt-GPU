@@ -276,3 +276,24 @@ larger target sets, and 92 registers/1024 bytes of stack for grouped BSGS. Nativ
 SASS retains `IADD3.X` carry instructions; its hash and reproduction command are
 recorded in the validation report. These measurements leave room for further
 workload-specific tuning; they do not establish a globally optimal kernel.
+
+## C20 worker context isolation
+
+The C20 selected-device path now has a native CUDA regression gate:
+`coordinator_cuda_contexts`. It runs the production worker self-test on the last
+visible ordinal in a fresh process, then queries every primary context with
+[`cuDevicePrimaryCtxGetState`](https://docs.nvidia.com/cuda/cuda-driver-api/cuda_driver_api/group__CUDA__PRIMARY__CTX.html).
+The observer does not retain contexts or select devices. Only the chosen ordinal
+may be active, catching both full-inventory initialization and accidental
+restoration of the untouched default device. Fewer than two visible devices
+explicitly skips this isolation gate; it cannot prove isolation on one GPU.
+
+On the eight-H200 host with CUDA 13.3 / driver 610.57.04, the fresh process
+reported eight visible devices and exactly `[7]` active after all four worker
+search variants passed. This validates the C20 fix for audit A20 on NVIDIA.
+It does not simulate a driver hang or certify MIG behavior.
+
+```sh
+TMPDIR=/var/tmp ctest --test-dir build/cuda-c20 \
+  -R coordinator_cuda_contexts --verbose
+```
