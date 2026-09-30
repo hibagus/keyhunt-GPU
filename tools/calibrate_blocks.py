@@ -14,6 +14,8 @@ ORDER = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141
 
 
 def recommend(report, mode, reference):
+    if report.get("passed") is not True:
+        raise ValueError("calibration requires a successfully completed validation report")
     samples, identity = [], None
     for run in report["runs"]:
         if not run.get("validated") or not run.get("measured") or run["device_count"] != 1 or run["mode"] != mode:
@@ -26,7 +28,7 @@ def recommend(report, mode, reference):
                 raise ValueError("reference samples mix devices or immutable search inputs")
             identity = current
             span, steps, nanoseconds = int(row["computed_scalars"], 16), int(row["device_steps"], 16), row["wall_ns"]
-            if not span or not steps or not isinstance(nanoseconds, int) or nanoseconds <= 0:
+            if span <= 0 or steps <= 0 or not isinstance(nanoseconds, int) or isinstance(nanoseconds, bool) or nanoseconds <= 0:
                 raise ValueError("invalid measured work/time")
             samples.append((Fraction(span * 1000000000, nanoseconds), Fraction(steps * 1000000000, nanoseconds)))
     if len(samples) < 5:
