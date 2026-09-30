@@ -1,0 +1,23 @@
+In file included from /home/bagus/keyhunt-GPU/src/backend/hip/bsgs_search.hip:4:
+/home/bagus/keyhunt-GPU/kernels/hip/bsgs_search.h:27:1: remark: Function Name: _ZN7keyhunt3gpuL11bsgs_searchILj1EEEvNS0_5PointEmmPKS2_jS4_NS_4bsgs4ViewEPNS_4core13BsgsCandidateEjPNS0_12BsgsCountersE [-Rpass-analysis=kernel-resource-usage]
+   27 |     core::BsgsCandidate* output,uint32_t capacity,BsgsCounters* counters) {
+      | ^
+/home/bagus/keyhunt-GPU/kernels/hip/bsgs_search.h:27:1: remark:     TotalSGPRs: 104 [-Rpass-analysis=kernel-resource-usage]
+/home/bagus/keyhunt-GPU/kernels/hip/bsgs_search.h:27:1: remark:     VGPRs: 142 [-Rpass-analysis=kernel-resource-usage]
+/home/bagus/keyhunt-GPU/kernels/hip/bsgs_search.h:27:1: remark:     AGPRs: 0 [-Rpass-analysis=kernel-resource-usage]
+/home/bagus/keyhunt-GPU/kernels/hip/bsgs_search.h:27:1: remark:     ScratchSize [bytes/lane]: 0 [-Rpass-analysis=kernel-resource-usage]
+/home/bagus/keyhunt-GPU/kernels/hip/bsgs_search.h:27:1: remark:     Dynamic Stack: False [-Rpass-analysis=kernel-resource-usage]
+/home/bagus/keyhunt-GPU/kernels/hip/bsgs_search.h:27:1: remark:     Occupancy [waves/SIMD]: 3 [-Rpass-analysis=kernel-resource-usage]
+/home/bagus/keyhunt-GPU/kernels/hip/bsgs_search.h:27:1: remark:     SGPRs Spill: 203 [-Rpass-analysis=kernel-resource-usage]
+/home/bagus/keyhunt-GPU/kernels/hip/bsgs_search.h:27:1: remark:     VGPRs Spill: 0 [-Rpass-analysis=kernel-resource-usage]
+/home/bagus/keyhunt-GPU/kernels/hip/bsgs_search.h:27:1: remark:     LDS Size [bytes/block]: 4096 [-Rpass-analysis=kernel-resource-usage]
+/home/bagus/keyhunt-GPU/kernels/hip/bsgs_search.h:27:1: remark: Function Name: _ZN7keyhunt3gpuL11bsgs_searchILj8EEEvNS0_5PointEmmPKS2_jS4_NS_4bsgs4ViewEPNS_4core13BsgsCandidateEjPNS0_12BsgsCountersE [-Rpass-analysis=kernel-resource-usage]
+/home/bagus/keyhunt-GPU/kernels/hip/bsgs_search.h:27:1: remark:     TotalSGPRs: 106 [-Rpass-analysis=kernel-resource-usage]
+/home/bagus/keyhunt-GPU/kernels/hip/bsgs_search.h:27:1: remark:     VGPRs: 248 [-Rpass-analysis=kernel-resource-usage]
+/home/bagus/keyhunt-GPU/kernels/hip/bsgs_search.h:27:1: remark:     AGPRs: 0 [-Rpass-analysis=kernel-resource-usage]
+/home/bagus/keyhunt-GPU/kernels/hip/bsgs_search.h:27:1: remark:     ScratchSize [bytes/lane]: 1232 [-Rpass-analysis=kernel-resource-usage]
+/home/bagus/keyhunt-GPU/kernels/hip/bsgs_search.h:27:1: remark:     Dynamic Stack: False [-Rpass-analysis=kernel-resource-usage]
+/home/bagus/keyhunt-GPU/kernels/hip/bsgs_search.h:27:1: remark:     Occupancy [waves/SIMD]: 2 [-Rpass-analysis=kernel-resource-usage]
+/home/bagus/keyhunt-GPU/kernels/hip/bsgs_search.h:27:1: remark:     SGPRs Spill: 248 [-Rpass-analysis=kernel-resource-usage]
+/home/bagus/keyhunt-GPU/kernels/hip/bsgs_search.h:27:1: remark:     VGPRs Spill: 0 [-Rpass-analysis=kernel-resource-usage]
+/home/bagus/keyhunt-GPU/kernels/hip/bsgs_search.h:27:1: remark:     LDS Size [bytes/block]: 4096 [-Rpass-analysis=kernel-resource-usage]

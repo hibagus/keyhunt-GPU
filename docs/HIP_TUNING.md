@@ -76,3 +76,29 @@ Five focused HIP tests passed: executor tails/ownership/overflow, injected
 failures, both CLI kernels and checkpoint pause. The existing C16 report provides
 the pre-change compiler baseline. Measurements used physical GPU 1 (visible
 ordinal 0); an independent C16 audit used GPU 0 on the same unreserved host.
+
+## Accepted: measured mixed point addition
+
+The portable mixed-add primitive specializes a Jacobian plus affine operand,
+preserves infinity/equal/opposite points and in-place aliasing, and removes four
+field multiplies and one square from a normal addition. Xpoint's cached powers
+now use 68-byte affine values instead of 96-byte Jacobian values; no coordinate
+normalization is needed because the CPU seeds are already affine. Single-giant
+BSGS also uses mixed addition. Its grouped kernel retains the general formula.
+
+[Five measured pairs](baselines/C17_MIXED.json) against the launch-bound build show
+xpoint kernel speedups of 1.281× / 1.292× / 1.080× and warm executor speedups of
+1.259× / 1.256× / 1.077×. Single-giant BSGS improves 1.089–1.180× at kernel level.
+The unchanged grouped BSGS workloads remain within about 1% of baseline.
+Independent portable/HIP point oracles and both executors' search/fault tests
+passed (six tests); BSGS search/fault tests also passed after narrowing dispatch.
+The small-target xpoint compiler estimate improves from 180 to 154 VGPRs and
+from two to three waves/SIMD, with zero private scratch. Retained remarks:
+[xpoint](baselines/C17_MIXED_XPOINT_RESOURCES.log),
+[BSGS](baselines/C17_MIXED_BSGS_SEARCH_RESOURCES.log).
+
+**Rejected variant:** converting both BSGS groups and their caches to affine
+helped smaller workloads but regressed the 32-target group-8 kernel by about
+13% (auto by 11%); [raw evidence](baselines/C17_MIXED_REJECTED.json). Operation
+counts alone did not predict the compiled kernel behavior. That variant is not
+retained; BSGS keeps its existing cache representation and group-8 formula.

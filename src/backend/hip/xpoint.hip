@@ -22,7 +22,7 @@ struct HipXPointExecutor::Impl {
     hipStream_t stream = nullptr;
     hipEvent_t start = nullptr, kernel_done = nullptr, done = nullptr;
     gpu::Field* device_targets = nullptr;
-    gpu::Point* device_powers = nullptr;
+    gpu::Affine* device_powers = nullptr;
     size_t powers_bytes = 0;
     double seed_ms = 0;
     core::XPointCandidate *device_output = nullptr, *host_output = nullptr;
@@ -38,7 +38,7 @@ struct HipXPointExecutor::Impl {
             throw std::invalid_argument("xpoint candidate capacity must be in [1, 1048576]");
         if (options.kernel != XPointKernel::Direct && options.kernel != XPointKernel::Stepped)
             throw std::invalid_argument("unsupported HIP xpoint kernel");
-        powers_bytes = options.kernel == XPointKernel::Stepped ? 20*sizeof(gpu::Point) : 0;
+        powers_bytes = options.kernel == XPointKernel::Stepped ? 20*sizeof(gpu::Affine) : 0;
         output_bytes = (uint64_t(options.candidate_capacity)+1)*sizeof(*device_output);
         target_bytes = targets.values().size()*sizeof(gpu::Field);
         DeviceScope selected(device);
@@ -70,8 +70,12 @@ struct HipXPointExecutor::Impl {
             // batches use only this executor's nonblocking stream and pinned buffers.
             hip_check(hipMemcpy(device_targets,upload.data(),target_bytes,hipMemcpyHostToDevice),"hipMemcpy(targets)");
             if (powers_bytes) {
-                gpu::Point powers[20];
-                for (unsigned bit=0;bit<20;++bit) powers[bit] = seed(core::UInt256::power_of_two(bit));
+                // CPU-derived powers are finite affine points; omit the redundant Z.
+                gpu::Affine powers[20];
+                for (unsigned bit=0;bit<20;++bit) {
+                    const auto point = seed(core::UInt256::power_of_two(bit));
+                    powers[bit] = {point.x,point.y,false};
+                }
                 hip_check(hipMalloc(&device_powers,powers_bytes),"hipMalloc(powers)");
                 hip_check(hipMemcpy(device_powers,powers,powers_bytes,hipMemcpyHostToDevice),"hipMemcpy(powers)");
             }

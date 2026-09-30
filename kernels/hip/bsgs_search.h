@@ -8,6 +8,14 @@ struct BsgsCounters {
     unsigned long long steps=0,candidates=0,tail_rejections=0;
     unsigned overflow=0,invalid=0;
 };
+// CPU-generated cached operands are finite and have Z=1. Mixed addition wins
+// for single-giant lanes; group-8 keeps the general formula because the mixed
+// version regressed the measured 32-target workload (see docs/HIP_TUNING.md).
+template<unsigned Group>
+__device__ inline void bsgs_add_cached(Point& out,const Point& a,const Point& b) {
+    if constexpr (Group==1) point_add_mixed(out,a,Affine{b.x,b.y,false});
+    else point_add(out,a,b);
+}
 // One lane walks a consecutive group for one target. All absolute-start work
 // is amortized in aG, while cached -(m*2^bit)G points seed each local giant index.
 // Infinity is expected (j=0), including inside a batch inversion group.
@@ -22,13 +30,13 @@ static __global__ __launch_bounds__(128) void bsgs_search(Point negative_start,u
     const uint32_t target=first_target+blockIdx.y;
     const unsigned count=unsigned(giants-first<Group?giants-first:Group);
     Point current;
-    point_add(current,targets[target],negative_start);
+    bsgs_add_cached<Group>(current,targets[target],negative_start);
     for (unsigned bit=0;bit<20;++bit)
-        if ((first>>bit)&1) point_add(current,current,powers[bit]);
+        if ((first>>bit)&1) bsgs_add_cached<Group>(current,current,powers[bit]);
     Field xs[Group],ys[Group],zs[Group];
     for (unsigned i=0;i<count;++i) {
         xs[i]=current.x; ys[i]=current.y; zs[i]=current.z;
-        if (i+1<count) point_add(current,current,powers[0]);
+        if (i+1<count) bsgs_add_cached<Group>(current,current,powers[0]);
     }
     if constexpr (Group==1) inverse(zs[0],zs[0]);
     else batch_inverse<Group>(zs,zs,count);

@@ -61,7 +61,7 @@ __global__ __launch_bounds__(128) void xpoint_direct(Scalar begin, uint64_t coun
 // Disjoint lane groups cover [0,count) exactly, including the final partial group.
 constexpr unsigned xpoint_group = 8;
 template<bool SmallTargets>
-__global__ __launch_bounds__(128) void xpoint_stepped(Point base, uint64_t count, const Point* powers,
+__global__ __launch_bounds__(128) void xpoint_stepped(Point base, uint64_t count, const Affine* powers,
     const Field* targets, uint32_t target_count, core::XPointCandidate* output,
     uint32_t capacity, XPointCounters* counters) {
     const uint64_t first = (uint64_t(blockIdx.x)*blockDim.x+threadIdx.x)*xpoint_group;
@@ -69,7 +69,7 @@ __global__ __launch_bounds__(128) void xpoint_stepped(Point base, uint64_t count
     const unsigned steps = unsigned(count-first < xpoint_group ? count-first : xpoint_group);
     Point current = base;
     for (unsigned bit=0;bit<20;++bit)
-        if ((first >> bit)&1) point_add(current,current,powers[bit]);
+        if ((first >> bit)&1) point_add_mixed(current,current,powers[bit]);
     Field xs[xpoint_group], zs[xpoint_group];
     for (unsigned i=0;i<steps;++i) {
         if (is_infinity(current)) { atomicExch(&counters->invalid,1U); return; }
@@ -85,7 +85,7 @@ __global__ __launch_bounds__(128) void xpoint_stepped(Point base, uint64_t count
         } else {
             xs[i] = current.x; zs[i] = current.z;
         }
-        if (i+1 < steps) point_add(current,current,powers[0]);
+        if (i+1 < steps) point_add_mixed(current,current,powers[0]);
     }
     if constexpr (!SmallTargets) {
         // One Fermat inversion for the whole lane group. Only X and Z are kept;

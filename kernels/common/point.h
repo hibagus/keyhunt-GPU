@@ -96,10 +96,26 @@ KEYHUNT_HD inline void point_add(Point& out, const Point& a, const Point& b) {
     out = result;
 }
 KEYHUNT_HD inline void point_add_mixed(Point& out, const Point& a, const Affine& b) {
-    // Use the complete general path first; a tuned mixed formula can replace it
-    // only after identical exceptional/aliasing cases and workload measurements.
-    const Point right = from_affine(b);
-    point_add(out,a,right);
+    if (b.infinity) { out = is_infinity(a) ? Point{} : a; return; }
+    if (is_infinity(a)) { out = from_affine(b); return; }
+    // The affine operand has Z=1. Specializing the general formula removes
+    // four multiplies and one square, without losing equal/opposite handling.
+    // Keep the result separate until all reads of a (possibly out) are done.
+    Field zz,u2,s2,h,r,hh,hhh,v,temp;
+    square(zz,a.z); mul(u2,b.x,zz);
+    mul(s2,b.y,a.z); mul(s2,s2,zz);
+    sub(h,u2,a.x); sub(r,s2,a.y);
+    if (is_zero(h)) {
+        if (is_zero(r)) point_double(out,a);
+        else out = Point{};
+        return;
+    }
+    square(hh,h); mul(hhh,hh,h); mul(v,a.x,hh);
+    Point result;
+    square(result.x,r); sub(result.x,result.x,hhh); add(temp,v,v); sub(result.x,result.x,temp);
+    sub(temp,v,result.x); mul(result.y,r,temp); mul(temp,a.y,hhh); sub(result.y,result.y,temp);
+    mul(result.z,a.z,h);
+    out = result;
 }
 KEYHUNT_HD inline void point_multiply(Point& out, const Point& point, const Scalar& scalar) {
     Point result{};
