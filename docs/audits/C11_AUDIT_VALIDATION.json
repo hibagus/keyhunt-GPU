@@ -1,0 +1,178 @@
+{
+  "schema_version": 1,
+  "recorded_utc": "2026-09-30T05:14:34.459588+00:00",
+  "revision": "4febd4a3b5c2a2f3e71e394163cd6d06cd16838a",
+  "snapshot": "/tmp/keyhunt-c11-audit-veoz264f/source",
+  "architecture": "gfx942",
+  "gpu_scope": "HIP_VISIBLE_DEVICES=0; one SPX logical device; no partition or clock changes",
+  "platform": "Linux-5.15.0-191-generic-x86_64-with-glibc2.35",
+  "configure_options": [
+    "-DCMAKE_BUILD_TYPE=Release",
+    "-DBUILD_TESTING=ON",
+    "-DCMAKE_HIP_ARCHITECTURES=gfx942"
+  ],
+  "suites": {
+    "hip": {
+      "command": "HIP_VISIBLE_DEVICES=0 ctest --test-dir hip --output-on-failure --parallel 1",
+      "exit_code": 0,
+      "test_count": 37,
+      "stdout": "Internal ctest changing into directory: /tmp/keyhunt-c11-audit-veoz264f/hip\nTest project /tmp/keyhunt-c11-audit-veoz264f/hip\n      Start  1: oracle_selftest\n 1/37 Test  #1: oracle_selftest ..................   Passed    0.85 sec\n      Start  2: cpu_field_oracle\n 2/37 Test  #2: cpu_field_oracle .................   Passed    0.26 sec\n      Start  3: cpu_point_oracle\n 3/37 Test  #3: cpu_point_oracle .................   Passed    0.70 sec\n      Start  4: bounded_search_oracle\n 4/37 Test  #4: bounded_search_oracle ............   Passed    1.61 sec\n      Start  5: portable_field_oracle\n 5/37 Test  #5: portable_field_oracle ............   Passed    0.31 sec\n      Start  6: hip_field_oracle\n 6/37 Test  #6: hip_field_oracle .................   Passed    5.15 sec\n      Start  7: portable_point_oracle\n 7/37 Test  #7: portable_point_oracle ............   Passed    1.34 sec\n      Start  8: hip_point_oracle\n 8/37 Test  #8: hip_point_oracle .................   Passed    4.75 sec\n      Start  9: hip_arithmetic_devices\n 9/37 Test  #9: hip_arithmetic_devices ...........   Passed    0.82 sec\n      Start 10: xpoint_search_contract\n10/37 Test #10: xpoint_search_contract ...........   Passed    0.09 sec\n      Start 11: hip_xpoint_failures\n11/37 Test #11: hip_xpoint_failures ..............   Passed    0.72 sec\n      Start 12: hip_xpoint_executor\n12/37 Test #12: hip_xpoint_executor ..............   Passed    0.78 sec\n      Start 13: xpoint_cli\n13/37 Test #13: xpoint_cli .......................   Passed   27.44 sec\n      Start 14: xpoint_cli_direct\n14/37 Test #14: xpoint_cli_direct ................   Passed   32.86 sec\n      Start 15: bsgs_table_contract\n15/37 Test #15: bsgs_table_contract ..............   Passed    0.31 sec\n      Start 16: bsgs_table_oracle\n16/37 Test #16: bsgs_table_oracle ................   Passed    2.87 sec\n      Start 17: hip_bsgs_table\n17/37 Test #17: hip_bsgs_table ...................   Passed    0.71 sec\n      Start 18: bsgs_table_devices\n18/37 Test #18: bsgs_table_devices ...............   Passed    2.07 sec\n      Start 19: hip_bsgs_failures\n19/37 Test #19: hip_bsgs_failures ................   Passed    0.80 sec\n      Start 20: bsgs_search_contract\n20/37 Test #20: bsgs_search_contract .............   Passed    0.14 sec\n      Start 21: hip_bsgs_search\n21/37 Test #21: hip_bsgs_search ..................   Passed    1.04 sec\n      Start 22: hip_bsgs_search_failures\n22/37 Test #22: hip_bsgs_search_failures .........   Passed    0.91 sec\n      Start 23: bsgs_cli\n23/37 Test #23: bsgs_cli .........................   Passed   60.53 sec\n      Start 24: bsgs_cli_single\n24/37 Test #24: bsgs_cli_single ..................   Passed   61.23 sec\n      Start 25: bsgs_cli_grouped\n25/37 Test #25: bsgs_cli_grouped .................   Passed   62.17 sec\n      Start 26: hip_discovery_contract\n26/37 Test #26: hip_discovery_contract ...........   Passed    0.12 sec\n      Start 27: hip_failures\n27/37 Test #27: hip_failures .....................   Passed    0.61 sec\n      Start 28: hip_executor\n28/37 Test #28: hip_executor .....................   Passed    0.65 sec\n      Start 29: hip_partitions\n29/37 Test #29: hip_partitions ...................   Passed    1.38 sec\n      Start 30: backend_cli\n30/37 Test #30: backend_cli ......................   Passed    1.49 sec\n      Start 31: exact_range\n31/37 Test #31: exact_range ......................   Passed    0.00 sec\n      Start 32: block_grid\n32/37 Test #32: block_grid .......................   Passed    0.09 sec\n      Start 33: work_unit\n33/37 Test #33: work_unit ........................   Passed    0.04 sec\n      Start 34: range_oracle\n34/37 Test #34: range_oracle .....................   Passed    1.86 sec\n      Start 35: result_verifier\n35/37 Test #35: result_verifier ..................   Passed    0.03 sec\n      Start 36: cpu_baseline\n36/37 Test #36: cpu_baseline .....................   Passed   29.10 sec\n      Start 37: target_loading\n37/37 Test #37: target_loading ...................   Passed    8.78 sec\n\n100% tests passed, 0 tests failed out of 37\n\nLabel Time Summary:\narithmetic    =  12.38 sec*proc (5 tests)\nbackend       =   1.60 sec*proc (2 tests)\nbaseline      =  29.10 sec*proc (1 test)\nbsgs          = 192.76 sec*proc (11 tests)\ncore          =  11.04 sec*proc (8 tests)\ncpu           =  48.51 sec*proc (18 tests)\nhardware      = 266.10 sec*proc (19 tests)\nhip           = 266.10 sec*proc (19 tests)\noracle        = 262.90 sec*proc (15 tests)\npartitions    =   1.38 sec*proc (1 test)\nranges        =   2.00 sec*proc (4 tests)\ntables        =   6.75 sec*proc (5 tests)\nxpoint        =  61.90 sec*proc (5 tests)\n\nTotal Test time (real) = 314.63 sec\n",
+      "last_test_log_sha256": "d6b542600894aef00cac5a94340e8fc171c8511fdc4f778e0e537ce1651014c3"
+    },
+    "cpu": {
+      "command": "ctest --test-dir cpu --output-on-failure --parallel 2",
+      "exit_code": 0,
+      "test_count": 22,
+      "stdout": "Internal ctest changing into directory: /tmp/keyhunt-c11-audit-veoz264f/cpu\nTest project /tmp/keyhunt-c11-audit-veoz264f/cpu\n      Start  1: oracle_selftest\n      Start  2: cpu_field_oracle\n 1/22 Test  #2: cpu_field_oracle .................   Passed    0.25 sec\n      Start  3: cpu_point_oracle\n 2/22 Test  #1: oracle_selftest ..................   Passed    0.88 sec\n      Start  4: bounded_search_oracle\n 3/22 Test  #3: cpu_point_oracle .................   Passed    0.70 sec\n      Start  5: portable_field_oracle\n 4/22 Test  #5: portable_field_oracle ............   Passed    0.31 sec\n      Start  6: portable_point_oracle\n 5/22 Test  #4: bounded_search_oracle ............   Passed    1.63 sec\n      Start  7: xpoint_search_contract\n 6/22 Test  #6: portable_point_oracle ............   Passed    1.34 sec\n      Start  8: xpoint_cli\n 7/22 Test  #7: xpoint_search_contract ...........   Passed    0.09 sec\n      Start  9: bsgs_table_contract\n 8/22 Test  #8: xpoint_cli .......................   Passed    0.07 sec\n      Start 10: bsgs_table_oracle\n 9/22 Test  #9: bsgs_table_contract ..............   Passed    0.31 sec\n      Start 11: bsgs_table_devices\n10/22 Test #11: bsgs_table_devices ...............   Passed    0.08 sec\n      Start 12: bsgs_search_contract\n11/22 Test #12: bsgs_search_contract .............   Passed    0.14 sec\n      Start 13: bsgs_cli\n12/22 Test #13: bsgs_cli .........................   Passed    0.07 sec\n      Start 14: hip_discovery_contract\n13/22 Test #14: hip_discovery_contract ...........   Passed    0.12 sec\n      Start 15: backend_cli\n14/22 Test #15: backend_cli ......................   Passed    0.04 sec\n      Start 16: exact_range\n15/22 Test #16: exact_range ......................   Passed    0.00 sec\n      Start 17: block_grid\n16/22 Test #17: block_grid .......................   Passed    0.09 sec\n      Start 18: work_unit\n17/22 Test #18: work_unit ........................   Passed    0.04 sec\n      Start 19: range_oracle\n18/22 Test #10: bsgs_table_oracle ................   Passed    1.58 sec\n      Start 20: result_verifier\n19/22 Test #20: result_verifier ..................   Passed    0.03 sec\n      Start 21: cpu_baseline\n20/22 Test #19: range_oracle .....................   Passed    1.86 sec\n      Start 22: target_loading\n21/22 Test #22: target_loading ...................   Passed    8.53 sec\n22/22 Test #21: cpu_baseline .....................   Passed   28.38 sec\n\n100% tests passed, 0 tests failed out of 22\n\nLabel Time Summary:\narithmetic    =   1.65 sec*proc (2 tests)\nbackend       =   0.39 sec*proc (5 tests)\nbaseline      =  28.38 sec*proc (1 test)\nbsgs          =   2.18 sec*proc (5 tests)\ncore          =  10.79 sec*proc (8 tests)\ncpu           =  46.56 sec*proc (22 tests)\noracle        =   6.70 sec*proc (7 tests)\nranges        =   2.00 sec*proc (4 tests)\ntables        =   1.89 sec*proc (2 tests)\nxpoint        =   0.16 sec*proc (2 tests)\n\nTotal Test time (real) =  32.68 sec\n",
+      "last_test_log_sha256": "8658d386bc0a626696fadff392e27c15ee714c96bdeb2ae892df5de745f2b8a4"
+    }
+  },
+  "resources": {
+    "hip": {
+      "argv": [
+        "/opt/rocm/core-10.0/lib/llvm/bin/clang++",
+        "-D__HIP_ROCclr__=1",
+        "-I/tmp/keyhunt-c11-audit-veoz264f/source/kernels",
+        "-I/tmp/keyhunt-c11-audit-veoz264f/source/kernels/hip",
+        "-I/tmp/keyhunt-c11-audit-veoz264f/source/include",
+        "-I/tmp/keyhunt-c11-audit-veoz264f/source/third_party",
+        "-O3",
+        "-DNDEBUG",
+        "--offload-arch=gfx942",
+        "-Wall",
+        "-Wextra",
+        "-std=gnu++17",
+        "-o",
+        "/tmp/keyhunt-c11-audit-veoz264f/hip-resources.o",
+        "-x",
+        "hip",
+        "-c",
+        "/tmp/keyhunt-c11-audit-veoz264f/source/src/backend/hip/xpoint.hip",
+        "-Rpass-analysis=kernel-resource-usage"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "In file included from /tmp/keyhunt-c11-audit-veoz264f/source/src/backend/hip/xpoint.hip:3:\n/tmp/keyhunt-c11-audit-veoz264f/source/kernels/hip/xpoint.h:42:1: remark: Function Name: _ZN7keyhunt3gpu13xpoint_directENS0_6ScalarEmPKNS0_5FieldEjPNS_4core15XPointCandidateEjPNS0_14XPointCountersE [-Rpass-analysis=kernel-resource-usage]\n   42 |     XPointCounters* counters) {\n      | ^\n/tmp/keyhunt-c11-audit-veoz264f/source/kernels/hip/xpoint.h:42:1: remark:     TotalSGPRs: 86 [-Rpass-analysis=kernel-resource-usage]\n/tmp/keyhunt-c11-audit-veoz264f/source/kernels/hip/xpoint.h:42:1: remark:     VGPRs: 128 [-Rpass-analysis=kernel-resource-usage]\n/tmp/keyhunt-c11-audit-veoz264f/source/kernels/hip/xpoint.h:42:1: remark:     AGPRs: 0 [-Rpass-analysis=kernel-resource-usage]\n/tmp/keyhunt-c11-audit-veoz264f/source/kernels/hip/xpoint.h:42:1: remark:     ScratchSize [bytes/lane]: 164 [-Rpass-analysis=kernel-resource-usage]\n/tmp/keyhunt-c11-audit-veoz264f/source/kernels/hip/xpoint.h:42:1: remark:     Dynamic Stack: False [-Rpass-analysis=kernel-resource-usage]\n/tmp/keyhunt-c11-audit-veoz264f/source/kernels/hip/xpoint.h:42:1: remark:     Occupancy [waves/SIMD]: 4 [-Rpass-analysis=kernel-resource-usage]\n/tmp/keyhunt-c11-audit-veoz264f/source/kernels/hip/xpoint.h:42:1: remark:     SGPRs Spill: 0 [-Rpass-analysis=kernel-resource-usage]\n/tmp/keyhunt-c11-audit-veoz264f/source/kernels/hip/xpoint.h:42:1: remark:     VGPRs Spill: 84 [-Rpass-analysis=kernel-resource-usage]\n/tmp/keyhunt-c11-audit-veoz264f/source/kernels/hip/xpoint.h:42:1: remark:     LDS Size [bytes/block]: 32768 [-Rpass-analysis=kernel-resource-usage]\n/tmp/keyhunt-c11-audit-veoz264f/source/kernels/hip/xpoint.h:64:1: remark: Function Name: _ZN7keyhunt3gpu14xpoint_steppedILb1EEEvNS0_5PointEmPKS2_PKNS0_5FieldEjPNS_4core15XPointCandidateEjPNS0_14XPointCountersE [-Rpass-analysis=kernel-resource-usage]\n   64 |     uint32_t capacity, XPointCounters* counters) {\n      | ^\n/tmp/keyhunt-c11-audit-veoz264f/source/kernels/hip/xpoint.h:64:1: remark:     TotalSGPRs: 104 [-Rpass-analysis=kernel-resource-usage]\n/tmp/keyhunt-c11-audit-veoz264f/source/kernels/hip/xpoint.h:64:1: remark:     VGPRs: 128 [-Rpass-analysis=kernel-resource-usage]\n/tmp/keyhunt-c11-audit-veoz264f/source/kernels/hip/xpoint.h:64:1: remark:     AGPRs: 0 [-Rpass-analysis=kernel-resource-usage]\n/tmp/keyhunt-c11-audit-veoz264f/source/kernels/hip/xpoint.h:64:1: remark:     ScratchSize [bytes/lane]: 260 [-Rpass-analysis=kernel-resource-usage]\n/tmp/keyhunt-c11-audit-veoz264f/source/kernels/hip/xpoint.h:64:1: remark:     Dynamic Stack: False [-Rpass-analysis=kernel-resource-usage]\n/tmp/keyhunt-c11-audit-veoz264f/source/kernels/hip/xpoint.h:64:1: remark:     Occupancy [waves/SIMD]: 4 [-Rpass-analysis=kernel-resource-usage]\n/tmp/keyhunt-c11-audit-veoz264f/source/kernels/hip/xpoint.h:64:1: remark:     SGPRs Spill: 0 [-Rpass-analysis=kernel-resource-usage]\n/tmp/keyhunt-c11-audit-veoz264f/source/kernels/hip/xpoint.h:64:1: remark:     VGPRs Spill: 220 [-Rpass-analysis=kernel-resource-usage]\n/tmp/keyhunt-c11-audit-veoz264f/source/kernels/hip/xpoint.h:64:1: remark:     LDS Size [bytes/block]: 0 [-Rpass-analysis=kernel-resource-usage]\n/tmp/keyhunt-c11-audit-veoz264f/source/kernels/hip/xpoint.h:64:1: remark: Function Name: _ZN7keyhunt3gpu14xpoint_steppedILb0EEEvNS0_5PointEmPKS2_PKNS0_5FieldEjPNS_4core15XPointCandidateEjPNS0_14XPointCountersE [-Rpass-analysis=kernel-resource-usage]\n/tmp/keyhunt-c11-audit-veoz264f/source/kernels/hip/xpoint.h:64:1: remark:     TotalSGPRs: 108 [-Rpass-analysis=kernel-resource-usage]\n/tmp/keyhunt-c11-audit-veoz264f/source/kernels/hip/xpoint.h:64:1: remark:     VGPRs: 128 [-Rpass-analysis=kernel-resource-usage]\n/tmp/keyhunt-c11-audit-veoz264f/source/kernels/hip/xpoint.h:64:1: remark:     AGPRs: 0 [-Rpass-analysis=kernel-resource-usage]\n/tmp/keyhunt-c11-audit-veoz264f/source/kernels/hip/xpoint.h:64:1: remark:     ScratchSize [bytes/lane]: 912 [-Rpass-analysis=kernel-resource-usage]\n/tmp/keyhunt-c11-audit-veoz264f/source/kernels/hip/xpoint.h:64:1: remark:     Dynamic Stack: False [-Rpass-analysis=kernel-resource-usage]\n/tmp/keyhunt-c11-audit-veoz264f/source/kernels/hip/xpoint.h:64:1: remark:     Occupancy [waves/SIMD]: 4 [-Rpass-analysis=kernel-resource-usage]\n/tmp/keyhunt-c11-audit-veoz264f/source/kernels/hip/xpoint.h:64:1: remark:     SGPRs Spill: 0 [-Rpass-analysis=kernel-resource-usage]\n/tmp/keyhunt-c11-audit-veoz264f/source/kernels/hip/xpoint.h:64:1: remark:     VGPRs Spill: 105 [-Rpass-analysis=kernel-resource-usage]\n/tmp/keyhunt-c11-audit-veoz264f/source/kernels/hip/xpoint.h:64:1: remark:     LDS Size [bytes/block]: 32768 [-Rpass-analysis=kernel-resource-usage]\n"
+    },
+    "variant-hip": {
+      "argv": [
+        "/opt/rocm/core-10.0/lib/llvm/bin/clang++",
+        "-D__HIP_ROCclr__=1",
+        "-I/tmp/keyhunt-c11-audit-veoz264f/variant-source/kernels",
+        "-I/tmp/keyhunt-c11-audit-veoz264f/variant-source/kernels/hip",
+        "-I/tmp/keyhunt-c11-audit-veoz264f/variant-source/include",
+        "-I/tmp/keyhunt-c11-audit-veoz264f/variant-source/third_party",
+        "-O3",
+        "-DNDEBUG",
+        "--offload-arch=gfx942",
+        "-Wall",
+        "-Wextra",
+        "-std=gnu++17",
+        "-o",
+        "/tmp/keyhunt-c11-audit-veoz264f/variant-hip-resources.o",
+        "-x",
+        "hip",
+        "-c",
+        "/tmp/keyhunt-c11-audit-veoz264f/variant-source/src/backend/hip/xpoint.hip",
+        "-Rpass-analysis=kernel-resource-usage"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "In file included from /tmp/keyhunt-c11-audit-veoz264f/variant-source/src/backend/hip/xpoint.hip:3:\n/tmp/keyhunt-c11-audit-veoz264f/variant-source/kernels/hip/xpoint.h:42:1: remark: Function Name: _ZN7keyhunt3gpu13xpoint_directENS0_6ScalarEmPKNS0_5FieldEjPNS_4core15XPointCandidateEjPNS0_14XPointCountersE [-Rpass-analysis=kernel-resource-usage]\n   42 |     XPointCounters* counters) {\n      | ^\n/tmp/keyhunt-c11-audit-veoz264f/variant-source/kernels/hip/xpoint.h:42:1: remark:     TotalSGPRs: 86 [-Rpass-analysis=kernel-resource-usage]\n/tmp/keyhunt-c11-audit-veoz264f/variant-source/kernels/hip/xpoint.h:42:1: remark:     VGPRs: 160 [-Rpass-analysis=kernel-resource-usage]\n/tmp/keyhunt-c11-audit-veoz264f/variant-source/kernels/hip/xpoint.h:42:1: remark:     AGPRs: 0 [-Rpass-analysis=kernel-resource-usage]\n/tmp/keyhunt-c11-audit-veoz264f/variant-source/kernels/hip/xpoint.h:42:1: remark:     ScratchSize [bytes/lane]: 36 [-Rpass-analysis=kernel-resource-usage]\n/tmp/keyhunt-c11-audit-veoz264f/variant-source/kernels/hip/xpoint.h:42:1: remark:     Dynamic Stack: False [-Rpass-analysis=kernel-resource-usage]\n/tmp/keyhunt-c11-audit-veoz264f/variant-source/kernels/hip/xpoint.h:42:1: remark:     Occupancy [waves/SIMD]: 3 [-Rpass-analysis=kernel-resource-usage]\n/tmp/keyhunt-c11-audit-veoz264f/variant-source/kernels/hip/xpoint.h:42:1: remark:     SGPRs Spill: 0 [-Rpass-analysis=kernel-resource-usage]\n/tmp/keyhunt-c11-audit-veoz264f/variant-source/kernels/hip/xpoint.h:42:1: remark:     VGPRs Spill: 0 [-Rpass-analysis=kernel-resource-usage]\n/tmp/keyhunt-c11-audit-veoz264f/variant-source/kernels/hip/xpoint.h:42:1: remark:     LDS Size [bytes/block]: 4096 [-Rpass-analysis=kernel-resource-usage]\n/tmp/keyhunt-c11-audit-veoz264f/variant-source/kernels/hip/xpoint.h:64:1: remark: Function Name: _ZN7keyhunt3gpu14xpoint_steppedILb1EEEvNS0_5PointEmPKS2_PKNS0_5FieldEjPNS_4core15XPointCandidateEjPNS0_14XPointCountersE [-Rpass-analysis=kernel-resource-usage]\n   64 |     uint32_t capacity, XPointCounters* counters) {\n      | ^\n/tmp/keyhunt-c11-audit-veoz264f/variant-source/kernels/hip/xpoint.h:64:1: remark:     TotalSGPRs: 104 [-Rpass-analysis=kernel-resource-usage]\n/tmp/keyhunt-c11-audit-veoz264f/variant-source/kernels/hip/xpoint.h:64:1: remark:     VGPRs: 180 [-Rpass-analysis=kernel-resource-usage]\n/tmp/keyhunt-c11-audit-veoz264f/variant-source/kernels/hip/xpoint.h:64:1: remark:     AGPRs: 0 [-Rpass-analysis=kernel-resource-usage]\n/tmp/keyhunt-c11-audit-veoz264f/variant-source/kernels/hip/xpoint.h:64:1: remark:     ScratchSize [bytes/lane]: 0 [-Rpass-analysis=kernel-resource-usage]\n/tmp/keyhunt-c11-audit-veoz264f/variant-source/kernels/hip/xpoint.h:64:1: remark:     Dynamic Stack: False [-Rpass-analysis=kernel-resource-usage]\n/tmp/keyhunt-c11-audit-veoz264f/variant-source/kernels/hip/xpoint.h:64:1: remark:     Occupancy [waves/SIMD]: 2 [-Rpass-analysis=kernel-resource-usage]\n/tmp/keyhunt-c11-audit-veoz264f/variant-source/kernels/hip/xpoint.h:64:1: remark:     SGPRs Spill: 0 [-Rpass-analysis=kernel-resource-usage]\n/tmp/keyhunt-c11-audit-veoz264f/variant-source/kernels/hip/xpoint.h:64:1: remark:     VGPRs Spill: 0 [-Rpass-analysis=kernel-resource-usage]\n/tmp/keyhunt-c11-audit-veoz264f/variant-source/kernels/hip/xpoint.h:64:1: remark:     LDS Size [bytes/block]: 0 [-Rpass-analysis=kernel-resource-usage]\n/tmp/keyhunt-c11-audit-veoz264f/variant-source/kernels/hip/xpoint.h:64:1: remark: Function Name: _ZN7keyhunt3gpu14xpoint_steppedILb0EEEvNS0_5PointEmPKS2_PKNS0_5FieldEjPNS_4core15XPointCandidateEjPNS0_14XPointCountersE [-Rpass-analysis=kernel-resource-usage]\n/tmp/keyhunt-c11-audit-veoz264f/variant-source/kernels/hip/xpoint.h:64:1: remark:     TotalSGPRs: 108 [-Rpass-analysis=kernel-resource-usage]\n/tmp/keyhunt-c11-audit-veoz264f/variant-source/kernels/hip/xpoint.h:64:1: remark:     VGPRs: 162 [-Rpass-analysis=kernel-resource-usage]\n/tmp/keyhunt-c11-audit-veoz264f/variant-source/kernels/hip/xpoint.h:64:1: remark:     AGPRs: 0 [-Rpass-analysis=kernel-resource-usage]\n/tmp/keyhunt-c11-audit-veoz264f/variant-source/kernels/hip/xpoint.h:64:1: remark:     ScratchSize [bytes/lane]: 784 [-Rpass-analysis=kernel-resource-usage]\n/tmp/keyhunt-c11-audit-veoz264f/variant-source/kernels/hip/xpoint.h:64:1: remark:     Dynamic Stack: False [-Rpass-analysis=kernel-resource-usage]\n/tmp/keyhunt-c11-audit-veoz264f/variant-source/kernels/hip/xpoint.h:64:1: remark:     Occupancy [waves/SIMD]: 3 [-Rpass-analysis=kernel-resource-usage]\n/tmp/keyhunt-c11-audit-veoz264f/variant-source/kernels/hip/xpoint.h:64:1: remark:     SGPRs Spill: 0 [-Rpass-analysis=kernel-resource-usage]\n/tmp/keyhunt-c11-audit-veoz264f/variant-source/kernels/hip/xpoint.h:64:1: remark:     VGPRs Spill: 0 [-Rpass-analysis=kernel-resource-usage]\n/tmp/keyhunt-c11-audit-veoz264f/variant-source/kernels/hip/xpoint.h:64:1: remark:     LDS Size [bytes/block]: 4096 [-Rpass-analysis=kernel-resource-usage]\n"
+    }
+  },
+  "build_artifacts": {
+    "/tmp/keyhunt-c11-audit-veoz264f/hip/keyhunt": "2d38271732e0b75b44d71dfda1894e52cfee738ef0147e8cb2943f674906f034",
+    "/tmp/keyhunt-c11-audit-veoz264f/hip/secp256k1_oracle": "38e8d5b053888c6273d90ddb6bde9f4dc1e316d67bf57a127a3e15b7e073bcf4",
+    "/tmp/keyhunt-c11-audit-veoz264f/hip/compile_commands.json": "2467b2c183693d6960a1b441cfec58577487e14f3f79561c7405d646fe25c63d",
+    "/tmp/keyhunt-c11-audit-veoz264f/cpu/keyhunt": "ec39664a749b420ba6ab73c35f4406eec3c3dd744fe23678c22cdabdfb6e23a5",
+    "/tmp/keyhunt-c11-audit-veoz264f/cpu/secp256k1_oracle": "38e8d5b053888c6273d90ddb6bde9f4dc1e316d67bf57a127a3e15b7e073bcf4",
+    "/tmp/keyhunt-c11-audit-veoz264f/cpu/compile_commands.json": "54df5ab872e8ea320c4cd8bf6075bf907b1b342d0ac44999b224d9d7873310af"
+  },
+  "variant": {
+    "description": "Only add __launch_bounds__(128) to xpoint_direct and templated xpoint_stepped",
+    "patch": "C11_XPOINT_LAUNCH_BOUNDS.patch",
+    "patch_sha256": "69cfa191031b749edff5175b21ebd28b3bb9e6b5e2f5a5d398894232d959cfcf",
+    "tests": {
+      "command": "HIP_VISIBLE_DEVICES=0 ctest --test-dir variant-hip --output-on-failure --parallel 1 -R '^(hip_xpoint_failures|hip_xpoint_executor|xpoint_cli|xpoint_cli_direct)$'",
+      "exit_code": 0,
+      "test_count": 4,
+      "stdout": "Internal ctest changing into directory: /tmp/keyhunt-c11-audit-veoz264f/variant-hip\nTest project /tmp/keyhunt-c11-audit-veoz264f/variant-hip\n    Start 11: hip_xpoint_failures\n1/4 Test #11: hip_xpoint_failures ..............   Passed    0.74 sec\n    Start 12: hip_xpoint_executor\n2/4 Test #12: hip_xpoint_executor ..............   Passed    0.80 sec\n    Start 13: xpoint_cli\n3/4 Test #13: xpoint_cli .......................   Passed   25.46 sec\n    Start 14: xpoint_cli_direct\n4/4 Test #14: xpoint_cli_direct ................   Passed   26.95 sec\n\n100% tests passed, 0 tests failed out of 4\n\nLabel Time Summary:\nhardware    =  53.93 sec*proc (4 tests)\nhip         =  53.93 sec*proc (4 tests)\noracle      =  52.40 sec*proc (2 tests)\nxpoint      =  53.93 sec*proc (4 tests)\n\nTotal Test time (real) =  53.94 sec\n",
+      "last_test_log_sha256": "c4ee4857882dc1ce5eddb959296bb1c7361132e0f2a56eede26520d3535b68c8"
+    },
+    "binary_sha256": "6159da7cd4292250034c2315c47cc1a49e192c2c7775c7d58663e212020c0f10"
+  },
+  "oracle_reports": {
+    "hip-field-oracle-results.json": {
+      "sha256": "8f3ec9e4f06d2b2ba30d6031be08d1c792324eaadf77e75d0f33f626dfc9f820",
+      "cases": 13381,
+      "failure_count": 0,
+      "rejections": null
+    },
+    "hip-point-oracle-results.json": {
+      "sha256": "674af2716c0abd6a93ff716b0daac2b7bb8d7c403a1fb06912e4e7dcfee68bc2",
+      "cases": 1278,
+      "failure_count": 0,
+      "rejections": null
+    },
+    "xpoint-cli-results.json": {
+      "sha256": "ab6b25beb3ff5d10876cddbbadf1c9a8f17de027d630e587d3ea39fc64fb6327",
+      "cases": 41,
+      "failure_count": null,
+      "rejections": 29
+    },
+    "xpoint-cli-direct-results.json": {
+      "sha256": "2831ef44e931ae73f7ce86882342ba47d04c385b29c9ab6718d51c29e18fec07",
+      "cases": 41,
+      "failure_count": null,
+      "rejections": 29
+    },
+    "bsgs-cli-results.json": {
+      "sha256": "bdd470fcecd790435b837d933274a9182257ef6b349378dc4a8399af03b74b8d",
+      "cases": 88,
+      "failure_count": null,
+      "rejections": 37
+    },
+    "bsgs-cli-single-results.json": {
+      "sha256": "2bc3fcbb70ca139d088d10031ad610e1a8637e93f523317bc995c2266ccba9dd",
+      "cases": 88,
+      "failure_count": null,
+      "rejections": 37
+    },
+    "bsgs-cli-grouped-results.json": {
+      "sha256": "75e20c0f3b242c95b10e743be8f875bf67873f5fbc078393a5442e7a9c64d208",
+      "cases": 88,
+      "failure_count": null,
+      "rejections": 37
+    },
+    "hip-partition-results.json": {
+      "sha256": "740fc0728658bd31633fce0881e68bf231ff9574764bf1383f84a58549b54d26",
+      "cases": null,
+      "failure_count": null,
+      "rejections": null
+    }
+  },
+  "compiler_version": "AMD clang version 23.0.0git (https://github.com/ROCm/llvm-project.git 8f497e0992fb7513f7f78a6f6b6f1056c375e961)\nTarget: x86_64-unknown-linux-gnu\nThread model: posix\nInstalledDir: /opt/rocm/core-10.0/lib/llvm/bin\n",
+  "artifact_sha256": {
+    "C11_AUDIT_PROBES.json": "956d73d8a76632ef12534c2d37d8a3d290855c11223c37db1d066d9af42e7184",
+    "C11_XPOINT_LAUNCH_BOUNDS.patch": "69cfa191031b749edff5175b21ebd28b3bb9e6b5e2f5a5d398894232d959cfcf"
+  },
+  "audit_runner_sha256": "564d0c17424f91276da3e84a0dd0aac89b5729f60e4124f64cbb2f4935b169a9",
+  "source_archive_sha256": "e5023ece13eeb2fa02a02c001f963877cd166fcf42eee2f66c876ba8f7e8941f",
+  "source_fingerprints": {
+    "kernels/common/field.h": "91be102a7437cd475e2a5e7831ffe6128a4039cf240c5ca841bcc8e2676899bf",
+    "kernels/common/point.h": "34289c51a5188fc098e01f9c13e0c3b13642c15c10544d2d058cad3e2ff29f10",
+    "kernels/hip/xpoint.h": "c0e7bbb838d4c2aaa0822a2ae29c4703dce35baa99567089c84e6628da4a4ce8",
+    "kernels/hip/bsgs_search.h": "c81491fadae85bcffd06390606708f7502d48e2466aec092d1ccdfd4de93e2b9",
+    "src/backend/hip/xpoint.hip": "e072942da7bb8aa9e9c0589e00706117d546ea240cfb72baa321f3dee0902796",
+    "src/backend/hip/bsgs_search.hip": "f2a25c3f0b73587ced45534aadd5c0554123022698750afb42028caec964ee59",
+    "src/backend/xpoint_command.cpp": "073829fdc64e0732eedb1951b9688303550921860da44246a52185f24536c855",
+    "src/backend/bsgs_command.cpp": "70b314e69a36eec143f11d5b0c87c0a50827c85f1a7d1a8aa2343ea3c68810fa",
+    "src/core/bsgs_table.cpp": "2d5922a0eda9a9fa07ad7100eee738488d64f1b3995bae4caeac11995701e36b",
+    "src/core/bsgs_search.cpp": "fbdf6c7568fc307163e41cfd73a5b53905a63ab675c2465edc006bbf292a6f22"
+  },
+  "concurrent_work": {
+    "head_after_audit": "0c213493e7021d7b3a1e5e81cd7e1d76b9fe7909",
+    "note": "C12 storage commit and working-tree changes appeared during the audit. All baseline tests used archived 4febd4a; production changes belong to the concurrent implementation, not this audit."
+  }
+}
