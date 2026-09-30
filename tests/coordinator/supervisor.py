@@ -19,6 +19,7 @@ spec.loader.exec_module(module)
 device = module.Device("0", "0", child=object(), state="running", last_progress=10)
 device.event({"type": "progress", "sequence": 1}, 20)
 device.event({"type": "progress", "sequence": 1}, 100)
+device.event({"message": "diagnostic log growth"}, 100)
 assert device.stalled(81, 60)
 device.event({"type": "control", "state": "paused"}, 82)
 assert not device.stalled(1000000, 60)
@@ -54,6 +55,9 @@ elif action == "run-device":
     if queue == "0" and (root / "fail-one").exists():
         emit(error="injected device memory exhaustion")
         sys.exit(2)
+    assert args["--host-memory"] == "50", "aggregate host budget not divided"
+    if queue == "0":
+        for _ in range(180): emit(diagnostic="x" * 60000)
     for sequence in range(1, 5):
         time.sleep(.05)
         emit(type="progress", sequence=sequence)
@@ -75,6 +79,9 @@ with tempfile.TemporaryDirectory(prefix="kh-c20-supervisor-") as directory:
             "--state-dir", str(state), "--worker", str(fake), "--keyhunt", str(fake),
             "--host-memory-total", "100", "--once"], capture_output=True, text=True, timeout=30)
         assert (result.returncode != 0) == fault, (result.stdout, result.stderr)
+        if not fault:
+            assert (state / "execution-0.log.1").exists(), "long-running diagnostic log did not rotate"
+            assert all(path.stat().st_size <= 8 * 1024 * 1024 for path in state.glob("execution-0.log*"))
         saved = json.loads((state / "supervisor.json").read_text())
         assert saved["devices"]["1"]["completed"] == 1
         assert saved["failures"].get("1", 0) == 0

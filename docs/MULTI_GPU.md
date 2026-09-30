@@ -155,3 +155,15 @@ The discovery mock passes SPX/QPX/CPX layouts and visibility remapping with devi
 queried. Real HIP selected-device self-tests and two-device fleet/HTTPS regressions
 pass. The CUDA path uses the existing selected-device API and version queries;
 new NVIDIA hardware validation is unavailable on this host and is not claimed.
+
+## Bounded operational output
+
+The owner observes every returned batch but emits progress at most four times
+per second; checkpoints/control transitions remain immediate. This avoids making
+fast kernels spend their time serializing per-batch diagnostics. Progress still
+comes only from completed work, so throttling cannot hide a hung submission.
+Each device log rotates on record boundaries at 8 MiB and retains one prior
+file. Durable matches/coverage remain in SQLite and the outbox, not these logs.
+A CPU process test feeds over 10 MiB of diagnostics and verifies rotation,
+independent healthy completion, and aggregate memory-budget division. The real
+two-device xpoint/BSGS fleet test passes with throttled output.

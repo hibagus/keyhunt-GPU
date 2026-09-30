@@ -43,6 +43,7 @@ class Device:
     ordinal: str
     child: object = None
     log: object = None
+    log_bytes: int = 0
     buffer: bytes = b""
     state: str = "pending"
     last_progress: float = 0
@@ -198,10 +199,19 @@ def main():
         if not chunk:
             selector.unregister(device.child.stdout)
             return
-        device.log.write(chunk)
         device.buffer += chunk
         while b"\n" in device.buffer:
             line, device.buffer = device.buffer.split(b"\n", 1)
+            if device.log_bytes + len(line) + 1 > 8 * 1024 * 1024:
+                # Rotate on record boundaries and retain one prior file. Logs
+                # are diagnostic; durable results live in SQLite/outbox receipts.
+                device.log.close()
+                path = root / ("execution-" + device.queue + ".log")
+                os.replace(path, path.with_suffix(".log.1"))
+                device.log = private_log(path)
+                device.log_bytes = 0
+            device.log.write(line + b"\n")
+            device.log_bytes += len(line) + 1
             try:
                 event = json.loads(line)
                 if isinstance(event, dict):
@@ -226,6 +236,7 @@ def main():
         if args.table:
             words += ["--table", str(args.table.resolve())]
         device.log = private_log(root / ("execution-" + device.queue + ".log"))
+        device.log_bytes = os.fstat(device.log.fileno()).st_size
         device.child = subprocess.Popen(words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         os.set_blocking(device.child.stdout.fileno(), False)
         selector.register(device.child.stdout, selectors.EVENT_READ, device)
@@ -249,7 +260,7 @@ def main():
                     device.log.close()
                     device.child = device.log = None
                     if (child.returncode or not device.ready) and not stopping:
-                        failures[device.queue] = failures.get(device.queue, 0) + 1
+                        failures[device.queue] = min(3, failures.get(device.queue, 0) + 1)
                         device.retry_at = now + min(30, 2 ** min(failures[device.queue], 5))
                     else:
                         device.done, device.state = True, "stopped"

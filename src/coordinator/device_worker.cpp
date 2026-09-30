@@ -117,6 +117,7 @@ int run_device(const Options& args){
     const auto checked=device_self_test(ordinal);
     emit({{"type","ready"},{"queue",queue},{"self_test",checked},{"uuid",selected.device.uuid}});
     Prepared prepared;uint64_t progress=0,completed=0;
+    auto last_progress_event=Clock::now()-std::chrono::milliseconds(250);
     std::optional<CheckpointActivity> idle_state;
     const auto idle=[&](CheckpointActivity activity){
         if(idle_state!=activity){control.bind(nullptr);callbacks.notify(activity);idle_state=activity;}
@@ -142,7 +143,14 @@ int run_device(const Options& args){
             };
             const auto batch_done=[&](const auto& result){
                 prepared.in_flight=false;
-                emit({{"type","progress"},{"sequence",++progress},{"device_steps",result.device_steps},{"kernel_ms",result.kernel_ms}});
+                ++progress;const auto now=Clock::now();
+                // Observe every completion but publish at most four progress
+                // events per second. Fast kernels must not turn logs/IPC into
+                // the workload; this remains far inside the stall deadline.
+                if(now-last_progress_event>=std::chrono::milliseconds(250)){
+                    emit({{"type","progress"},{"sequence",progress},{"device_steps",result.device_steps},{"kernel_ms",result.kernel_ms}});
+                    last_progress_event=now;
+                }
             };
             const auto cleanup=[&]{prepared.drain_failed_submission();};
             CheckpointSummary result;
