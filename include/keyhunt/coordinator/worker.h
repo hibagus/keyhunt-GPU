@@ -13,6 +13,11 @@ public:
     Json configuration() const;
     bool synchronize(const Transport&,bool manual=false);
     std::optional<storage::Grant> next(const std::string& device) const;
+    // Held for this Worker's lifetime. Rebinding a UUID is explicit and only
+    // succeeds after the previous process releases its device lock.
+    void acquire_device(const std::string& device,const std::string& uuid,bool rebind=false);
+    std::optional<storage::Grant> claim_device();
+    Json execution(const storage::Grant&) const;
     Json status() const;
     Json execution(const std::string& device) const;
     storage::Journal& journal();

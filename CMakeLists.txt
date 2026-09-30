@@ -154,6 +154,8 @@ file(READ "${CMAKE_CURRENT_SOURCE_DIR}/src/storage/schema_v4.sql" KEYHUNT_SCHEMA
 configure_file(src/storage/schema_v4.h.in generated/schema_v4.h @ONLY)
 file(READ "${CMAKE_CURRENT_SOURCE_DIR}/src/storage/schema_v5.sql" KEYHUNT_SCHEMA_V5)
 configure_file(src/storage/schema_v5.h.in generated/schema_v5.h @ONLY)
+file(READ "${CMAKE_CURRENT_SOURCE_DIR}/src/storage/schema_v6.sql" KEYHUNT_SCHEMA_V6)
+configure_file(src/storage/schema_v6.h.in generated/schema_v6.h @ONLY)
 add_library(keyhunt_storage STATIC src/storage/sqlite.cpp src/storage/free_tree.cpp src/storage/journal.cpp src/storage/checkpoint_data.cpp src/storage/checkpoint.cpp)
 target_include_directories(keyhunt_storage PUBLIC include PRIVATE src/storage "${CMAKE_CURRENT_BINARY_DIR}/generated")
 target_compile_definitions(keyhunt_storage PRIVATE KEYHUNT_SOURCE_ROOT="${CMAKE_CURRENT_SOURCE_DIR}")

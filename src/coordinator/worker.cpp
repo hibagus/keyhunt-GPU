@@ -1,6 +1,10 @@
 #include "keyhunt/coordinator/worker.h"
 #include "protocol.h"
 #include <map>
+#include <fcntl.h>
+#include <sys/file.h>
+#include <sys/stat.h>
+#include <unistd.h>
 namespace keyhunt::coordination {
 using namespace storage;
 using namespace storage::detail;
@@ -9,6 +13,9 @@ struct Worker::Impl {
     Journal journal;
     Database& db;
     Timer timer;
+    int device_lock=-1;
+    std::string device;
+    ~Impl(){if(device_lock>=0)close(device_lock);}
     Impl(const std::string& path,Journal::Clock clock,Timer time):journal(path,std::move(clock)),db(journal.database()),timer(std::move(time)){
         if(!timer)timer=boot_seconds;
     }
@@ -204,9 +211,68 @@ std::optional<Grant> Worker::next(const std::string& device)const{
     }
     tx.commit();return {};
 }
+void Worker::acquire_device(const std::string& device,const std::string& identity,bool rebind){
+    token(device);token(identity);auto& s=*impl_;
+    if(s.device_lock>=0)throw std::logic_error("device owner already acquired");
+    bool configured=false;const auto config=s.configuration();
+    for(const auto& job:config["jobs"])for(const auto& candidate:job["devices"])
+        configured=configured||candidate==device;
+    if(!configured)throw std::invalid_argument("device queue is not configured");
+    const auto path=s.journal.state_directory()+"/device-"+device+".lock";
+    const int fd=open(path.c_str(),O_RDWR|O_CREAT|O_CLOEXEC|O_NOFOLLOW,0600);
+    if(fd<0)throw std::runtime_error("cannot open device owner lock");
+    struct stat info{};
+    if(fstat(fd,&info)||!S_ISREG(info.st_mode)||info.st_uid!=geteuid()||(info.st_mode&0077)||info.st_nlink!=1||flock(fd,LOCK_EX|LOCK_NB)){
+        close(fd);throw std::runtime_error("device owner lock unsafe or already held");
+    }
+    try{
+        Transaction tx(s.db);s.db.writable();
+        Statement previous(s.db.handle(),"SELECT uuid FROM worker_dispatch WHERE device=?");previous.bind(1,device);
+        if(previous.step()&&previous.text(0)!=identity&&!rebind)
+            throw std::runtime_error("device UUID changed; explicit stopped-device rebind required");
+        Statement save(s.db.handle(),"INSERT INTO worker_dispatch(device,uuid) VALUES(?,?) ON CONFLICT(device) DO UPDATE SET uuid=excluded.uuid");
+        save.bind(1,device);save.bind(2,identity);save.step();tx.commit();
+        s.device_lock=fd;s.device=device;
+    }catch(...){close(fd);throw;}
+}
+std::optional<Grant> Worker::claim_device(){
+    auto& s=*impl_;if(s.device_lock<0)throw std::logic_error("claim requires device owner lock");
+    Transaction tx(s.db);s.db.writable();
+    // Resume the slot's unfinished block before looking at any queue. A pause,
+    // expiry or uncertain boot retains ownership until it can be revalidated.
+    Statement current(s.db.handle(),"SELECT COALESCE(project,''),job,block FROM worker_dispatch WHERE device=?");current.bind(1,s.device);current.step();
+    const auto take=[&](const Scope& scope,const UInt256& block)->std::optional<Grant>{
+        Statement live(s.db.handle(),"SELECT generation FROM worker_grants WHERE project=? AND job=? AND block=? AND acknowledged=0 AND paused=0 AND boot=? AND deadline>?");
+        bind_scope(live,scope);live.bind(3,block);live.bind(4,boot_id());live.bind(5,s.timer());
+        const auto state=s.journal.block(scope,block);
+        if(live.step()&&state.assignment&&!state.expired&&live.integer(0)==state.assignment->generation)return state.assignment;
+        return {};
+    };
+    if(!current.text(0).empty()){
+        const Scope scope{current.text(0),wire::digest(hex(current.blob(1)))};const auto block=current.wide(2);
+        if(s.journal.block(scope,block).state!="finished"){auto result=take(scope,block);tx.commit();return result;}
+        Statement clear(s.db.handle(),"UPDATE worker_dispatch SET project=NULL,job=NULL,block=NULL WHERE device=?");clear.bind(1,s.device);clear.step();
+    }
+    // Configuration assigns one immutable job to each queue. Work stealing is
+    // confined to that job and to blocks that no device has started or claimed.
+    Scope scope;const auto config=s.configuration();for(const auto& job:config["jobs"])
+        for(const auto& candidate:job["devices"])if(candidate==s.device)scope=wire::scope(job);
+    Statement queued(s.db.handle(),"SELECT g.block,g.device FROM worker_grants g WHERE g.project=? AND g.job=? AND NOT EXISTS (SELECT 1 FROM worker_dispatch d WHERE d.project=g.project AND d.job=g.job AND d.block=g.block) ORDER BY (g.device=?) DESC,g.generation");
+    bind_scope(queued,scope);queued.bind(3,s.device);
+    while(queued.step()){
+        const auto state=s.journal.block(scope,queued.wide(0));
+        if(state.started&&queued.text(1)!=s.device)continue;
+        auto grant=take(scope,queued.wide(0));if(!grant)continue;
+        Statement save(s.db.handle(),"UPDATE worker_dispatch SET project=?,job=?,block=? WHERE device=?");
+        bind_scope(save,scope);save.bind(3,grant->block);save.bind(4,s.device);save.step();tx.commit();return grant;
+    }
+    tx.commit();return {};
+}
 Json Worker::execution(const std::string& device)const{
-    const auto selected=next(device);if(!selected)return nullptr;
-    const auto& g=*selected;auto& s=*impl_;
+    const auto selected=next(device);return selected?execution(*selected):Json(nullptr);
+}
+Json Worker::execution(const Grant& g)const{
+    auto& s=*impl_;
     Statement inputs(s.db.handle(),"SELECT configuration,targets FROM search_bindings WHERE project=? AND job=?");bind_scope(inputs,g.scope);
     if(!inputs.step())throw std::runtime_error("imported grant missing inputs");
     const auto manifest=s.journal.manifest(g.scope);
@@ -234,6 +300,10 @@ Json Worker::status()const{
             {"device",grants.text(3)},{"activity",activity},{"local_state",state.state},
             {"server_expires",parse_json(grants.text(8))["expires"]}});
     }
+    out["dispatch"]=Json::array();
+    Statement slots(s.db.handle(),"SELECT device,uuid,COALESCE(project,''),COALESCE(job,X''),COALESCE(block,X'') FROM worker_dispatch ORDER BY device");
+    while(slots.step())out["dispatch"].push_back({{"device",slots.text(0)},{"uuid",slots.text(1)},
+        {"project",slots.text(2)},{"job",hex(slots.blob(3))},{"block",hex(slots.blob(4))}});
     tx.commit();return out;
 }
 }

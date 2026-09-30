@@ -29,3 +29,24 @@ count as hardware failures (C15 audit A16).
   simulated hung GPU submission. Another block completes, duplicate and standalone
   execution are refused, then the killed owner's block replays. The final journal
   audit and four exact CPU-verified boundary matches check coverage and results.
+
+## Local dispatch (schema v6)
+
+`Worker::acquire_device` holds a private, stable per-queue process lock and binds
+that queue to a reported device UUID. A changed UUID requires an explicit rebind;
+the lock prevents rebinding while the old process remains alive. The saved slot
+retains its unfinished block across restart or replacement. This is a local
+handoff of the existing machine lease, not a new coordinator assignment.
+
+`Worker::claim_device` uses `BEGIN IMMEDIATE` and a unique project/job/block key.
+It resumes the saved active block first, otherwise prefers its own queued grants
+and may take an unstarted, unclaimed grant from another queue for the same job.
+A paused or expired active block stays in its slot awaiting revalidation. A
+finished slot is cleared before selecting another block. Server queue metadata
+is retained independently, so lease renewal cannot overwrite local ownership.
+Schema migration retains the normal sealed pre-upgrade backup and checksum audit.
+
+`coordinator_dispatch`, `coordinator_worker`, and `storage_checkpoint` pass with
+schema v6. Tests cover fast-device queue stealing beside a held slow-device
+block, duplicate process exclusion, idempotent claims, stopped-device UUID
+replacement, pause/expiry gates, retained outbox data and migration recovery.
