@@ -76,7 +76,10 @@ static DeviceInventory discover_hip_at(const std::filesystem::path& sysfs_root) 
     return result;
 }
 static SelectedDevice select_hip_at(const std::filesystem::path& root,int ordinal){
-    int count=0;hip_check(hipGetDeviceCount(&count),"hipGetDeviceCount");
+    int count=0;const auto status=hipGetDeviceCount(&count);
+    // An empty visibility mask is a valid inventory with no selectable ordinal,
+    // not a runtime failure. Keep the established CLI "not visible" diagnostic.
+    if(status!=hipErrorNoDevice)hip_check(status,"hipGetDeviceCount");
     if(ordinal<0||ordinal>=count)throw std::invalid_argument("GPU device ordinal is not visible");
     SelectedDevice result;
     result.visible_devices=size_t(count);

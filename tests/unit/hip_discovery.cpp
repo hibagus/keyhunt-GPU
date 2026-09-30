@@ -105,6 +105,12 @@ void profile(const char* compute, const char* memory, int partitions) {
     fake_hip::fail_memory_on = -1;
     fake_hip::devices.clear();
     require(discover_hip_at(sysfs.path).devices.empty(), "hidden devices were resurrected");
+    try{
+        (void)select_hip_at(sysfs.path,0);
+        throw std::logic_error("hidden device was selected");
+    }catch(const std::invalid_argument& error){
+        require(std::string(error.what()).find("not visible")!=std::string::npos,"empty visibility changed CLI diagnostic");
+    }
     std::cout << compute << '/' << memory << ": discovery, budgets, remapping and failures passed\n";
 }
 int main() {

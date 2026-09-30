@@ -180,3 +180,10 @@ The fixture and storage guide now expect v6; its independent foreign-key and
 checkpoint-payload checksum checks remain intact. The failed gate then passed.
 The other 46 CPU/coordinator gates passed in the full run; focused debug (9) and
 ASAN/UBSAN (7, leak detection and halt-on-error enabled) checks also passed.
+
+The full HIP run exposed three CLI failures in the empty-device-visibility case:
+selected HIP discovery returned a runtime error instead of the established
+`not visible` diagnostic. Selection now treats `hipErrorNoDevice` as an empty
+inventory, while other runtime failures still propagate. A dedicated discovery
+assertion and all three CLI gates pass. Together with the other 63 full-run gates,
+all 66 HIP/coordinator gates are validated; no failures are waived.
