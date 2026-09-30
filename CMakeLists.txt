@@ -150,6 +150,7 @@ include(CTest)
 if(BUILD_TESTING)
     find_package(Python3 3.9 REQUIRED COMPONENTS Interpreter)
     include(cmake/OracleTests.cmake)
+    include(cmake/GpuArithmeticTests.cmake)
     # This discovery contract test uses a private, minimal API double. It needs
     # no GPU SDK; actual HIP compilation and hardware tests remain separate.
     add_executable(hip_discovery_test tests/unit/hip_discovery.cpp)

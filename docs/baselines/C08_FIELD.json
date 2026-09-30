@@ -1,0 +1,118 @@
+{
+  "recorded_utc": "2026-09-30T01:34:21.714671+00:00",
+  "reports": {
+    "portable": {
+      "seed": 3230604829,
+      "cases": 10420,
+      "cpu_comparisons": 9006,
+      "categories": {
+        "fadd": 2960,
+        "fsub": 2960,
+        "fmul": 2960,
+        "fnorm": 300,
+        "fbytes": 300,
+        "fsquare": 300,
+        "fneg": 300,
+        "finv": 300,
+        "finvgroup": 40
+      },
+      "boundary_batch_sizes": [
+        1,
+        127,
+        128,
+        129,
+        256,
+        257,
+        1024
+      ],
+      "binary_sha256": "c2a158291ccf11a1a358ea141d778875b805a6e9a2a307241e6be56eb22bb201",
+      "stats": {
+        "cases": 10420,
+        "batches": 41,
+        "kernel_ms": 0,
+        "wall_ms": 57.8922,
+        "batch_capacity": 257,
+        "device": 0
+      },
+      "failure_count": 0,
+      "failures": [],
+      "cpu_failures": []
+    },
+    "hip": {
+      "seed": 3230604829,
+      "cases": 10420,
+      "cpu_comparisons": 9006,
+      "categories": {
+        "fadd": 2960,
+        "fsub": 2960,
+        "fmul": 2960,
+        "fnorm": 300,
+        "fbytes": 300,
+        "fsquare": 300,
+        "fneg": 300,
+        "finv": 300,
+        "finvgroup": 40
+      },
+      "boundary_batch_sizes": [
+        1,
+        127,
+        128,
+        129,
+        256,
+        257,
+        1024
+      ],
+      "binary_sha256": "a19c4495b950908be6158b95d14517530a59857e67fa0cbb954145fd19bd31b3",
+      "stats": {
+        "cases": 10420,
+        "batches": 41,
+        "kernel_ms": 68.8906,
+        "wall_ms": 524.769,
+        "batch_capacity": 257,
+        "device": 0
+      },
+      "failure_count": 0,
+      "failures": [],
+      "cpu_failures": []
+    },
+    "sanitizers": {
+      "seed": 3230604829,
+      "cases": 10420,
+      "cpu_comparisons": 9006,
+      "categories": {
+        "fadd": 2960,
+        "fsub": 2960,
+        "fmul": 2960,
+        "fnorm": 300,
+        "fbytes": 300,
+        "fsquare": 300,
+        "fneg": 300,
+        "finv": 300,
+        "finvgroup": 40
+      },
+      "boundary_batch_sizes": [
+        1,
+        127,
+        128,
+        129,
+        256,
+        257,
+        1024
+      ],
+      "binary_sha256": "f5fa9522625ff1b291437326ae10ea0d51f6c9321722ba63a384ebcabc249e49",
+      "stats": {
+        "cases": 10420,
+        "batches": 41,
+        "kernel_ms": 0,
+        "wall_ms": 403.742,
+        "batch_capacity": 257,
+        "device": 0
+      },
+      "failure_count": 0,
+      "failures": [],
+      "cpu_failures": []
+    }
+  },
+  "ctest": "Test project /home/bagus/keyhunt-GPU/build/hip-release\n    Start 5: portable_field_oracle\n1/2 Test #5: portable_field_oracle ............   Passed    0.65 sec\n    Start 6: hip_field_oracle\n2/2 Test #6: hip_field_oracle .................   Passed    5.66 sec\n\n100% tests passed, 0 tests failed out of 2\n\nLabel Time Summary:\narithmetic    =   6.30 sec*proc (2 tests)\ncpu           =   0.65 sec*proc (1 test)\nhardware      =   5.66 sec*proc (1 test)\nhip           =   5.66 sec*proc (1 test)\noracle        =   6.30 sec*proc (2 tests)\n\nTotal Test time (real) =   6.32 sec\n",
+  "sanitizer_ctest": "Test project /home/bagus/keyhunt-GPU/build/cpu-sanitizers\n    Start 5: portable_field_oracle\n1/1 Test #5: portable_field_oracle ............   Passed    1.55 sec\n\n100% tests passed, 0 tests failed out of 1\n\nLabel Time Summary:\narithmetic    =   1.55 sec*proc (1 test)\ncpu           =   1.55 sec*proc (1 test)\noracle        =   1.55 sec*proc (1 test)\n\nTotal Test time (real) =   1.57 sec\n"
+}
