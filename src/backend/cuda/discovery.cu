@@ -1,5 +1,7 @@
 #include "keyhunt/backend/device.h"
 #include "runtime.h"
+#include <algorithm>
+#include <cctype>
 #include <fstream>
 #include <iomanip>
 #include <sstream>
@@ -31,6 +33,9 @@ DeviceInfo describe(int ordinal) {
     char bdf[32]{};
     gpu_check(cudaDeviceGetPCIBusId(bdf, sizeof(bdf), ordinal), "cudaDeviceGetPCIBusId");
     info.pci_bus_id = bdf;
+    // CUDA may use uppercase hex; Linux PCI sysfs directory names are lowercase.
+    std::transform(info.pci_bus_id.begin(), info.pci_bus_id.end(), info.pci_bus_id.begin(),
+                   [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
     std::ostringstream hex;
     for (unsigned char byte : prop.uuid.bytes)
         hex << std::hex << std::setfill('0') << std::setw(2) << unsigned(byte);

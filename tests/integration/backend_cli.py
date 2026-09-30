@@ -3,6 +3,7 @@
 import argparse
 import json
 import os
+from pathlib import Path
 import subprocess
 
 p = argparse.ArgumentParser()
@@ -36,6 +37,11 @@ else:
         assert 0 <= d['free_memory_bytes'] <= d['total_memory_bytes']
         assert d['compute_units'] > 0 and d['warp_size'] > 0
         assert d['physical_id'] or 'physical package identity unavailable' in d['warnings']
+        if a.backend == 'cuda':
+            assert d['pci_bus_id'] == d['pci_bus_id'].lower()
+            numa = Path('/sys/bus/pci/devices') / d['pci_bus_id'] / 'numa_node'
+            if numa.exists():
+                assert d['numa_node'] == int(numa.read_text()), d
     # No visible devices is valid discovery, but never a fallback CPU search.
     env = dict(os.environ, CUDA_VISIBLE_DEVICES='-1', HIP_VISIBLE_DEVICES='-1', ROCR_VISIBLE_DEVICES='-1')
     r = run(['devices', '--backend', a.backend], env)

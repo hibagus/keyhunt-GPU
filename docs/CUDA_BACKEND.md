@@ -101,6 +101,11 @@ Raw observations are in [C18_DEVICE_SELECTION.json](baselines/C18_DEVICE_SELECTI
 The CLI checks cover hidden devices, invalid/unbuilt backends, `1,0` visibility
 remapping and selected UUID identity.
 
+CUDA PCI addresses are normalized to lowercase before the Linux sysfs lookup.
+The runtime returned uppercase hex on this host, which previously made existing
+NUMA metadata appear unavailable (`-1`). Discovery tests compare the reported
+NUMA node with sysfs whenever that metadata is exposed.
+
 ## Fixed inversion chain
 
 CUDA `inverse()` uses an explicit chain for `p-2 = 2^256 - 2^32 - 979`:
