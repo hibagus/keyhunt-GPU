@@ -20,6 +20,19 @@ int main() {
         auto work = scheduler::WorkUnit::plan(grid, UInt256(0), UInt256(1), 257, id);
         auto batch = *scheduler::KernelBatch::plan(*work, UInt256(1), 257);
         unsigned tested = 0;
+        int count = 0;
+        backend::gpu_check(gpuGetDeviceCount(&count), "device count");
+        backend::gpu_check(gpuSetDevice(0), "select original device");
+        for (const char* operation : {"gpuGetDevice", "gpuSetDevice"}) {
+            // With two visible GPUs this proves restoration after a successful
+            // native selection followed by a throwing constructor check.
+            backend::injected_failure = operation;
+            expect_error([&] { backend::DeviceScope scope(count > 1 ? 1 : 0); }, operation);
+            int current = -1;
+            backend::gpu_check(gpuGetDevice(&current), "check restored device");
+            if (current != 0) throw std::runtime_error("failed scope changed caller device");
+            ++tested;
+        }
         for (const char* operation : {"gpuStreamCreateWithFlags", "gpuEventCreate(start)",
                 "gpuEventCreate(kernel_done)", "gpuEventCreate(done)", "gpuMalloc(output)",
                 "gpuMalloc(count)", "gpuHostMalloc(output)", "gpuHostMalloc(count)"}) {

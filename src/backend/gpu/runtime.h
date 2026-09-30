@@ -35,7 +35,14 @@ class DeviceScope {
 public:
     explicit DeviceScope(int device) {
         gpu_check(gpuGetDevice(&previous_), "gpuGetDevice");
-        gpu_check(gpuSetDevice(device), "gpuSetDevice");
+        try {
+            gpu_check(gpuSetDevice(device), "gpuSetDevice");
+        } catch (...) {
+            // A throwing constructor has no destructor. Restore even when a
+            // post-call failure occurs after the runtime changed the selection.
+            (void)gpuSetDevice(previous_);
+            throw;
+        }
     }
     ~DeviceScope() { (void)gpuSetDevice(previous_); }
     DeviceScope(const DeviceScope&) = delete;

@@ -34,6 +34,7 @@ inline constexpr auto gpuDeviceAttributeMultiprocessorCount = hipDeviceAttribute
     kernel<<<grid, block, shared, stream>>>(__VA_ARGS__)
 
 inline gpuError_t gpuGetDevice(int* value) { return KEYHUNT_NATIVE_API(GetDevice)(value); }
+inline gpuError_t gpuGetDeviceCount(int* value) { return KEYHUNT_NATIVE_API(GetDeviceCount)(value); }
 inline gpuError_t gpuSetDevice(int value) { return KEYHUNT_NATIVE_API(SetDevice)(value); }
 inline gpuError_t gpuMemGetInfo(size_t* free, size_t* total) { return KEYHUNT_NATIVE_API(MemGetInfo)(free, total); }
 inline gpuError_t gpuStreamCreateWithFlags(gpuStream_t* value, unsigned flags) { return KEYHUNT_NATIVE_API(StreamCreateWithFlags)(value, flags); }

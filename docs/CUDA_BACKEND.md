@@ -57,6 +57,11 @@ change clocks, reset devices, reserve all GPUs, or alter compute partitions.
 This milestone executes one selected device per owner; concurrent multi-device
 scheduling remains C20.
 
+Device selection also restores the caller's ordinal if scope construction throws
+after the native runtime has changed it. The failure test injects both get-device
+and post-set-device errors; with two visible GPUs it verifies an actual selection
+change is undone. This protects shared CUDA and HIP executor construction.
+
 The shared arithmetic/search/failure tests compile with either GPU language.
 Native CUDA validation includes independent Python field arithmetic and pinned
 libsecp256k1 point/search oracles, every visible device, exact tails and high-bit
