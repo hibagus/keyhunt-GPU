@@ -57,3 +57,39 @@ The coordinator release build passed this gate plus the existing database,
 state CLI, checkpoint, checkpoint-failure, control and checkpoint CLI gates:
 **7/7**. Existing fourteen checkpoint process-exit cases continue to pass.
 The HTTP boundary will independently test CA and TLS authentication.
+
+## S03: private HTTP and real mTLS
+
+The coordinator executable listens only on two Unix sockets. The API socket is
+0660 and checks the configured Apache UID with `SO_PEERCRED`; the local admin
+socket is 0600 and accepts only the service UID. Their parent directories must
+be owned by the service user, without group write or access for other users.
+Use a dedicated service account and a shared Apache group in deployment. The
+isolated test runs both processes as the current user; it separately tests a
+mismatched proxy UID. A process running as the trusted service/Apache account is
+inside this boundary and must not host unrelated applications.
+
+`deploy/apache/keyhunt.conf.in` requires client certificates, replaces all
+external copies of its four identity headers, and forwards a single-line base64
+certificate. The application matches the exact enrolled DER, validates current
+registry state on every request, and checks the forwarded Host, SNI and TLS
+version. Only `/api/v1/` is proxied. Administration has no HTTPS route. Backend
+requests reject duplicate headers, ambiguous framing, duplicate JSON keys,
+early data, oversized bodies and unsupported methods. Read/write deadlines,
+an 8 MiB body limit and a bounded per-credential request budget limit resource use.
+
+The template uses [Apache header replacement and expressions](https://httpd.apache.org/docs/2.4/mod/mod_headers.html)
+and [mod_ssl connection variables](https://httpd.apache.org/docs/2.4/mod/mod_ssl.html).
+It was exercised with Apache 2.4.52 and OpenSSL 3.0.2 using patched Ubuntu
+packages extracted under `/tmp`; no packages, system services or trust stores
+were changed. No GPU libraries are required by `keyhunt-coordinator`.
+
+Configure `KEYHUNT_TEST_APACHE_ROOT=/` for installed Apache, or an extracted
+package root containing `usr/sbin/apache2` and `usr/lib/apache2/modules`.
+`coordinator_tls` creates private, temporary server/client CAs and runs actual
+Apache and coordinator processes. It passed required/unknown/wrong-CA client
+checks, forged duplicate header replacement, wrong Host/SNI rejection, API
+socket peer rejection, framing/body limits, admin isolation, rotation and
+revocation on the **same persistent frontend TLS connection**. Certificates,
+keys and databases are removed with the fixture. Public TCP 443 and ACME
+renewal remain outside this localhost gate.

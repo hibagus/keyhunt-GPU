@@ -1,0 +1,43 @@
+# Dedicated mTLS API virtual host. Render the placeholders; do not include this
+# on an unrelated public vhost. Runtime files and private keys stay outside Git.
+Listen @LISTEN_ADDRESS@:@PORT@
+<VirtualHost @LISTEN_ADDRESS@:@PORT@>
+    ServerName @HOST@
+    SSLEngine On
+    SSLProtocol -all +TLSv1.2 +TLSv1.3
+    SSLVerifyClient require
+    SSLVerifyDepth 2
+    SSLStrictSNIVHostCheck On
+    SSLCertificateFile "@SERVER_CERT@"
+    SSLCertificateKeyFile "@SERVER_KEY@"
+    SSLCACertificateFile "@CLIENT_CA@"
+    SSLOptions +ExportCertData
+    SSLSessionTickets Off
+    ProxyRequests Off
+    ProxyPreserveHost On
+    ProxyTimeout 15
+    LimitRequestBody 8388608
+    LimitRequestFields 64
+    LimitRequestFieldSize 16384
+    RequestReadTimeout header=10-15,MinRate=500 body=15,MinRate=1000
+
+    # Strip every externally supplied copy before installing connection-derived
+    # values. PEM is base64 encoded into a single line, never a multiline header.
+    RequestHeader unset X-Keyhunt-TLS-Verify early
+    RequestHeader unset X-Keyhunt-Cert early
+    RequestHeader unset X-Keyhunt-TLS-SNI early
+    RequestHeader unset X-Keyhunt-TLS-Protocol early
+    RequestHeader set X-Keyhunt-TLS-Verify "%{SSL_CLIENT_VERIFY}s"
+    RequestHeader set X-Keyhunt-Cert "expr=%{base64:%{SSL_CLIENT_CERT}}"
+    RequestHeader set X-Keyhunt-TLS-SNI "%{SSL_TLS_SNI}s"
+    RequestHeader set X-Keyhunt-TLS-Protocol "%{SSL_PROTOCOL}s"
+    Header always set Cache-Control "no-store"
+
+    <Location "/">
+        Require all denied
+    </Location>
+    <Location "/api/v1/">
+        Require expr "%{HTTP_HOST} == '@AUTHORITY@' && %{SSL_TLS_SNI} == '@HOST@'"
+    </Location>
+    ProxyPass "/api/v1/" "unix:@API_SOCKET@|http://localhost/api/v1/" connectiontimeout=3 timeout=15
+</VirtualHost>
