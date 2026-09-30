@@ -1,0 +1,175 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 35b317b..b5fd020 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -27,6 +27,10 @@ option(KEYHUNT_BUILD_LEGACY "Build the separate GMP/OpenSSL legacy executable" O
+ option(KEYHUNT_BUILD_BSGSD "Build the original local BSGS daemon" OFF)
+ option(KEYHUNT_ENABLE_HIP "Build AMD HIP discovery, diagnostics and bounded xpoint search" OFF)
+ option(KEYHUNT_ENABLE_CUDA "Build the native NVIDIA CUDA backend" OFF)
++option(KEYHUNT_GFX942_MAD "Opt in to validated gfx942 field multiply-accumulate ISA" OFF)
++if(KEYHUNT_GFX942_MAD AND NOT KEYHUNT_ENABLE_HIP)
++    message(FATAL_ERROR "KEYHUNT_GFX942_MAD requires the native AMD HIP backend.")
++endif()
+ if(KEYHUNT_ENABLE_HIP AND KEYHUNT_ENABLE_CUDA)
+     message(FATAL_ERROR "Select one native GPU backend per build directory: HIP or CUDA.")
+ endif()
+@@ -70,6 +74,16 @@ if(KEYHUNT_ENABLE_GPU)
+     if(KEYHUNT_ENABLE_CUDA)
+         target_link_libraries(keyhunt_gpu_options INTERFACE CUDA::cudart)
+     endif()
++    if(KEYHUNT_GFX942_MAD)
++        if(NOT CMAKE_HIP_COMPILER_ID STREQUAL "Clang" OR
++           NOT "${CMAKE_HIP_ARCHITECTURES}" MATCHES "(^|;)gfx942(:[^;]+)?(;|$)")
++            message(FATAL_ERROR "KEYHUNT_GFX942_MAD requires AMD Clang and a gfx942 code object.")
++        endif()
++        # Scope the switch to device translation units. Non-gfx942 code objects
++        # in a multi-architecture HIP build still select the portable header.
++        target_compile_definitions(keyhunt_gpu_options INTERFACE
++            "$<$<COMPILE_LANGUAGE:HIP>:KEYHUNT_GFX942_MAD=1>")
++    endif()
+ endif()
+ 
+ include(cmake/CompilerOptions.cmake)
+diff --git a/kernels/common/field.h b/kernels/common/field.h
+index b5920ec..06eb677 100644
+--- a/kernels/common/field.h
++++ b/kernels/common/field.h
+@@ -1,5 +1,6 @@
+ #pragma once
+ #include <cstdint>
++#include "../arch/amd/gfx942/multiply.h"
+ #if defined(__CUDACC__)
+ #include "../cuda/carry.cuh"
+ #endif
+@@ -142,7 +143,12 @@ KEYHUNT_HD inline void mul(Field& out, const Field& a, const Field& b) {
+         uint64_t carry = 0;
+         for (unsigned j = 0; j < 8; ++j) {
+             // (B-1)^2 + (B-1) + (B-1) = B^2-1, with B=2^32.
++#if defined(KEYHUNT_USE_GFX942_MAD)
++            const uint64_t sum = gfx942::multiply_accumulate(a.limb[i], b.limb[j],
++                                                            product[i+j], uint32_t(carry));
++#else
+             const uint64_t sum = uint64_t(a.limb[i]) * b.limb[j] + product[i+j] + carry;
++#endif
+             product[i+j] = uint32_t(sum);
+             carry = sum >> 32;
+         }
+diff --git a/tests/gpu/arithmetic_cases.h b/tests/gpu/arithmetic_cases.h
+index 33b930c..ce57ae9 100644
+--- a/tests/gpu/arithmetic_cases.h
++++ b/tests/gpu/arithmetic_cases.h
+@@ -3,7 +3,7 @@
+ #include "multiply16.h"
+ 
+ namespace keyhunt::gpu::test {
+-enum class Op : uint32_t { Normalize, Add, Sub, Mul, Mul16, Square, Negate, Inverse, BatchInverse, Bytes, Limits, Public, PointAdd, PointMixed, PointDouble, PointNegate, PointReduce, PointMultiply, PointValid };
++enum class Op : uint32_t { Normalize, Add, Sub, Mul, Mul16, Square, Negate, Inverse, BatchInverse, Bytes, Limits, LimbMac, Public, PointAdd, PointMixed, PointDouble, PointNegate, PointReduce, PointMultiply, PointValid };
+ struct Request { Op op{}; uint32_t count = 0; Field values[32]{}; };
+ struct Result { Field values[32]{}; uint32_t flags = 0; };
+ 
+@@ -70,6 +70,20 @@ KEYHUNT_HD inline Result evaluate(const Request& request) {
+     const auto a = normalize(request.values[0]), b = normalize(request.values[1]);
+     auto left = a, right = b;
+     switch (request.op) {
++    case Op::LimbMac: {
++        // Exercise the ISA primitive's complete word domain independently of
++        // canonical field inputs and of the shared modular reduction.
++        const uint32_t x = request.values[0].limb[0], y = request.values[1].limb[0];
++        const uint32_t word = request.values[2].limb[0], carry = request.values[3].limb[0];
++#if defined(KEYHUNT_USE_GFX942_MAD)
++        const uint64_t sum = gfx942::multiply_accumulate(x, y, word, carry);
++#else
++        const uint64_t sum = uint64_t(x)*y + word + carry;
++#endif
++        result.values[0].limb[0] = uint32_t(sum);
++        result.values[0].limb[1] = uint32_t(sum >> 32);
++        break;
++    }
+     case Op::Normalize: result.values[0] = a; break;
+     case Op::Add:
+         add(result.values[0], a, b); add(left, left, b); add(right, a, right);
+diff --git a/tests/gpu/arithmetic_probe.cpp b/tests/gpu/arithmetic_probe.cpp
+index 4a44e34..df83050 100644
+--- a/tests/gpu/arithmetic_probe.cpp
++++ b/tests/gpu/arithmetic_probe.cpp
+@@ -82,6 +82,7 @@ Request parse(const std::string& line) {
+     else if (op == "fbytes") request.op = Op::Bytes;
+     else if (op == "fadd") request.op = Op::Add;
+     else if (op == "fsub") request.op = Op::Sub;
++    else if (op == "fmac") request.op = Op::LimbMac;
+     else if (op == "fmul") request.op = Op::Mul;
+     else if (op == "fmul16") request.op = Op::Mul16;
+     else if (op == "fsquare") request.op = Op::Square;
+@@ -93,6 +94,13 @@ Request parse(const std::string& line) {
+         if (request.count == 32) throw std::invalid_argument("group capacity exceeded");
+         request.values[request.count++] = decode(word);
+     }
++    if (request.op == Op::LimbMac) {
++        if (request.count != 4) throw std::invalid_argument("fmac requires four words");
++        for (unsigned i = 0; i < 4; ++i)
++            for (unsigned j = 1; j < 8; ++j)
++                if (request.values[i].limb[j]) throw std::invalid_argument("fmac word exceeds 32 bits");
++        return request;
++    }
+     const bool binary = request.op == Op::Add || request.op == Op::Sub || request.op == Op::Mul || request.op == Op::Mul16;
+     if (request.op != Op::BatchInverse && request.count != (binary ? 2U : 1U))
+         throw std::invalid_argument("wrong operation arity");
+diff --git a/tests/gpu/field_oracle.py b/tests/gpu/field_oracle.py
+index 70f550b..4adde7a 100644
+--- a/tests/gpu/field_oracle.py
++++ b/tests/gpu/field_oracle.py
+@@ -3,6 +3,7 @@
+ import argparse
+ from collections import Counter
+ import hashlib
++from itertools import product
+ import json
+ from pathlib import Path
+ import random
+@@ -53,6 +54,14 @@ def main():
+             expected=' '.join(f'{pow(v,-1,P) if v else 0:064x}' for v in values)
+             case('finvgroup',values,'1'+(' '+expected if expected else ''),None)
+     case('flimits',(),f'{0:064x}')
++    # The multiply-accumulate primitive must retain a 33-bit addend. Check its
++    # full input domain at carry boundaries, then deterministic random words;
++    # Python's unbounded integers supply the expected 64-bit result directly.
++    word_edges = (0, 1, 2, (1<<31)-1, 1<<31, (1<<32)-2, (1<<32)-1)
++    mac_inputs = list(product(word_edges, repeat=4))
++    mac_inputs += [tuple(rng.getrandbits(32) for _ in range(4)) for _ in range(4096)]
++    for a, b, word, carry in mac_inputs:
++        case('fmac', (a, b, word, carry), f'{a*b+word+carry:064x}')
+     stats_path=args.report.with_suffix('.stats.json')
+     command=[str(args.binary.resolve()),'--device',args.device,'--batch','257','--stats',str(stats_path)]
+     process=subprocess.run(command,input='\n'.join(c[1] for c in cases)+'\n',capture_output=True,text=True,timeout=150)
+diff --git a/kernels/arch/amd/gfx942/multiply.h b/kernels/arch/amd/gfx942/multiply.h
+new file mode 100644
+index 0000000..6a0f820
+--- /dev/null
++++ b/kernels/arch/amd/gfx942/multiply.h
+@@ -0,0 +1,26 @@
++#pragma once
++#include <cstdint>
++
++// Host compilation and every other GPU architecture retain the portable path.
++// The CMake option is deliberately opt-in: remeasure after toolchain changes.
++#if defined(KEYHUNT_GFX942_MAD) && defined(__HIP_DEVICE_COMPILE__) && \
++    defined(__gfx942__) && defined(__clang__)
++#define KEYHUNT_USE_GFX942_MAD 1
++namespace keyhunt::gpu::gfx942 {
++// One schoolbook limb: a*b + existing_product + incoming_carry. All four
++// inputs are 32-bit words, so the maximum is (B-1)^2 + 2*(B-1) = B^2-1.
++// The ISA's 65th result bit is therefore always zero and may be discarded.
++__device__ inline __attribute__((always_inline)) uint64_t multiply_accumulate(uint32_t a, uint32_t b,
++                                                       uint32_t word, uint32_t carry) {
++    const uint64_t addend = uint64_t(word) + carry; // retain the 33rd bit
++    uint64_t result;
++    // A 64-bit "v" operand is a consecutive VGPR pair. This single instruction
++    // reads every input before writing its output, so overlap needs no early
++    // clobber. Its carry output overwrites VCC, declared explicitly below.
++    // No memory, EXEC mask, wave communication, or hidden carry state is used.
++    asm("v_mad_u64_u32 %0, vcc, %1, %2, %3"
++        : "=v"(result) : "v"(a), "v"(b), "v"(addend) : "vcc");
++    return result;
++}
++} // namespace keyhunt::gpu::gfx942
++#endif
