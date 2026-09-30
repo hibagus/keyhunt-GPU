@@ -147,7 +147,8 @@ process exit as proof of saved search progress or exact coverage.
 - [x] C16: [reproducible GPU profiling and durability benchmarks](docs/GPU_PROFILING.md).
 - [x] C17: [measured HIP arithmetic, buffer and overflow tuning](docs/HIP_TUNING.md).
 - [x] C18: native CUDA, H200 parity/recovery, measured arithmetic and inline PTX tuning.
-- [ ] C19–C20: gfx942 assembly specializations and simultaneous multi-GPU scheduling.
+- [x] C19: [opt-in gfx942 carry/borrow intrinsics, portable fallback and paired ISA evidence](docs/GFX942_SPECIALIZATIONS.md).
+- [ ] C20: simultaneous multi-GPU scheduling and balancing.
 - [ ] C21–C23: operations guides, offline assignments and further GPU modes.
 
 See [implementation status](docs/IMPLEMENTATION_STATUS.md) for evidence and

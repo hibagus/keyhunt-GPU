@@ -140,6 +140,9 @@ it changes neither multiplication/reduction algorithms nor field representation.
 
 ## Final correctness, recovery, and operating scope
 
+The retained implementation is commit `99fa27a`; its directly relevant tests,
+comments, build documentation, and raw evidence are committed together.
+
 [Validation manifest](baselines/C19_VALIDATION.json): **33/33 CPU release,
 59/59 HIP/coordinator regressions plus 2/2 additional HIP portable-fallback
 oracles, 4/4 focused debug, and 4/4 focused address/undefined sanitizer checks**

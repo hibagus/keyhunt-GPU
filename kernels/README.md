@@ -22,3 +22,9 @@ and x86 assembly remain under `include/` and `src/crypto/`.
 C18: shared search kernels now live in `search/`; `device_runtime.h` is a private
 native HIP/CUDA SDK spelling adapter. Public host APIs remain SDK-free. See
 [the CUDA guide](../docs/CUDA_BACKEND.md) for H200 builds and validation.
+
+C19 adds opt-in gfx942 carry/borrow compiler intrinsics under
+`arch/amd/gfx942/`, guarded by device architecture and compiler capability.
+Portable field reduction remains shared. See [the specialization guide](../docs/GFX942_SPECIALIZATIONS.md)
+for the default-off build switch, real-device fallback oracles, rejected ISA
+experiments, disassembly and paired performance evidence.

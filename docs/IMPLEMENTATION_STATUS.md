@@ -25,7 +25,8 @@ change is committed separately. Analysis and validation evidence live under
 | C16: reproducible GPU profiling and benchmarks | Completed | [Methodology, findings and raw evidence](GPU_PROFILING.md); exact oracle-checked coverage, repeated volatile/durable samples, hardware/build metadata, real periodic commits, separate ROCm traces/counters and compiler resources; 32 CPU and 58 HIP/coordinator tests pass |
 | C17: measured HIP tuning | Completed | [Changes, rejected experiment and paired evidence](HIP_TUNING.md); xpoint kernels 1.94–2.33× and BSGS kernels 1.31–1.72× faster on the measured MI300X workloads; exact overflow recovery, compact transfers, complete grouping metrics, pause checks; 33 CPU / 59 HIP / 8 debug / 6 sanitizer tests pass |
 | C18: native CUDA | Completed | [CUDA build, tuning and acceptance](CUDA_BACKEND.md); 47 CUDA-build and 32 CPU tests, eight H200s, exact xpoint/BSGS parity, checkpoint recovery, 12 sanitizer runs and measured PTX/mixed-coordinate optimizations; [validation evidence](baselines/C18_VALIDATION.json) |
-| C19–C23 | Planned | Acceptance gates remain in the redesign plan |
+| C19: gfx942 arithmetic specializations | Completed (opt-in) | [Carry/borrow intrinsics, rejected experiments and ISA evidence](GFX942_SPECIALIZATIONS.md); small-target stepped xpoint kernels 1.051–1.060× faster, portable fallback; 33 CPU / 61 HIP / 4 debug / 4 sanitizer checks pass |
+| C20–C23 | Planned | Acceptance gates remain in the redesign plan |
 
 C01 records the original CPU boundary/stride defects. C06 fixes modular/point
 arithmetic and the tested BSGS start miss; tail overrun and stride defects remain.
@@ -53,3 +54,12 @@ optimization is committed separately with comments and paired evidence. The
 [acceptance scope and limits](HIP_TUNING.md#pause-validation-and-limits) distinguish
 kernel/executor gains from startup-sensitive process rates and preserve the
 remaining supervisor findings. No handwritten ISA or multi-GPU speedup is claimed.
+
+C19 adds opt-in gfx942 compiler carry/borrow intrinsics with a configure-time
+capability check and a real-HIP portable arithmetic fallback gate. The
+[validation manifest](baselines/C19_VALIDATION.json) and
+[paired evidence](GFX942_SPECIALIZATIONS.md) separate kernel improvements from
+startup-sensitive CLI timings. Multiplication ISA was rejected for regressions;
+explicit carry assembly was not retained because its incremental gain over
+intrinsics stayed below the acceptance threshold. C20 multi-GPU scheduling and
+supervisor lifecycle findings remain open.
