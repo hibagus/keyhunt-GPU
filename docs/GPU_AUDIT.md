@@ -4,8 +4,15 @@ Current implementation: [C17 measured tuning](HIP_TUNING.md) addresses A12, A13,
 A14 and A19 with separate changes and retained paired evidence. The audits below
 remain scoped to their frozen revisions.
 
-Latest follow-up: [C16 profiling audit](audits/C16_AUDIT.md) passes 58 HIP and
-42 CPU tests, independently checks the retained benchmark evidence, reproduces a
+Latest follow-up: [C17–C19 audit](audits/C19_AUDIT.md) passes 61 carry-enabled
+HIP/coordinator tests, 43 CPU/coordinator tests and 18 focused default-HIP checks.
+It closes A12, A13, A14 and A19, checks the retained tuning evidence, and measures
+**2.484 billion xpoint scalars/s** over a finite MI300X run with periodic
+checkpoints. A20 identifies full CUDA discovery in each worker self-test; NVIDIA
+validation of the merged C19 revision remains an acceptance gap on this HIP host.
+
+The [C16 profiling audit](audits/C16_AUDIT.md) passes 58 HIP and 42 CPU tests,
+independently checks its retained benchmark evidence, reproduces the earlier
 mixed-BSGS-group reporting defect, and measures periodic-checkpoint throughput.
 The [C14–C15 audit](audits/C15_AUDIT.md) reproduces two still-open supervisor
 pause/quarantine defects and measures coordinated block startup costs.
