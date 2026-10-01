@@ -1,0 +1,5 @@
+add_executable(hash160_search_test tests/unit/hash160_search.cpp)
+target_link_libraries(hash160_search_test PRIVATE keyhunt_core)
+keyhunt_configure_target(hash160_search_test)
+add_test(NAME hash160_search_contract COMMAND hash160_search_test)
+set_tests_properties(hash160_search_contract PROPERTIES TIMEOUT 30 LABELS "cpu;core;hash160")

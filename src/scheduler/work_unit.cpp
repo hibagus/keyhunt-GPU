@@ -20,7 +20,7 @@ std::optional<ScalarInterval> bounded_interval(const ScalarInterval& parent,
 }
 
 void validate(const ExecutionIdentity& identity) {
-    if (identity.algorithm != WorkAlgorithm::DirectXPointV1)
+    if (identity.algorithm != WorkAlgorithm::DirectXPointV1 && identity.algorithm != WorkAlgorithm::DirectHash160V1)
         throw std::invalid_argument("unsupported work algorithm mapping");
     if (!identity.assignment_generation || !identity.executor_generation)
         throw std::invalid_argument("execution generations must be positive");
