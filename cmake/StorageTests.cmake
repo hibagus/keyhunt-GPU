@@ -318,3 +318,26 @@ target_link_libraries(storage_bsgs_both_ends_test PRIVATE keyhunt_storage)
 keyhunt_configure_target(storage_bsgs_both_ends_test)
 add_test(NAME storage_bsgs_both_ends COMMAND storage_bsgs_both_ends_test)
 set_tests_properties(storage_bsgs_both_ends PROPERTIES TIMEOUT 180 LABELS "cpu;bsgs;storage;both-ends;recovery")
+
+add_test(NAME bsgs_dance_recovery_cli COMMAND "${Python3_EXECUTABLE}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/bsgs_reverse_cli.py" --binary $<TARGET_FILE:keyhunt>
+    --oracle $<TARGET_FILE:secp256k1_oracle> --suite recovery --dance
+    --report "${CMAKE_CURRENT_BINARY_DIR}/bsgs-dance-recovery-cli.json" ${checkpoint_cli_options})
+set_tests_properties(bsgs_dance_recovery_cli PROPERTIES TIMEOUT 480 LABELS "cpu;bsgs;dance;recovery")
+if(KEYHUNT_ENABLE_GPU)
+    set_tests_properties(bsgs_dance_recovery_cli PROPERTIES LABELS "${KEYHUNT_GPU_BACKEND};hardware;bsgs;dance;recovery" RESOURCE_LOCK gpu_device)
+    add_test(NAME bsgs_dance_pause_${KEYHUNT_GPU_BACKEND} COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/checkpoint_pause_hip.py"
+        --binary $<TARGET_FILE:keyhunt> --oracle $<TARGET_FILE:secp256k1_oracle>
+        --backend ${KEYHUNT_GPU_BACKEND} --mode bsgs --tile-order dance
+        --report "${CMAKE_CURRENT_BINARY_DIR}/bsgs-dance-pause-${KEYHUNT_GPU_BACKEND}.json")
+    set_tests_properties(bsgs_dance_pause_${KEYHUNT_GPU_BACKEND} PROPERTIES TIMEOUT 240
+        LABELS "${KEYHUNT_GPU_BACKEND};hardware;bsgs;dance;recovery" RESOURCE_LOCK gpu_device)
+endif()
+
+add_executable(storage_bsgs_dance_test tests/storage/bsgs_dance.cpp)
+target_include_directories(storage_bsgs_dance_test PRIVATE src/storage)
+target_link_libraries(storage_bsgs_dance_test PRIVATE keyhunt_storage)
+keyhunt_configure_target(storage_bsgs_dance_test)
+add_test(NAME storage_bsgs_dance COMMAND storage_bsgs_dance_test)
+set_tests_properties(storage_bsgs_dance PROPERTIES TIMEOUT 180 LABELS "cpu;bsgs;storage;dance;recovery")

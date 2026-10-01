@@ -380,8 +380,8 @@ CheckpointSummary CheckpointRun::bsgs(Journal& journal,const Grant& grant,const 
     Cleanup stopped_before_unlock{std::move(cleanup)};
     scheduler::AdaptiveWorkSize units(UInt256(table.memory().m).multiply(UInt256(o.giant_steps)),o.work_unit_seconds,table.memory().m);
     core::BsgsTilePlanner planner(state.remaining,table.memory().m,o.giant_steps,o.bsgs_tile_order.value_or(core::BsgsTileOrder::Forward));
-    // Up to two work units can be active at opposite ends. Charge only their
-    // own admitted execution time; paused time and the other unit are excluded.
+    // Up to three work units can be active (low/high/middle for dance). Charge
+    // only their own execution time; pauses and other units are excluded.
     std::map<UInt256,uint64_t> active_work;
     while(const auto selected=planner.next(units.span())){
         const auto& tile=selected->interval;
