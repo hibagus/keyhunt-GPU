@@ -9,8 +9,8 @@ from minikey import PUBLIC_KEYS,text,ordinal,scalar
 p=argparse.ArgumentParser()
 for name in ('binary','oracle','report'):p.add_argument('--'+name,type=Path,required=True)
 p.add_argument('--hardware',action='store_true');p.add_argument('--backend',choices=('hip','cuda'),default='hip')
-orders=p.add_mutually_exclusive_group();orders.add_argument('--reverse',action='store_true');orders.add_argument('--both-ends',action='store_true')
-a=p.parse_args();order='both-ends' if a.both_ends else 'reverse' if a.reverse else 'forward';binary=str(a.binary.resolve())
+orders=p.add_mutually_exclusive_group();orders.add_argument('--reverse',action='store_true');orders.add_argument('--both-ends',action='store_true');orders.add_argument('--dance',action='store_true')
+a=p.parse_args();order='dance' if a.dance else 'both-ends' if a.both_ends else 'reverse' if a.reverse else 'forward';binary=str(a.binary.resolve())
 report=dict(passed=False,oracle_commit=check_source(),binary_sha256=hashlib.sha256(a.binary.read_bytes()).hexdigest(),
             hardware=a.hardware,reverse=a.reverse,ordinal_order=order,backend=a.backend,cases=[],checks=0)
 with tempfile.TemporaryDirectory(prefix='kh-minikey-checkpoint-') as directory:
@@ -76,17 +76,17 @@ with tempfile.TemporaryDirectory(prefix='kh-minikey-checkpoint-') as directory:
             assert again['batches']==0 and int(again['resumed_ordinals'],16)==count
             report['cases'].append(dict(name=label,length=length,relations=len(expected),summary=summary))
         if not a.hardware:continue
-        for first,resume in ([('both-ends','forward'),('forward','both-ends'),('both-ends','reverse'),('reverse','both-ends'),('both-ends','both-ends')] if a.both_ends else [('reverse','forward'),('forward','reverse'),('reverse','reverse')] if a.reverse else [('forward','forward')]):
+        for first,resume in ([('dance','forward'),('forward','dance'),('dance','reverse'),('reverse','dance'),('dance','both-ends'),('both-ends','dance'),('dance','dance')] if a.dance else [('both-ends','forward'),('forward','both-ends'),('both-ends','reverse'),('reverse','both-ends'),('both-ends','both-ends')] if a.both_ends else [('reverse','forward'),('forward','reverse'),('reverse','reverse')] if a.reverse else [('forward','forward')]):
             # Kill only after an acknowledged durable prefix; all later work is
             # reconstructed from its exact ordinal complement with new batch sizes.
             start=begin-1048575 if first=='reverse' else begin
             scope,run=prepare(f'killed-{length}-{first}-{resume}',length,start,start+1048576,[values[begin,tag] for tag in (1,2)])
-            process=subprocess.Popen(command('checkpoint','run',*run,'--ordinal-order',first,'--batch-size','32',*(['--checkpoint-seconds','0'] if first=='both-ends' else [])),stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
+            process=subprocess.Popen(command('checkpoint','run',*run,'--ordinal-order',first,'--batch-size','32',*(['--checkpoint-seconds','0'] if first in ('both-ends','dance') else [])),stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
             try:
                 assert select.select([process.stdout],[],[],30)[0],'no durable acknowledgment'
                 notice=json.loads(process.stdout.readline())
-                if first=='both-ends':
-                    # Persist both endpoint batches before killing this owner.
+                for _ in range(2 if first=='dance' else 1 if first=='both-ends' else 0):
+                    # Persist every selected front before killing this owner.
                     notice=json.loads(process.stdout.readline())
                 assert notice['type']=='checkpoint' and notice['durable_results'] and notice['coordinate_space']=='minikey-ordinal-v1'
                 assert 'already held' in call('checkpoint','run',*run,ok=False).stderr
@@ -96,7 +96,8 @@ with tempfile.TemporaryDirectory(prefix='kh-minikey-checkpoint-') as directory:
             call('state','check');assert results(scope)
             retained=call('state','block',*scope,'--block','0')[0]
             covered=sum(int(v['end_exclusive'],16)-int(v['begin'],16) for v in retained['covered'])
-            if first=='both-ends':assert int(retained['covered'][0]['begin'],16)==start and int(retained['covered'][-1]['end_exclusive'],16)==start+1048576
+            if first in ('both-ends','dance'):assert int(retained['covered'][0]['begin'],16)==start and int(retained['covered'][-1]['end_exclusive'],16)==start+1048576
+            if first=='dance':assert any(int(v['begin'],16)<=start+524288<int(v['end_exclusive'],16) for v in retained['covered'])
             summary=call('checkpoint','run',*run,'--ordinal-order',resume,'--batch-size','65536')[-1]
             assert summary['complete'] and int(summary['resumed_ordinals'],16)==covered
             assert covered+int(summary['computed_ordinals'],16)==1048576
