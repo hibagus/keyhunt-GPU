@@ -24,7 +24,10 @@ parser.add_argument("--oracle", type=Path, required=True)
 parser.add_argument("--report", type=Path, required=True)
 parser.add_argument("--backend",choices=("hip","cuda"),default="hip")
 parser.add_argument("--mode", choices=("xpoint","bsgs","hash160","ethereum","vanity","minikeys22","minikeys30"), action="append")
+parser.add_argument("--stride", type=lambda value:int(value,16), default=1)
 args = parser.parse_args()
+if args.stride!=1 and (not args.mode or any(mode not in ("xpoint","hash160","ethereum","vanity") for mode in args.mode)):
+    parser.error("strides require explicit scalar modes")
 binary = args.binary.resolve()
 report = {"oracle_commit": check_source(), "binary_sha256": hashlib.sha256(binary.read_bytes()).hexdigest(),
           "cases": [], "pause_latency_scope": "local socket request through durably-paused status, including admitted batch and up to 20 ms idle polling"}
@@ -48,7 +51,7 @@ with tempfile.TemporaryDirectory(prefix="kh-c14-hip-") as temporary:
     root = Path(temporary)
     table = root / "table.khb"
     invoke(["bsgs-table", "build", "--m", "17", "--output", table])
-    seeds = [1, 2, 1048576, 1 << 80]
+    seeds = [1+(i-1)*args.stride for i in (1,2,1048576,1<<80)]
     public = dict(zip(seeds, oracle_run(args.oracle, [f"pub {n:064x}" for n in seeds])))
     for mode in (args.mode or ("xpoint", "bsgs")):
         state = root / mode
@@ -68,8 +71,8 @@ with tempfile.TemporaryDirectory(prefix="kh-c14-hip-") as temporary:
         inputs = ["--targets", targets] + (["--table", table] if mode == "bsgs" else [])
         if length:inputs += ["--length",length,"--input-format","hash160"]
         project = local("state", "project-create", "--name", "C14 HIP pause")[0]["project"]
-        job = local("checkpoint", "create", "--project", project, "--mode", "minikeys" if length else mode, "--range", f"{begin:x}:{begin+1048576:x}",
-                    "--block-width", "100000", *inputs)[0]["job"]
+        job = local("checkpoint", "create", "--project", project, "--mode", "minikeys" if length else mode, "--range", f"{begin:x}:{begin+1048576*args.stride:x}",
+                    "--block-width", "100000", *inputs, *(["--stride",f"{args.stride:x}"] if args.stride!=1 else []))[0]["job"]
         scope = ["--project", project, "--job", job]
         grant = local("state", "claim", *scope, "--owner", "pause-test", "--request", "claim")[0]["assignments"][0]["grant"]
         run = ["checkpoint", "run", "--state-dir", state, "--backend", args.backend, "--grant", grant, *inputs]
@@ -170,7 +173,7 @@ with tempfile.TemporaryDirectory(prefix="kh-c14-hip-") as temporary:
             env["CUDA_VISIBLE_DEVICES" if args.backend=="cuda" else "HIP_VISIBLE_DEVICES"] = visibility
         completed = invoke(run + fast + ["--device", device], env=env)[-1]
         assert completed["complete"]
-        assert int(completed["resumed_ordinals" if length else "resumed_scalars"], 16) + int(completed["computed_ordinals" if length else "computed_scalars"], 16) == 1048576
+        assert int(completed["resumed_candidates" if args.stride!=1 else "resumed_ordinals" if length else "resumed_scalars"], 16) + int(completed["computed_candidates" if args.stride!=1 else "computed_ordinals" if length else "computed_scalars"], 16) == 1048576
         matches = local("checkpoint", "results", *scope)[0]["results"]
         expected=({(n,f'{tag:02x}'+values[n,tag]) for n in seeds[:3] for tag in (1,2)} if mode=="hash160"
                   else {(n,(bytes([tag,len(values[n,tag])])+values[n,tag].encode()+bytes(34-len(values[n,tag]))).hex()) for n in seeds[:3] for tag in (1,2)} if mode=="vanity"
@@ -180,6 +183,8 @@ with tempfile.TemporaryDirectory(prefix="kh-c14-hip-") as temporary:
             assert all(r["minikey"]==key and int(r["scalar"],16)==minikey_scalar(key) for r in matches)
         assert {(int(r["ordinal" if length else "scalar"],16),r["target_bytes"]) for r in matches}==expected
         assert len(matches)==len(expected)
+        if args.stride!=1:
+            assert all(r["coordinate_space"]=="scalar-stride-index-v1" and int(r["scalar"],16)==1+(int(r["candidate_index"],16)-1)*args.stride for r in matches)
         assert local("state", "block", *scope, "--block", "0")[0]["state"] == "finished"
         local("state", "check")
         case["completion"] = {"device": device, "visible_devices": visible_count, "summary": completed}

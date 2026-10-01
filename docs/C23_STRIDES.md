@@ -88,3 +88,23 @@ order boundaries, off-lattice targets, overlapping vanity relations, bounded
 buffer overflow/replay and the maximum 1,048,576-candidate batch. Explicit stride
 one retains the existing coordinate space and target relations. These checks are
 correctness evidence, not throughput or multi-GPU scaling measurements.
+
+## Durable mapping
+
+The checkpoint binding now uses the specified 146-byte configuration for nonunit
+strides. Decoding checks canonical targets, version, length, zero table fields,
+positive nonunit stride and exact candidate-index root before accepting the job.
+The unchanged receipt format stores candidate indices in its historical `scalar`
+field; both executor and journal verification map that index to a private scalar.
+Public result records show both `candidate_index` and the actual `scalar`.
+
+`checkpoint create --stride HEX` binds the progression. `checkpoint run` recovers
+it automatically; an explicit stride must match. Candidate counts are reported as
+`computed_candidates` and `resumed_candidates`. Block widths count candidates.
+BSGS and minikey jobs reject the scalar-stride option. Unit stride keeps the old
+50-byte configuration and job identity, with no schema migration.
+
+CPU tests cover all four families, malformed configurations with recalculated
+digests, mismatch rejection, dense overflow, lost commit acknowledgements, pause,
+backup and completed retry. HIP integration verifies 24 direct/stepped durable
+cases plus four killed-process restarts against independent target relations.

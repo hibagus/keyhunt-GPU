@@ -14,6 +14,7 @@ struct Binding {
     Bytes configuration,targets;
     Digest target_digest{},algorithm_digest{},table_checksum{};
     uint64_t m=0;
+    std::optional<core::ScalarStride> stride_mapping;
     size_t count() const { return targets.size()/target_width(mode); }
     void verify(const core::XPointVerifier& verifier,const UInt256& scalar,uint32_t target) const;
 };
@@ -23,6 +24,7 @@ Binding binding(const core::EthereumTargets& targets);
 Binding binding(const core::VanityTargets& targets);
 Binding binding(const core::MinikeyTargets& targets);
 Binding binding(const core::BsgsPublicKeyTargets& targets,const bsgs::Table& table);
+Binding with_stride(Binding input,const core::ScalarStride& mapping);
 Binding decode_binding(const Manifest& manifest,const Bytes& configuration,const Bytes& targets);
 struct CheckpointData {
     UInt256 block;

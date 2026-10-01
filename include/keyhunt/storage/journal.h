@@ -76,6 +76,9 @@ public:
     std::string create_project(const std::string& name);
     Scope create_job(const std::string& project,const Manifest& manifest,std::optional<Digest> seed={});
     Manifest manifest(const Scope& scope) const;
+    // Empty for unit-stride and unbound synthetic jobs. This validates the full
+    // immutable binding before exposing any candidate-to-scalar mapping.
+    std::optional<core::ScalarStride> stride_mapping(const Scope& scope) const;
     std::vector<Grant> claim(const Scope& scope,const std::string& owner,const std::string& request,
         Selection selection={},int64_t lifetime_seconds=30*24*60*60);
     void start(const Grant& grant,const std::string& request);

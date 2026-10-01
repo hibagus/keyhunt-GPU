@@ -178,6 +178,12 @@ Scope Journal::create_job(const std::string& project,const Manifest& manifest,st
     (void)s.job(scope);tx.commit();return scope;
 }
 Manifest Journal::manifest(const Scope& scope)const{return impl_->job(scope).manifest;}
+std::optional<core::ScalarStride> Journal::stride_mapping(const Scope& scope)const{
+    const auto manifest=impl_->job(scope).manifest;
+    Statement row(impl_->db.handle(),"SELECT configuration,targets FROM search_bindings WHERE project=? AND job=?");scope_bind(row,scope);
+    if(!row.step())return {};
+    return decode_binding(manifest,row.blob(0),row.blob(1)).stride_mapping;
+}
 std::vector<Grant> Journal::claim(const Scope& scope,const std::string& owner,const std::string& request,Selection choice,int64_t lifetime){
     if(!choice.count||choice.count>256 || choice.window.is_zero())throw std::invalid_argument("claim count must be 1..256 and window positive");
     if(choice.policy!=Policy::Sequential && choice.policy!=Policy::Random && choice.policy!=Policy::RandomWindow && choice.policy!=Policy::Manual)throw std::invalid_argument("unknown selection policy");

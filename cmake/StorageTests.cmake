@@ -171,3 +171,26 @@ if(KEYHUNT_ENABLE_GPU)
     set_tests_properties(checkpoint_minikeys_pause_${KEYHUNT_GPU_BACKEND} PROPERTIES TIMEOUT 180
         LABELS "${KEYHUNT_GPU_BACKEND};hardware;storage;minikeys;recovery" RESOURCE_LOCK gpu_device)
 endif()
+
+add_executable(storage_stride_checkpoint_test tests/storage/stride_checkpoint.cpp)
+target_include_directories(storage_stride_checkpoint_test PRIVATE src/storage)
+target_link_libraries(storage_stride_checkpoint_test PRIVATE keyhunt_storage)
+keyhunt_configure_target(storage_stride_checkpoint_test)
+add_test(NAME storage_stride_checkpoint COMMAND storage_stride_checkpoint_test)
+set_tests_properties(storage_stride_checkpoint PROPERTIES TIMEOUT 180 LABELS "cpu;storage;stride;recovery")
+
+add_test(NAME checkpoint_strides_cli COMMAND "${Python3_EXECUTABLE}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/stride_checkpoint_cli.py"
+    --binary $<TARGET_FILE:keyhunt> --oracle $<TARGET_FILE:secp256k1_oracle>
+    --report "${CMAKE_CURRENT_BINARY_DIR}/checkpoint-strides-cli.json" ${checkpoint_cli_options})
+set_tests_properties(checkpoint_strides_cli PROPERTIES TIMEOUT 300 LABELS "cpu;storage;stride;recovery")
+if(KEYHUNT_ENABLE_GPU)
+    set_tests_properties(checkpoint_strides_cli PROPERTIES LABELS "${KEYHUNT_GPU_BACKEND};hardware;storage;stride;recovery" RESOURCE_LOCK gpu_device)
+    add_test(NAME checkpoint_strides_pause_${KEYHUNT_GPU_BACKEND} COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/checkpoint_pause_hip.py"
+        --binary $<TARGET_FILE:keyhunt> --oracle $<TARGET_FILE:secp256k1_oracle>
+        --backend ${KEYHUNT_GPU_BACKEND} --stride 11 --mode xpoint --mode hash160 --mode ethereum --mode vanity
+        --report "${CMAKE_CURRENT_BINARY_DIR}/checkpoint-strides-pause-${KEYHUNT_GPU_BACKEND}.json")
+    set_tests_properties(checkpoint_strides_pause_${KEYHUNT_GPU_BACKEND} PROPERTIES TIMEOUT 240
+        LABELS "${KEYHUNT_GPU_BACKEND};hardware;storage;stride;recovery" RESOURCE_LOCK gpu_device)
+endif()

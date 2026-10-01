@@ -46,10 +46,22 @@ Binding binding(const core::BsgsPublicKeyTargets& targets,const bsgs::Table& tab
     Bytes bytes;for(const auto& t:targets.values())bytes.insert(bytes.end(),t.begin(),t.end());
     return make(Mode::Bsgs,bytes,targets.digest(),table.memory().m,table.checksum());
 }
+Binding with_stride(Binding input,const core::ScalarStride& mapping) {
+    if(input.stride_mapping || (input.mode!=Mode::XPoint && input.mode!=Mode::Hash160 &&
+       input.mode!=Mode::Ethereum && input.mode!=Mode::Vanity))
+        throw std::invalid_argument("stride binding requires an unmapped scalar search");
+    // The immutable configuration binds both the lattice origin and its exclusive
+    // scalar end. Coverage receipts can therefore use compact candidate indices.
+    input.configuration[8]=2;
+    wide(input.configuration,mapping.scalars().begin());wide(input.configuration,mapping.scalars().end());
+    wide(input.configuration,mapping.stride());input.stride_mapping=mapping;
+    input.algorithm_digest=fixed(detail::digest(input.configuration));return input;
+}
 Binding decode_binding(const Manifest& manifest,const Bytes& config,const Bytes& bytes) {
-    if(config.size()!=50 || bytes.empty())throw std::runtime_error("invalid search binding length");
+    if((config.size()!=50 && config.size()!=146) || bytes.empty())throw std::runtime_error("invalid search binding length");
+    const uint8_t version=config.size()==146?2:1;
     Reader read{config};const auto tag=read.take(10);
-    if(tag!=Bytes({'k','h','s','e','a','r','c','h',1,uint8_t(manifest.mode)}))
+    if(tag!=Bytes({'k','h','s','e','a','r','c','h',version,uint8_t(manifest.mode)}))
         throw std::runtime_error("unsupported search semantics");
     const auto m=read.number();const auto checksum=fixed(read.take(32));
     Binding result;
@@ -93,6 +105,13 @@ Binding decode_binding(const Manifest& manifest,const Bytes& config,const Bytes&
         result=make(Mode::Bsgs,encoded,canonical.digest(),m,checksum);
     }
     else throw std::runtime_error("unsupported checkpoint mode");
+    if(version==2){
+        const auto begin=read.wide(),end=read.wide(),stride=read.wide();
+        const core::ScalarStride mapping(ScalarInterval(begin,end),stride);
+        if(mapping.indices().begin()!=manifest.root.begin() || mapping.indices().end()!=manifest.root.end())
+            throw std::runtime_error("stride binding disagrees with candidate-index root");
+        result=with_stride(std::move(result),mapping);
+    }
     if(result.targets!=bytes || result.configuration!=config ||
        result.target_digest!=manifest.targets || result.algorithm_digest!=manifest.algorithm)
         throw std::runtime_error("canonical search inputs do not match job identity");
@@ -103,7 +122,7 @@ void Binding::verify(const core::XPointVerifier& verifier,const UInt256& scalar,
     const size_t width=target_width(mode);const auto expected=targets.begin()+width*target;
     // A mode-6 receipt stores the ordinal in the historical scalar field. Check
     // admission and reconstruct the private scalar before deriving its public key.
-    auto private_scalar=scalar;
+    auto private_scalar=stride_mapping?stride_mapping->scalar(scalar):scalar;
     if(mode==Mode::Minikeys){
         const auto derived=core::minikey_scalar(core::minikey_text(scalar,*expected));
         if(!derived)throw std::runtime_error("checkpoint minikey failed validity check");
