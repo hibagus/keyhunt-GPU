@@ -1,0 +1,1352 @@
+{
+  "feature": "C23 scalar both-ends batch traversal",
+  "source_commit": "0d2704b6f3ae15d240d9d51a7d8eaeaa14d2f2f4",
+  "previous_acceptance": "a34ab2f8822bd703627d92a4bb1e80a197816c65",
+  "passed": true,
+  "phases": {
+    "contract": "6d71977",
+    "implementation": "cb24cec",
+    "native": "cd16461",
+    "recovery": "88df111",
+    "workers": "fa1c59f",
+    "example": "36bc698",
+    "guides": "0d2704b"
+  },
+  "suites": {
+    "local": {
+      "tests": 172,
+      "seconds": "116",
+      "metadata": {
+        "source_commit": "0d2704b6f3ae15d240d9d51a7d8eaeaa14d2f2f4",
+        "platform": "Linux-5.15.0-191-generic-x86_64-with-glibc2.35",
+        "binaries": {
+          "block_grid_test": "ee4ff54521f408938022d41591b3d7e0ed5a0b2edd8a9467cb2185597e17d949",
+          "bounded_search_probe": "dad2015065b9062a9e268c9ddfaea65f665656ca5b837ace03636e622181af7e",
+          "bsgs_plan_probe": "e518cc88e9f260dbdad58a7116c70cfd6b5f8415c780d8c558e7203bde2c8944",
+          "bsgs_search_test": "f69201ce1e5035cb6231bb21f1fa334a979f22fbf0174f55a6ae078189672b77",
+          "bsgs_table_test": "2a709bec792edbb789c378ba91c4639d0b50e777351298d290b1cd6de8e5638f",
+          "bsgs_tile_probe": "d350044eceab3eee5e3785b1a51be90c107724ae64ca3dc648fcc85c6ad2ec12",
+          "checkpoint_control_driver": "bb245b2a75f870acdef29f6849c4ca4ba6c765ae2ee204a2e5ba87c73f5375bd",
+          "coordinator_bsgs_reverse_test": "90020febaf5ec81423ccc1effdf337bf59d46bc00f7f08b0782a800e1f264871",
+          "coordinator_budget_test": "cf28224b448880ebafd12c59b4299c3a3fe17551493ab26c4121721979edac7c",
+          "coordinator_dispatch_test": "9270a7e4afdf4cb0052689af06d354c16e0ce9917ffffb012dfd7378d14245b3",
+          "coordinator_ethereum_test": "22e0bce1459624c074cef6ce4a173f3faf166f0a113a84cfbcab8e1824aef49c",
+          "coordinator_hash160_test": "aee86f8fc92dc3fa669ffc604835032f7653352eafa13e2fc01b6ae38e96c40b",
+          "coordinator_minikey_reverse_test": "37b19ebe85e99be25d530345dbb06e653bcd66b033248cfff2863d98dad537a4",
+          "coordinator_minikeys_test": "e784908536ac1e70b85dcc41879226107b94915e665d6b70734f75556ee3a718",
+          "coordinator_offline_failures_test": "ff40e9d07ea8adcd0ea25192aa866bea61e747fe3a9ef5028a7c1e14a49900f1",
+          "coordinator_offline_files_test": "c77ba486f35802f6de4416735eff7f5d198070517d1845dc59c8721fe2529cef",
+          "coordinator_offline_test": "170ce35acb3ff91b10207fa46b929859a3ba942482eea01e66d3d13985294503",
+          "coordinator_orbits_test": "5a434f70fc3c42164c43317aa317de6ca63acdd8b7a3496afde0c08cc6264e39",
+          "coordinator_recovery_test": "a1c84fa1804b040e28afffc391b2bcab264d45e1dc06b75b6cf0d75d91ea4bed",
+          "coordinator_registry_test": "9dba1d84307093e882c13f835769ce861685b6d67282c6ff0afd2dbbe33055b3",
+          "coordinator_reverse_test": "5fad3b4b4c8be9b38f336bd66af2a0e0473d6c28974c39d1a61dbc6c432b7e5c",
+          "coordinator_strides_test": "57af3176720955fe07f6a2b7e8e27a23c4965b58d89ddebecb7b72caef88053e",
+          "coordinator_sync_failures_test": "d24d6803a8e2dbf7f09a2a75d9c55e0b2e1f0d3f98e321759d64c15f5e2634a5",
+          "coordinator_sync_test": "2e3f415df8fb57a5f09c02d8b3753e12104e7e3f8877aa5f9e050d1a6c45ce84",
+          "coordinator_vanity_test": "037013823e20152ff472074602a54ec7832602baf27a0a9a71def76ecdc31f85",
+          "coordinator_worker_failures_test": "5bf08fece476dfe19cb0354b50c556c7823eab2b49883c56b0e1a957dc7f3001",
+          "coordinator_worker_test": "bae00f28d905a65310411294e2ce34df8414a11ee315e53b5009e311168cb164",
+          "cpu_arithmetic_probe": "1ed107bf92e9a57c8e7335489766280e297aca692be3714b95fb5c84d6e36bf1",
+          "ethereum_search_test": "1ae254fa85c8a8e7f654c9e073b0e0bcbac87e64124d1ada914463db5ca41b65",
+          "exact_range_test": "59ef8e660afc005c264963d828658bc57b1ea49ef6e464dffcf7ee9f6ca29a55",
+          "hash160_search_test": "997bb7359ec425e7bb780de15652706810b96748f893d4a7a7e6bb57411989ab",
+          "hip_discovery_test": "6b75c743bc371d8b6a7eec2d48bef1ffa191187f2b03be9cd8475711295d96f7",
+          "keyhunt": "4454a97ee35fdd5275df2f4ca25796bb4b486fd15ccc125028d6b7843f69a529",
+          "keyhunt-coordinator": "ae2183b0fe08607dca8fedc5dac3e57397d95880616f45de1a1c7f26578b909f",
+          "keyhunt-worker": "c6c92aade56bc60dcae300056ce8edf25fc8084077ce9b8284acd41ab485769c",
+          "minikey_order_probe": "0a502c97781552780dde809ca3dd9133748faa9103bd9c192e16d0ab373f95d0",
+          "minikey_random_window_probe": "8981cf7c6a70c6a4c38a240acf06d1bdcdfedaea4fd9049b2c11bf40cbe9f0c0",
+          "minikey_search_test": "1271419a476a675e49913275ae060467e29f41cf84cdf6d0f92700cd9b8b9169",
+          "portable_arithmetic_probe": "d010166424337b90febed782b49465036ae7f07584b8e2c5993428ceb4d47081",
+          "portable_base58_probe": "44e1671def64527d86f73acad0f6ca109383ff7ea7609e3b6c6a0426ef6afbe2",
+          "portable_glv_probe": "e5c61b4fcaf12587e3eec49439c20ee86e51f37ebb7930c8616188c71e90b5c0",
+          "portable_hash160_probe": "594be2d59b1366c1ae1a435251ea5635f1920e325e27cad6418c212a4317b7a6",
+          "portable_keccak_probe": "06264f2008fdb21f11f90a93ec13295792a55bd536ffcdf888b76a5f2bfa38aa",
+          "portable_minikey_probe": "6f26de0fae45c95b2ed34fb5cb355e4e62ed2e91a3a0a064a37b274fc96e0e30",
+          "portable_stride_probe": "82a59e1a4012dc15dc6f7f8b4ed33eeaf9628abb7eb76c1980b7aeae921160a9",
+          "range_probe": "694bd8e12c28c25c8be0ff7decf7fc36f5ab10e7cb28ba6cd192dd0470d74920",
+          "result_verifier_test": "c0471b6cf429702cf549bce670ab5e0bb48ea25a855c9ba2f9f04cf2b7d59189",
+          "scalar_batch_probe": "ad05857f8c4a82a05a551e0a1a4e58f6b686c97c4f49db6a8645751fa4158f0f",
+          "scalar_orbit_probe": "b01b21f954bc06568f6bfa168d2a837a12740083f5fea9d466b23756d8930e01",
+          "scalar_orbit_test": "0759934a2278e41dab775321593575e47f9c6d4bab6eb4c24528706690e39d7a",
+          "scalar_reverse_test": "98b3d33234fcaadfb23b15c4c6436847b89e002d0d3d3fb74c965a9deaeada19",
+          "scalar_stride_probe": "1b14003517ac130422a752cbad1b5934d7f9af0c4882011eb2c10519fa87bafa",
+          "scalar_stride_test": "c053fca143fc4e3150bcb01ce84cf07068c527860762d6ed9bf083e7e55b9205",
+          "secp256k1_oracle": "8dc92137c49502e3de62cb20a750d1c7f0bd84294ae77c5ccc9c9dffd20763c6",
+          "storage_bsgs_both_ends_test": "e468fe005f8d24896c915f4e8bf099052cbfc407e65c7e816fba05d132db0bf8",
+          "storage_bsgs_dance_test": "4978443fb71bebddcb5e75f23d312bc25dd51a81ed7e5822910a39d18bbb16fe",
+          "storage_bsgs_random_window_test": "21de33694f0dc382a5fa42e160a455d569ebb9c0b9f392e01c72fc8ab030def2",
+          "storage_bsgs_reverse_test": "6f03529141dfd28261d6c085ff836b5914fa59cc2c62579583846d8183abc456",
+          "storage_checkpoint_concurrent_test": "859d476bc6d93d7d97b39714fd3cd79da5088cd8029186c51e29d6821db86730",
+          "storage_checkpoint_control_test": "1369455cfc666508fa388dc7a33670b934442157463ba9cb0711333f3ef0126e",
+          "storage_checkpoint_failures_test": "5aa5c969647fdc99d57d59c4f4077158fa8afe6a881b0e7ef7a827e5585d4c30",
+          "storage_checkpoint_test": "165c0f144d32bd5c1b46bf337a07ae3f75efdc97caa5253443c1ef881376625a",
+          "storage_concurrency_test": "9e0194cbf366a6a786482c825f48e15c2eb52a3aaef0c79fc5d6e7a49f62477a",
+          "storage_database_test": "4a87536aff0128c5a578d70ee03c057dc5d9a68d5d69e1fcada45e0836a60914",
+          "storage_ethereum_checkpoint_test": "0d99b2f167d75d4d6bd1268a30ca072699707376c0e8edda9369e0b62d1ccacf",
+          "storage_hash160_checkpoint_test": "d492ed47138fda014938b545828e3646fe865d3040ff3b3872d83a3cf71609a7",
+          "storage_journal_test": "8602a8332d1ca592ee49edad41abb7c654969e7750b02efb58c7222cfdacb02c",
+          "storage_minikey_both_ends_test": "bedd5d3b1bc511270190d64a5a81aef2df6488726b29e03efa080d832ffc3878",
+          "storage_minikey_checkpoint_test": "75642890f6595a0933e195f16e672ba3b8f9721971b176dd9d16421a1124f726",
+          "storage_minikey_dance_test": "cb14d08060a6435e8697730bf29ae13bc24345343ce5577f5941a3a0a85c7d29",
+          "storage_minikey_random_window_test": "a44b9de8b7ae601cb45d4095bea54215c7cca7cb1a890429199bf96163cbe603",
+          "storage_minikey_reverse_test": "1bbf8d2972c807c0341240e3860ef97824c24c5f8a62d791ace9b919c29c4241",
+          "storage_orbit_checkpoint_test": "ca2448e3c16bd2e459a417c802d15fdbb8918766e0c018172de08ed220f4a2e1",
+          "storage_reverse_checkpoint_test": "3eda9a8584829adc8d4feacc3aed49c7dbb493af2b7becb2e27a4f4700df1cda",
+          "storage_scalar_both_ends_test": "e3fcfd81fe2ad3aa139890132b82d0f5b4c40d992ccb842cc8be54cf4adf450b",
+          "storage_stride_checkpoint_test": "6d41129d2b404918df6a862d308d855eea186c1bceb5d2e685b14334c9a2a310",
+          "storage_vanity_checkpoint_test": "bc21ffccb3b95edbc2fb573fbd883e0a85fa45b075b7ce2b43fe3b50e090c362",
+          "vanity_search_test": "92f9ed5693d2653a4bff2e6313d2dd504462f100464027430e6e78cd20a9e604",
+          "work_unit_test": "649f118b16e43c83dff081c9ad8ead1f7e751525e821c3447a93d8994566fa6b",
+          "xpoint_search_test": "331885020004779bd73536944b4e583bda06036438b46d6adb330997deb9cf36"
+        },
+        "configuration": {
+          "CMAKE_BUILD_TYPE": "Release",
+          "CMAKE_CXX_COMPILER": "/usr/bin/c++",
+          "KEYHUNT_ENABLE_COORDINATOR": "ON",
+          "KEYHUNT_ENABLE_CUDA": "OFF",
+          "KEYHUNT_ENABLE_HIP": "OFF",
+          "KEYHUNT_ENABLE_HTTPS_WORKER": "ON",
+          "KEYHUNT_ENABLE_LTO": "ON",
+          "KEYHUNT_ENABLE_SANITIZERS": "OFF",
+          "KEYHUNT_GFX942_CARRY": "OFF"
+        },
+        "compilers": {
+          "/usr/bin/c++": "c++ (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0\nCopyright (C) 2021 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
+        }
+      },
+      "results": [
+        {
+          "name": "gpu_benchmark_metrics",
+          "seconds": "0.0440538"
+        },
+        {
+          "name": "gpu_benchmark_pairs",
+          "seconds": "0.052627"
+        },
+        {
+          "name": "oracle_selftest",
+          "seconds": "0.9302"
+        },
+        {
+          "name": "cpu_field_oracle",
+          "seconds": "0.252897"
+        },
+        {
+          "name": "cpu_point_oracle",
+          "seconds": "0.695174"
+        },
+        {
+          "name": "bounded_search_oracle",
+          "seconds": "1.65069"
+        },
+        {
+          "name": "portable_field_oracle",
+          "seconds": "0.345953"
+        },
+        {
+          "name": "portable_point_oracle",
+          "seconds": "1.30351"
+        },
+        {
+          "name": "xpoint_search_contract",
+          "seconds": "0.102713"
+        },
+        {
+          "name": "xpoint_cli",
+          "seconds": "0.0807532"
+        },
+        {
+          "name": "hash160_search_contract",
+          "seconds": "0.159935"
+        },
+        {
+          "name": "portable_hash160_oracle",
+          "seconds": "1.02449"
+        },
+        {
+          "name": "hash160_cli",
+          "seconds": "0.107157"
+        },
+        {
+          "name": "ethereum_search_contract",
+          "seconds": "0.138514"
+        },
+        {
+          "name": "portable_keccak_oracle",
+          "seconds": "0.0502721"
+        },
+        {
+          "name": "ethereum_cli",
+          "seconds": "0.0814445"
+        },
+        {
+          "name": "vanity_search_contract",
+          "seconds": "0.0892656"
+        },
+        {
+          "name": "portable_base58_oracle",
+          "seconds": "0.0427339"
+        },
+        {
+          "name": "vanity_cli",
+          "seconds": "0.0835696"
+        },
+        {
+          "name": "minikey_search_contract",
+          "seconds": "0.0459913"
+        },
+        {
+          "name": "portable_minikey_oracle",
+          "seconds": "0.0519604"
+        },
+        {
+          "name": "minikeys_cli",
+          "seconds": "0.123405"
+        },
+        {
+          "name": "minikeys_reverse_cli",
+          "seconds": "0.126244"
+        },
+        {
+          "name": "minikey_order_oracle",
+          "seconds": "1.4817"
+        },
+        {
+          "name": "minikey_reverse_documented_example",
+          "seconds": "0.1303"
+        },
+        {
+          "name": "minikeys_both_ends_cli",
+          "seconds": "0.123421"
+        },
+        {
+          "name": "minikey_both_ends_documented_example",
+          "seconds": "0.12688"
+        },
+        {
+          "name": "minikeys_dance_cli",
+          "seconds": "0.12416"
+        },
+        {
+          "name": "minikey_dance_documented_example",
+          "seconds": "0.128445"
+        },
+        {
+          "name": "minikey_random_window_oracle",
+          "seconds": "4.54118"
+        },
+        {
+          "name": "minikeys_random_window_cli",
+          "seconds": "0.127407"
+        },
+        {
+          "name": "minikey_random_window_documented_example",
+          "seconds": "0.129303"
+        },
+        {
+          "name": "scalar_stride_contract",
+          "seconds": "0.0508447"
+        },
+        {
+          "name": "scalar_stride_oracle",
+          "seconds": "0.0757551"
+        },
+        {
+          "name": "portable_stride_oracle",
+          "seconds": "0.059316"
+        },
+        {
+          "name": "scalar_strides_cli",
+          "seconds": "0.633783"
+        },
+        {
+          "name": "scalar_reverse_contract",
+          "seconds": "0.0843759"
+        },
+        {
+          "name": "scalar_reverse_oracle",
+          "seconds": "0.076447"
+        },
+        {
+          "name": "portable_reverse_oracle",
+          "seconds": "0.0604484"
+        },
+        {
+          "name": "scalar_reverse_cli",
+          "seconds": "0.65545"
+        },
+        {
+          "name": "scalar_batch_oracle",
+          "seconds": "0.573921"
+        },
+        {
+          "name": "scalar_both_ends_strides_forward_cli",
+          "seconds": "1.09907"
+        },
+        {
+          "name": "scalar_both_ends_orbits_forward_cli",
+          "seconds": "0.479359"
+        },
+        {
+          "name": "scalar_both_ends_strides_reverse_cli",
+          "seconds": "1.18796"
+        },
+        {
+          "name": "scalar_both_ends_orbits_reverse_cli",
+          "seconds": "0.468728"
+        },
+        {
+          "name": "scalar_both_ends_documented_example",
+          "seconds": "0.110665"
+        },
+        {
+          "name": "portable_glv_oracle",
+          "seconds": "0.186491"
+        },
+        {
+          "name": "glv_forward_cli",
+          "seconds": "0.496387"
+        },
+        {
+          "name": "glv_reverse_cli",
+          "seconds": "0.472894"
+        },
+        {
+          "name": "scalar_orbit_contract",
+          "seconds": "0.0820678"
+        },
+        {
+          "name": "scalar_orbit_oracle",
+          "seconds": "0.200696"
+        },
+        {
+          "name": "portable_orbit_oracle",
+          "seconds": "0.40817"
+        },
+        {
+          "name": "scalar_orbit_forward_cli",
+          "seconds": "0.369948"
+        },
+        {
+          "name": "scalar_orbit_reverse_cli",
+          "seconds": "0.370632"
+        },
+        {
+          "name": "orbit_documented_example",
+          "seconds": "0.111079"
+        },
+        {
+          "name": "bsgs_table_contract",
+          "seconds": "0.309471"
+        },
+        {
+          "name": "bsgs_table_oracle",
+          "seconds": "1.43147"
+        },
+        {
+          "name": "bsgs_table_devices",
+          "seconds": "0.0822545"
+        },
+        {
+          "name": "bsgs_search_contract",
+          "seconds": "0.137246"
+        },
+        {
+          "name": "bsgs_cli",
+          "seconds": "0.0864443"
+        },
+        {
+          "name": "bsgs_reverse_tile_oracle",
+          "seconds": "0.0754911"
+        },
+        {
+          "name": "bsgs_reverse_search_cli",
+          "seconds": "0.160572"
+        },
+        {
+          "name": "bsgs_reverse_documented_example",
+          "seconds": "0.172268"
+        },
+        {
+          "name": "bsgs_both_ends_plan_oracle",
+          "seconds": "0.182368"
+        },
+        {
+          "name": "bsgs_both_ends_search_cli",
+          "seconds": "0.128037"
+        },
+        {
+          "name": "bsgs_both_ends_documented_example",
+          "seconds": "0.171708"
+        },
+        {
+          "name": "bsgs_dance_plan_oracle",
+          "seconds": "0.108323"
+        },
+        {
+          "name": "bsgs_dance_search_cli",
+          "seconds": "0.124536"
+        },
+        {
+          "name": "bsgs_dance_documented_example",
+          "seconds": "0.172366"
+        },
+        {
+          "name": "bsgs_random_window_plan_oracle",
+          "seconds": "3.86066"
+        },
+        {
+          "name": "bsgs_random_window_search_cli",
+          "seconds": "0.181538"
+        },
+        {
+          "name": "bsgs_random_window_documented_example",
+          "seconds": "0.178213"
+        },
+        {
+          "name": "storage_database",
+          "seconds": "0.0386007"
+        },
+        {
+          "name": "storage_journal",
+          "seconds": "0.60228"
+        },
+        {
+          "name": "storage_concurrency",
+          "seconds": "0.187901"
+        },
+        {
+          "name": "state_cli",
+          "seconds": "0.305976"
+        },
+        {
+          "name": "storage_checkpoint",
+          "seconds": "3.58887"
+        },
+        {
+          "name": "storage_checkpoint_failures",
+          "seconds": "2.78225"
+        },
+        {
+          "name": "checkpoint_cli",
+          "seconds": "2.0302"
+        },
+        {
+          "name": "storage_checkpoint_control",
+          "seconds": "2.50325"
+        },
+        {
+          "name": "checkpoint_controls",
+          "seconds": "4.21361"
+        },
+        {
+          "name": "storage_checkpoint_concurrent",
+          "seconds": "0.205727"
+        },
+        {
+          "name": "storage_hash160_checkpoint",
+          "seconds": "0.948682"
+        },
+        {
+          "name": "storage_ethereum_checkpoint",
+          "seconds": "0.911633"
+        },
+        {
+          "name": "storage_vanity_checkpoint",
+          "seconds": "0.936775"
+        },
+        {
+          "name": "checkpoint_vanity_cli",
+          "seconds": "2.70343"
+        },
+        {
+          "name": "storage_minikey_checkpoint",
+          "seconds": "2.66509"
+        },
+        {
+          "name": "checkpoint_minikeys_cli",
+          "seconds": "1.74977"
+        },
+        {
+          "name": "storage_stride_checkpoint",
+          "seconds": "2.16105"
+        },
+        {
+          "name": "checkpoint_strides_cli",
+          "seconds": "0.682273"
+        },
+        {
+          "name": "storage_reverse_checkpoint",
+          "seconds": "3.26123"
+        },
+        {
+          "name": "checkpoint_reverse_cli",
+          "seconds": "0.89512"
+        },
+        {
+          "name": "checkpoint_glv_forward_cli",
+          "seconds": "0.375267"
+        },
+        {
+          "name": "checkpoint_glv_reverse_cli",
+          "seconds": "0.508008"
+        },
+        {
+          "name": "storage_orbit_checkpoint",
+          "seconds": "3.43093"
+        },
+        {
+          "name": "checkpoint_orbit_forward_cli",
+          "seconds": "0.767223"
+        },
+        {
+          "name": "checkpoint_orbit_reverse_cli",
+          "seconds": "0.769034"
+        },
+        {
+          "name": "storage_bsgs_reverse",
+          "seconds": "0.820609"
+        },
+        {
+          "name": "bsgs_reverse_recovery_cli",
+          "seconds": "0.422845"
+        },
+        {
+          "name": "bsgs_both_ends_recovery_cli",
+          "seconds": "0.24997"
+        },
+        {
+          "name": "storage_bsgs_both_ends",
+          "seconds": "2.08903"
+        },
+        {
+          "name": "bsgs_dance_recovery_cli",
+          "seconds": "0.254312"
+        },
+        {
+          "name": "storage_bsgs_dance",
+          "seconds": "5.58821"
+        },
+        {
+          "name": "storage_minikey_reverse",
+          "seconds": "8.25715"
+        },
+        {
+          "name": "checkpoint_minikeys_reverse_cli",
+          "seconds": "1.75405"
+        },
+        {
+          "name": "checkpoint_minikeys_both_ends_cli",
+          "seconds": "1.74483"
+        },
+        {
+          "name": "storage_minikey_both_ends",
+          "seconds": "3.62531"
+        },
+        {
+          "name": "checkpoint_minikeys_dance_cli",
+          "seconds": "1.74731"
+        },
+        {
+          "name": "storage_minikey_dance",
+          "seconds": "4.15072"
+        },
+        {
+          "name": "bsgs_random_window_recovery_cli",
+          "seconds": "0.259654"
+        },
+        {
+          "name": "storage_bsgs_random_window",
+          "seconds": "7.0095"
+        },
+        {
+          "name": "checkpoint_minikeys_random_window_cli",
+          "seconds": "1.73987"
+        },
+        {
+          "name": "storage_minikey_random_window",
+          "seconds": "18.2859"
+        },
+        {
+          "name": "storage_scalar_both_ends",
+          "seconds": "79.8062"
+        },
+        {
+          "name": "checkpoint_scalar_both_ends_forward",
+          "seconds": "0.815001"
+        },
+        {
+          "name": "checkpoint_scalar_both_ends_reverse",
+          "seconds": "0.772091"
+        },
+        {
+          "name": "coordinator_registry",
+          "seconds": "0.111404"
+        },
+        {
+          "name": "coordinator_tls",
+          "seconds": "0.557977"
+        },
+        {
+          "name": "coordinator_sync",
+          "seconds": "0.319841"
+        },
+        {
+          "name": "coordinator_sync_failures",
+          "seconds": "0.601145"
+        },
+        {
+          "name": "coordinator_worker",
+          "seconds": "0.374369"
+        },
+        {
+          "name": "coordinator_worker_failures",
+          "seconds": "1.13121"
+        },
+        {
+          "name": "coordinator_https_worker",
+          "seconds": "0.489927"
+        },
+        {
+          "name": "coordinator_recovery",
+          "seconds": "0.399892"
+        },
+        {
+          "name": "coordinator_local_launcher",
+          "seconds": "0.612668"
+        },
+        {
+          "name": "coordinator_budget",
+          "seconds": "0.359273"
+        },
+        {
+          "name": "coordinator_dispatch",
+          "seconds": "0.189376"
+        },
+        {
+          "name": "coordinator_supervisor",
+          "seconds": "12.6073"
+        },
+        {
+          "name": "coordinator_calibration",
+          "seconds": "0.0381623"
+        },
+        {
+          "name": "coordinator_offline_files",
+          "seconds": "0.0472874"
+        },
+        {
+          "name": "coordinator_offline",
+          "seconds": "1.40112"
+        },
+        {
+          "name": "coordinator_offline_failures",
+          "seconds": "2.05357"
+        },
+        {
+          "name": "coordinator_offline_cli",
+          "seconds": "2.10114"
+        },
+        {
+          "name": "coordinator_hash160",
+          "seconds": "0.300489"
+        },
+        {
+          "name": "coordinator_ethereum",
+          "seconds": "0.311911"
+        },
+        {
+          "name": "coordinator_vanity",
+          "seconds": "0.30245"
+        },
+        {
+          "name": "coordinator_minikeys",
+          "seconds": "0.66233"
+        },
+        {
+          "name": "coordinator_strides",
+          "seconds": "1.19563"
+        },
+        {
+          "name": "coordinator_strides_cli",
+          "seconds": "1.2828"
+        },
+        {
+          "name": "coordinator_reverse",
+          "seconds": "1.1842"
+        },
+        {
+          "name": "coordinator_reverse_cli",
+          "seconds": "1.29509"
+        },
+        {
+          "name": "coordinator_glv_forward_cli",
+          "seconds": "1.28152"
+        },
+        {
+          "name": "coordinator_glv_reverse_cli",
+          "seconds": "1.29106"
+        },
+        {
+          "name": "coordinator_orbits",
+          "seconds": "1.27409"
+        },
+        {
+          "name": "coordinator_orbit_forward_cli",
+          "seconds": "1.3214"
+        },
+        {
+          "name": "coordinator_orbit_reverse_cli",
+          "seconds": "1.31053"
+        },
+        {
+          "name": "coordinator_bsgs_reverse",
+          "seconds": "2.70806"
+        },
+        {
+          "name": "coordinator_bsgs_reverse_cli",
+          "seconds": "0.560999"
+        },
+        {
+          "name": "coordinator_bsgs_both_ends_cli",
+          "seconds": "0.564957"
+        },
+        {
+          "name": "coordinator_bsgs_dance_cli",
+          "seconds": "0.557066"
+        },
+        {
+          "name": "coordinator_minikey_reverse_cli",
+          "seconds": "0.883078"
+        },
+        {
+          "name": "coordinator_minikey_reverse",
+          "seconds": "2.89405"
+        },
+        {
+          "name": "coordinator_minikey_both_ends_cli",
+          "seconds": "0.874632"
+        },
+        {
+          "name": "coordinator_minikey_both_ends",
+          "seconds": "1.45482"
+        },
+        {
+          "name": "coordinator_minikey_dance_cli",
+          "seconds": "0.881974"
+        },
+        {
+          "name": "coordinator_minikey_dance",
+          "seconds": "1.45363"
+        },
+        {
+          "name": "coordinator_bsgs_random_window_cli",
+          "seconds": "0.556698"
+        },
+        {
+          "name": "coordinator_bsgs_random_window",
+          "seconds": "0.682749"
+        },
+        {
+          "name": "coordinator_minikey_random_window_cli",
+          "seconds": "0.87453"
+        },
+        {
+          "name": "coordinator_minikey_random_window",
+          "seconds": "1.44996"
+        },
+        {
+          "name": "coordinator_scalar_both_ends",
+          "seconds": "1.18317"
+        },
+        {
+          "name": "coordinator_scalar_both_ends_forward_cli",
+          "seconds": "1.31927"
+        },
+        {
+          "name": "coordinator_scalar_both_ends_reverse_cli",
+          "seconds": "1.32226"
+        },
+        {
+          "name": "hip_discovery_contract",
+          "seconds": "0.135325"
+        },
+        {
+          "name": "backend_cli",
+          "seconds": "0.0610286"
+        },
+        {
+          "name": "exact_range",
+          "seconds": "0.00165981"
+        },
+        {
+          "name": "block_grid",
+          "seconds": "0.0997304"
+        },
+        {
+          "name": "work_unit",
+          "seconds": "0.0617707"
+        },
+        {
+          "name": "range_oracle",
+          "seconds": "1.85842"
+        },
+        {
+          "name": "result_verifier",
+          "seconds": "0.032459"
+        },
+        {
+          "name": "cpu_baseline",
+          "seconds": "28.3887"
+        },
+        {
+          "name": "target_loading",
+          "seconds": "8.51666"
+        }
+      ]
+    },
+    "sanitizer": {
+      "tests": 10,
+      "seconds": "398",
+      "metadata": {
+        "source_commit": "0d2704b6f3ae15d240d9d51a7d8eaeaa14d2f2f4",
+        "platform": "Linux-5.15.0-191-generic-x86_64-with-glibc2.35",
+        "binaries": {
+          "coordinator_orbits_test": "9523fa88fb24c086bbef9c0dd00811ca4d5bd1b3736fdcf683b2b3bc09d90c3b",
+          "coordinator_reverse_test": "19a09db101232c847ba1d8f656957033ed10810d3b0ef1a23e5a30016eca64ff",
+          "coordinator_strides_test": "57c26728a9f107e5e5443584da3798be6cc73a40cd631ba4fec362bc6d5cc23a",
+          "keyhunt": "7682981f8443fd724112a4857b4433e1cc87a7573ccf038496a66317bc0d2def",
+          "keyhunt-coordinator": "3f2a5fe0e860e15b434417edc55c1c7bd29dd6acfbee3e1670b883e844f8ca51",
+          "keyhunt-worker": "412171641e38e0a12fa82f616df6e2a18299dd8c22bca279c1e8b45d9a009426",
+          "scalar_batch_probe": "81453e7fbde3297faf3e8d755c6f2e2760a654f7250df1b01a5f1a3441e1b5bf",
+          "secp256k1_oracle": "fc52fc04fe92fc395fb5a4b71b1afde220e9a4f391fd93348535291b09c3aca2",
+          "storage_orbit_checkpoint_test": "fd3a0427301720279f3b95e82e1a36b5b26f5493d64809a9df55d4820f2c77ac",
+          "storage_reverse_checkpoint_test": "5e15bfd33dd19a301bc90e7963040db7e70cd95083944a6e41087fc4a09c40ca",
+          "storage_scalar_both_ends_test": "558e33128b272b1632c74a4df9a30b7c2e6e3dd652d385ba42ee5f9b65b41ca9",
+          "storage_stride_checkpoint_test": "a49b4624313c199ef9409e9754ea6d195833e160b51fdea30df2cd2d06d9e98c",
+          "work_unit_test": "45c713869969acd1a9b36a04cf78a04af8db867fcf215e9c6c30bf6e8d39c78d"
+        },
+        "configuration": {
+          "CMAKE_BUILD_TYPE": "Debug",
+          "CMAKE_CXX_COMPILER": "/usr/bin/c++",
+          "KEYHUNT_ENABLE_COORDINATOR": "ON",
+          "KEYHUNT_ENABLE_CUDA": "OFF",
+          "KEYHUNT_ENABLE_HIP": "OFF",
+          "KEYHUNT_ENABLE_HTTPS_WORKER": "ON",
+          "KEYHUNT_ENABLE_LTO": "OFF",
+          "KEYHUNT_ENABLE_SANITIZERS": "ON",
+          "KEYHUNT_GFX942_CARRY": "OFF"
+        },
+        "compilers": {
+          "/usr/bin/c++": "c++ (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0\nCopyright (C) 2021 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
+        }
+      },
+      "results": [
+        {
+          "name": "scalar_batch_oracle",
+          "seconds": "17.6673"
+        },
+        {
+          "name": "storage_stride_checkpoint",
+          "seconds": "9.58244"
+        },
+        {
+          "name": "storage_reverse_checkpoint",
+          "seconds": "14.2071"
+        },
+        {
+          "name": "storage_orbit_checkpoint",
+          "seconds": "20.4325"
+        },
+        {
+          "name": "storage_scalar_both_ends",
+          "seconds": "384.672"
+        },
+        {
+          "name": "coordinator_strides",
+          "seconds": "5.18432"
+        },
+        {
+          "name": "coordinator_reverse",
+          "seconds": "5.15243"
+        },
+        {
+          "name": "coordinator_orbits",
+          "seconds": "6.22183"
+        },
+        {
+          "name": "coordinator_scalar_both_ends",
+          "seconds": "5.14016"
+        },
+        {
+          "name": "work_unit",
+          "seconds": "0.891564"
+        }
+      ]
+    },
+    "hip": {
+      "tests": 29,
+      "seconds": "582",
+      "metadata": {
+        "source_commit": "0d2704b6f3ae15d240d9d51a7d8eaeaa14d2f2f4",
+        "platform": "Linux-5.15.0-191-generic-x86_64-with-glibc2.35",
+        "binaries": {
+          "coordinator_orbits_test": "5a434f70fc3c42164c43317aa317de6ca63acdd8b7a3496afde0c08cc6264e39",
+          "coordinator_reverse_test": "5fad3b4b4c8be9b38f336bd66af2a0e0473d6c28974c39d1a61dbc6c432b7e5c",
+          "coordinator_strides_test": "57af3176720955fe07f6a2b7e8e27a23c4965b58d89ddebecb7b72caef88053e",
+          "hip_reverse_executor_test": "316a7784c4f3add836f8500221a3c6e06517749edeebe67e7d4767a28fe88723",
+          "hip_stride_executor_test": "ab26e84f4621cd93a68a34eacb000e1059ad24744a6afdc9951db726fb0ffcac",
+          "hip_xpoint_executor_test": "06e62e53469d9d97ff61d85309be27832758cc2a1f6cfe46b5b333f22e029b34",
+          "keyhunt": "863e4af62d03e099c2ca7cb331dc8b01684aa574817ff1da58f0eceb837419a2",
+          "keyhunt-coordinator": "ae2183b0fe08607dca8fedc5dac3e57397d95880616f45de1a1c7f26578b909f",
+          "keyhunt-worker": "bc25dabd5886b53a0daf2bea33916475ef55a7b86c440f44252849759bac941d",
+          "scalar_batch_probe": "ad05857f8c4a82a05a551e0a1a4e58f6b686c97c4f49db6a8645751fa4158f0f",
+          "secp256k1_oracle": "8dc92137c49502e3de62cb20a750d1c7f0bd84294ae77c5ccc9c9dffd20763c6",
+          "storage_orbit_checkpoint_test": "ca2448e3c16bd2e459a417c802d15fdbb8918766e0c018172de08ed220f4a2e1",
+          "storage_reverse_checkpoint_test": "3eda9a8584829adc8d4feacc3aed49c7dbb493af2b7becb2e27a4f4700df1cda",
+          "storage_scalar_both_ends_test": "e3fcfd81fe2ad3aa139890132b82d0f5b4c40d992ccb842cc8be54cf4adf450b",
+          "storage_stride_checkpoint_test": "6d41129d2b404918df6a862d308d855eea186c1bceb5d2e685b14334c9a2a310",
+          "work_unit_test": "649f118b16e43c83dff081c9ad8ead1f7e751525e821c3447a93d8994566fa6b"
+        },
+        "configuration": {
+          "CMAKE_BUILD_TYPE": "Release",
+          "CMAKE_CXX_COMPILER": "/usr/bin/c++",
+          "CMAKE_HIP_ARCHITECTURES": "gfx942",
+          "CMAKE_HIP_COMPILER": "/opt/rocm/core-10.0/lib/llvm/bin/clang++",
+          "KEYHUNT_ENABLE_COORDINATOR": "ON",
+          "KEYHUNT_ENABLE_CUDA": "OFF",
+          "KEYHUNT_ENABLE_HIP": "ON",
+          "KEYHUNT_ENABLE_HTTPS_WORKER": "ON",
+          "KEYHUNT_ENABLE_LTO": "ON",
+          "KEYHUNT_ENABLE_SANITIZERS": "OFF",
+          "KEYHUNT_GFX942_CARRY": "ON"
+        },
+        "compilers": {
+          "/opt/rocm/core-10.0/lib/llvm/bin/clang++": "AMD clang version 23.0.0git (https://github.com/ROCm/llvm-project.git 8f497e0992fb7513f7f78a6f6b6f1056c375e961)\nTarget: x86_64-unknown-linux-gnu\nThread model: posix\nInstalledDir: /opt/rocm/core-10.0/lib/llvm/bin",
+          "/usr/bin/c++": "c++ (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0\nCopyright (C) 2021 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
+        }
+      },
+      "results": [
+        {
+          "name": "scalar_strides_cli",
+          "seconds": "39.3558"
+        },
+        {
+          "name": "hip_stride_executor",
+          "seconds": "0.431714"
+        },
+        {
+          "name": "scalar_reverse_cli",
+          "seconds": "42.8327"
+        },
+        {
+          "name": "hip_reverse_executor",
+          "seconds": "0.467611"
+        },
+        {
+          "name": "scalar_batch_oracle",
+          "seconds": "0.57302"
+        },
+        {
+          "name": "scalar_both_ends_strides_forward_cli",
+          "seconds": "66.632"
+        },
+        {
+          "name": "scalar_both_ends_orbits_forward_cli",
+          "seconds": "32.2561"
+        },
+        {
+          "name": "scalar_both_ends_strides_reverse_cli",
+          "seconds": "69.5936"
+        },
+        {
+          "name": "scalar_both_ends_orbits_reverse_cli",
+          "seconds": "29.9174"
+        },
+        {
+          "name": "scalar_both_ends_documented_example",
+          "seconds": "1.17567"
+        },
+        {
+          "name": "glv_forward_cli",
+          "seconds": "27.8171"
+        },
+        {
+          "name": "glv_reverse_cli",
+          "seconds": "28.0211"
+        },
+        {
+          "name": "hip_glv_xpoint_executor",
+          "seconds": "0.550332"
+        },
+        {
+          "name": "scalar_orbit_forward_cli",
+          "seconds": "27.7027"
+        },
+        {
+          "name": "scalar_orbit_reverse_cli",
+          "seconds": "25.9389"
+        },
+        {
+          "name": "storage_stride_checkpoint",
+          "seconds": "2.15682"
+        },
+        {
+          "name": "storage_reverse_checkpoint",
+          "seconds": "3.25953"
+        },
+        {
+          "name": "storage_orbit_checkpoint",
+          "seconds": "3.4301"
+        },
+        {
+          "name": "storage_scalar_both_ends",
+          "seconds": "79.8815"
+        },
+        {
+          "name": "checkpoint_scalar_both_ends_forward",
+          "seconds": "74.244"
+        },
+        {
+          "name": "checkpoint_scalar_both_ends_reverse",
+          "seconds": "74.409"
+        },
+        {
+          "name": "checkpoint_scalar_both_ends_pause",
+          "seconds": "10.2192"
+        },
+        {
+          "name": "coordinator_strides",
+          "seconds": "1.19058"
+        },
+        {
+          "name": "coordinator_reverse",
+          "seconds": "1.18563"
+        },
+        {
+          "name": "coordinator_orbits",
+          "seconds": "1.28025"
+        },
+        {
+          "name": "coordinator_scalar_both_ends",
+          "seconds": "1.18459"
+        },
+        {
+          "name": "coordinator_scalar_both_ends_forward_cli",
+          "seconds": "15.7269"
+        },
+        {
+          "name": "coordinator_scalar_both_ends_reverse_cli",
+          "seconds": "15.6869"
+        },
+        {
+          "name": "work_unit",
+          "seconds": "0.0410275"
+        }
+      ]
+    },
+    "cuda": {
+      "tests": 29,
+      "seconds": "3997",
+      "metadata": {
+        "source_commit": "0d2704b6f3ae15d240d9d51a7d8eaeaa14d2f2f4",
+        "platform": "Linux-5.15.0-194-generic-x86_64-with-glibc2.35",
+        "binaries": {
+          "coordinator_orbits_test": "87c0191035876302e303fe188a33a8ce563089aa5214b464c285a2dabff18616",
+          "coordinator_reverse_test": "0d00e44ec04da49375619e1449aefb7e9da56fd3715eda9ac90d8c45afb37305",
+          "coordinator_strides_test": "abca37436ef9b541fe904ca10f8fd97aaf4a5357c10937c8c69fc573483a1b6a",
+          "cuda_reverse_executor_test": "d8edbbbb846a7bad7234cd006d99f16403c8fb72ba152e02095a76a5c52fc711",
+          "cuda_stride_executor_test": "f55e56dad22f3c5e7512fba3039277544e155ccbc302d6c562b47a62a51c870e",
+          "cuda_xpoint_executor_test": "6af07c683743c5623b2d72d524d390146b7ae46e18acce6ee0fb466a06c9a21f",
+          "keyhunt": "bcc5aa90e3ab92af06bcdc770b83befe70a9dfa7222ca3918976af3e1d20d03d",
+          "keyhunt-coordinator": "f3c8bf9c149f51aea13babe86939d2220b7fe5b02a2fbef38a21c41aaa4df65e",
+          "keyhunt-worker": "6f2379b0e61f7a8c53b60109830a3d3915722869d1abe23b8fc26be4090bbdde",
+          "scalar_batch_probe": "c4f72ac5d57a236bbe7cbc1c4841b18ddd2dfa23796d180d99224a395f7be9f8",
+          "secp256k1_oracle": "039bdb67a9ec9ca522b193385033bb578e133ecd300ba32da8a550299c07e5e0",
+          "storage_orbit_checkpoint_test": "d48cff42c374939b2a7ee03abe7a2d86b56b560660dface34ba7db53cb598840",
+          "storage_reverse_checkpoint_test": "96db89674a84ff78703cd8300d99c1ed3a6ec204043b7c4af8441d248645a2ef",
+          "storage_scalar_both_ends_test": "45e1befa176249e7c4cb13d46ac22fda3ef2fa2ad4bf3aba0633ce256b9d6568",
+          "storage_stride_checkpoint_test": "21e7f78722be766a3d4bd78489067a725e2a8381f1e723ac5cc03be5903ec86b",
+          "work_unit_test": "97b90583cc74c291937e016e64278a9d39cf9161db486114fa58f91c90260be7"
+        },
+        "configuration": {
+          "CMAKE_BUILD_TYPE": "Release",
+          "CMAKE_CUDA_ARCHITECTURES": "90",
+          "CMAKE_CUDA_COMPILER": "/usr/local/cuda/bin/nvcc",
+          "CMAKE_CXX_COMPILER": "/usr/bin/c++",
+          "KEYHUNT_ENABLE_COORDINATOR": "ON",
+          "KEYHUNT_ENABLE_CUDA": "ON",
+          "KEYHUNT_ENABLE_HIP": "OFF",
+          "KEYHUNT_ENABLE_HTTPS_WORKER": "ON",
+          "KEYHUNT_ENABLE_LTO": "ON",
+          "KEYHUNT_ENABLE_SANITIZERS": "OFF",
+          "KEYHUNT_GFX942_CARRY": "OFF"
+        },
+        "compilers": {
+          "/usr/bin/c++": "c++ (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0\nCopyright (C) 2021 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.",
+          "/usr/local/cuda/bin/nvcc": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2026 NVIDIA Corporation\nBuilt on Tue_Jun_09_02:43:40_PM_PDT_2026\nCuda compilation tools, release 13.3, V13.3.73\nBuild cuda_13.3.r13.3/compiler.38244171_0"
+        }
+      },
+      "results": [
+        {
+          "name": "scalar_strides_cli",
+          "seconds": "363.944"
+        },
+        {
+          "name": "cuda_stride_executor",
+          "seconds": "3.21023"
+        },
+        {
+          "name": "scalar_reverse_cli",
+          "seconds": "388.31"
+        },
+        {
+          "name": "cuda_reverse_executor",
+          "seconds": "3.20682"
+        },
+        {
+          "name": "scalar_batch_oracle",
+          "seconds": "0.619858"
+        },
+        {
+          "name": "scalar_both_ends_strides_forward_cli",
+          "seconds": "640.471"
+        },
+        {
+          "name": "scalar_both_ends_orbits_forward_cli",
+          "seconds": "332.802"
+        },
+        {
+          "name": "scalar_both_ends_strides_reverse_cli",
+          "seconds": "602.537"
+        },
+        {
+          "name": "scalar_both_ends_orbits_reverse_cli",
+          "seconds": "278.096"
+        },
+        {
+          "name": "scalar_both_ends_documented_example",
+          "seconds": "7.25119"
+        },
+        {
+          "name": "glv_forward_cli",
+          "seconds": "232.991"
+        },
+        {
+          "name": "glv_reverse_cli",
+          "seconds": "177.439"
+        },
+        {
+          "name": "cuda_glv_xpoint_executor",
+          "seconds": "7.03017"
+        },
+        {
+          "name": "scalar_orbit_forward_cli",
+          "seconds": "198.458"
+        },
+        {
+          "name": "scalar_orbit_reverse_cli",
+          "seconds": "194.035"
+        },
+        {
+          "name": "storage_stride_checkpoint",
+          "seconds": "2.3287"
+        },
+        {
+          "name": "storage_reverse_checkpoint",
+          "seconds": "3.52313"
+        },
+        {
+          "name": "storage_orbit_checkpoint",
+          "seconds": "3.68679"
+        },
+        {
+          "name": "storage_scalar_both_ends",
+          "seconds": "89.5221"
+        },
+        {
+          "name": "checkpoint_scalar_both_ends_forward",
+          "seconds": "234.899"
+        },
+        {
+          "name": "checkpoint_scalar_both_ends_reverse",
+          "seconds": "241.217"
+        },
+        {
+          "name": "checkpoint_scalar_both_ends_pause",
+          "seconds": "21.392"
+        },
+        {
+          "name": "coordinator_strides",
+          "seconds": "1.32357"
+        },
+        {
+          "name": "coordinator_reverse",
+          "seconds": "1.28505"
+        },
+        {
+          "name": "coordinator_orbits",
+          "seconds": "1.41214"
+        },
+        {
+          "name": "coordinator_scalar_both_ends",
+          "seconds": "1.27829"
+        },
+        {
+          "name": "coordinator_scalar_both_ends_forward_cli",
+          "seconds": "34.8161"
+        },
+        {
+          "name": "coordinator_scalar_both_ends_reverse_cli",
+          "seconds": "33.8871"
+        },
+        {
+          "name": "work_unit",
+          "seconds": "0.0426146"
+        }
+      ]
+    }
+  },
+  "artifacts": {
+    "C23_SCALAR_BOTH_ENDS_ALGORITHMS.json": "e71678345d130e1d1f97db35633d03f793b3f380f4ff2d111ee42113a960d734",
+    "C23_SCALAR_BOTH_ENDS_RECOVERY.json": "1b7e8a006d675c705558f922ac614186855f07612c7cc5574e07f301bded2766",
+    "C23_SCALAR_BOTH_ENDS_WORKERS.json": "6e5e353d02f4e354b5393017b34ece23c16d784e4d5fee25efd2bbc6978711f8",
+    "C23_SCALAR_BOTH_ENDS_EXAMPLES.json": "dbc322b975de29b3c59f326814cf0b9039c0a58f9bc817968fc6988057fa0f54",
+    "C23_SCALAR_BOTH_ENDS_LOGS.tar.gz": "947e9f5c44ddc40f962644c35622870c515062a97876a56d8154d5d4ed49830c"
+  },
+  "raw_files": {
+    "cuda/LastTest.log": "38b228277451e4910b969fdc0e0925b7cabe030e5982d2aa41e33dee74ce2dd1",
+    "cuda/build-metadata.json": "087f98ed8b5b8d5d5a0acdd010ade741ac0d088edaeead3146aca5e3ae614ecd",
+    "cuda/build.log": "6d7ec66005359de5744083d5f795d0bab2ccd358394864ead1353d3362073bd2",
+    "cuda/checkpoint-scalar-both-ends-forward.json": "9bbea131ed8bcf0afd0447c67b2ff51fdaf8c2bf1cb80f249954a5f53bfd668d",
+    "cuda/checkpoint-scalar-both-ends-pause.json": "09c4435cd9b04dd6bb19545e47a5b65778e9d663643d5c95aafa5d17f4518139",
+    "cuda/checkpoint-scalar-both-ends-reverse.json": "a653142cd0e02eb8d19a1d7dcd379e78f5f318bd8203839bfbddc8642b3251d4",
+    "cuda/coordinator-scalar-both-ends-forward.json": "75ba33fdf1beaff60ddc674f3ebc00b0ad2cd4ab48553af6126ecfab5a401d3c",
+    "cuda/coordinator-scalar-both-ends-reverse.json": "70d304975f0160002a8f4c601dd57ce9e9f1e01b9a76edcce29fdf36329bf3d3",
+    "cuda/glv-forward-cli.json": "50dd67768b34df0679361f3eedfe9663d017be7b2a0e4c3f5ae5218e5286bfb4",
+    "cuda/glv-reverse-cli.json": "1f39e9855d914ec4935217104c8c3a8f959a65ff210f0c01a9e50af8427a7265",
+    "cuda/scalar-batch-oracle.json": "93a3a9fb28e5a3094ce40a68bcb16c6bfe70b35914d0f0752cbc354515f8a7b9",
+    "cuda/scalar-both-ends-example.json": "f87d7741bb9e107fa8fe6017da2ddd1bf11437405a3b49637f90950fb4d575b1",
+    "cuda/scalar-both-ends-orbits-forward.json": "9717c11a4837a95ffad520617bb3b3d01637d3d455b782fdf9d75decb79a550f",
+    "cuda/scalar-both-ends-orbits-reverse.json": "611f059c07f2e669c234578b967ae1758a101770b06d3cc80e3d2af7f3513e51",
+    "cuda/scalar-both-ends-strides-forward.json": "4c7080ac601ee3acc76f44861785dbd662a08a304916fcb6104b06255e128036",
+    "cuda/scalar-both-ends-strides-reverse.json": "0c91edf5c5f058c2a4b6f3a861ed80c13e710c52886f7ac584a449a0814c8ca4",
+    "cuda/scalar-orbit-forward-cli.json": "0dda359721cf189cce01f2c2cc4d354aee58c85141de989ddf6efa8d23a76240",
+    "cuda/scalar-orbit-reverse-cli.json": "b41a0bb50ca2d062fdb8847cceae993bbc3487e82fac62e3cb147b40f999db97",
+    "cuda/scalar-reverse-cli-results.json": "f2952e3d29d508740f9cd5dd7e82c77a0fc27c13db58383dd81c869c90cb8fc2",
+    "cuda/scalar-strides-cli-results.json": "6f148437d00ec6d437bb2e375d03e1c0bc27aec91b5b2efd7899773eb5485648",
+    "cuda/selection.json": "a9f483acb0393d47eaf3e2561a2d1a8e23c052bc5505d001933d94431aaaca73",
+    "cuda/tests.log": "084938de8b334cd856eed5cf265ba318fb8418541e651df72c8931bb716ee59c",
+    "cuda/tests.xml": "119555d66f4e45ae2bb2d6b07b030a6cbf667760c1e09fffb7f7c8dd3120cfb9",
+    "hip/LastTest.log": "6a00ba45a9898a950e004f6d822101175b419ead1b10b971541fa93bd384e12b",
+    "hip/build-metadata.json": "15cdeaf67b8a34d8e2c90078cd5393c064d3cb4f4bf2efd3dd1a2882872df48a",
+    "hip/checkpoint-scalar-both-ends-forward.json": "748e63a3c24b9d27b905655c7aaeffdb3acb39bb930c8c0725826474c93dc6fe",
+    "hip/checkpoint-scalar-both-ends-pause.json": "8977f333ae6ef42f8d67126313284ced99bf46e0cce346e5abce9caeaaf8dd46",
+    "hip/checkpoint-scalar-both-ends-reverse.json": "bf46478641c6b7cc934b501d7def6306482bd239375186c7696598bd94fbb039",
+    "hip/coordinator-scalar-both-ends-forward.json": "3484df44d228137812d8137b7db51db21c02fba26cca40047ce12ffd8cd422c4",
+    "hip/coordinator-scalar-both-ends-reverse.json": "cf5578a19fdce791476bb8838c428c0a6da4c820d3e0b3fd22a3bc21c26af8da",
+    "hip/glv-forward-cli.json": "e5f309c3086ea998b5a975f86daee704166b5baef566fa4d4581532b78e6c7f8",
+    "hip/glv-reverse-cli.json": "ab51add9f86395883081886f297a5f51c731adca64ae421944fe0e9db46edfe7",
+    "hip/scalar-batch-oracle.json": "0e0fd6cd8bf7610469d3236e0306c8a7880c3213d64d91293f7ea789297fbbad",
+    "hip/scalar-both-ends-example.json": "730ea8f0317742cf0903123a7d2963b155d897aa14388cef9d7c808c8d387c91",
+    "hip/scalar-both-ends-orbits-forward.json": "b93aae2070aaafefd634dea283eb571df8d2faa17a3c682a48c2de3b6b0b8c37",
+    "hip/scalar-both-ends-orbits-reverse.json": "2e054da63395a3c7040f747a6cb62750c1ce5f10a6ebf3b0c1e4b28c751dd489",
+    "hip/scalar-both-ends-strides-forward.json": "453bd2b3a04a38d4f2791180d5c8821e497b9beefced261a3663b3385f4044f9",
+    "hip/scalar-both-ends-strides-reverse.json": "0c762de841a2887148620fc8476f395c305df974cb26e2aa411b7622dd50a2ab",
+    "hip/scalar-orbit-forward-cli.json": "f121bda1982c92b69fa4f719e788db91154dec6e6281e0b058399a393a587533",
+    "hip/scalar-orbit-reverse-cli.json": "d2c193a20298481b58f48cf8c51d71791a2b8bc73e619e19710cc4303467239d",
+    "hip/scalar-reverse-cli-results.json": "d22c28bd65d38cc5deaade55cdc447b6bc8b11f8702a05daf01766f7a06d3c6f",
+    "hip/scalar-strides-cli-results.json": "d37dfa17462ece16ca7079661c4f51e8e9d1ce100e5a36a25c674ad2d90e47cb",
+    "hip/selection.json": "f16f88ca987bd763058572ecea1c5e05cf631d5a1d979572397dffd6c3ce8c45",
+    "hip/tests.log": "0fb6ff18746816138107e87c3436be27e8519eda6f26b905765a57f2e36753b0",
+    "hip/tests.xml": "9071fe6cc5b038dbfa2ecac3a5962f5231330793ce1122fd935632668a98e6f7",
+    "local/LastTest.log": "47bb6d3a6a886c24cdbc54451e1e9953e10cf07de369c5f96947d57a1e7ed0ff",
+    "local/bsgs-reverse-documented-example.json": "bd305514ddb09839a0f851c180513a618e6b32a8f2a415e81fb3119ed6f83972",
+    "local/bsgs-reverse-recovery-cli.json": "58ed50dc5d07b007e645a7698c40f27645ad04523fbce539c80b56bce9623b27",
+    "local/bsgs-reverse-search-cli.json": "8a0bff5bd396b8744b524722362d223439bed17d37506b1bba97d1dc958f97bb",
+    "local/bsgs-reverse-tile-oracle.json": "96ecf8d0640b7007aade94a38bc33f55371482b260ee0bcc78a3ea64e199cf1b",
+    "local/build-metadata.json": "4a8fd1c39753bd0cf08462c3d25cdda81aca22e81f21b200ca42e4f1be0038a5",
+    "local/checkpoint-glv-forward-cli.json": "6b074fd8767342ca0b0ecff205ebb691a631498a2004a5112775979a2400e7e9",
+    "local/checkpoint-glv-reverse-cli.json": "6ca8fe925920906fc31997e66dd99e9580f7f1c1f333fbb2db86e710077c4bb5",
+    "local/checkpoint-minikeys-reverse-cli.json": "626cd8396165f2bac767cf47ac97409d7a10761816f9a9f276af91e087b8a84a",
+    "local/checkpoint-orbit-forward-cli.json": "020041fc88a988f5426936a85055c6d0d92cbe6ff9d6c656dcb95a7c2027a05e",
+    "local/checkpoint-orbit-reverse-cli.json": "4e22f18f791ef50b06c1c5e108223acacbe7b20c9759507192416abcf8cf6d28",
+    "local/checkpoint-reverse-cli.json": "cbdbbf95f800263177eb96d69909ea50c9580042628c48d4e1ef7220604ec26d",
+    "local/checkpoint-scalar-both-ends-forward.json": "f633fc9add877f80053997aff176f811b08832844c6a4afec44c0b3d6affeecb",
+    "local/checkpoint-scalar-both-ends-reverse.json": "5a77bc01df16c8a9a1543ffe614aab3301aa5e98cb46b873c8dcc982def2b6d6",
+    "local/checkpoint-strides-cli.json": "bd18618a0118c225c8c9db2b8c9bfbb87607de4e5a8717cdfc8558d45c43edc6",
+    "local/coordinator-bsgs-reverse-cli.json": "e12bb638809e470e413dab4a5c6305ee17adac69bc336a1c3d83bf1c6f499a5d",
+    "local/coordinator-glv-forward-cli.json": "31cd1792c97841d708ad9401d808c21480208fc9b41ab5ec9fd16cc0e344c312",
+    "local/coordinator-glv-reverse-cli.json": "3dcfe5d5d87d0efa3bb56c7591c6cb0cd3a22d1c37b53c802d41d11f08c907d9",
+    "local/coordinator-minikey-reverse-cli.json": "357f93e9066a8fddffa91817eaf7e7723fdbb5fb0ab72a76d826206591b17637",
+    "local/coordinator-orbit-forward-cli.json": "4aa602c9966645df9afc3f8ba3ffb845f716417c4afa8e81f7ab796bebf8df1f",
+    "local/coordinator-orbit-reverse-cli.json": "f3f92bb46c886375399f7a25d93ccfa1066044dc72c834fda8c4c7d9a0abeebc",
+    "local/coordinator-reverse-cli.json": "de0d034de11536c2514dd5027bd5ba81bd7bee07c25ed344d90917cfa69ee90b",
+    "local/coordinator-scalar-both-ends-forward.json": "f583dc8b8d70ba57d993e47c7e47c08959c8bf86c6c328564024b9ae3c256b72",
+    "local/coordinator-scalar-both-ends-reverse.json": "3b6ef345c7ef1fb607f7150643e7979f83f401c5da915297f7bdb0a8569afb31",
+    "local/coordinator-strides-cli.json": "bb76a6edd54a5033e03196f9a221e619e46108d6e297929f47a61449d7b48747",
+    "local/docs-check.log": "fa1cac8bde04eb383a0723bd5bfb472f600b7ca6cb96e976fe51741f58e8c637",
+    "local/empty-selection.log": "95fc21d7d512627199914fda50ff6ef775359da4aa9aa386b7ca8f142e57008e",
+    "local/glv-forward-cli.json": "38838afadbe7dc7344b600be171cfb10c2fc126e20ba29fb96b233f53769f15c",
+    "local/glv-reverse-cli.json": "ea372bc4695fd9f98141a155ce9f3caa8a2f25549df34029162bb862823d173c",
+    "local/kh-scalar-both-build.log": "453276fc44f376e3bab5605e8f64468e291eb8ddea5240b48151c08c66aa74f5",
+    "local/kh-scalar-both-build2.log": "ceda2e810aa68e04a576983cb204603801b034078707206bb285bd6c776857e4",
+    "local/kh-scalar-both-build3.log": "0ac0d20dbb527037fc4aab93e8fe13785b4e23e763af172e4de2ae9b6f09e61c",
+    "local/kh-scalar-both-build4.log": "7b6a9061bb0a4a5b1e0b1937812c0add3b1f6798f6c1a818b2947e2dfffb65f3",
+    "local/kh-scalar-both-build5.log": "308d031dc0a5b3d8391aeab87108dc25c07c7901ec8edd437a90597954995051",
+    "local/kh-scalar-both-focused.log": "7104eebdbaf7ebbdba23515925490627bf458dc8306d4385854f0e13ae375279",
+    "local/kh-scalar-both-focused2.log": "8ed85073e4410d238914aa6f0f593eeb5b7b002d9b65fc9c3cd87aa6bfda096a",
+    "local/kh-scalar-both-hip-build.log": "64070a926b88c1485d838cb70089192343a44fbfeb0b7af3fe7ec6d4c59260c4",
+    "local/kh-scalar-both-hip-build2.log": "e33779154a6b29f9c24c75628b1b1f0b25bf634610e9578b769810d2db1177d1",
+    "local/kh-scalar-both-hip-final-build.log": "3ff670b254c7d177ae5c90bceb6b1e35d4fc1b8d06ed00c8e6ac619409f66317",
+    "local/kh-scalar-both-hip-smoke.log": "30b6e1e200c1adb2106490757a74eda12470d55560877a688f62d7063a5f48c4",
+    "local/kh-scalar-both-san-build.log": "c1f2c2777ecc36cbb50e91615cd61de6d1ad1a4a2ca3ffd5a974067cf18647d3",
+    "local/kh-scalar-both-san-final-build.log": "b56aa8d2431add42c1e7da124cd3ff9b5d4e5394813af3b1c6fa404acd109ef0",
+    "local/kh-scalar-both-storage-build.log": "c3601462cedfa03dbdf1fb89f3950bf44df3a527791ba2d3cbee8b9e443fef71",
+    "local/kh-scalar-both-storage-build2.log": "f77016f9203fb0eb023cf89a6a8231c5f8fb28c2fb00e47840d1eca55e858833",
+    "local/kh-scalar-both-storage.log": "07900c31dc9c9721b3e9ca40b16d8ec670f16ec5816e8e73f0a5eb72fe8c8fb0",
+    "local/kh-scalar-both-storage2.log": "9bf64e2ea17308b13e3b93007208d3435dc78169d519918671b15b04d9b9158d",
+    "local/kh_scalar_both_collect.py": "65325a02ed27abb2cd5982bbe1c10b200f06b6fe63607a60d57df27e80bd245c",
+    "local/kh_scalar_both_evidence.py": "7f5910c1de02c969d83d54abdbf11b63152624c19dbf7936ea272f486ad8677c",
+    "local/kh_scalar_both_metadata.py": "aea2bbc2027a394838b02dfd85ede1497564d470329c57496442003b38034645",
+    "local/kh_scalar_both_validate.sh": "eb853f5e9bf00077a091eab2be85c4285817e5d296a76450ca6c1d0ddb27bfac",
+    "local/minikey-reverse-documented-example.json": "0729247d701c7c9be9ba5146cf1bbdb88548143fedb826b1a214987fe9f83e91",
+    "local/minikeys-reverse-cli-results.json": "75e1959671bad02c63c50fdc4eb1afd554a99e8118a0fa6976111392e65dc585",
+    "local/orbit-documented-example.json": "aab0c842846a7df93cbd736f835919a7a392f4ea12230811ac9bbacab5afb799",
+    "local/portable-glv-oracle.json": "8dde11f61bd55b22e26446ef6f264e3dbd0c7ef6b7c2d3c21a15003778106860",
+    "local/portable-orbit-oracle.json": "fc659ac85c68b2dbb9752499fbe13087ecb88b865f359fe30f704598e970eed7",
+    "local/portable-reverse-oracle.json": "ebe64c65854fd537821d3b4b4f6adb5fd2e62679da3486b49db6c4599fd62b53",
+    "local/portable-stride-oracle.json": "ebe64c65854fd537821d3b4b4f6adb5fd2e62679da3486b49db6c4599fd62b53",
+    "local/scalar-batch-oracle.json": "0e0fd6cd8bf7610469d3236e0306c8a7880c3213d64d91293f7ea789297fbbad",
+    "local/scalar-both-ends-example.json": "7dd87aa81c29e6599337e68ca8b1e4012214c4bbe00d6e530a60c3daa2d859e5",
+    "local/scalar-both-ends-orbits-forward.json": "f6ce6043e810ab2996ba98b703635897d9c7b3fba841e9b3ec59945074f897ba",
+    "local/scalar-both-ends-orbits-reverse.json": "082f11aed28b55424cd10479d114c0b7eac467c118a9af27ea04df27101f4ae6",
+    "local/scalar-both-ends-strides-forward.json": "23aed8f9ac1f918933b4dc36f22f33cbbee053992b1ac0735825ca59d21f4233",
+    "local/scalar-both-ends-strides-reverse.json": "9dfe886f9b3485ba8ca54a3d046d903bbca446f16b61741d6c1c542b3ab835fb",
+    "local/scalar-orbit-forward-cli.json": "c386e569fb18e33df68064117889e4a410b1da39dd066ebb8a8663cbef0c4943",
+    "local/scalar-orbit-oracle.json": "4602d56cc2ad546bc8a8990502fb94d38a185caf0fb75990bc99696ff97ea51a",
+    "local/scalar-orbit-reverse-cli.json": "ffa3f19dadadaef24687d397bc38fd2426afaccd887b6c04afa599e0da6511ca",
+    "local/scalar-reverse-cli-results.json": "df48b99ae47c00eb1e51335a1a467d6c472ca5149bebc8d76d0864554a1681e0",
+    "local/scalar-reverse-oracle.json": "f62a98f0afc2314763d2002cbbb5a097d8db364acd03ae581c100f4ed2815562",
+    "local/scalar-stride-oracle.json": "c34fd8619d9c342d656816040e6555fffbef77c7e15fdd2d34dcb6491276f08a",
+    "local/scalar-strides-cli-results.json": "dd3d16a9335d6f43afdd3cc661622f24f4ded084984a9277d7fac3698baf3476",
+    "local/selection.json": "3d772ab05b350d52b085a7b4973376942d7c406f72fc0a63987fe05ba18dd95e",
+    "local/tests.log": "af029a8413f1d95985071627ba1e953a1e828757d8ad777074e5443fb878dd19",
+    "local/tests.xml": "17a0ee5d77a7ebfe4053479f02a82b02e55b45211c1c3101a3ff4888e0148c85",
+    "sanitizer/LastTest.log": "ef52fdd9fd6dd3507ad8a01e3543942a26160b07d9f44263760eae64494daf39",
+    "sanitizer/build-metadata.json": "143bab1461c3cbb5c9330a792322c5fac98f27325494ba6837b3627c6acff362",
+    "sanitizer/scalar-batch-oracle.json": "eae7bf5ca4396dac34388ae057d7821af6a7b751efe2b07f998f5ed0a3d4a9ca",
+    "sanitizer/selection.json": "004f935649b27f5615349aec0b65bc3bdef0f7a3c4fbddc9158db6b7a7290728",
+    "sanitizer/tests.log": "ffa2cabad025a348e6c4767c8630fec1bd5193ee837d3137bf326036059a6156",
+    "sanitizer/tests.xml": "e89f7c6e67293200c12e72f14b650f804f1898e061d000138338f3d858f259e6"
+  },
+  "development_findings": [
+    "The initial host build required an explicit vector include in the new planner header.",
+    "The recovery fixture exposed rejection of completed grants with executor generation zero; production validation now requires a live generation only when work remains.",
+    "The initial recovery fixture requested pause at completion; it now uses a one-step resumed batch to exercise an actual partial pause.",
+    "The fixture now requests all results instead of relying on the default 100-row page.",
+    "An empty CTest regular expression selected zero CPU tests; this was replaced with an explicit match-all expression before the full suite."
+  ]
+}
