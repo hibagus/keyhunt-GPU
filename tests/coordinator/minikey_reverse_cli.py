@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Reverse minikeys across two grants through HTTPS and disconnected file exchange."""
+"""Ordered minikeys across two grants through HTTPS and disconnected file exchange."""
 import argparse, hashlib, json, subprocess, sys, tempfile
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'tools'))
@@ -15,9 +15,10 @@ for name in ('coordinator', 'worker', 'keyhunt', 'oracle', 'report'):
 p.add_argument('--apache-root', default='/')
 p.add_argument('--hardware', action='store_true')
 p.add_argument('--backend', choices=('hip', 'cuda'), default='hip')
+p.add_argument('--ordinal-order',choices=('reverse','both-ends'),default='reverse')
 a = p.parse_args()
 worker, keyhunt = str(a.worker.resolve()), str(a.keyhunt.resolve())
-report = dict(ordinal_order="reverse", passed=False, hardware=a.hardware, backend=a.backend, oracle_commit=check_source(), cases=[],
+report = dict(ordinal_order=a.ordinal_order, passed=False, hardware=a.hardware, backend=a.backend, oracle_commit=check_source(), cases=[],
               binaries={v.name: hashlib.sha256(v.read_bytes()).hexdigest() for v in (a.coordinator, a.worker, a.keyhunt)})
 
 def command(words, ok=True):
@@ -83,26 +84,32 @@ with tempfile.TemporaryDirectory(prefix='kh-minikey-reverse-worker-', dir='/var/
                 if transport == 'file': env.stop()
                 command([sys.executable, REPO / 'tools/coordinator_worker.py', '--state-dir', state,
                          '--worker', worker, '--keyhunt', keyhunt, '--backend', a.backend,
-                         '--ordinal-order', 'reverse', '--batch-size', '129', '--once'])
+                         '--ordinal-order', a.ordinal_order, '--batch-size', '129', '--once'])
                 events = [json.loads(v) for v in (state / 'execution-0.log').read_text().splitlines()]
                 finished = [v for v in events if v.get('type') == 'grant-finish']
-                assert len(finished) == 2 and all(v['complete'] and v['ordinal_order'] == 'reverse' and
+                assert len(finished) == 2 and all(v['complete'] and v['ordinal_order'] == a.ordinal_order and
                     int(v['computed_ordinals'], 16) == width and v['executor_setups'] == 1 for v in finished)
                 assert finished[0]['cold'] and not finished[1]['cold']
                 # Adaptive work-unit widths may change after a timing sample;
-                # their exact descending union must still equal each grant.
+                # reservations must be disjoint and have exactly the grant union.
                 cursor = lower = upper = None; units = []
                 for event in events:
                     if event.get('type') == 'grant-start':
                         cursor = upper = int(event['grant']['end_exclusive'], 16)
-                        lower = int(event['grant']['begin'], 16); units = []
+                        lower = int(event['grant']['begin'], 16); units = [];free_low,free_high=lower,upper
                     elif event.get('type') == 'work-unit':
                         span = event['interval']; lo, hi = int(span['begin'], 16), int(span['end_exclusive'], 16)
                         assert lower <= lo < hi <= upper
-                        assert hi == cursor
-                        cursor = lo; units.append((lo, hi))
+                        if a.ordinal_order=='reverse':
+                            assert hi==cursor;cursor=lo
+                        else:
+                            assert free_low<=lo<hi<=free_high and (lo==free_low or hi==free_high)
+                            if lo==free_low:free_low=hi
+                            else:free_high=lo
+                        units.append((lo, hi))
                     elif event.get('type') == 'grant-finish':
                         assert len(units) >= 2 and units[0][1] - units[0][0] == 129
+                        assert units[0][1]==upper if a.ordinal_order=='reverse' else units[0][0]==lower
                         ordered=sorted(units)
                         assert ordered[0][0]==lower and ordered[-1][1]==upper
                         assert all(left[1]==right[0] for left,right in zip(ordered,ordered[1:]))
@@ -128,4 +135,4 @@ with tempfile.TemporaryDirectory(prefix='kh-minikey-reverse-worker-', dir='/var/
         report['error'] = repr(error); raise
     finally:
         env.stop(); a.report.write_text(json.dumps(report, indent=2) + '\n')
-print('PASS reverse BSGS HTTPS and disconnected file transport')
+print('PASS',a.ordinal_order,'minikey HTTPS and disconnected file transport')

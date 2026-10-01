@@ -3,9 +3,13 @@
 #include <iostream>
 #include <set>
 using namespace cfixture;using namespace keyhunt::storage::detail;
-int main(){try{
+int main(int argc,char** argv){try{
+ const bool both=argc==2&&std::string(argv[1])=="--both-ends";
+ require(argc==1||both,"unexpected test option");
+ const auto orders=both?std::vector<core::MinikeyOrder>{core::MinikeyOrder::BothEnds}:
+     std::vector<core::MinikeyOrder>{core::MinikeyOrder::Forward,core::MinikeyOrder::Reverse};
  for(const std::string key:{"SzavMBLoXU6kDrqtUVmffv","S6c56bnXQiBjk9mqSYE7ykVQ7NzrRy"})
- for(const bool reverse:{false,true})for(unsigned seconds:{0U,180U}){
+ for(const auto order:orders)for(unsigned seconds:{0U,180U}){
     Temporary server,local;int64_t now=1800000000;Repository repo(server.path.string(),[&]{return now;});
     const auto leaf=pem(1,now-60,now+90*86400);const auto cert=certificate(leaf);
     const auto client=repo.admin({{"operation","bootstrap"},{"name","owner"},{"certificate",leaf}});
@@ -37,7 +41,8 @@ int main(){try{
     auto transport=[&](const Json& sent){require(sent["capabilities"].size()==9,"ordinal order changed capabilities");return Json{{"ok",true},{"server_time",now},{"value",repo.request(cert,"POST","/api/v1/sync",sent)}};};
     worker.synchronize(transport);const auto grant=*worker.next("gpu");std::set<UInt256> missing;
     for(const auto& gap:worker.journal().block(grant.scope,grant.block).remaining)for(auto at=gap.begin();at<gap.end();at=at.add(UInt256(1)))missing.insert(at);
-    CheckpointOptions options;options.minikey_order=reverse?core::MinikeyOrder::Reverse:core::MinikeyOrder::Forward;options.xpoint_steps=17;options.work_unit_seconds=seconds;options.checkpoint_seconds=0;
+    CheckpointOptions options;options.minikey_order=order;options.xpoint_steps=17;options.work_unit_seconds=seconds;options.checkpoint_seconds=0;
+    bool reverse=order==core::MinikeyOrder::Reverse;
     const auto summary=CheckpointRun::minikeys(worker.journal(),grant,targets,verifier,[&](const auto& batch){
         require(batch.ordinal_reverse()==reverse,"recovery direction lost");
         backend::MinikeysResult result{batch,{}};result.device_steps=result.verified_steps=batch.step_count();
@@ -47,7 +52,7 @@ int main(){try{
             const auto point=verifier.derive(*scalar);
             for(uint8_t tag:{1,2}){const auto target=core::minikey_target(length,core::hash160_target(point,tag));const auto found=std::lower_bound(targets.values().begin(),targets.values().end(),target);
                 if(found!=targets.values().end()&&*found==target)result.matches.push_back({at,uint32_t(found-targets.values().begin())});}}
-        result.candidate_count=result.matches.size();return result;
+        result.candidate_count=result.matches.size();if(order==core::MinikeyOrder::BothEnds)reverse=!reverse;return result;
     },options);
     require(summary.complete&&missing.empty()&&summary.resumed_scalars==UInt256(97)&&summary.computed_scalars==width.subtract(UInt256(97)),"fragmented ordinal union changed");
     require(worker.journal().results(grant.scope).size()==2,"old owner results recomputed");

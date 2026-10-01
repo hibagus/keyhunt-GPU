@@ -329,3 +329,18 @@ target_link_libraries(coordinator_minikey_reverse_test PRIVATE keyhunt_coordinat
 keyhunt_configure_target(coordinator_minikey_reverse_test)
 add_test(NAME coordinator_minikey_reverse COMMAND coordinator_minikey_reverse_test)
 set_tests_properties(coordinator_minikey_reverse PROPERTIES TIMEOUT 180 LABELS "cpu;coordinator;minikeys;reverse;recovery")
+
+if(KEYHUNT_ENABLE_HTTPS_WORKER)
+    add_test(NAME coordinator_minikey_both_ends_cli COMMAND ${Python3_EXECUTABLE}
+        ${PROJECT_SOURCE_DIR}/tests/coordinator/minikey_reverse_cli.py
+        --coordinator $<TARGET_FILE:keyhunt-coordinator> --worker $<TARGET_FILE:keyhunt-worker>
+        --keyhunt $<TARGET_FILE:keyhunt> --oracle $<TARGET_FILE:secp256k1_oracle>
+        --ordinal-order both-ends --apache-root ${KEYHUNT_TEST_APACHE_ROOT} --report ${CMAKE_CURRENT_BINARY_DIR}/coordinator-minikey-both-ends-cli.json ${coordinator_worker_options})
+    set_tests_properties(coordinator_minikey_both_ends_cli PROPERTIES TIMEOUT 300 LABELS "cpu;coordinator;minikeys;both-ends;integration;recovery")
+    if(KEYHUNT_ENABLE_GPU)
+        set_tests_properties(coordinator_minikey_both_ends_cli PROPERTIES LABELS "${KEYHUNT_GPU_BACKEND};hardware;coordinator;minikeys;both-ends;integration;recovery" RESOURCE_LOCK gpu_device)
+    endif()
+endif()
+
+add_test(NAME coordinator_minikey_both_ends COMMAND coordinator_minikey_reverse_test --both-ends)
+set_tests_properties(coordinator_minikey_both_ends PROPERTIES TIMEOUT 180 LABELS "cpu;coordinator;minikeys;both-ends;recovery")
