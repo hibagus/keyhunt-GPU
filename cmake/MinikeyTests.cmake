@@ -81,3 +81,21 @@ set_tests_properties(minikey_reverse_documented_example PROPERTIES TIMEOUT 150 L
 if(KEYHUNT_ENABLE_GPU)
     set_tests_properties(minikey_reverse_documented_example PROPERTIES LABELS "${KEYHUNT_GPU_BACKEND};hardware;minikeys;reverse;examples" RESOURCE_LOCK gpu_device)
 endif()
+
+add_test(NAME minikeys_both_ends_cli COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/minikeys_cli.py"
+    --binary $<TARGET_FILE:keyhunt> --oracle $<TARGET_FILE:secp256k1_oracle>
+    --both-ends --report "${CMAKE_CURRENT_BINARY_DIR}/minikeys-both-ends-cli-results.json" ${minikeys_cli_args})
+set_tests_properties(minikeys_both_ends_cli PROPERTIES TIMEOUT 600 LABELS "cpu;minikeys")
+if(KEYHUNT_ENABLE_GPU)
+    set_tests_properties(minikeys_both_ends_cli PROPERTIES LABELS "${KEYHUNT_GPU_BACKEND};hardware;minikeys;oracle" RESOURCE_LOCK gpu_device)
+endif()
+
+
+add_test(NAME minikey_both_ends_documented_example COMMAND "${Python3_EXECUTABLE}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/minikey_both_ends_examples.py"
+    --binary $<TARGET_FILE:keyhunt> --backend ${minikey_example_backend}
+    --report "${CMAKE_CURRENT_BINARY_DIR}/minikey-both-ends-documented-example.json")
+set_tests_properties(minikey_both_ends_documented_example PROPERTIES TIMEOUT 150 LABELS "cpu;minikeys;both-ends;examples")
+if(KEYHUNT_ENABLE_GPU)
+    set_tests_properties(minikey_both_ends_documented_example PROPERTIES LABELS "${KEYHUNT_GPU_BACKEND};hardware;minikeys;both-ends;examples" RESOURCE_LOCK gpu_device)
+endif()
