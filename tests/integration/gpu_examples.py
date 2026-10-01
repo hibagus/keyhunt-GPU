@@ -32,7 +32,7 @@ def validate(artifacts, hardware, device):
 
     require(one('table-inspect')['m'] == 257, 'wrong baby-table size')
     require(one('preflight')['integrity'] == 'ok', 'preflight audit failed')
-    for mode, width in [('xpoint', 256), ('bsgs', 65536)]:
+    for mode, width in [('xpoint', 256), ('bsgs', 65536), ('hash160', 256)]:
         job = one(mode + '-job')
         assignments = one(mode + '-grant')['assignments']
         require(job['project'] == one('project')['project'], 'wrong project')
@@ -55,14 +55,15 @@ def validate(artifacts, hardware, device):
                 matches.extend(record['matches'])
             # BSGS accepts coverage only at the all-target tile receipt. Its
             # preceding batch receipts can describe the same scalar interval.
-            coverage_type = 'batch' if mode == 'xpoint' else 'tile'
+            coverage_type = 'tile' if mode == 'bsgs' else 'batch'
             if record['type'] == coverage_type:
                 begin = int(record['begin'], 16)
                 end = int(record['end_exclusive'], 16)
                 require(begin == cursor and end > begin, 'noncontiguous volatile coverage')
                 cursor = end
         require(cursor == 1 + width, 'wrong volatile endpoint')
-        require(len(matches) == 1 and int(matches[0]['scalar'], 16) == 1,
+        expected_count = 2 if mode == 'hash160' else 1
+        require(len(matches) == expected_count and all(int(m['scalar'], 16) == 1 for m in matches),
                 'wrong volatile match set')
         durable = artifacts[mode + '-durable.ndjson'][-1]
         require(durable['complete'] and durable['durability'] == 'local', 'incomplete durable run')
@@ -72,13 +73,24 @@ def validate(artifacts, hardware, device):
                 int(retry['resumed_scalars'], 16) == width and
                 int(retry['computed_scalars'], 16) == 0, 'completed grant recomputed work')
         results = one(mode + '-results')['results']
-        require(len(results) == 1 and int(results[0]['scalar'], 16) == 1,
+        require(len(results) == expected_count and all(int(r['scalar'], 16) == 1 for r in results),
                 'wrong durable match set')
         block = one(mode + '-block')
         require(block['state'] == 'finished' and not block['remaining'], 'block not finished')
         require([(int(row['begin'], 16), int(row['end_exclusive'], 16))
                  for row in block['covered']] == [(1, 1 + width)], 'wrong durable interval union')
     if hardware:
+        # Equivalent address/raw inputs must describe exactly the same relations.
+        address = artifacts['address.ndjson']
+        hashed = artifacts['hash160.ndjson']
+        require(address[0]['target_digest'] == hashed[0]['target_digest'], 'address/hash identity differs')
+        require([m for r in address[1:-1] for m in r.get('matches', [])] ==
+                [m for r in hashed[1:-1] for m in r.get('matches', [])], 'address/hash matches differ')
+        require(address[-1]['complete'] and int(address[-1]['verified_steps'], 16) == 256,
+                'address search incomplete')
+        expected = {'01751e76e8199196d454941c45d1b3a323f1433bd6', '0291b24bf9f5288532960ac687abb035127b1d28a5'}
+        require({r['target_bytes'] for r in one('hash160-results')['results']} == expected,
+                'durable encoding relation differs from public fixture')
         require(one('check')['integrity'] == 'ok', 'final journal audit failed')
         require(one('table-validate')['m'] == 257 and
                 one('table-validate')['checksum'] == one('table-inspect')['checksum'],

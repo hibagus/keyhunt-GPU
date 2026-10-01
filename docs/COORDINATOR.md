@@ -114,9 +114,13 @@ renewal remain outside this localhost gate.
 
 ## S04a: atomic machine synchronization
 
-`POST /api/v1/sync` accepts protocol 1 with the exact capability list
-`["checkpoint-v1", "offline-lease-v1"]`. A request identifies a persistent worker
-instance and idempotency key, authorized jobs with device queues, checkpoint
+`POST /api/v1/sync` accepts protocol 1. Current workers send the exact capability
+list `["checkpoint-v1", "offline-lease-v1", "hash160-v1"]`. Updated coordinators
+also accept the older two-element list for xpoint/BSGS jobs. A HASH160 job requires
+the third capability before reservation, renewal, update or receipt replay;
+incompatible requests receive HTTP 426. Deploy the updated coordinator before
+updated workers. Unknown capabilities and wire modes fail explicitly. A request
+identifies a persistent worker instance and idempotency key, authorized jobs with device queues, checkpoint
 pages, and returned unstarted spares. The authenticated client UUID plus instance
 identifies ownership; supplying a different owner in a grant is rejected.
 
@@ -213,7 +217,7 @@ has no libcurl or GPU runtime dependency; the HTTPS worker is a separate target.
 
 `tools/coordinator_worker.py` (installed as `keyhunt-supervise`) owns a stable
 supervisor lock, one separate network child and a persistent native process per
-selected device. Each device process runs fresh xpoint/BSGS self-tests before
+selected device. Each device process runs fresh xpoint/BSGS/HASH160 self-tests before
 execution. Device selection queries only its ordinal, records the observed UUID,
 partition, CU count and runtime/driver versions, and never changes partition modes.
 
@@ -222,7 +226,15 @@ unstarted queued grants for the same job; active blocks remain owned until their
 process stops. Targets and GPU tables stay loaded across block handoffs. The
 standalone whole-journal guard is retained; supervised execution uses per-block
 guards plus per-device process locks. Default stepped xpoint and automatic BSGS
-group selection remain. BSGS requires a matching local `--table`.
+group selection remain. HASH160 uses the scalar batch/kernel options and retains
+its immutable targets across grants. BSGS requires a matching local `--table`.
+
+The job API accepts mode `hash160`, configuration `khsearch`, version 1, mode 3,
+zero `m` and zero table checksum. `targets` is canonical sorted unique 21-byte
+relations encoded as lowercase hex: tag `01`/`02` plus 20 hash bytes. It carries
+no address-text parsing or separate encoding flag; the tags are authoritative.
+Existing bounded wire-size limits still apply. The [checkpoint CLI](CHECKPOINTS.md#bitcoin-address-and-hash160-jobs)
+accepts raw/address files and computes this canonical binding.
 
 `--devices 0,1` selects configured queues. `--device-map QUEUE=ORDINAL` handles
 visibility renumbering while retaining the UUID binding. A different physical or

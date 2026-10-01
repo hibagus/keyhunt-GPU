@@ -6,14 +6,16 @@
 | Legacy `-m xpoint`, `-m bsgs` | Characterized CPU paths, range/stride limitations | Same CPU paths | Same CPU paths |
 | Exact `xpoint --backend …` | Explicitly rejected | Validated | Validated |
 | Exact `bsgs --backend …` | Explicitly rejected | Validated | Validated |
+| Exact `hash160` / Bitcoin P2PKH `address --backend …` | Explicitly rejected | Validated | Validated |
 | `bsgs-table build` / `inspect`, state, job creation and result inspection | Supported | CPU operations | CPU operations |
-| `checkpoint run --backend …` | Explicitly rejected | Validated durable xpoint/BSGS | Validated durable xpoint/BSGS |
-| Optional supervised workers | Configuration/sync/file exchange; no CPU search executor | Validated concurrent xpoint/BSGS | Validated concurrent xpoint/BSGS |
+| `checkpoint run --backend …` | Explicitly rejected | Validated durable xpoint/BSGS/HASH160 | Validated durable xpoint/BSGS/HASH160 |
+| Optional supervised workers | Configuration/sync/file exchange; no CPU search executor | Validated xpoint/BSGS/HASH160 owners | Validated xpoint/BSGS/HASH160 owners |
 
 The [GPU quickstart](GPU_QUICKSTART.md) includes exact ranges and public fixtures.
 The [build matrix](BUILD.md#validated-gpu-builds) identifies tested stacks and
-partition limits. C23 will add further GPU modes; Bitcoin/HASH160/Ethereum/vanity
-and minikey GPU searches are not implemented. C22 adds
+partition limits. [C23's first family](C23_HASH160.md) adds exact raw HASH160 and
+Bitcoin mainnet P2PKH inputs with explicit public-key encoding identity. Ethereum,
+vanity, minikeys and other C23 families remain pending. C22 adds
 [manual offline assignment files](OFFLINE_ASSIGNMENTS.md) for disconnected workers
 and connected couriers. HTTPS workers also retain valid leases and a durable
 outbox between scheduled contacts.
@@ -42,6 +44,13 @@ CPU mode flags listed below.
 | `pub2rmd` | Not active in the main executable | Prints removal message and exits 0 |
 
 ## Address and HASH160
+
+The native `hash160` and `address` subcommands use `--encoding compressed`,
+`uncompressed` or `both` (default). Native address input requires canonical
+Bitcoin mainnet P2PKH Base58Check; P2SH, witness, testnet and Ethereum are rejected.
+Full hashes and encoding tags bind checkpoint jobs. Both encodings can produce
+separate verified matches at one scalar. [Runnable GPU examples](GPU_QUICKSTART.md)
+cover raw hashes, addresses and durable restart. The legacy syntax below is unchanged.
 
 `-l compress`, `-l uncompress`, or `-l both` selects the Bitcoin public-key
 encoding. `address` compares address-derived targets; `rmd160` takes the raw

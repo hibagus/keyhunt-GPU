@@ -2,7 +2,7 @@
 
 Use the [build matrix](BUILD.md#validated-gpu-builds) and
 [finite quickstart](GPU_QUICKSTART.md) to verify the chosen native backend first.
-The [mode matrix](MODES.md) limits GPU execution to exact xpoint and BSGS.
+The [mode matrix](MODES.md) covers exact xpoint, BSGS and Bitcoin P2PKH/HASH160.
 Standalone execution needs only `keyhunt`; authenticated workers additionally
 need the optional coordinator/HTTPS build. HTTPS workers hold enrolled client
 credentials; [file-only workers](OFFLINE_ASSIGNMENTS.md) keep those credentials
@@ -25,7 +25,7 @@ partition's memory or rate by a logical count to claim package capacity.
 
 A job fixes its half-open scalar range, block width, canonical targets and BSGS
 configuration. Device choice and launch geometry can change on restart; changing
-targets or table identity requires a new job. `state claim --policy sequential`,
+targets, HASH160 encoding selection or table identity requires a new job. `state claim --policy sequential`,
 `random`, `random-window` or `manual` selects unexplored blocks, not random scalar
 samples inside an active block. Completed and in-progress blocks are excluded.
 See [selection and fences](STORAGE.md#local-commands).

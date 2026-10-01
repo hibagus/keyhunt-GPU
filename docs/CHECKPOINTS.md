@@ -1,6 +1,6 @@
 # Verified local checkpoints (C13)
 
-The checkpoint commands connect exact HIP/CUDA xpoint and BSGS execution to the
+The checkpoint commands connect exact HIP/CUDA xpoint, BSGS and HASH160 execution to the
 [local journal](STORAGE.md). The guarantee is at-least-once computation with exact
 locally acknowledged coverage and deduplicated CPU-verified matches. Start with
 the runnable [GPU quickstart](GPU_QUICKSTART.md). C13 introduced this contract;
@@ -11,19 +11,19 @@ Standalone execution has no server acknowledgment. The optional
 [C15 coordinator](COORDINATOR.md) adds HTTPS synchronization and a durable worker
 outbox; [C20](MULTI_GPU.md) adds concurrent owners on both backends. C14's
 [graceful signals and controls](PAUSE_RESUME.md) apply to durable execution.
-Ordinary `keyhunt xpoint` and `keyhunt bsgs` commands remain volatile.
+Ordinary `keyhunt xpoint`, `bsgs`, `hash160` and `address` commands remain volatile.
 
 ## Binding real inputs
 
 A checkpoint job uses the same immutable C12 manifest/root/block grid, with target
 and algorithm digests derived from actual loaded inputs. Canonical target sets
 are persisted as sorted unique 32-byte X values or 65-byte uncompressed SEC1
-points. The existing target loaders reject malformed/noncanonical inputs;
+points, plus C23's 21-byte encoding/HASH160 relations. The existing target loaders reject malformed/noncanonical inputs;
 compressed/uncompressed encodings of the same BSGS point identify one target.
 
 The algorithm fingerprint is SHA256 of exactly 50 bytes: `khsearch` (8 bytes),
-semantic version 1, mode byte (1=xpoint, 2=BSGS), big-endian 64-bit `m`, and the
-32-byte table checksum. Xpoint uses zero `m` and checksum. Semantics are secp256k1,
+semantic version 1, mode byte (1=xpoint, 2=BSGS, 3=HASH160), big-endian 64-bit `m`, and the
+32-byte table checksum. Xpoint and HASH160 use zero `m` and checksum. Semantics are secp256k1,
 stride one, exhaustive all-target coverage. BSGS binds the validated C10 cache
 including its table size and checksum. Changing `m` or rebuilding a differently
 encoded cache requires a new job; incompatible progress is never silently reused.
@@ -37,6 +37,24 @@ A C12 job with synthetic/raw coverage cannot be promoted into a verified search.
 The bind operation rejects existing partial or finished coverage unless a search
 binding was already registered. For bound jobs, raw `record_coverage` is disabled.
 Only the checkpoint owner can call the private result/coverage transaction.
+
+## Bitcoin address and HASH160 jobs
+
+Use `checkpoint create --mode hash160 --targets FILE` for raw 40-digit hashes,
+or `--mode address` for Bitcoin mainnet P2PKH Base58Check. Both store mode 3.
+`--encoding compressed|uncompressed|both` defaults to both and is part of the
+canonical target set. Equivalent address/raw files produce the same job identity.
+
+On `checkpoint run`, use `--input-format hash160` (default) or `--input-format address`
+with the matching file, and repeat the original `--encoding` selection. Changed
+encoding or target bytes fail binding validation. Select `--kernel stepped|direct`
+and `--batch-size` as for xpoint. With both encodings, candidate capacity must be
+at least two; dense overflow retries smaller scalar intervals before coverage
+advances. Results include `target_bytes`: `01` or `02` followed by the full hash.
+The scalar/target pair is unique; two encoding results at one scalar remain distinct.
+
+C23 uses the existing schema and receipt encoding. It does not change published
+migrations, weaken restored-state quarantine or bypass lease/executor fences.
 
 ## Schema version 2 and migration
 

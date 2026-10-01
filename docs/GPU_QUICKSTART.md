@@ -1,7 +1,7 @@
 # Finite HIP and CUDA searches
 
 This example uses only the public secp256k1 generator (scalar 1). It exercises
-bounded xpoint/BSGS searches, real-input job creation, sequential/random claims,
+bounded xpoint/BSGS/Bitcoin HASH160 searches, real-input job creation, sequential/random claims,
 local checkpoints and completed-grant replay. Follow [BUILD.md](BUILD.md) first.
 No coordinator is required. Run the blocks below in order in the **same Bash
 shell**, starting in the repository root. Use a new private example directory
@@ -53,6 +53,10 @@ printf '%s\n' 79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798 \
   > "$example_dir/xpoint.txt"
 printf '%s\n' 0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798 \
   > "$example_dir/public-key.txt"
+printf '%s\n' 751e76e8199196d454941c45d1b3a323f1433bd6 \
+  91b24bf9f5288532960ac687abb035127b1d28a5 > "$example_dir/hash160.txt"
+printf '%s\n' 1BgGZ9tcN4rm9KBzDn7KprQz87SZ26SAMH \
+  1EHNa6Q4Jz2uvNExL497mE43ikXhwF6kZm > "$example_dir/address.txt"
 "$KEYHUNT_BIN" bsgs-table build --m 257 --output "$example_dir/babies.khb" \
   > "$example_dir/table.json"
 "$KEYHUNT_BIN" bsgs-table inspect --input "$example_dir/babies.khb" \
@@ -80,13 +84,24 @@ not a general table-size recommendation ([table budgets](BSGS_TABLES.md)).
   --range 1:10001 --targets "$example_dir/public-key.txt" \
   --table "$example_dir/babies.khb" --giant-batch 256 --target-batch 1 \
   > "$example_dir/bsgs.ndjson"
+"$KEYHUNT_BIN" hash160 --backend "$GPU_BACKEND" --device "$GPU_DEVICE" \
+  --range 1:101 --targets "$example_dir/hash160.txt" --encoding both --batch-size 256 \
+  > "$example_dir/hash160.ndjson"
+"$KEYHUNT_BIN" address --backend "$GPU_BACKEND" --device "$GPU_DEVICE" \
+  --range 1:101 --targets "$example_dir/address.txt" --encoding both --batch-size 256 \
+  > "$example_dir/address.ndjson"
 ```
 
-Both searches exit 0, find scalar 1 once, and exhaust their exact ranges. Range
-endpoints and block widths are **hexadecimal and half-open**: `1:101` covers
+All searches exit 0 and exhaust their exact ranges. Xpoint and BSGS find scalar 1
+once. HASH160 and address each find its compressed and uncompressed relations,
+for two matches at the same scalar. Range endpoints and block widths are **hexadecimal and half-open**: `1:101` covers
 256 scalars and `1:10001` covers 65,536. Batch sizes and `m` are decimal. Xpoint
 matches the full X coordinate and cannot distinguish the two Y signs; BSGS
-matches the full public key. Both verify returned candidates on the CPU.
+matches the full public key. All modes verify returned candidates on the CPU.
+
+`address` accepts Bitcoin mainnet P2PKH Base58Check only. `hash160` accepts
+40 hexadecimal digits per line. `--encoding compressed|uncompressed|both` defaults
+to `both`; it is part of immutable target identity. See [C23 contracts](C23_HASH160.md).
 
 These `.ndjson` files contain start, batch and summary records. They are volatile
 output, not restart checkpoints. `gpu-smoke` validates a diagnostic launch and
@@ -99,17 +114,21 @@ from JSON so no example UUID or grant needs to be copied manually. Each job has
 one block: this keeps the random claim reproducible while exercising the real
 selection option. Larger jobs may use `random-window` or manual block selection;
 see [claim policies](STORAGE.md#local-commands). The manifest's width and canonical
-inputs are immutable. Size a new production job using
-[reference calibration](MULTI_GPU.md#work-units-and-reference-calibration).
+inputs are immutable. Use [reference calibration](MULTI_GPU.md#work-units-and-reference-calibration)
+for xpoint/BSGS. HASH160 currently uses an explicit block width; this correctness
+slice makes no throughput or calibrated-width claim.
 
 <!-- example: create -->
 ```bash
 "$KEYHUNT_BIN" state project-create --name "GPU quickstart" > "$example_dir/project.json"
 PROJECT="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["project"])' "$example_dir/project.json")"
-for mode in xpoint bsgs; do
+for mode in xpoint bsgs hash160; do
   if [ "$mode" = xpoint ]; then
     targets="$example_dir/xpoint.txt"; bounds=1:101; width=100; policy=sequential
     table_options=()
+  elif [ "$mode" = hash160 ]; then
+    targets="$example_dir/hash160.txt"; bounds=1:101; width=100; policy=sequential
+    table_options=(--encoding both)
   else
     targets="$example_dir/public-key.txt"; bounds=1:10001; width=10000; policy=random
     table_options=(--table "$example_dir/babies.khb")
@@ -134,11 +153,13 @@ do not allocate remote coordinator work.
 
 <!-- example: durable -->
 ```bash
-for mode in xpoint bsgs; do
+for mode in xpoint bsgs hash160; do
   JOB="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["job"])' "$example_dir/$mode-job.json")"
   GRANT="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["assignments"][0]["grant"])' "$example_dir/$mode-grant.json")"
   if [ "$mode" = xpoint ]; then
     run_options=(--targets "$example_dir/xpoint.txt" --batch-size 256)
+  elif [ "$mode" = hash160 ]; then
+    run_options=(--targets "$example_dir/hash160.txt" --encoding both --batch-size 256)
   else
     run_options=(--targets "$example_dir/public-key.txt" --table "$example_dir/babies.khb"
                  --giant-batch 256 --target-batch 1)
@@ -157,8 +178,8 @@ done
 ```
 
 Each final durable summary reports `complete:true` and `durability:"local"`.
-Each results file contains one scalar-1 match, each block is `finished`, and each
-retry summary reports zero `batches` with the whole range in `resumed_scalars`.
+The xpoint/BSGS results files contain one scalar-1 match; HASH160 contains two
+encoding relations. Each block is `finished`, and each retry summary reports zero `batches` with the whole range in `resumed_scalars`.
 Completion means that assigned block; it does not mean every block of a larger job.
 Local durability does not mean that a coordinator has acknowledged the result.
 
@@ -185,8 +206,8 @@ public fixtures and temporary local state; remove that directory when finished.
 
 The harness reads the marked Bash blocks above directly; it does not keep another
 copy of the commands. CPU CI runs table preparation, canonical job creation and
-both claim policies. Hardware runs additionally check discovery, launches, both
-volatile searches and both durable searches/retries:
+both claim policies. Hardware runs additionally check discovery, launches, all
+four volatile commands and all three durable searches/retries:
 
 ```sh
 python3 tests/integration/gpu_examples.py --binary build/cpu-release/keyhunt \

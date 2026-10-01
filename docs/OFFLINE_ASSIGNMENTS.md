@@ -283,3 +283,13 @@ per mode, stops both services during execution, checks exact local coverage and
 scalar-1 matches, then restarts the services and verifies final acknowledgment.
 It also checks retained executors across grants and absence of a network child.
 Run these correctness checks independently of performance measurements.
+
+## C23 HASH160 family
+
+The same manual exchange supports mode `hash160`, including separate compressed
+and uncompressed target relations. Updated workers require the coordinator's
+`hash160-v1` capability support before grants can be imported. Both native GPU
+owners preserve exact coverage, both encoding results, bounded outbox state and
+one prepared executor across active/spare handoffs while disconnected. The
+[mode contract and acceptance](C23_HASH160.md) describe this extension; C22's
+historical evidence above remains scoped to xpoint/BSGS.
