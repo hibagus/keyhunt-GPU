@@ -1,0 +1,222 @@
+{
+  "passed": true,
+  "recorded_utc": "2026-10-01T16:53:47.966033+00:00",
+  "base_commit": "af975576dfb51097a6885ffc4f15e683d66833fb",
+  "scope": "Exact low/high/fixed-midpoint-forward BSGS dance with bounded planner state, adaptive units, scalar checkpoint recovery and HTTPS/disconnected workers",
+  "source_phases": {
+    "contract": "efee869114cdbcb198542416793e25e3917567cb",
+    "native": "c79c77b6234c926fe586a99f029068a3259b989f",
+    "checkpoints": "547a0b4a2ba4cdbf81c51ff9b9cab432ba7e63a2",
+    "workers": "ee352e5e401063492758fd01d6e1c02227f7dc0f"
+  },
+  "metadata": {
+    "hip": {
+      "source_commit": "ee352e5e401063492758fd01d6e1c02227f7dc0f",
+      "platform": "Linux-5.15.0-191-generic-x86_64-with-glibc2.35",
+      "binaries": {
+        "/home/bagus/keyhunt-GPU/build/hip-release": {
+          "keyhunt": "0f16865d35e69ea437cbb531f30cb5f7d4f0dd494abe6be1afe52ddb52eb8628",
+          "keyhunt-worker": "9b2e29e6aa4ebd1ffd59478f1f977748af89c767ddd3ce7519a96895a6bf36e6",
+          "keyhunt-coordinator": "787d5fc6f31d6a2c8b3752bde6f6e0e9ce7afa64c2dd5c2fd2003995e5c64402",
+          "bsgs_tile_probe": "f074edbd97555a4beae58381e38e3f78172768d92b3e0177f1ddb4933b5ecc85",
+          "bsgs_plan_probe": "76eb5610ad8e2e9647c1cc9dc5cc19fc19a6ec73436c3e42a15c10abf193bb14",
+          "secp256k1_oracle": "8dc92137c49502e3de62cb20a750d1c7f0bd84294ae77c5ccc9c9dffd20763c6",
+          "storage_bsgs_reverse_test": "01655850d26c2b21e3f0cb236e787a2d36b3438a48911083d1b250ea37cc5bd3",
+          "storage_bsgs_both_ends_test": "050e520b904e0f407a3219673ece6ff104412e9b7dd42ca0dd17d488d851c228",
+          "storage_bsgs_dance_test": "243dd8f5a4b623f87755c297f75bfe838aea2e52cdf3dfd930647fd471aa3281",
+          "coordinator_bsgs_reverse_test": "e1ab2060c21c1fcf047931bf2e8ca5633dc774ce4e7ee69f551ced69a64faf46"
+        }
+      },
+      "build_configuration": {
+        "/home/bagus/keyhunt-GPU/build/hip-release": {
+          "CMAKE_BUILD_TYPE": "Release",
+          "CMAKE_CXX_COMPILER": "/usr/bin/c++",
+          "CMAKE_HIP_ARCHITECTURES": "gfx942",
+          "CMAKE_HIP_COMPILER": "/opt/rocm/core-10.0/lib/llvm/bin/clang++",
+          "KEYHUNT_ENABLE_COORDINATOR": "ON",
+          "KEYHUNT_ENABLE_CUDA": "OFF",
+          "KEYHUNT_ENABLE_HIP": "ON",
+          "KEYHUNT_ENABLE_HTTPS_WORKER": "ON",
+          "KEYHUNT_ENABLE_LTO": "ON",
+          "KEYHUNT_ENABLE_SANITIZERS": "OFF",
+          "KEYHUNT_GFX942_CARRY": "ON"
+        }
+      },
+      "compilers": {
+        "/opt/rocm/core-10.0/lib/llvm/bin/clang++": "AMD clang version 23.0.0git (https://github.com/ROCm/llvm-project.git 8f497e0992fb7513f7f78a6f6b6f1056c375e961)\nTarget: x86_64-unknown-linux-gnu\nThread model: posix\nInstalledDir: /opt/rocm/core-10.0/lib/llvm/bin",
+        "/usr/bin/c++": "c++ (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0\nCopyright (C) 2021 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
+      }
+    },
+    "cuda": {
+      "source_commit": "ee352e5e401063492758fd01d6e1c02227f7dc0f",
+      "platform": "Linux-5.15.0-194-generic-x86_64-with-glibc2.35",
+      "binaries": {
+        "/home/bagus/keyhunt-GPU/build/cuda-h200": {
+          "keyhunt": "cda762aca82e44d28bbc3da763a6c5988a31894a6c81cbc0c85138ef70af7925",
+          "keyhunt-worker": "4dad1217d4a4de726772486be0f5c73feb962bca8f6124fc9e659b2e9a002bcf",
+          "keyhunt-coordinator": "c342f37fee7095a77e65c67c27e8954098478e99f06f65a54d718c4d0a4b39ca",
+          "bsgs_tile_probe": "0928d0a0951bc888141c624fd3c4503751902c1788627c82c5f37e6cbfc58481",
+          "bsgs_plan_probe": "cca57333047f66dcfce7027be53df74bbe44b338b77e0aaae452245433ea136f",
+          "secp256k1_oracle": "039bdb67a9ec9ca522b193385033bb578e133ecd300ba32da8a550299c07e5e0",
+          "storage_bsgs_reverse_test": "06bac684de01f0594e20b701476b05d80b13233b8b224bf8255358180c847856",
+          "storage_bsgs_both_ends_test": "01df8bbcfbc355760d6f7a8d27d4e4e4505d3152d2213e8952725a1e383665da",
+          "storage_bsgs_dance_test": "11bae5f3e815c487ee58dd8eaa0a495589be328b9a51b72abda6654a92815865",
+          "coordinator_bsgs_reverse_test": "2fccd55617187796027b3a206ea28d74a12042ae9fc39baa08dee1d97ec515de"
+        }
+      },
+      "build_configuration": {
+        "/home/bagus/keyhunt-GPU/build/cuda-h200": {
+          "CMAKE_BUILD_TYPE": "Release",
+          "CMAKE_CUDA_ARCHITECTURES": "90",
+          "CMAKE_CUDA_COMPILER": "/usr/local/cuda/bin/nvcc",
+          "CMAKE_CXX_COMPILER": "/usr/bin/c++",
+          "KEYHUNT_ENABLE_COORDINATOR": "ON",
+          "KEYHUNT_ENABLE_CUDA": "ON",
+          "KEYHUNT_ENABLE_HIP": "OFF",
+          "KEYHUNT_ENABLE_HTTPS_WORKER": "ON",
+          "KEYHUNT_ENABLE_LTO": "ON",
+          "KEYHUNT_ENABLE_SANITIZERS": "OFF",
+          "KEYHUNT_GFX942_CARRY": "OFF"
+        }
+      },
+      "compilers": {
+        "/usr/bin/c++": "c++ (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0\nCopyright (C) 2021 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.",
+        "/usr/local/cuda/bin/nvcc": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2026 NVIDIA Corporation\nBuilt on Tue_Jun_09_02:43:40_PM_PDT_2026\nCuda compilation tools, release 13.3, V13.3.73\nBuild cuda_13.3.r13.3/compiler.38244171_0"
+      }
+    }
+  },
+  "host_metadata": {
+    "source_commit": "ee352e5e401063492758fd01d6e1c02227f7dc0f",
+    "platform": "Linux-5.15.0-191-generic-x86_64-with-glibc2.35",
+    "binaries": {
+      "/home/bagus/keyhunt-GPU/build/coordinator-release": {
+        "keyhunt": "1069d4b597af268863fb4b2f873b24bcceae5acf680b47e12cacd98920c803d1",
+        "keyhunt-worker": "0256045b3af10516b5a5d5ab2efdbe5bf59e0122e3ade6137783c2a90b0ec197",
+        "keyhunt-coordinator": "787d5fc6f31d6a2c8b3752bde6f6e0e9ce7afa64c2dd5c2fd2003995e5c64402",
+        "bsgs_tile_probe": "f074edbd97555a4beae58381e38e3f78172768d92b3e0177f1ddb4933b5ecc85",
+        "bsgs_plan_probe": "76eb5610ad8e2e9647c1cc9dc5cc19fc19a6ec73436c3e42a15c10abf193bb14",
+        "secp256k1_oracle": "8dc92137c49502e3de62cb20a750d1c7f0bd84294ae77c5ccc9c9dffd20763c6",
+        "storage_bsgs_reverse_test": "01655850d26c2b21e3f0cb236e787a2d36b3438a48911083d1b250ea37cc5bd3",
+        "storage_bsgs_both_ends_test": "050e520b904e0f407a3219673ece6ff104412e9b7dd42ca0dd17d488d851c228",
+        "storage_bsgs_dance_test": "243dd8f5a4b623f87755c297f75bfe838aea2e52cdf3dfd930647fd471aa3281",
+        "coordinator_bsgs_reverse_test": "e1ab2060c21c1fcf047931bf2e8ca5633dc774ce4e7ee69f551ced69a64faf46"
+      },
+      "/home/bagus/keyhunt-GPU/build/coordinator-sanitizers": {
+        "bsgs_tile_probe": "aa95010e35e0642591ad1fa4d0bed3509c636a6d3c387ae3396b01bb3debb28c",
+        "bsgs_plan_probe": "2a3313bf2747c82f7c58f5863300dffb52053e4e140ecbc280ca52b7a3f925c4",
+        "secp256k1_oracle": "fc52fc04fe92fc395fb5a4b71b1afde220e9a4f391fd93348535291b09c3aca2",
+        "storage_bsgs_reverse_test": "b7c49b84588d87eb8a7a735f54b058b065a3a8baae65b109e294eae74b7063c5",
+        "storage_bsgs_both_ends_test": "5c3f96f0f152f657374c97b4a6edc31fea2508e075d69e76e63ebbec7fff7e89",
+        "storage_bsgs_dance_test": "66c0a54c30b8271f933a7b5ed4b9d1cacd0dd9b33cf580f3bdf34e0d2fe3b6a5",
+        "coordinator_bsgs_reverse_test": "7e7620aac0e09a256fce046562fd70c29d34abbe49605e9fe3158ff53503267a"
+      }
+    },
+    "build_configuration": {
+      "/home/bagus/keyhunt-GPU/build/coordinator-release": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_CXX_COMPILER": "/usr/bin/c++",
+        "KEYHUNT_ENABLE_COORDINATOR": "ON",
+        "KEYHUNT_ENABLE_CUDA": "OFF",
+        "KEYHUNT_ENABLE_HIP": "OFF",
+        "KEYHUNT_ENABLE_HTTPS_WORKER": "ON",
+        "KEYHUNT_ENABLE_LTO": "ON",
+        "KEYHUNT_ENABLE_SANITIZERS": "OFF",
+        "KEYHUNT_GFX942_CARRY": "OFF"
+      },
+      "/home/bagus/keyhunt-GPU/build/coordinator-sanitizers": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_CXX_COMPILER": "/usr/bin/c++",
+        "KEYHUNT_ENABLE_COORDINATOR": "ON",
+        "KEYHUNT_ENABLE_CUDA": "OFF",
+        "KEYHUNT_ENABLE_HIP": "OFF",
+        "KEYHUNT_ENABLE_HTTPS_WORKER": "ON",
+        "KEYHUNT_ENABLE_LTO": "OFF",
+        "KEYHUNT_ENABLE_SANITIZERS": "ON",
+        "KEYHUNT_GFX942_CARRY": "OFF"
+      }
+    },
+    "compilers": {
+      "/usr/bin/c++": "c++ (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0\nCopyright (C) 2021 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
+    }
+  },
+  "checks": {
+    "cpu_release": {
+      "passed": 127,
+      "failed": 0,
+      "log": "local/full-tests.log"
+    },
+    "sanitizers": {
+      "passed": 7,
+      "failed": 0,
+      "log": "local/sanitizer-tests.log"
+    },
+    "hip": {
+      "passed": 24,
+      "failed": 0,
+      "log": "hip/tests.log"
+    },
+    "cuda": {
+      "passed": 24,
+      "failed": 0,
+      "log": "cuda/tests.log"
+    },
+    "initial_sanitizer_build": {
+      "passed": false,
+      "log": "local/sanitizer-build-initial.log",
+      "resolution": "The cached Makefile did not know the new target in the original multi-target build invocation. Explicit CMake configure followed by rebuilding all seven gates succeeded; no code change."
+    }
+  },
+  "results": {
+    "dance_sequence_cases": 1071,
+    "previous_sequence_cases": 3164,
+    "bounds_cases": 5535,
+    "cpu_passing_gates": 127,
+    "focused_sanitizer_gates": 7,
+    "gpu_gates_per_backend": 24,
+    "dance_native_cases_per_backend": 22,
+    "dance_checkpoint_cases_per_backend": 9,
+    "dance_killed_restarts_per_backend": 7,
+    "dance_pause_visibility_cases_per_backend": 1,
+    "dance_worker_cases_per_backend": 2,
+    "worker_grants_per_case": 2,
+    "previous_native_cases_per_backend": 56,
+    "previous_checkpoint_cases_per_backend": 15,
+    "documented_examples_per_backend": 3,
+    "observed_max_active_units": 3,
+    "observed_max_extra_missing_gaps": 1
+  },
+  "limits": [
+    "Dance starts low and cycles high then middle after full-target tile completion. Overflow does not advance the phase.",
+    "The fixed midpoint is the floor midpoint of the initial missing-interval hull, not uncovered rank. Split once there; no tile or work unit crosses it.",
+    "The middle front advances upward and falls back to low when no upper-half work remains. Planner entries are bounded by original gaps plus four.",
+    "At most three adaptive work units interleave, timed by their own execution excluding pauses and other units.",
+    "Restart recalculates the pivot and resets low on saved complement. Exact scalar union is preserved; submission sequence may differ.",
+    "Job/configuration/table identity, schema 7, protocol, receipts and capabilities are unchanged. Scalar --order and block claims remain separate.",
+    "Both kernels tested on HIP/CUDA; group-8 spots cover eight ordinals. No exhaustive kernel-by-device product, fleet scaling or new partition claim.",
+    "Seven focused host sanitizer gates; no claim of whole-application or device-code sanitizer coverage.",
+    "No new device arithmetic or throughput claim. Legacy random dance is not reproduced. Additional random traversal semantics and alternative minikey orders remain pending.",
+    "Public fixtures only; no enrollment credentials or journal databases archived."
+  ],
+  "artifacts": {
+    "C23_BSGS_DANCE_ALGORITHMS.json": {
+      "sha256": "62a7b1a4c49267dab1cec665be98793f25f84ff5462d0c8e9aa2f22ffd4dcd5f",
+      "bytes": 206675
+    },
+    "C23_BSGS_DANCE_RECOVERY.json": {
+      "sha256": "9fa3cfd1ca38cca25605964076f8da5a6318065425534aec59175a1692c9764e",
+      "bytes": 299649
+    },
+    "C23_BSGS_DANCE_WORKERS.json": {
+      "sha256": "0795db71d35b8d61385df50b0cddf75d240b424e1b3a739cebd7549d38bb24f9",
+      "bytes": 192550
+    },
+    "C23_BSGS_DANCE_EXAMPLES.json": {
+      "sha256": "d41bfdc65a59df0b29b6f1f889e91d4826f621540966972f659a300465fb8b46",
+      "bytes": 94622
+    },
+    "C23_BSGS_DANCE_LOGS.tar.gz": {
+      "sha256": "4cb42342e61ca5f6ee8c6651ebb2d31914a55af7573abad786ad2c95e0924c45",
+      "bytes": 87152
+    }
+  }
+}

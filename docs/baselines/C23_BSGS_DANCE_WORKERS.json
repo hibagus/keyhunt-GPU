@@ -1,0 +1,4234 @@
+{
+  "hip": {
+    "reverse": {
+      "workers": {
+        "tile_order": "reverse",
+        "passed": true,
+        "hardware": true,
+        "backend": "hip",
+        "oracle_commit": "0cdc758a56360bf58a851fe91085a327ec97685a",
+        "cases": [
+          {
+            "transport": "https",
+            "group_size": 1,
+            "local_results": [
+              {
+                "id": "1",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000069",
+                "target": 0,
+                "target_bytes": "0470c6e4713921551b68610c90ff5142d85cfdaac48dafd6d33a09100c831ca9f66588ea2d46f9faebb63e39cb99db83dc606edb2fceadf6c8e6cca5a821b14f27"
+              },
+              {
+                "id": "2",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000036",
+                "target": 1,
+                "target_bytes": "0488c0f53200725b48cb7249baa205c70ab12fc302ff7625915bcc2e63803cbd33b84ceb4d639b902b8753472c1d5d561cca2f1913df3333a2e3d449c6b969659c"
+              },
+              {
+                "id": "3",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                "target": 3,
+                "target_bytes": "04d2083f9e07d640f2764fc7912d2f204420eceb4f0c00dd6eadba3cee444245e04733802b0021932f71d0e9fb7d183b9bf8ad81dabf702624d9c332a8ce3b1f59"
+              },
+              {
+                "id": "4",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "scalar": "0x00000000000000000000000000000001000000000000000000000000000000d0",
+                "target": 4,
+                "target_bytes": "04da80618bb852f44b4ccfb14e72085d13839cbb8d0eba1e3a2743387dd95f317eece9a357e25c8d7fba23055a2a541c30754bc7d5ca963fba93faea92d4d6fbb1"
+              },
+              {
+                "id": "5",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "scalar": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                "target": 2,
+                "target_bytes": "04ce5f0e6dc2b77311d3bf691742d4debf8e6eddd8a631957a5978603da4f02f96db6f9efc8b320982d46687230fbe18365c1e054f966c04ee15484aef38c600e3"
+              }
+            ],
+            "server_results": [
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "id": 1,
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000069",
+                "target": 0,
+                "target_bytes": "0470c6e4713921551b68610c90ff5142d85cfdaac48dafd6d33a09100c831ca9f66588ea2d46f9faebb63e39cb99db83dc606edb2fceadf6c8e6cca5a821b14f27"
+              },
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "id": 2,
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000036",
+                "target": 1,
+                "target_bytes": "0488c0f53200725b48cb7249baa205c70ab12fc302ff7625915bcc2e63803cbd33b84ceb4d639b902b8753472c1d5d561cca2f1913df3333a2e3d449c6b969659c"
+              },
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "id": 3,
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                "target": 3,
+                "target_bytes": "04d2083f9e07d640f2764fc7912d2f204420eceb4f0c00dd6eadba3cee444245e04733802b0021932f71d0e9fb7d183b9bf8ad81dabf702624d9c332a8ce3b1f59"
+              },
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "id": 4,
+                "scalar": "0x00000000000000000000000000000001000000000000000000000000000000d0",
+                "target": 4,
+                "target_bytes": "04da80618bb852f44b4ccfb14e72085d13839cbb8d0eba1e3a2743387dd95f317eece9a357e25c8d7fba23055a2a541c30754bc7d5ca963fba93faea92d4d6fbb1"
+              },
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "id": 5,
+                "scalar": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                "target": 2,
+                "target_bytes": "04ce5f0e6dc2b77311d3bf691742d4debf8e6eddd8a631957a5978603da4f02f96db6f9efc8b320982d46687230fbe18365c1e054f966c04ee15484aef38c600e3"
+              }
+            ],
+            "events": [
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "running",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 1070616,
+                "device": 0,
+                "visible_devices": 8
+              },
+              {
+                "queue": "0",
+                "type": "self-test-start"
+              },
+              {
+                "queue": "0",
+                "self_test": {
+                  "compute_partition": "SPX",
+                  "compute_units": 304,
+                  "driver": 71526333,
+                  "memory_partition": "NPS1",
+                  "ordinal": 0,
+                  "passed": true,
+                  "pci_bus_id": "0000:1b:00.0",
+                  "runtime": 71526333,
+                  "uuid": "30646366333934386337333264313231"
+                },
+                "type": "ready",
+                "uuid": "30646366333934386337333264313231"
+              },
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "running",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 1070616,
+                "device": 0,
+                "visible_devices": 8,
+                "project": "0fcf116a-057a-43e5-a29f-59079619c362",
+                "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "assignment_generation": "1"
+              },
+              {
+                "grant": {
+                  "begin": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                  "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                  "end_exclusive": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "epoch": "a454437b5003b9f7eb4fb55d1a98e1a5",
+                  "expires": 1793465091,
+                  "generation": 1,
+                  "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                  "owner": "a9196a57-c1a8-4731-9da2-87183f9964a4.0841cf28-c549-4163-94dd-42e902b475aa",
+                  "project": "0fcf116a-057a-43e5-a29f-59079619c362"
+                },
+                "queue": "0",
+                "type": "grant-start"
+              },
+              {
+                "interval": {
+                  "begin": "0x0000000000000000000000000000000100000000000000000000000000000059",
+                  "end_exclusive": "0x000000000000000000000000000000010000000000000000000000000000006a"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "device_steps": 2,
+                "kernel_ms": 0.23188599944114685,
+                "sequence": 1,
+                "type": "progress"
+              },
+              {
+                "matches": 1,
+                "sequence": 2,
+                "transaction_ms": 0.36943,
+                "type": "checkpoint"
+              },
+              {
+                "interval": {
+                  "begin": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                  "end_exclusive": "0x0000000000000000000000000000000100000000000000000000000000000059"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "matches": 1,
+                "sequence": 12,
+                "transaction_ms": 0.363591,
+                "type": "checkpoint"
+              },
+              {
+                "matches": 1,
+                "sequence": 23,
+                "transaction_ms": 0.307655,
+                "type": "checkpoint"
+              },
+              {
+                "matches": 0,
+                "sequence": 25,
+                "transaction_ms": 0.345721,
+                "type": "checkpoint"
+              },
+              {
+                "cold": true,
+                "complete": true,
+                "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000067",
+                "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000023",
+                "executor_setups": 1,
+                "grant": {
+                  "begin": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                  "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                  "end_exclusive": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "epoch": "a454437b5003b9f7eb4fb55d1a98e1a5",
+                  "expires": 1793465091,
+                  "generation": 1,
+                  "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                  "owner": "a9196a57-c1a8-4731-9da2-87183f9964a4.0841cf28-c549-4163-94dd-42e902b475aa",
+                  "project": "0fcf116a-057a-43e5-a29f-59079619c362"
+                },
+                "kernel_ms": 4.648224979639053,
+                "m": 17,
+                "mode": "bsgs",
+                "table_upload_ms": 0.014632999897003174,
+                "target_count": 5,
+                "tile_order": "reverse",
+                "type": "grant-finish",
+                "wall_ns": 77836646,
+                "work_units": 2
+              },
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "running",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 1070616,
+                "device": 0,
+                "visible_devices": 8,
+                "project": "0fcf116a-057a-43e5-a29f-59079619c362",
+                "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "assignment_generation": "2"
+              },
+              {
+                "grant": {
+                  "begin": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                  "end_exclusive": "0x00000000000000000000000000000001000000000000000000000000000000d1",
+                  "epoch": "a454437b5003b9f7eb4fb55d1a98e1a5",
+                  "expires": 1793465091,
+                  "generation": 2,
+                  "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                  "owner": "a9196a57-c1a8-4731-9da2-87183f9964a4.0841cf28-c549-4163-94dd-42e902b475aa",
+                  "project": "0fcf116a-057a-43e5-a29f-59079619c362"
+                },
+                "queue": "0",
+                "type": "grant-start"
+              },
+              {
+                "interval": {
+                  "begin": "0x00000000000000000000000000000001000000000000000000000000000000c0",
+                  "end_exclusive": "0x00000000000000000000000000000001000000000000000000000000000000d1"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "matches": 1,
+                "sequence": 29,
+                "transaction_ms": 0.326366,
+                "type": "checkpoint"
+              },
+              {
+                "interval": {
+                  "begin": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "end_exclusive": "0x00000000000000000000000000000001000000000000000000000000000000c0"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "matches": 1,
+                "sequence": 47,
+                "transaction_ms": 0.30952399999999997,
+                "type": "checkpoint"
+              },
+              {
+                "matches": 0,
+                "sequence": 49,
+                "transaction_ms": 0.355715,
+                "type": "checkpoint"
+              },
+              {
+                "cold": false,
+                "complete": true,
+                "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000067",
+                "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000023",
+                "executor_setups": 1,
+                "grant": {
+                  "begin": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                  "end_exclusive": "0x00000000000000000000000000000001000000000000000000000000000000d1",
+                  "epoch": "a454437b5003b9f7eb4fb55d1a98e1a5",
+                  "expires": 1793465091,
+                  "generation": 2,
+                  "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                  "owner": "a9196a57-c1a8-4731-9da2-87183f9964a4.0841cf28-c549-4163-94dd-42e902b475aa",
+                  "project": "0fcf116a-057a-43e5-a29f-59079619c362"
+                },
+                "kernel_ms": 4.628984987735748,
+                "m": 17,
+                "mode": "bsgs",
+                "table_upload_ms": 0.014632999897003174,
+                "target_count": 5,
+                "tile_order": "reverse",
+                "type": "grant-finish",
+                "wall_ns": 39713789,
+                "work_units": 2
+              },
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "idle",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 1070616,
+                "device": 0,
+                "visible_devices": 8
+              },
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "stopped",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 1070616,
+                "device": 0,
+                "visible_devices": 8
+              },
+              {
+                "completed": 2,
+                "executor_setups": 1,
+                "reason": "drained",
+                "type": "exit",
+                "wall_ms": 118.83079
+              }
+            ]
+          },
+          {
+            "transport": "file",
+            "group_size": 8,
+            "local_results": [
+              {
+                "id": "1",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000069",
+                "target": 0,
+                "target_bytes": "0470c6e4713921551b68610c90ff5142d85cfdaac48dafd6d33a09100c831ca9f66588ea2d46f9faebb63e39cb99db83dc606edb2fceadf6c8e6cca5a821b14f27"
+              },
+              {
+                "id": "2",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000036",
+                "target": 1,
+                "target_bytes": "0488c0f53200725b48cb7249baa205c70ab12fc302ff7625915bcc2e63803cbd33b84ceb4d639b902b8753472c1d5d561cca2f1913df3333a2e3d449c6b969659c"
+              },
+              {
+                "id": "3",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                "target": 3,
+                "target_bytes": "04d2083f9e07d640f2764fc7912d2f204420eceb4f0c00dd6eadba3cee444245e04733802b0021932f71d0e9fb7d183b9bf8ad81dabf702624d9c332a8ce3b1f59"
+              },
+              {
+                "id": "4",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "scalar": "0x00000000000000000000000000000001000000000000000000000000000000d0",
+                "target": 4,
+                "target_bytes": "04da80618bb852f44b4ccfb14e72085d13839cbb8d0eba1e3a2743387dd95f317eece9a357e25c8d7fba23055a2a541c30754bc7d5ca963fba93faea92d4d6fbb1"
+              },
+              {
+                "id": "5",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "scalar": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                "target": 2,
+                "target_bytes": "04ce5f0e6dc2b77311d3bf691742d4debf8e6eddd8a631957a5978603da4f02f96db6f9efc8b320982d46687230fbe18365c1e054f966c04ee15484aef38c600e3"
+              }
+            ],
+            "server_results": [
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "id": 6,
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000069",
+                "target": 0,
+                "target_bytes": "0470c6e4713921551b68610c90ff5142d85cfdaac48dafd6d33a09100c831ca9f66588ea2d46f9faebb63e39cb99db83dc606edb2fceadf6c8e6cca5a821b14f27"
+              },
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "id": 7,
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000036",
+                "target": 1,
+                "target_bytes": "0488c0f53200725b48cb7249baa205c70ab12fc302ff7625915bcc2e63803cbd33b84ceb4d639b902b8753472c1d5d561cca2f1913df3333a2e3d449c6b969659c"
+              },
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "id": 8,
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                "target": 3,
+                "target_bytes": "04d2083f9e07d640f2764fc7912d2f204420eceb4f0c00dd6eadba3cee444245e04733802b0021932f71d0e9fb7d183b9bf8ad81dabf702624d9c332a8ce3b1f59"
+              },
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "id": 9,
+                "scalar": "0x00000000000000000000000000000001000000000000000000000000000000d0",
+                "target": 4,
+                "target_bytes": "04da80618bb852f44b4ccfb14e72085d13839cbb8d0eba1e3a2743387dd95f317eece9a357e25c8d7fba23055a2a541c30754bc7d5ca963fba93faea92d4d6fbb1"
+              },
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "id": 10,
+                "scalar": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                "target": 2,
+                "target_bytes": "04ce5f0e6dc2b77311d3bf691742d4debf8e6eddd8a631957a5978603da4f02f96db6f9efc8b320982d46687230fbe18365c1e054f966c04ee15484aef38c600e3"
+              }
+            ],
+            "events": [
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "running",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 1070667,
+                "device": 0,
+                "visible_devices": 8
+              },
+              {
+                "queue": "0",
+                "type": "self-test-start"
+              },
+              {
+                "queue": "0",
+                "self_test": {
+                  "compute_partition": "SPX",
+                  "compute_units": 304,
+                  "driver": 71526333,
+                  "memory_partition": "NPS1",
+                  "ordinal": 0,
+                  "passed": true,
+                  "pci_bus_id": "0000:1b:00.0",
+                  "runtime": 71526333,
+                  "uuid": "30646366333934386337333264313231"
+                },
+                "type": "ready",
+                "uuid": "30646366333934386337333264313231"
+              },
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "running",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 1070667,
+                "device": 0,
+                "visible_devices": 8,
+                "project": "a8987f08-07a8-43fa-a24c-d5a5aeedce70",
+                "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "assignment_generation": "1"
+              },
+              {
+                "grant": {
+                  "begin": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                  "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                  "end_exclusive": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "epoch": "f0916c01fa12fe9c102ac1efce295bd6",
+                  "expires": 1793465093,
+                  "generation": 1,
+                  "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                  "owner": "a9196a57-c1a8-4731-9da2-87183f9964a4.23be7ee9-20e2-4937-864f-d76fe5ebae86",
+                  "project": "a8987f08-07a8-43fa-a24c-d5a5aeedce70"
+                },
+                "queue": "0",
+                "type": "grant-start"
+              },
+              {
+                "interval": {
+                  "begin": "0x0000000000000000000000000000000100000000000000000000000000000059",
+                  "end_exclusive": "0x000000000000000000000000000000010000000000000000000000000000006a"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "device_steps": 2,
+                "kernel_ms": 0.24046599864959717,
+                "sequence": 1,
+                "type": "progress"
+              },
+              {
+                "matches": 1,
+                "sequence": 2,
+                "transaction_ms": 0.36694299999999996,
+                "type": "checkpoint"
+              },
+              {
+                "interval": {
+                  "begin": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                  "end_exclusive": "0x0000000000000000000000000000000100000000000000000000000000000059"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "matches": 1,
+                "sequence": 12,
+                "transaction_ms": 0.357517,
+                "type": "checkpoint"
+              },
+              {
+                "matches": 1,
+                "sequence": 23,
+                "transaction_ms": 0.341259,
+                "type": "checkpoint"
+              },
+              {
+                "matches": 0,
+                "sequence": 25,
+                "transaction_ms": 0.369139,
+                "type": "checkpoint"
+              },
+              {
+                "cold": true,
+                "complete": true,
+                "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000067",
+                "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000023",
+                "executor_setups": 1,
+                "grant": {
+                  "begin": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                  "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                  "end_exclusive": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "epoch": "f0916c01fa12fe9c102ac1efce295bd6",
+                  "expires": 1793465093,
+                  "generation": 1,
+                  "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                  "owner": "a9196a57-c1a8-4731-9da2-87183f9964a4.23be7ee9-20e2-4937-864f-d76fe5ebae86",
+                  "project": "a8987f08-07a8-43fa-a24c-d5a5aeedce70"
+                },
+                "kernel_ms": 4.825869008898735,
+                "m": 17,
+                "mode": "bsgs",
+                "table_upload_ms": 0.015314999967813492,
+                "target_count": 5,
+                "tile_order": "reverse",
+                "type": "grant-finish",
+                "wall_ns": 78473807,
+                "work_units": 2
+              },
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "running",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 1070667,
+                "device": 0,
+                "visible_devices": 8,
+                "project": "a8987f08-07a8-43fa-a24c-d5a5aeedce70",
+                "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "assignment_generation": "2"
+              },
+              {
+                "grant": {
+                  "begin": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                  "end_exclusive": "0x00000000000000000000000000000001000000000000000000000000000000d1",
+                  "epoch": "f0916c01fa12fe9c102ac1efce295bd6",
+                  "expires": 1793465093,
+                  "generation": 2,
+                  "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                  "owner": "a9196a57-c1a8-4731-9da2-87183f9964a4.23be7ee9-20e2-4937-864f-d76fe5ebae86",
+                  "project": "a8987f08-07a8-43fa-a24c-d5a5aeedce70"
+                },
+                "queue": "0",
+                "type": "grant-start"
+              },
+              {
+                "interval": {
+                  "begin": "0x00000000000000000000000000000001000000000000000000000000000000c0",
+                  "end_exclusive": "0x00000000000000000000000000000001000000000000000000000000000000d1"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "matches": 1,
+                "sequence": 29,
+                "transaction_ms": 0.35001899999999997,
+                "type": "checkpoint"
+              },
+              {
+                "interval": {
+                  "begin": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "end_exclusive": "0x00000000000000000000000000000001000000000000000000000000000000c0"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "matches": 1,
+                "sequence": 47,
+                "transaction_ms": 0.329246,
+                "type": "checkpoint"
+              },
+              {
+                "matches": 0,
+                "sequence": 49,
+                "transaction_ms": 0.357375,
+                "type": "checkpoint"
+              },
+              {
+                "cold": false,
+                "complete": true,
+                "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000067",
+                "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000023",
+                "executor_setups": 1,
+                "grant": {
+                  "begin": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                  "end_exclusive": "0x00000000000000000000000000000001000000000000000000000000000000d1",
+                  "epoch": "f0916c01fa12fe9c102ac1efce295bd6",
+                  "expires": 1793465093,
+                  "generation": 2,
+                  "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                  "owner": "a9196a57-c1a8-4731-9da2-87183f9964a4.23be7ee9-20e2-4937-864f-d76fe5ebae86",
+                  "project": "a8987f08-07a8-43fa-a24c-d5a5aeedce70"
+                },
+                "kernel_ms": 4.814643010497093,
+                "m": 17,
+                "mode": "bsgs",
+                "table_upload_ms": 0.015314999967813492,
+                "target_count": 5,
+                "tile_order": "reverse",
+                "type": "grant-finish",
+                "wall_ns": 40051604,
+                "work_units": 2
+              },
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "idle",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 1070667,
+                "device": 0,
+                "visible_devices": 8
+              },
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "stopped",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 1070667,
+                "device": 0,
+                "visible_devices": 8
+              },
+              {
+                "completed": 2,
+                "executor_setups": 1,
+                "reason": "drained",
+                "type": "exit",
+                "wall_ms": 119.82430699999999
+              }
+            ]
+          }
+        ],
+        "binaries": {
+          "keyhunt-coordinator": "787d5fc6f31d6a2c8b3752bde6f6e0e9ce7afa64c2dd5c2fd2003995e5c64402",
+          "keyhunt-worker": "9b2e29e6aa4ebd1ffd59478f1f977748af89c767ddd3ce7519a96895a6bf36e6",
+          "keyhunt": "0f16865d35e69ea437cbb531f30cb5f7d4f0dd494abe6be1afe52ddb52eb8628"
+        }
+      }
+    },
+    "both-ends": {
+      "workers": {
+        "tile_order": "both-ends",
+        "passed": true,
+        "hardware": true,
+        "backend": "hip",
+        "oracle_commit": "0cdc758a56360bf58a851fe91085a327ec97685a",
+        "cases": [
+          {
+            "transport": "https",
+            "group_size": 1,
+            "local_results": [
+              {
+                "id": "1",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                "target": 3,
+                "target_bytes": "04d2083f9e07d640f2764fc7912d2f204420eceb4f0c00dd6eadba3cee444245e04733802b0021932f71d0e9fb7d183b9bf8ad81dabf702624d9c332a8ce3b1f59"
+              },
+              {
+                "id": "2",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000069",
+                "target": 0,
+                "target_bytes": "0470c6e4713921551b68610c90ff5142d85cfdaac48dafd6d33a09100c831ca9f66588ea2d46f9faebb63e39cb99db83dc606edb2fceadf6c8e6cca5a821b14f27"
+              },
+              {
+                "id": "3",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000036",
+                "target": 1,
+                "target_bytes": "0488c0f53200725b48cb7249baa205c70ab12fc302ff7625915bcc2e63803cbd33b84ceb4d639b902b8753472c1d5d561cca2f1913df3333a2e3d449c6b969659c"
+              },
+              {
+                "id": "4",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "scalar": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                "target": 2,
+                "target_bytes": "04ce5f0e6dc2b77311d3bf691742d4debf8e6eddd8a631957a5978603da4f02f96db6f9efc8b320982d46687230fbe18365c1e054f966c04ee15484aef38c600e3"
+              },
+              {
+                "id": "5",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "scalar": "0x00000000000000000000000000000001000000000000000000000000000000d0",
+                "target": 4,
+                "target_bytes": "04da80618bb852f44b4ccfb14e72085d13839cbb8d0eba1e3a2743387dd95f317eece9a357e25c8d7fba23055a2a541c30754bc7d5ca963fba93faea92d4d6fbb1"
+              }
+            ],
+            "server_results": [
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "id": 1,
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                "target": 3,
+                "target_bytes": "04d2083f9e07d640f2764fc7912d2f204420eceb4f0c00dd6eadba3cee444245e04733802b0021932f71d0e9fb7d183b9bf8ad81dabf702624d9c332a8ce3b1f59"
+              },
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "id": 2,
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000069",
+                "target": 0,
+                "target_bytes": "0470c6e4713921551b68610c90ff5142d85cfdaac48dafd6d33a09100c831ca9f66588ea2d46f9faebb63e39cb99db83dc606edb2fceadf6c8e6cca5a821b14f27"
+              },
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "id": 3,
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000036",
+                "target": 1,
+                "target_bytes": "0488c0f53200725b48cb7249baa205c70ab12fc302ff7625915bcc2e63803cbd33b84ceb4d639b902b8753472c1d5d561cca2f1913df3333a2e3d449c6b969659c"
+              },
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "id": 4,
+                "scalar": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                "target": 2,
+                "target_bytes": "04ce5f0e6dc2b77311d3bf691742d4debf8e6eddd8a631957a5978603da4f02f96db6f9efc8b320982d46687230fbe18365c1e054f966c04ee15484aef38c600e3"
+              },
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "id": 5,
+                "scalar": "0x00000000000000000000000000000001000000000000000000000000000000d0",
+                "target": 4,
+                "target_bytes": "04da80618bb852f44b4ccfb14e72085d13839cbb8d0eba1e3a2743387dd95f317eece9a357e25c8d7fba23055a2a541c30754bc7d5ca963fba93faea92d4d6fbb1"
+              }
+            ],
+            "events": [
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "running",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 1070885,
+                "device": 0,
+                "visible_devices": 8
+              },
+              {
+                "queue": "0",
+                "type": "self-test-start"
+              },
+              {
+                "queue": "0",
+                "self_test": {
+                  "compute_partition": "SPX",
+                  "compute_units": 304,
+                  "driver": 71526333,
+                  "memory_partition": "NPS1",
+                  "ordinal": 0,
+                  "passed": true,
+                  "pci_bus_id": "0000:1b:00.0",
+                  "runtime": 71526333,
+                  "uuid": "30646366333934386337333264313231"
+                },
+                "type": "ready",
+                "uuid": "30646366333934386337333264313231"
+              },
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "running",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 1070885,
+                "device": 0,
+                "visible_devices": 8,
+                "project": "4159d57b-e592-479f-a1e2-23759d1eb856",
+                "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "assignment_generation": "1"
+              },
+              {
+                "grant": {
+                  "begin": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                  "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                  "end_exclusive": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "epoch": "fbe1a850cfb34fe94afd03f620c10338",
+                  "expires": 1793465095,
+                  "generation": 1,
+                  "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                  "owner": "7ebbe92c-44f3-4a52-a369-9b5f3d9288fc.d2bafbd6-8412-4349-89a7-e9bd97d29b2f",
+                  "project": "4159d57b-e592-479f-a1e2-23759d1eb856"
+                },
+                "queue": "0",
+                "type": "grant-start"
+              },
+              {
+                "interval": {
+                  "begin": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                  "end_exclusive": "0x0000000000000000000000000000000100000000000000000000000000000014"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "device_steps": 2,
+                "kernel_ms": 0.22218400239944458,
+                "sequence": 1,
+                "type": "progress"
+              },
+              {
+                "matches": 1,
+                "sequence": 3,
+                "transaction_ms": 0.344941,
+                "type": "checkpoint"
+              },
+              {
+                "interval": {
+                  "begin": "0x0000000000000000000000000000000100000000000000000000000000000014",
+                  "end_exclusive": "0x000000000000000000000000000000010000000000000000000000000000006a"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "matches": 1,
+                "sequence": 6,
+                "transaction_ms": 0.359988,
+                "type": "checkpoint"
+              },
+              {
+                "matches": 1,
+                "sequence": 22,
+                "transaction_ms": 0.32755799999999996,
+                "type": "checkpoint"
+              },
+              {
+                "matches": 0,
+                "sequence": 25,
+                "transaction_ms": 0.35492199999999996,
+                "type": "checkpoint"
+              },
+              {
+                "cold": true,
+                "complete": true,
+                "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000067",
+                "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000023",
+                "executor_setups": 1,
+                "grant": {
+                  "begin": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                  "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                  "end_exclusive": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "epoch": "fbe1a850cfb34fe94afd03f620c10338",
+                  "expires": 1793465095,
+                  "generation": 1,
+                  "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                  "owner": "7ebbe92c-44f3-4a52-a369-9b5f3d9288fc.d2bafbd6-8412-4349-89a7-e9bd97d29b2f",
+                  "project": "4159d57b-e592-479f-a1e2-23759d1eb856"
+                },
+                "kernel_ms": 4.640768975019455,
+                "m": 17,
+                "mode": "bsgs",
+                "table_upload_ms": 0.01463400013744831,
+                "target_count": 5,
+                "tile_order": "both-ends",
+                "type": "grant-finish",
+                "wall_ns": 78059541,
+                "work_units": 2
+              },
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "running",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 1070885,
+                "device": 0,
+                "visible_devices": 8,
+                "project": "4159d57b-e592-479f-a1e2-23759d1eb856",
+                "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "assignment_generation": "2"
+              },
+              {
+                "grant": {
+                  "begin": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                  "end_exclusive": "0x00000000000000000000000000000001000000000000000000000000000000d1",
+                  "epoch": "fbe1a850cfb34fe94afd03f620c10338",
+                  "expires": 1793465095,
+                  "generation": 2,
+                  "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                  "owner": "7ebbe92c-44f3-4a52-a369-9b5f3d9288fc.d2bafbd6-8412-4349-89a7-e9bd97d29b2f",
+                  "project": "4159d57b-e592-479f-a1e2-23759d1eb856"
+                },
+                "queue": "0",
+                "type": "grant-start"
+              },
+              {
+                "interval": {
+                  "begin": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "end_exclusive": "0x000000000000000000000000000000010000000000000000000000000000007b"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "matches": 1,
+                "sequence": 28,
+                "transaction_ms": 0.300077,
+                "type": "checkpoint"
+              },
+              {
+                "interval": {
+                  "begin": "0x000000000000000000000000000000010000000000000000000000000000007b",
+                  "end_exclusive": "0x00000000000000000000000000000001000000000000000000000000000000d1"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "matches": 1,
+                "sequence": 33,
+                "transaction_ms": 0.312708,
+                "type": "checkpoint"
+              },
+              {
+                "matches": 0,
+                "sequence": 49,
+                "transaction_ms": 0.359966,
+                "type": "checkpoint"
+              },
+              {
+                "cold": false,
+                "complete": true,
+                "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000067",
+                "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000023",
+                "executor_setups": 1,
+                "grant": {
+                  "begin": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                  "end_exclusive": "0x00000000000000000000000000000001000000000000000000000000000000d1",
+                  "epoch": "fbe1a850cfb34fe94afd03f620c10338",
+                  "expires": 1793465095,
+                  "generation": 2,
+                  "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                  "owner": "7ebbe92c-44f3-4a52-a369-9b5f3d9288fc.d2bafbd6-8412-4349-89a7-e9bd97d29b2f",
+                  "project": "4159d57b-e592-479f-a1e2-23759d1eb856"
+                },
+                "kernel_ms": 4.6408509612083435,
+                "m": 17,
+                "mode": "bsgs",
+                "table_upload_ms": 0.01463400013744831,
+                "target_count": 5,
+                "tile_order": "both-ends",
+                "type": "grant-finish",
+                "wall_ns": 39839784,
+                "work_units": 2
+              },
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "idle",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 1070885,
+                "device": 0,
+                "visible_devices": 8
+              },
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "stopped",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 1070885,
+                "device": 0,
+                "visible_devices": 8
+              },
+              {
+                "completed": 2,
+                "executor_setups": 1,
+                "reason": "drained",
+                "type": "exit",
+                "wall_ms": 119.190322
+              }
+            ]
+          },
+          {
+            "transport": "file",
+            "group_size": 8,
+            "local_results": [
+              {
+                "id": "1",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                "target": 3,
+                "target_bytes": "04d2083f9e07d640f2764fc7912d2f204420eceb4f0c00dd6eadba3cee444245e04733802b0021932f71d0e9fb7d183b9bf8ad81dabf702624d9c332a8ce3b1f59"
+              },
+              {
+                "id": "2",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000069",
+                "target": 0,
+                "target_bytes": "0470c6e4713921551b68610c90ff5142d85cfdaac48dafd6d33a09100c831ca9f66588ea2d46f9faebb63e39cb99db83dc606edb2fceadf6c8e6cca5a821b14f27"
+              },
+              {
+                "id": "3",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000036",
+                "target": 1,
+                "target_bytes": "0488c0f53200725b48cb7249baa205c70ab12fc302ff7625915bcc2e63803cbd33b84ceb4d639b902b8753472c1d5d561cca2f1913df3333a2e3d449c6b969659c"
+              },
+              {
+                "id": "4",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "scalar": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                "target": 2,
+                "target_bytes": "04ce5f0e6dc2b77311d3bf691742d4debf8e6eddd8a631957a5978603da4f02f96db6f9efc8b320982d46687230fbe18365c1e054f966c04ee15484aef38c600e3"
+              },
+              {
+                "id": "5",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "scalar": "0x00000000000000000000000000000001000000000000000000000000000000d0",
+                "target": 4,
+                "target_bytes": "04da80618bb852f44b4ccfb14e72085d13839cbb8d0eba1e3a2743387dd95f317eece9a357e25c8d7fba23055a2a541c30754bc7d5ca963fba93faea92d4d6fbb1"
+              }
+            ],
+            "server_results": [
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "id": 6,
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                "target": 3,
+                "target_bytes": "04d2083f9e07d640f2764fc7912d2f204420eceb4f0c00dd6eadba3cee444245e04733802b0021932f71d0e9fb7d183b9bf8ad81dabf702624d9c332a8ce3b1f59"
+              },
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "id": 7,
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000069",
+                "target": 0,
+                "target_bytes": "0470c6e4713921551b68610c90ff5142d85cfdaac48dafd6d33a09100c831ca9f66588ea2d46f9faebb63e39cb99db83dc606edb2fceadf6c8e6cca5a821b14f27"
+              },
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "id": 8,
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000036",
+                "target": 1,
+                "target_bytes": "0488c0f53200725b48cb7249baa205c70ab12fc302ff7625915bcc2e63803cbd33b84ceb4d639b902b8753472c1d5d561cca2f1913df3333a2e3d449c6b969659c"
+              },
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "id": 9,
+                "scalar": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                "target": 2,
+                "target_bytes": "04ce5f0e6dc2b77311d3bf691742d4debf8e6eddd8a631957a5978603da4f02f96db6f9efc8b320982d46687230fbe18365c1e054f966c04ee15484aef38c600e3"
+              },
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "id": 10,
+                "scalar": "0x00000000000000000000000000000001000000000000000000000000000000d0",
+                "target": 4,
+                "target_bytes": "04da80618bb852f44b4ccfb14e72085d13839cbb8d0eba1e3a2743387dd95f317eece9a357e25c8d7fba23055a2a541c30754bc7d5ca963fba93faea92d4d6fbb1"
+              }
+            ],
+            "events": [
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "running",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 1070937,
+                "device": 0,
+                "visible_devices": 8
+              },
+              {
+                "queue": "0",
+                "type": "self-test-start"
+              },
+              {
+                "queue": "0",
+                "self_test": {
+                  "compute_partition": "SPX",
+                  "compute_units": 304,
+                  "driver": 71526333,
+                  "memory_partition": "NPS1",
+                  "ordinal": 0,
+                  "passed": true,
+                  "pci_bus_id": "0000:1b:00.0",
+                  "runtime": 71526333,
+                  "uuid": "30646366333934386337333264313231"
+                },
+                "type": "ready",
+                "uuid": "30646366333934386337333264313231"
+              },
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "running",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 1070937,
+                "device": 0,
+                "visible_devices": 8,
+                "project": "fc991a9b-a9ef-4aa5-b878-12590394a40b",
+                "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "assignment_generation": "1"
+              },
+              {
+                "grant": {
+                  "begin": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                  "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                  "end_exclusive": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "epoch": "60a11856e00378e69a969c6355fce75e",
+                  "expires": 1793465097,
+                  "generation": 1,
+                  "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                  "owner": "7ebbe92c-44f3-4a52-a369-9b5f3d9288fc.d1e1c047-1069-4a58-9744-cc15cd5138ff",
+                  "project": "fc991a9b-a9ef-4aa5-b878-12590394a40b"
+                },
+                "queue": "0",
+                "type": "grant-start"
+              },
+              {
+                "interval": {
+                  "begin": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                  "end_exclusive": "0x0000000000000000000000000000000100000000000000000000000000000014"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "device_steps": 2,
+                "kernel_ms": 0.23160499334335327,
+                "sequence": 1,
+                "type": "progress"
+              },
+              {
+                "matches": 1,
+                "sequence": 3,
+                "transaction_ms": 0.36139,
+                "type": "checkpoint"
+              },
+              {
+                "interval": {
+                  "begin": "0x0000000000000000000000000000000100000000000000000000000000000014",
+                  "end_exclusive": "0x000000000000000000000000000000010000000000000000000000000000006a"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "matches": 1,
+                "sequence": 6,
+                "transaction_ms": 0.342754,
+                "type": "checkpoint"
+              },
+              {
+                "matches": 1,
+                "sequence": 22,
+                "transaction_ms": 0.32822,
+                "type": "checkpoint"
+              },
+              {
+                "matches": 0,
+                "sequence": 25,
+                "transaction_ms": 0.357829,
+                "type": "checkpoint"
+              },
+              {
+                "cold": true,
+                "complete": true,
+                "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000067",
+                "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000023",
+                "executor_setups": 1,
+                "grant": {
+                  "begin": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                  "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                  "end_exclusive": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "epoch": "60a11856e00378e69a969c6355fce75e",
+                  "expires": 1793465097,
+                  "generation": 1,
+                  "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                  "owner": "7ebbe92c-44f3-4a52-a369-9b5f3d9288fc.d1e1c047-1069-4a58-9744-cc15cd5138ff",
+                  "project": "fc991a9b-a9ef-4aa5-b878-12590394a40b"
+                },
+                "kernel_ms": 4.819534987211227,
+                "m": 17,
+                "mode": "bsgs",
+                "table_upload_ms": 0.01435299962759018,
+                "target_count": 5,
+                "tile_order": "both-ends",
+                "type": "grant-finish",
+                "wall_ns": 78213382,
+                "work_units": 2
+              },
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "running",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 1070937,
+                "device": 0,
+                "visible_devices": 8,
+                "project": "fc991a9b-a9ef-4aa5-b878-12590394a40b",
+                "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "assignment_generation": "2"
+              },
+              {
+                "grant": {
+                  "begin": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                  "end_exclusive": "0x00000000000000000000000000000001000000000000000000000000000000d1",
+                  "epoch": "60a11856e00378e69a969c6355fce75e",
+                  "expires": 1793465097,
+                  "generation": 2,
+                  "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                  "owner": "7ebbe92c-44f3-4a52-a369-9b5f3d9288fc.d1e1c047-1069-4a58-9744-cc15cd5138ff",
+                  "project": "fc991a9b-a9ef-4aa5-b878-12590394a40b"
+                },
+                "queue": "0",
+                "type": "grant-start"
+              },
+              {
+                "interval": {
+                  "begin": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "end_exclusive": "0x000000000000000000000000000000010000000000000000000000000000007b"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "matches": 1,
+                "sequence": 28,
+                "transaction_ms": 0.290302,
+                "type": "checkpoint"
+              },
+              {
+                "interval": {
+                  "begin": "0x000000000000000000000000000000010000000000000000000000000000007b",
+                  "end_exclusive": "0x00000000000000000000000000000001000000000000000000000000000000d1"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "matches": 1,
+                "sequence": 33,
+                "transaction_ms": 0.318944,
+                "type": "checkpoint"
+              },
+              {
+                "matches": 0,
+                "sequence": 49,
+                "transaction_ms": 0.360349,
+                "type": "checkpoint"
+              },
+              {
+                "cold": false,
+                "complete": true,
+                "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000067",
+                "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000023",
+                "executor_setups": 1,
+                "grant": {
+                  "begin": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                  "end_exclusive": "0x00000000000000000000000000000001000000000000000000000000000000d1",
+                  "epoch": "60a11856e00378e69a969c6355fce75e",
+                  "expires": 1793465097,
+                  "generation": 2,
+                  "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                  "owner": "7ebbe92c-44f3-4a52-a369-9b5f3d9288fc.d1e1c047-1069-4a58-9744-cc15cd5138ff",
+                  "project": "fc991a9b-a9ef-4aa5-b878-12590394a40b"
+                },
+                "kernel_ms": 4.8192169815301895,
+                "m": 17,
+                "mode": "bsgs",
+                "table_upload_ms": 0.01435299962759018,
+                "target_count": 5,
+                "tile_order": "both-ends",
+                "type": "grant-finish",
+                "wall_ns": 39916814,
+                "work_units": 2
+              },
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "idle",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 1070937,
+                "device": 0,
+                "visible_devices": 8
+              },
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "stopped",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 1070937,
+                "device": 0,
+                "visible_devices": 8
+              },
+              {
+                "completed": 2,
+                "executor_setups": 1,
+                "reason": "drained",
+                "type": "exit",
+                "wall_ms": 119.401777
+              }
+            ]
+          }
+        ],
+        "binaries": {
+          "keyhunt-coordinator": "787d5fc6f31d6a2c8b3752bde6f6e0e9ce7afa64c2dd5c2fd2003995e5c64402",
+          "keyhunt-worker": "9b2e29e6aa4ebd1ffd59478f1f977748af89c767ddd3ce7519a96895a6bf36e6",
+          "keyhunt": "0f16865d35e69ea437cbb531f30cb5f7d4f0dd494abe6be1afe52ddb52eb8628"
+        }
+      }
+    },
+    "dance": {
+      "workers": {
+        "tile_order": "dance",
+        "passed": true,
+        "hardware": true,
+        "backend": "hip",
+        "oracle_commit": "0cdc758a56360bf58a851fe91085a327ec97685a",
+        "cases": [
+          {
+            "transport": "https",
+            "group_size": 1,
+            "local_results": [
+              {
+                "id": "1",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                "target": 3,
+                "target_bytes": "04d2083f9e07d640f2764fc7912d2f204420eceb4f0c00dd6eadba3cee444245e04733802b0021932f71d0e9fb7d183b9bf8ad81dabf702624d9c332a8ce3b1f59"
+              },
+              {
+                "id": "2",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000069",
+                "target": 0,
+                "target_bytes": "0470c6e4713921551b68610c90ff5142d85cfdaac48dafd6d33a09100c831ca9f66588ea2d46f9faebb63e39cb99db83dc606edb2fceadf6c8e6cca5a821b14f27"
+              },
+              {
+                "id": "3",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000036",
+                "target": 1,
+                "target_bytes": "0488c0f53200725b48cb7249baa205c70ab12fc302ff7625915bcc2e63803cbd33b84ceb4d639b902b8753472c1d5d561cca2f1913df3333a2e3d449c6b969659c"
+              },
+              {
+                "id": "4",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "scalar": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                "target": 2,
+                "target_bytes": "04ce5f0e6dc2b77311d3bf691742d4debf8e6eddd8a631957a5978603da4f02f96db6f9efc8b320982d46687230fbe18365c1e054f966c04ee15484aef38c600e3"
+              },
+              {
+                "id": "5",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "scalar": "0x00000000000000000000000000000001000000000000000000000000000000d0",
+                "target": 4,
+                "target_bytes": "04da80618bb852f44b4ccfb14e72085d13839cbb8d0eba1e3a2743387dd95f317eece9a357e25c8d7fba23055a2a541c30754bc7d5ca963fba93faea92d4d6fbb1"
+              }
+            ],
+            "server_results": [
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "id": 1,
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                "target": 3,
+                "target_bytes": "04d2083f9e07d640f2764fc7912d2f204420eceb4f0c00dd6eadba3cee444245e04733802b0021932f71d0e9fb7d183b9bf8ad81dabf702624d9c332a8ce3b1f59"
+              },
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "id": 2,
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000069",
+                "target": 0,
+                "target_bytes": "0470c6e4713921551b68610c90ff5142d85cfdaac48dafd6d33a09100c831ca9f66588ea2d46f9faebb63e39cb99db83dc606edb2fceadf6c8e6cca5a821b14f27"
+              },
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "id": 3,
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000036",
+                "target": 1,
+                "target_bytes": "0488c0f53200725b48cb7249baa205c70ab12fc302ff7625915bcc2e63803cbd33b84ceb4d639b902b8753472c1d5d561cca2f1913df3333a2e3d449c6b969659c"
+              },
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "id": 4,
+                "scalar": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                "target": 2,
+                "target_bytes": "04ce5f0e6dc2b77311d3bf691742d4debf8e6eddd8a631957a5978603da4f02f96db6f9efc8b320982d46687230fbe18365c1e054f966c04ee15484aef38c600e3"
+              },
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "id": 5,
+                "scalar": "0x00000000000000000000000000000001000000000000000000000000000000d0",
+                "target": 4,
+                "target_bytes": "04da80618bb852f44b4ccfb14e72085d13839cbb8d0eba1e3a2743387dd95f317eece9a357e25c8d7fba23055a2a541c30754bc7d5ca963fba93faea92d4d6fbb1"
+              }
+            ],
+            "events": [
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "running",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 1071158,
+                "device": 0,
+                "visible_devices": 8
+              },
+              {
+                "queue": "0",
+                "type": "self-test-start"
+              },
+              {
+                "queue": "0",
+                "self_test": {
+                  "compute_partition": "SPX",
+                  "compute_units": 304,
+                  "driver": 71526333,
+                  "memory_partition": "NPS1",
+                  "ordinal": 0,
+                  "passed": true,
+                  "pci_bus_id": "0000:1b:00.0",
+                  "runtime": 71526333,
+                  "uuid": "30646366333934386337333264313231"
+                },
+                "type": "ready",
+                "uuid": "30646366333934386337333264313231"
+              },
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "running",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 1071158,
+                "device": 0,
+                "visible_devices": 8,
+                "project": "de720461-1a02-4a39-9035-7b46782c7c10",
+                "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "assignment_generation": "1"
+              },
+              {
+                "grant": {
+                  "begin": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                  "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                  "end_exclusive": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "epoch": "e620d867f8fa97cc940c4676f2280f00",
+                  "expires": 1793465099,
+                  "generation": 1,
+                  "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                  "owner": "0c7bca57-de3b-46fe-8c4d-3f13d0e1a42a.522e3020-ebbb-41d6-b33c-a9a5846d467d",
+                  "project": "de720461-1a02-4a39-9035-7b46782c7c10"
+                },
+                "queue": "0",
+                "type": "grant-start"
+              },
+              {
+                "interval": {
+                  "begin": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                  "end_exclusive": "0x0000000000000000000000000000000100000000000000000000000000000014"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "device_steps": 2,
+                "kernel_ms": 0.221903994679451,
+                "sequence": 1,
+                "type": "progress"
+              },
+              {
+                "matches": 1,
+                "sequence": 3,
+                "transaction_ms": 0.35564799999999996,
+                "type": "checkpoint"
+              },
+              {
+                "interval": {
+                  "begin": "0x0000000000000000000000000000000100000000000000000000000000000036",
+                  "end_exclusive": "0x000000000000000000000000000000010000000000000000000000000000006a"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "matches": 1,
+                "sequence": 6,
+                "transaction_ms": 0.362383,
+                "type": "checkpoint"
+              },
+              {
+                "matches": 1,
+                "sequence": 10,
+                "transaction_ms": 0.330978,
+                "type": "checkpoint"
+              },
+              {
+                "interval": {
+                  "begin": "0x0000000000000000000000000000000100000000000000000000000000000014",
+                  "end_exclusive": "0x0000000000000000000000000000000100000000000000000000000000000036"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "matches": 0,
+                "sequence": 25,
+                "transaction_ms": 0.396341,
+                "type": "checkpoint"
+              },
+              {
+                "cold": true,
+                "complete": true,
+                "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000067",
+                "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000023",
+                "executor_setups": 1,
+                "grant": {
+                  "begin": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                  "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                  "end_exclusive": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "epoch": "e620d867f8fa97cc940c4676f2280f00",
+                  "expires": 1793465099,
+                  "generation": 1,
+                  "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                  "owner": "0c7bca57-de3b-46fe-8c4d-3f13d0e1a42a.522e3020-ebbb-41d6-b33c-a9a5846d467d",
+                  "project": "de720461-1a02-4a39-9035-7b46782c7c10"
+                },
+                "kernel_ms": 4.637963950634003,
+                "m": 17,
+                "mode": "bsgs",
+                "table_upload_ms": 0.015274000354111195,
+                "target_count": 5,
+                "tile_order": "dance",
+                "type": "grant-finish",
+                "wall_ns": 77678731,
+                "work_units": 3
+              },
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "running",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 1071158,
+                "device": 0,
+                "visible_devices": 8,
+                "project": "de720461-1a02-4a39-9035-7b46782c7c10",
+                "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "assignment_generation": "2"
+              },
+              {
+                "grant": {
+                  "begin": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                  "end_exclusive": "0x00000000000000000000000000000001000000000000000000000000000000d1",
+                  "epoch": "e620d867f8fa97cc940c4676f2280f00",
+                  "expires": 1793465099,
+                  "generation": 2,
+                  "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                  "owner": "0c7bca57-de3b-46fe-8c4d-3f13d0e1a42a.522e3020-ebbb-41d6-b33c-a9a5846d467d",
+                  "project": "de720461-1a02-4a39-9035-7b46782c7c10"
+                },
+                "queue": "0",
+                "type": "grant-start"
+              },
+              {
+                "interval": {
+                  "begin": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "end_exclusive": "0x000000000000000000000000000000010000000000000000000000000000007b"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "matches": 1,
+                "sequence": 28,
+                "transaction_ms": 0.307398,
+                "type": "checkpoint"
+              },
+              {
+                "interval": {
+                  "begin": "0x000000000000000000000000000000010000000000000000000000000000009d",
+                  "end_exclusive": "0x00000000000000000000000000000001000000000000000000000000000000d1"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "matches": 1,
+                "sequence": 33,
+                "transaction_ms": 0.31529399999999996,
+                "type": "checkpoint"
+              },
+              {
+                "interval": {
+                  "begin": "0x000000000000000000000000000000010000000000000000000000000000007b",
+                  "end_exclusive": "0x000000000000000000000000000000010000000000000000000000000000009d"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "matches": 0,
+                "sequence": 49,
+                "transaction_ms": 0.378619,
+                "type": "checkpoint"
+              },
+              {
+                "cold": false,
+                "complete": true,
+                "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000067",
+                "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000023",
+                "executor_setups": 1,
+                "grant": {
+                  "begin": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                  "end_exclusive": "0x00000000000000000000000000000001000000000000000000000000000000d1",
+                  "epoch": "e620d867f8fa97cc940c4676f2280f00",
+                  "expires": 1793465099,
+                  "generation": 2,
+                  "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                  "owner": "0c7bca57-de3b-46fe-8c4d-3f13d0e1a42a.522e3020-ebbb-41d6-b33c-a9a5846d467d",
+                  "project": "de720461-1a02-4a39-9035-7b46782c7c10"
+                },
+                "kernel_ms": 4.633912965655327,
+                "m": 17,
+                "mode": "bsgs",
+                "table_upload_ms": 0.015274000354111195,
+                "target_count": 5,
+                "tile_order": "dance",
+                "type": "grant-finish",
+                "wall_ns": 39869472,
+                "work_units": 3
+              },
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "idle",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 1071158,
+                "device": 0,
+                "visible_devices": 8
+              },
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "stopped",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 1071158,
+                "device": 0,
+                "visible_devices": 8
+              },
+              {
+                "completed": 2,
+                "executor_setups": 1,
+                "reason": "drained",
+                "type": "exit",
+                "wall_ms": 118.88779199999999
+              }
+            ]
+          },
+          {
+            "transport": "file",
+            "group_size": 8,
+            "local_results": [
+              {
+                "id": "1",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                "target": 3,
+                "target_bytes": "04d2083f9e07d640f2764fc7912d2f204420eceb4f0c00dd6eadba3cee444245e04733802b0021932f71d0e9fb7d183b9bf8ad81dabf702624d9c332a8ce3b1f59"
+              },
+              {
+                "id": "2",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000069",
+                "target": 0,
+                "target_bytes": "0470c6e4713921551b68610c90ff5142d85cfdaac48dafd6d33a09100c831ca9f66588ea2d46f9faebb63e39cb99db83dc606edb2fceadf6c8e6cca5a821b14f27"
+              },
+              {
+                "id": "3",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000036",
+                "target": 1,
+                "target_bytes": "0488c0f53200725b48cb7249baa205c70ab12fc302ff7625915bcc2e63803cbd33b84ceb4d639b902b8753472c1d5d561cca2f1913df3333a2e3d449c6b969659c"
+              },
+              {
+                "id": "4",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "scalar": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                "target": 2,
+                "target_bytes": "04ce5f0e6dc2b77311d3bf691742d4debf8e6eddd8a631957a5978603da4f02f96db6f9efc8b320982d46687230fbe18365c1e054f966c04ee15484aef38c600e3"
+              },
+              {
+                "id": "5",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "scalar": "0x00000000000000000000000000000001000000000000000000000000000000d0",
+                "target": 4,
+                "target_bytes": "04da80618bb852f44b4ccfb14e72085d13839cbb8d0eba1e3a2743387dd95f317eece9a357e25c8d7fba23055a2a541c30754bc7d5ca963fba93faea92d4d6fbb1"
+              }
+            ],
+            "server_results": [
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "id": 6,
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                "target": 3,
+                "target_bytes": "04d2083f9e07d640f2764fc7912d2f204420eceb4f0c00dd6eadba3cee444245e04733802b0021932f71d0e9fb7d183b9bf8ad81dabf702624d9c332a8ce3b1f59"
+              },
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "id": 7,
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000069",
+                "target": 0,
+                "target_bytes": "0470c6e4713921551b68610c90ff5142d85cfdaac48dafd6d33a09100c831ca9f66588ea2d46f9faebb63e39cb99db83dc606edb2fceadf6c8e6cca5a821b14f27"
+              },
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "id": 8,
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000036",
+                "target": 1,
+                "target_bytes": "0488c0f53200725b48cb7249baa205c70ab12fc302ff7625915bcc2e63803cbd33b84ceb4d639b902b8753472c1d5d561cca2f1913df3333a2e3d449c6b969659c"
+              },
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "id": 9,
+                "scalar": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                "target": 2,
+                "target_bytes": "04ce5f0e6dc2b77311d3bf691742d4debf8e6eddd8a631957a5978603da4f02f96db6f9efc8b320982d46687230fbe18365c1e054f966c04ee15484aef38c600e3"
+              },
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "id": 10,
+                "scalar": "0x00000000000000000000000000000001000000000000000000000000000000d0",
+                "target": 4,
+                "target_bytes": "04da80618bb852f44b4ccfb14e72085d13839cbb8d0eba1e3a2743387dd95f317eece9a357e25c8d7fba23055a2a541c30754bc7d5ca963fba93faea92d4d6fbb1"
+              }
+            ],
+            "events": [
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "running",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 1071209,
+                "device": 0,
+                "visible_devices": 8
+              },
+              {
+                "queue": "0",
+                "type": "self-test-start"
+              },
+              {
+                "queue": "0",
+                "self_test": {
+                  "compute_partition": "SPX",
+                  "compute_units": 304,
+                  "driver": 71526333,
+                  "memory_partition": "NPS1",
+                  "ordinal": 0,
+                  "passed": true,
+                  "pci_bus_id": "0000:1b:00.0",
+                  "runtime": 71526333,
+                  "uuid": "30646366333934386337333264313231"
+                },
+                "type": "ready",
+                "uuid": "30646366333934386337333264313231"
+              },
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "running",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 1071209,
+                "device": 0,
+                "visible_devices": 8,
+                "project": "c7d57af1-54ab-4baf-8e27-590474f60d14",
+                "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "assignment_generation": "1"
+              },
+              {
+                "grant": {
+                  "begin": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                  "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                  "end_exclusive": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "epoch": "50050f41992a6ba949b85759954fe6ac",
+                  "expires": 1793465101,
+                  "generation": 1,
+                  "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                  "owner": "0c7bca57-de3b-46fe-8c4d-3f13d0e1a42a.abb44559-4a32-4071-a880-df3d5158ba55",
+                  "project": "c7d57af1-54ab-4baf-8e27-590474f60d14"
+                },
+                "queue": "0",
+                "type": "grant-start"
+              },
+              {
+                "interval": {
+                  "begin": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                  "end_exclusive": "0x0000000000000000000000000000000100000000000000000000000000000014"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "device_steps": 2,
+                "kernel_ms": 0.23144499957561493,
+                "sequence": 1,
+                "type": "progress"
+              },
+              {
+                "matches": 1,
+                "sequence": 3,
+                "transaction_ms": 0.349142,
+                "type": "checkpoint"
+              },
+              {
+                "interval": {
+                  "begin": "0x0000000000000000000000000000000100000000000000000000000000000036",
+                  "end_exclusive": "0x000000000000000000000000000000010000000000000000000000000000006a"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "matches": 1,
+                "sequence": 6,
+                "transaction_ms": 0.332924,
+                "type": "checkpoint"
+              },
+              {
+                "matches": 1,
+                "sequence": 10,
+                "transaction_ms": 0.314716,
+                "type": "checkpoint"
+              },
+              {
+                "interval": {
+                  "begin": "0x0000000000000000000000000000000100000000000000000000000000000014",
+                  "end_exclusive": "0x0000000000000000000000000000000100000000000000000000000000000036"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "matches": 0,
+                "sequence": 25,
+                "transaction_ms": 0.364075,
+                "type": "checkpoint"
+              },
+              {
+                "cold": true,
+                "complete": true,
+                "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000067",
+                "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000023",
+                "executor_setups": 1,
+                "grant": {
+                  "begin": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                  "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                  "end_exclusive": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "epoch": "50050f41992a6ba949b85759954fe6ac",
+                  "expires": 1793465101,
+                  "generation": 1,
+                  "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                  "owner": "0c7bca57-de3b-46fe-8c4d-3f13d0e1a42a.abb44559-4a32-4071-a880-df3d5158ba55",
+                  "project": "c7d57af1-54ab-4baf-8e27-590474f60d14"
+                },
+                "kernel_ms": 4.813401967287064,
+                "m": 17,
+                "mode": "bsgs",
+                "table_upload_ms": 0.01563500054180622,
+                "target_count": 5,
+                "tile_order": "dance",
+                "type": "grant-finish",
+                "wall_ns": 79084211,
+                "work_units": 3
+              },
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "running",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 1071209,
+                "device": 0,
+                "visible_devices": 8,
+                "project": "c7d57af1-54ab-4baf-8e27-590474f60d14",
+                "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "assignment_generation": "2"
+              },
+              {
+                "grant": {
+                  "begin": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                  "end_exclusive": "0x00000000000000000000000000000001000000000000000000000000000000d1",
+                  "epoch": "50050f41992a6ba949b85759954fe6ac",
+                  "expires": 1793465101,
+                  "generation": 2,
+                  "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                  "owner": "0c7bca57-de3b-46fe-8c4d-3f13d0e1a42a.abb44559-4a32-4071-a880-df3d5158ba55",
+                  "project": "c7d57af1-54ab-4baf-8e27-590474f60d14"
+                },
+                "queue": "0",
+                "type": "grant-start"
+              },
+              {
+                "interval": {
+                  "begin": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "end_exclusive": "0x000000000000000000000000000000010000000000000000000000000000007b"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "matches": 1,
+                "sequence": 28,
+                "transaction_ms": 0.281234,
+                "type": "checkpoint"
+              },
+              {
+                "interval": {
+                  "begin": "0x000000000000000000000000000000010000000000000000000000000000009d",
+                  "end_exclusive": "0x00000000000000000000000000000001000000000000000000000000000000d1"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "matches": 1,
+                "sequence": 33,
+                "transaction_ms": 0.32223999999999997,
+                "type": "checkpoint"
+              },
+              {
+                "interval": {
+                  "begin": "0x000000000000000000000000000000010000000000000000000000000000007b",
+                  "end_exclusive": "0x000000000000000000000000000000010000000000000000000000000000009d"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "matches": 0,
+                "sequence": 49,
+                "transaction_ms": 0.35222699999999996,
+                "type": "checkpoint"
+              },
+              {
+                "cold": false,
+                "complete": true,
+                "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000067",
+                "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000023",
+                "executor_setups": 1,
+                "grant": {
+                  "begin": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                  "end_exclusive": "0x00000000000000000000000000000001000000000000000000000000000000d1",
+                  "epoch": "50050f41992a6ba949b85759954fe6ac",
+                  "expires": 1793465101,
+                  "generation": 2,
+                  "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                  "owner": "0c7bca57-de3b-46fe-8c4d-3f13d0e1a42a.abb44559-4a32-4071-a880-df3d5158ba55",
+                  "project": "c7d57af1-54ab-4baf-8e27-590474f60d14"
+                },
+                "kernel_ms": 4.807546988129616,
+                "m": 17,
+                "mode": "bsgs",
+                "table_upload_ms": 0.01563500054180622,
+                "target_count": 5,
+                "tile_order": "dance",
+                "type": "grant-finish",
+                "wall_ns": 39906797,
+                "work_units": 3
+              },
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "idle",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 1071209,
+                "device": 0,
+                "visible_devices": 8
+              },
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "stopped",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 1071209,
+                "device": 0,
+                "visible_devices": 8
+              },
+              {
+                "completed": 2,
+                "executor_setups": 1,
+                "reason": "drained",
+                "type": "exit",
+                "wall_ms": 120.28949
+              }
+            ]
+          }
+        ],
+        "binaries": {
+          "keyhunt-coordinator": "787d5fc6f31d6a2c8b3752bde6f6e0e9ce7afa64c2dd5c2fd2003995e5c64402",
+          "keyhunt-worker": "9b2e29e6aa4ebd1ffd59478f1f977748af89c767ddd3ce7519a96895a6bf36e6",
+          "keyhunt": "0f16865d35e69ea437cbb531f30cb5f7d4f0dd494abe6be1afe52ddb52eb8628"
+        }
+      }
+    }
+  },
+  "cuda": {
+    "reverse": {
+      "workers": {
+        "tile_order": "reverse",
+        "passed": true,
+        "hardware": true,
+        "backend": "cuda",
+        "oracle_commit": "0cdc758a56360bf58a851fe91085a327ec97685a",
+        "cases": [
+          {
+            "transport": "https",
+            "group_size": 1,
+            "local_results": [
+              {
+                "id": "1",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000069",
+                "target": 0,
+                "target_bytes": "0470c6e4713921551b68610c90ff5142d85cfdaac48dafd6d33a09100c831ca9f66588ea2d46f9faebb63e39cb99db83dc606edb2fceadf6c8e6cca5a821b14f27"
+              },
+              {
+                "id": "2",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000036",
+                "target": 1,
+                "target_bytes": "0488c0f53200725b48cb7249baa205c70ab12fc302ff7625915bcc2e63803cbd33b84ceb4d639b902b8753472c1d5d561cca2f1913df3333a2e3d449c6b969659c"
+              },
+              {
+                "id": "3",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                "target": 3,
+                "target_bytes": "04d2083f9e07d640f2764fc7912d2f204420eceb4f0c00dd6eadba3cee444245e04733802b0021932f71d0e9fb7d183b9bf8ad81dabf702624d9c332a8ce3b1f59"
+              },
+              {
+                "id": "4",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "scalar": "0x00000000000000000000000000000001000000000000000000000000000000d0",
+                "target": 4,
+                "target_bytes": "04da80618bb852f44b4ccfb14e72085d13839cbb8d0eba1e3a2743387dd95f317eece9a357e25c8d7fba23055a2a541c30754bc7d5ca963fba93faea92d4d6fbb1"
+              },
+              {
+                "id": "5",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "scalar": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                "target": 2,
+                "target_bytes": "04ce5f0e6dc2b77311d3bf691742d4debf8e6eddd8a631957a5978603da4f02f96db6f9efc8b320982d46687230fbe18365c1e054f966c04ee15484aef38c600e3"
+              }
+            ],
+            "server_results": [
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "id": 1,
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000069",
+                "target": 0,
+                "target_bytes": "0470c6e4713921551b68610c90ff5142d85cfdaac48dafd6d33a09100c831ca9f66588ea2d46f9faebb63e39cb99db83dc606edb2fceadf6c8e6cca5a821b14f27"
+              },
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "id": 2,
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000036",
+                "target": 1,
+                "target_bytes": "0488c0f53200725b48cb7249baa205c70ab12fc302ff7625915bcc2e63803cbd33b84ceb4d639b902b8753472c1d5d561cca2f1913df3333a2e3d449c6b969659c"
+              },
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "id": 3,
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                "target": 3,
+                "target_bytes": "04d2083f9e07d640f2764fc7912d2f204420eceb4f0c00dd6eadba3cee444245e04733802b0021932f71d0e9fb7d183b9bf8ad81dabf702624d9c332a8ce3b1f59"
+              },
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "id": 4,
+                "scalar": "0x00000000000000000000000000000001000000000000000000000000000000d0",
+                "target": 4,
+                "target_bytes": "04da80618bb852f44b4ccfb14e72085d13839cbb8d0eba1e3a2743387dd95f317eece9a357e25c8d7fba23055a2a541c30754bc7d5ca963fba93faea92d4d6fbb1"
+              },
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "id": 5,
+                "scalar": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                "target": 2,
+                "target_bytes": "04ce5f0e6dc2b77311d3bf691742d4debf8e6eddd8a631957a5978603da4f02f96db6f9efc8b320982d46687230fbe18365c1e054f966c04ee15484aef38c600e3"
+              }
+            ],
+            "events": [
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "running",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 3366644,
+                "device": 0,
+                "visible_devices": 8
+              },
+              {
+                "queue": "0",
+                "type": "self-test-start"
+              },
+              {
+                "queue": "0",
+                "self_test": {
+                  "compute_partition": "",
+                  "compute_units": 132,
+                  "driver": 13030,
+                  "memory_partition": "",
+                  "ordinal": 0,
+                  "passed": true,
+                  "pci_bus_id": "0000:1b:00.0",
+                  "runtime": 13030,
+                  "uuid": "9fdcd9f2c45469a881b044d5f5e92bb8"
+                },
+                "type": "ready",
+                "uuid": "9fdcd9f2c45469a881b044d5f5e92bb8"
+              },
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "running",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 3366644,
+                "device": 0,
+                "visible_devices": 8,
+                "project": "17fdac66-ee24-478a-a44d-06afe47a61f4",
+                "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "assignment_generation": "1"
+              },
+              {
+                "grant": {
+                  "begin": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                  "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                  "end_exclusive": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "epoch": "6fbb5271b97c3daf285463aeda6fa01a",
+                  "expires": 1793465524,
+                  "generation": 1,
+                  "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                  "owner": "8186569e-aa86-4519-81df-662c8a4efd5a.cf1cf8e8-d643-46ee-bb10-2f741235664a",
+                  "project": "17fdac66-ee24-478a-a44d-06afe47a61f4"
+                },
+                "queue": "0",
+                "type": "grant-start"
+              },
+              {
+                "interval": {
+                  "begin": "0x0000000000000000000000000000000100000000000000000000000000000059",
+                  "end_exclusive": "0x000000000000000000000000000000010000000000000000000000000000006a"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "device_steps": 2,
+                "kernel_ms": 0.1599999964237213,
+                "sequence": 1,
+                "type": "progress"
+              },
+              {
+                "matches": 1,
+                "sequence": 2,
+                "transaction_ms": 0.580133,
+                "type": "checkpoint"
+              },
+              {
+                "interval": {
+                  "begin": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                  "end_exclusive": "0x0000000000000000000000000000000100000000000000000000000000000059"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "matches": 1,
+                "sequence": 12,
+                "transaction_ms": 0.5336839999999999,
+                "type": "checkpoint"
+              },
+              {
+                "matches": 1,
+                "sequence": 23,
+                "transaction_ms": 0.5515599999999999,
+                "type": "checkpoint"
+              },
+              {
+                "matches": 0,
+                "sequence": 25,
+                "transaction_ms": 0.570589,
+                "type": "checkpoint"
+              },
+              {
+                "cold": true,
+                "complete": true,
+                "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000067",
+                "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000023",
+                "executor_setups": 1,
+                "grant": {
+                  "begin": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                  "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                  "end_exclusive": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "epoch": "6fbb5271b97c3daf285463aeda6fa01a",
+                  "expires": 1793465524,
+                  "generation": 1,
+                  "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                  "owner": "8186569e-aa86-4519-81df-662c8a4efd5a.cf1cf8e8-d643-46ee-bb10-2f741235664a",
+                  "project": "17fdac66-ee24-478a-a44d-06afe47a61f4"
+                },
+                "kernel_ms": 3.14832004904747,
+                "m": 17,
+                "mode": "bsgs",
+                "table_upload_ms": 0.015072000212967396,
+                "target_count": 5,
+                "tile_order": "reverse",
+                "type": "grant-finish",
+                "wall_ns": 74166843,
+                "work_units": 2
+              },
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "running",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 3366644,
+                "device": 0,
+                "visible_devices": 8,
+                "project": "17fdac66-ee24-478a-a44d-06afe47a61f4",
+                "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "assignment_generation": "2"
+              },
+              {
+                "grant": {
+                  "begin": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                  "end_exclusive": "0x00000000000000000000000000000001000000000000000000000000000000d1",
+                  "epoch": "6fbb5271b97c3daf285463aeda6fa01a",
+                  "expires": 1793465524,
+                  "generation": 2,
+                  "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                  "owner": "8186569e-aa86-4519-81df-662c8a4efd5a.cf1cf8e8-d643-46ee-bb10-2f741235664a",
+                  "project": "17fdac66-ee24-478a-a44d-06afe47a61f4"
+                },
+                "queue": "0",
+                "type": "grant-start"
+              },
+              {
+                "interval": {
+                  "begin": "0x00000000000000000000000000000001000000000000000000000000000000c0",
+                  "end_exclusive": "0x00000000000000000000000000000001000000000000000000000000000000d1"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "matches": 1,
+                "sequence": 29,
+                "transaction_ms": 0.5403209999999999,
+                "type": "checkpoint"
+              },
+              {
+                "interval": {
+                  "begin": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "end_exclusive": "0x00000000000000000000000000000001000000000000000000000000000000c0"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "matches": 1,
+                "sequence": 47,
+                "transaction_ms": 0.522992,
+                "type": "checkpoint"
+              },
+              {
+                "matches": 0,
+                "sequence": 49,
+                "transaction_ms": 0.566948,
+                "type": "checkpoint"
+              },
+              {
+                "cold": false,
+                "complete": true,
+                "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000067",
+                "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000023",
+                "executor_setups": 1,
+                "grant": {
+                  "begin": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                  "end_exclusive": "0x00000000000000000000000000000001000000000000000000000000000000d1",
+                  "epoch": "6fbb5271b97c3daf285463aeda6fa01a",
+                  "expires": 1793465524,
+                  "generation": 2,
+                  "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                  "owner": "8186569e-aa86-4519-81df-662c8a4efd5a.cf1cf8e8-d643-46ee-bb10-2f741235664a",
+                  "project": "17fdac66-ee24-478a-a44d-06afe47a61f4"
+                },
+                "kernel_ms": 3.1397440135478973,
+                "m": 17,
+                "mode": "bsgs",
+                "table_upload_ms": 0.015072000212967396,
+                "target_count": 5,
+                "tile_order": "reverse",
+                "type": "grant-finish",
+                "wall_ns": 39357503,
+                "work_units": 2
+              },
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "idle",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 3366644,
+                "device": 0,
+                "visible_devices": 8
+              },
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "stopped",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 3366644,
+                "device": 0,
+                "visible_devices": 8
+              },
+              {
+                "completed": 2,
+                "executor_setups": 1,
+                "reason": "drained",
+                "type": "exit",
+                "wall_ms": 115.384514
+              }
+            ]
+          },
+          {
+            "transport": "file",
+            "group_size": 8,
+            "local_results": [
+              {
+                "id": "1",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000069",
+                "target": 0,
+                "target_bytes": "0470c6e4713921551b68610c90ff5142d85cfdaac48dafd6d33a09100c831ca9f66588ea2d46f9faebb63e39cb99db83dc606edb2fceadf6c8e6cca5a821b14f27"
+              },
+              {
+                "id": "2",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000036",
+                "target": 1,
+                "target_bytes": "0488c0f53200725b48cb7249baa205c70ab12fc302ff7625915bcc2e63803cbd33b84ceb4d639b902b8753472c1d5d561cca2f1913df3333a2e3d449c6b969659c"
+              },
+              {
+                "id": "3",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                "target": 3,
+                "target_bytes": "04d2083f9e07d640f2764fc7912d2f204420eceb4f0c00dd6eadba3cee444245e04733802b0021932f71d0e9fb7d183b9bf8ad81dabf702624d9c332a8ce3b1f59"
+              },
+              {
+                "id": "4",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "scalar": "0x00000000000000000000000000000001000000000000000000000000000000d0",
+                "target": 4,
+                "target_bytes": "04da80618bb852f44b4ccfb14e72085d13839cbb8d0eba1e3a2743387dd95f317eece9a357e25c8d7fba23055a2a541c30754bc7d5ca963fba93faea92d4d6fbb1"
+              },
+              {
+                "id": "5",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "scalar": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                "target": 2,
+                "target_bytes": "04ce5f0e6dc2b77311d3bf691742d4debf8e6eddd8a631957a5978603da4f02f96db6f9efc8b320982d46687230fbe18365c1e054f966c04ee15484aef38c600e3"
+              }
+            ],
+            "server_results": [
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "id": 6,
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000069",
+                "target": 0,
+                "target_bytes": "0470c6e4713921551b68610c90ff5142d85cfdaac48dafd6d33a09100c831ca9f66588ea2d46f9faebb63e39cb99db83dc606edb2fceadf6c8e6cca5a821b14f27"
+              },
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "id": 7,
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000036",
+                "target": 1,
+                "target_bytes": "0488c0f53200725b48cb7249baa205c70ab12fc302ff7625915bcc2e63803cbd33b84ceb4d639b902b8753472c1d5d561cca2f1913df3333a2e3d449c6b969659c"
+              },
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "id": 8,
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                "target": 3,
+                "target_bytes": "04d2083f9e07d640f2764fc7912d2f204420eceb4f0c00dd6eadba3cee444245e04733802b0021932f71d0e9fb7d183b9bf8ad81dabf702624d9c332a8ce3b1f59"
+              },
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "id": 9,
+                "scalar": "0x00000000000000000000000000000001000000000000000000000000000000d0",
+                "target": 4,
+                "target_bytes": "04da80618bb852f44b4ccfb14e72085d13839cbb8d0eba1e3a2743387dd95f317eece9a357e25c8d7fba23055a2a541c30754bc7d5ca963fba93faea92d4d6fbb1"
+              },
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "id": 10,
+                "scalar": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                "target": 2,
+                "target_bytes": "04ce5f0e6dc2b77311d3bf691742d4debf8e6eddd8a631957a5978603da4f02f96db6f9efc8b320982d46687230fbe18365c1e054f966c04ee15484aef38c600e3"
+              }
+            ],
+            "events": [
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "running",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 3366764,
+                "device": 0,
+                "visible_devices": 8
+              },
+              {
+                "queue": "0",
+                "type": "self-test-start"
+              },
+              {
+                "queue": "0",
+                "self_test": {
+                  "compute_partition": "",
+                  "compute_units": 132,
+                  "driver": 13030,
+                  "memory_partition": "",
+                  "ordinal": 0,
+                  "passed": true,
+                  "pci_bus_id": "0000:1b:00.0",
+                  "runtime": 13030,
+                  "uuid": "9fdcd9f2c45469a881b044d5f5e92bb8"
+                },
+                "type": "ready",
+                "uuid": "9fdcd9f2c45469a881b044d5f5e92bb8"
+              },
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "running",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 3366764,
+                "device": 0,
+                "visible_devices": 8,
+                "project": "c5299329-e24e-4528-8dc7-450d6b97a459",
+                "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "assignment_generation": "1"
+              },
+              {
+                "grant": {
+                  "begin": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                  "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                  "end_exclusive": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "epoch": "0bba9ca26c5db7760b3a96c1c7bbc1d5",
+                  "expires": 1793465528,
+                  "generation": 1,
+                  "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                  "owner": "8186569e-aa86-4519-81df-662c8a4efd5a.79b2e1bd-d77d-42d0-bf1c-71c90b05c51f",
+                  "project": "c5299329-e24e-4528-8dc7-450d6b97a459"
+                },
+                "queue": "0",
+                "type": "grant-start"
+              },
+              {
+                "interval": {
+                  "begin": "0x0000000000000000000000000000000100000000000000000000000000000059",
+                  "end_exclusive": "0x000000000000000000000000000000010000000000000000000000000000006a"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "device_steps": 2,
+                "kernel_ms": 0.16262400150299072,
+                "sequence": 1,
+                "type": "progress"
+              },
+              {
+                "matches": 1,
+                "sequence": 2,
+                "transaction_ms": 0.572125,
+                "type": "checkpoint"
+              },
+              {
+                "interval": {
+                  "begin": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                  "end_exclusive": "0x0000000000000000000000000000000100000000000000000000000000000059"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "matches": 1,
+                "sequence": 12,
+                "transaction_ms": 0.547759,
+                "type": "checkpoint"
+              },
+              {
+                "matches": 1,
+                "sequence": 23,
+                "transaction_ms": 0.5446179999999999,
+                "type": "checkpoint"
+              },
+              {
+                "matches": 0,
+                "sequence": 25,
+                "transaction_ms": 0.5797709999999999,
+                "type": "checkpoint"
+              },
+              {
+                "cold": true,
+                "complete": true,
+                "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000067",
+                "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000023",
+                "executor_setups": 1,
+                "grant": {
+                  "begin": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                  "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                  "end_exclusive": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "epoch": "0bba9ca26c5db7760b3a96c1c7bbc1d5",
+                  "expires": 1793465528,
+                  "generation": 1,
+                  "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                  "owner": "8186569e-aa86-4519-81df-662c8a4efd5a.79b2e1bd-d77d-42d0-bf1c-71c90b05c51f",
+                  "project": "c5299329-e24e-4528-8dc7-450d6b97a459"
+                },
+                "kernel_ms": 3.2025599777698517,
+                "m": 17,
+                "mode": "bsgs",
+                "table_upload_ms": 0.015231999568641186,
+                "target_count": 5,
+                "tile_order": "reverse",
+                "type": "grant-finish",
+                "wall_ns": 74177521,
+                "work_units": 2
+              },
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "running",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 3366764,
+                "device": 0,
+                "visible_devices": 8,
+                "project": "c5299329-e24e-4528-8dc7-450d6b97a459",
+                "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "assignment_generation": "2"
+              },
+              {
+                "grant": {
+                  "begin": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                  "end_exclusive": "0x00000000000000000000000000000001000000000000000000000000000000d1",
+                  "epoch": "0bba9ca26c5db7760b3a96c1c7bbc1d5",
+                  "expires": 1793465528,
+                  "generation": 2,
+                  "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                  "owner": "8186569e-aa86-4519-81df-662c8a4efd5a.79b2e1bd-d77d-42d0-bf1c-71c90b05c51f",
+                  "project": "c5299329-e24e-4528-8dc7-450d6b97a459"
+                },
+                "queue": "0",
+                "type": "grant-start"
+              },
+              {
+                "interval": {
+                  "begin": "0x00000000000000000000000000000001000000000000000000000000000000c0",
+                  "end_exclusive": "0x00000000000000000000000000000001000000000000000000000000000000d1"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "matches": 1,
+                "sequence": 29,
+                "transaction_ms": 0.541974,
+                "type": "checkpoint"
+              },
+              {
+                "interval": {
+                  "begin": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "end_exclusive": "0x00000000000000000000000000000001000000000000000000000000000000c0"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "matches": 1,
+                "sequence": 47,
+                "transaction_ms": 0.534397,
+                "type": "checkpoint"
+              },
+              {
+                "matches": 0,
+                "sequence": 49,
+                "transaction_ms": 0.577009,
+                "type": "checkpoint"
+              },
+              {
+                "cold": false,
+                "complete": true,
+                "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000067",
+                "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000023",
+                "executor_setups": 1,
+                "grant": {
+                  "begin": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                  "end_exclusive": "0x00000000000000000000000000000001000000000000000000000000000000d1",
+                  "epoch": "0bba9ca26c5db7760b3a96c1c7bbc1d5",
+                  "expires": 1793465528,
+                  "generation": 2,
+                  "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                  "owner": "8186569e-aa86-4519-81df-662c8a4efd5a.79b2e1bd-d77d-42d0-bf1c-71c90b05c51f",
+                  "project": "c5299329-e24e-4528-8dc7-450d6b97a459"
+                },
+                "kernel_ms": 3.194271996617317,
+                "m": 17,
+                "mode": "bsgs",
+                "table_upload_ms": 0.015231999568641186,
+                "target_count": 5,
+                "tile_order": "reverse",
+                "type": "grant-finish",
+                "wall_ns": 39909905,
+                "work_units": 2
+              },
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "idle",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 3366764,
+                "device": 0,
+                "visible_devices": 8
+              },
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "stopped",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 3366764,
+                "device": 0,
+                "visible_devices": 8
+              },
+              {
+                "completed": 2,
+                "executor_setups": 1,
+                "reason": "drained",
+                "type": "exit",
+                "wall_ms": 115.967103
+              }
+            ]
+          }
+        ],
+        "binaries": {
+          "keyhunt-coordinator": "c342f37fee7095a77e65c67c27e8954098478e99f06f65a54d718c4d0a4b39ca",
+          "keyhunt-worker": "4dad1217d4a4de726772486be0f5c73feb962bca8f6124fc9e659b2e9a002bcf",
+          "keyhunt": "cda762aca82e44d28bbc3da763a6c5988a31894a6c81cbc0c85138ef70af7925"
+        }
+      }
+    },
+    "both-ends": {
+      "workers": {
+        "tile_order": "both-ends",
+        "passed": true,
+        "hardware": true,
+        "backend": "cuda",
+        "oracle_commit": "0cdc758a56360bf58a851fe91085a327ec97685a",
+        "cases": [
+          {
+            "transport": "https",
+            "group_size": 1,
+            "local_results": [
+              {
+                "id": "1",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                "target": 3,
+                "target_bytes": "04d2083f9e07d640f2764fc7912d2f204420eceb4f0c00dd6eadba3cee444245e04733802b0021932f71d0e9fb7d183b9bf8ad81dabf702624d9c332a8ce3b1f59"
+              },
+              {
+                "id": "2",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000069",
+                "target": 0,
+                "target_bytes": "0470c6e4713921551b68610c90ff5142d85cfdaac48dafd6d33a09100c831ca9f66588ea2d46f9faebb63e39cb99db83dc606edb2fceadf6c8e6cca5a821b14f27"
+              },
+              {
+                "id": "3",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000036",
+                "target": 1,
+                "target_bytes": "0488c0f53200725b48cb7249baa205c70ab12fc302ff7625915bcc2e63803cbd33b84ceb4d639b902b8753472c1d5d561cca2f1913df3333a2e3d449c6b969659c"
+              },
+              {
+                "id": "4",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "scalar": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                "target": 2,
+                "target_bytes": "04ce5f0e6dc2b77311d3bf691742d4debf8e6eddd8a631957a5978603da4f02f96db6f9efc8b320982d46687230fbe18365c1e054f966c04ee15484aef38c600e3"
+              },
+              {
+                "id": "5",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "scalar": "0x00000000000000000000000000000001000000000000000000000000000000d0",
+                "target": 4,
+                "target_bytes": "04da80618bb852f44b4ccfb14e72085d13839cbb8d0eba1e3a2743387dd95f317eece9a357e25c8d7fba23055a2a541c30754bc7d5ca963fba93faea92d4d6fbb1"
+              }
+            ],
+            "server_results": [
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "id": 1,
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                "target": 3,
+                "target_bytes": "04d2083f9e07d640f2764fc7912d2f204420eceb4f0c00dd6eadba3cee444245e04733802b0021932f71d0e9fb7d183b9bf8ad81dabf702624d9c332a8ce3b1f59"
+              },
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "id": 2,
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000069",
+                "target": 0,
+                "target_bytes": "0470c6e4713921551b68610c90ff5142d85cfdaac48dafd6d33a09100c831ca9f66588ea2d46f9faebb63e39cb99db83dc606edb2fceadf6c8e6cca5a821b14f27"
+              },
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "id": 3,
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000036",
+                "target": 1,
+                "target_bytes": "0488c0f53200725b48cb7249baa205c70ab12fc302ff7625915bcc2e63803cbd33b84ceb4d639b902b8753472c1d5d561cca2f1913df3333a2e3d449c6b969659c"
+              },
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "id": 4,
+                "scalar": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                "target": 2,
+                "target_bytes": "04ce5f0e6dc2b77311d3bf691742d4debf8e6eddd8a631957a5978603da4f02f96db6f9efc8b320982d46687230fbe18365c1e054f966c04ee15484aef38c600e3"
+              },
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "id": 5,
+                "scalar": "0x00000000000000000000000000000001000000000000000000000000000000d0",
+                "target": 4,
+                "target_bytes": "04da80618bb852f44b4ccfb14e72085d13839cbb8d0eba1e3a2743387dd95f317eece9a357e25c8d7fba23055a2a541c30754bc7d5ca963fba93faea92d4d6fbb1"
+              }
+            ],
+            "events": [
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "running",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 3367028,
+                "device": 0,
+                "visible_devices": 8
+              },
+              {
+                "queue": "0",
+                "type": "self-test-start"
+              },
+              {
+                "queue": "0",
+                "self_test": {
+                  "compute_partition": "",
+                  "compute_units": 132,
+                  "driver": 13030,
+                  "memory_partition": "",
+                  "ordinal": 0,
+                  "passed": true,
+                  "pci_bus_id": "0000:1b:00.0",
+                  "runtime": 13030,
+                  "uuid": "9fdcd9f2c45469a881b044d5f5e92bb8"
+                },
+                "type": "ready",
+                "uuid": "9fdcd9f2c45469a881b044d5f5e92bb8"
+              },
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "running",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 3367028,
+                "device": 0,
+                "visible_devices": 8,
+                "project": "006fe265-d647-437d-b7e8-3cf117ca3a4b",
+                "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "assignment_generation": "1"
+              },
+              {
+                "grant": {
+                  "begin": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                  "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                  "end_exclusive": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "epoch": "2ae67bad375e1bd4441ac8bfbefc8808",
+                  "expires": 1793465533,
+                  "generation": 1,
+                  "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                  "owner": "db043a74-00e4-494e-a48e-b31c02f14219.cffb013d-3aeb-4884-91f2-faa7357845c4",
+                  "project": "006fe265-d647-437d-b7e8-3cf117ca3a4b"
+                },
+                "queue": "0",
+                "type": "grant-start"
+              },
+              {
+                "interval": {
+                  "begin": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                  "end_exclusive": "0x0000000000000000000000000000000100000000000000000000000000000014"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "device_steps": 2,
+                "kernel_ms": 0.15647999942302704,
+                "sequence": 1,
+                "type": "progress"
+              },
+              {
+                "matches": 1,
+                "sequence": 3,
+                "transaction_ms": 0.521362,
+                "type": "checkpoint"
+              },
+              {
+                "interval": {
+                  "begin": "0x0000000000000000000000000000000100000000000000000000000000000014",
+                  "end_exclusive": "0x000000000000000000000000000000010000000000000000000000000000006a"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "matches": 1,
+                "sequence": 6,
+                "transaction_ms": 0.53718,
+                "type": "checkpoint"
+              },
+              {
+                "matches": 1,
+                "sequence": 22,
+                "transaction_ms": 0.519995,
+                "type": "checkpoint"
+              },
+              {
+                "matches": 0,
+                "sequence": 25,
+                "transaction_ms": 0.558784,
+                "type": "checkpoint"
+              },
+              {
+                "cold": true,
+                "complete": true,
+                "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000067",
+                "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000023",
+                "executor_setups": 1,
+                "grant": {
+                  "begin": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                  "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                  "end_exclusive": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "epoch": "2ae67bad375e1bd4441ac8bfbefc8808",
+                  "expires": 1793465533,
+                  "generation": 1,
+                  "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                  "owner": "db043a74-00e4-494e-a48e-b31c02f14219.cffb013d-3aeb-4884-91f2-faa7357845c4",
+                  "project": "006fe265-d647-437d-b7e8-3cf117ca3a4b"
+                },
+                "kernel_ms": 3.141504019498825,
+                "m": 17,
+                "mode": "bsgs",
+                "table_upload_ms": 0.01462399959564209,
+                "target_count": 5,
+                "tile_order": "both-ends",
+                "type": "grant-finish",
+                "wall_ns": 73728166,
+                "work_units": 2
+              },
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "running",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 3367028,
+                "device": 0,
+                "visible_devices": 8,
+                "project": "006fe265-d647-437d-b7e8-3cf117ca3a4b",
+                "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "assignment_generation": "2"
+              },
+              {
+                "grant": {
+                  "begin": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                  "end_exclusive": "0x00000000000000000000000000000001000000000000000000000000000000d1",
+                  "epoch": "2ae67bad375e1bd4441ac8bfbefc8808",
+                  "expires": 1793465533,
+                  "generation": 2,
+                  "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                  "owner": "db043a74-00e4-494e-a48e-b31c02f14219.cffb013d-3aeb-4884-91f2-faa7357845c4",
+                  "project": "006fe265-d647-437d-b7e8-3cf117ca3a4b"
+                },
+                "queue": "0",
+                "type": "grant-start"
+              },
+              {
+                "interval": {
+                  "begin": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "end_exclusive": "0x000000000000000000000000000000010000000000000000000000000000007b"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "matches": 1,
+                "sequence": 28,
+                "transaction_ms": 0.49202199999999996,
+                "type": "checkpoint"
+              },
+              {
+                "interval": {
+                  "begin": "0x000000000000000000000000000000010000000000000000000000000000007b",
+                  "end_exclusive": "0x00000000000000000000000000000001000000000000000000000000000000d1"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "matches": 1,
+                "sequence": 33,
+                "transaction_ms": 0.5269739999999999,
+                "type": "checkpoint"
+              },
+              {
+                "matches": 0,
+                "sequence": 49,
+                "transaction_ms": 0.566664,
+                "type": "checkpoint"
+              },
+              {
+                "cold": false,
+                "complete": true,
+                "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000067",
+                "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000023",
+                "executor_setups": 1,
+                "grant": {
+                  "begin": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                  "end_exclusive": "0x00000000000000000000000000000001000000000000000000000000000000d1",
+                  "epoch": "2ae67bad375e1bd4441ac8bfbefc8808",
+                  "expires": 1793465533,
+                  "generation": 2,
+                  "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                  "owner": "db043a74-00e4-494e-a48e-b31c02f14219.cffb013d-3aeb-4884-91f2-faa7357845c4",
+                  "project": "006fe265-d647-437d-b7e8-3cf117ca3a4b"
+                },
+                "kernel_ms": 3.137184038758278,
+                "m": 17,
+                "mode": "bsgs",
+                "table_upload_ms": 0.01462399959564209,
+                "target_count": 5,
+                "tile_order": "both-ends",
+                "type": "grant-finish",
+                "wall_ns": 39507439,
+                "work_units": 2
+              },
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "idle",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 3367028,
+                "device": 0,
+                "visible_devices": 8
+              },
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "stopped",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 3367028,
+                "device": 0,
+                "visible_devices": 8
+              },
+              {
+                "completed": 2,
+                "executor_setups": 1,
+                "reason": "drained",
+                "type": "exit",
+                "wall_ms": 115.000738
+              }
+            ]
+          },
+          {
+            "transport": "file",
+            "group_size": 8,
+            "local_results": [
+              {
+                "id": "1",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                "target": 3,
+                "target_bytes": "04d2083f9e07d640f2764fc7912d2f204420eceb4f0c00dd6eadba3cee444245e04733802b0021932f71d0e9fb7d183b9bf8ad81dabf702624d9c332a8ce3b1f59"
+              },
+              {
+                "id": "2",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000069",
+                "target": 0,
+                "target_bytes": "0470c6e4713921551b68610c90ff5142d85cfdaac48dafd6d33a09100c831ca9f66588ea2d46f9faebb63e39cb99db83dc606edb2fceadf6c8e6cca5a821b14f27"
+              },
+              {
+                "id": "3",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000036",
+                "target": 1,
+                "target_bytes": "0488c0f53200725b48cb7249baa205c70ab12fc302ff7625915bcc2e63803cbd33b84ceb4d639b902b8753472c1d5d561cca2f1913df3333a2e3d449c6b969659c"
+              },
+              {
+                "id": "4",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "scalar": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                "target": 2,
+                "target_bytes": "04ce5f0e6dc2b77311d3bf691742d4debf8e6eddd8a631957a5978603da4f02f96db6f9efc8b320982d46687230fbe18365c1e054f966c04ee15484aef38c600e3"
+              },
+              {
+                "id": "5",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "scalar": "0x00000000000000000000000000000001000000000000000000000000000000d0",
+                "target": 4,
+                "target_bytes": "04da80618bb852f44b4ccfb14e72085d13839cbb8d0eba1e3a2743387dd95f317eece9a357e25c8d7fba23055a2a541c30754bc7d5ca963fba93faea92d4d6fbb1"
+              }
+            ],
+            "server_results": [
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "id": 6,
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                "target": 3,
+                "target_bytes": "04d2083f9e07d640f2764fc7912d2f204420eceb4f0c00dd6eadba3cee444245e04733802b0021932f71d0e9fb7d183b9bf8ad81dabf702624d9c332a8ce3b1f59"
+              },
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "id": 7,
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000069",
+                "target": 0,
+                "target_bytes": "0470c6e4713921551b68610c90ff5142d85cfdaac48dafd6d33a09100c831ca9f66588ea2d46f9faebb63e39cb99db83dc606edb2fceadf6c8e6cca5a821b14f27"
+              },
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "id": 8,
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000036",
+                "target": 1,
+                "target_bytes": "0488c0f53200725b48cb7249baa205c70ab12fc302ff7625915bcc2e63803cbd33b84ceb4d639b902b8753472c1d5d561cca2f1913df3333a2e3d449c6b969659c"
+              },
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "id": 9,
+                "scalar": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                "target": 2,
+                "target_bytes": "04ce5f0e6dc2b77311d3bf691742d4debf8e6eddd8a631957a5978603da4f02f96db6f9efc8b320982d46687230fbe18365c1e054f966c04ee15484aef38c600e3"
+              },
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "id": 10,
+                "scalar": "0x00000000000000000000000000000001000000000000000000000000000000d0",
+                "target": 4,
+                "target_bytes": "04da80618bb852f44b4ccfb14e72085d13839cbb8d0eba1e3a2743387dd95f317eece9a357e25c8d7fba23055a2a541c30754bc7d5ca963fba93faea92d4d6fbb1"
+              }
+            ],
+            "events": [
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "running",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 3367145,
+                "device": 0,
+                "visible_devices": 8
+              },
+              {
+                "queue": "0",
+                "type": "self-test-start"
+              },
+              {
+                "queue": "0",
+                "self_test": {
+                  "compute_partition": "",
+                  "compute_units": 132,
+                  "driver": 13030,
+                  "memory_partition": "",
+                  "ordinal": 0,
+                  "passed": true,
+                  "pci_bus_id": "0000:1b:00.0",
+                  "runtime": 13030,
+                  "uuid": "9fdcd9f2c45469a881b044d5f5e92bb8"
+                },
+                "type": "ready",
+                "uuid": "9fdcd9f2c45469a881b044d5f5e92bb8"
+              },
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "running",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 3367145,
+                "device": 0,
+                "visible_devices": 8,
+                "project": "ced1b294-bf6f-4a4e-b88b-1e934ecb6417",
+                "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "assignment_generation": "1"
+              },
+              {
+                "grant": {
+                  "begin": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                  "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                  "end_exclusive": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "epoch": "c6730088dea25a288c9719f68a75964c",
+                  "expires": 1793465537,
+                  "generation": 1,
+                  "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                  "owner": "db043a74-00e4-494e-a48e-b31c02f14219.56731b04-67d3-409c-a12a-69cf4111653e",
+                  "project": "ced1b294-bf6f-4a4e-b88b-1e934ecb6417"
+                },
+                "queue": "0",
+                "type": "grant-start"
+              },
+              {
+                "interval": {
+                  "begin": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                  "end_exclusive": "0x0000000000000000000000000000000100000000000000000000000000000014"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "device_steps": 2,
+                "kernel_ms": 0.1594880074262619,
+                "sequence": 1,
+                "type": "progress"
+              },
+              {
+                "matches": 1,
+                "sequence": 3,
+                "transaction_ms": 0.545754,
+                "type": "checkpoint"
+              },
+              {
+                "interval": {
+                  "begin": "0x0000000000000000000000000000000100000000000000000000000000000014",
+                  "end_exclusive": "0x000000000000000000000000000000010000000000000000000000000000006a"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "matches": 1,
+                "sequence": 6,
+                "transaction_ms": 0.565816,
+                "type": "checkpoint"
+              },
+              {
+                "matches": 1,
+                "sequence": 22,
+                "transaction_ms": 0.530056,
+                "type": "checkpoint"
+              },
+              {
+                "matches": 0,
+                "sequence": 25,
+                "transaction_ms": 0.572869,
+                "type": "checkpoint"
+              },
+              {
+                "cold": true,
+                "complete": true,
+                "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000067",
+                "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000023",
+                "executor_setups": 1,
+                "grant": {
+                  "begin": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                  "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                  "end_exclusive": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "epoch": "c6730088dea25a288c9719f68a75964c",
+                  "expires": 1793465537,
+                  "generation": 1,
+                  "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                  "owner": "db043a74-00e4-494e-a48e-b31c02f14219.56731b04-67d3-409c-a12a-69cf4111653e",
+                  "project": "ced1b294-bf6f-4a4e-b88b-1e934ecb6417"
+                },
+                "kernel_ms": 3.18326398730278,
+                "m": 17,
+                "mode": "bsgs",
+                "table_upload_ms": 0.015200000256299973,
+                "target_count": 5,
+                "tile_order": "both-ends",
+                "type": "grant-finish",
+                "wall_ns": 74629132,
+                "work_units": 2
+              },
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "running",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 3367145,
+                "device": 0,
+                "visible_devices": 8,
+                "project": "ced1b294-bf6f-4a4e-b88b-1e934ecb6417",
+                "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "assignment_generation": "2"
+              },
+              {
+                "grant": {
+                  "begin": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                  "end_exclusive": "0x00000000000000000000000000000001000000000000000000000000000000d1",
+                  "epoch": "c6730088dea25a288c9719f68a75964c",
+                  "expires": 1793465537,
+                  "generation": 2,
+                  "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                  "owner": "db043a74-00e4-494e-a48e-b31c02f14219.56731b04-67d3-409c-a12a-69cf4111653e",
+                  "project": "ced1b294-bf6f-4a4e-b88b-1e934ecb6417"
+                },
+                "queue": "0",
+                "type": "grant-start"
+              },
+              {
+                "interval": {
+                  "begin": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "end_exclusive": "0x000000000000000000000000000000010000000000000000000000000000007b"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "matches": 1,
+                "sequence": 28,
+                "transaction_ms": 0.511227,
+                "type": "checkpoint"
+              },
+              {
+                "interval": {
+                  "begin": "0x000000000000000000000000000000010000000000000000000000000000007b",
+                  "end_exclusive": "0x00000000000000000000000000000001000000000000000000000000000000d1"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "matches": 1,
+                "sequence": 33,
+                "transaction_ms": 0.520309,
+                "type": "checkpoint"
+              },
+              {
+                "matches": 0,
+                "sequence": 49,
+                "transaction_ms": 0.5777519999999999,
+                "type": "checkpoint"
+              },
+              {
+                "cold": false,
+                "complete": true,
+                "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000067",
+                "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000023",
+                "executor_setups": 1,
+                "grant": {
+                  "begin": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                  "end_exclusive": "0x00000000000000000000000000000001000000000000000000000000000000d1",
+                  "epoch": "c6730088dea25a288c9719f68a75964c",
+                  "expires": 1793465537,
+                  "generation": 2,
+                  "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                  "owner": "db043a74-00e4-494e-a48e-b31c02f14219.56731b04-67d3-409c-a12a-69cf4111653e",
+                  "project": "ced1b294-bf6f-4a4e-b88b-1e934ecb6417"
+                },
+                "kernel_ms": 3.19167996942997,
+                "m": 17,
+                "mode": "bsgs",
+                "table_upload_ms": 0.015200000256299973,
+                "target_count": 5,
+                "tile_order": "both-ends",
+                "type": "grant-finish",
+                "wall_ns": 39788737,
+                "work_units": 2
+              },
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "idle",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 3367145,
+                "device": 0,
+                "visible_devices": 8
+              },
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "stopped",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 3367145,
+                "device": 0,
+                "visible_devices": 8
+              },
+              {
+                "completed": 2,
+                "executor_setups": 1,
+                "reason": "drained",
+                "type": "exit",
+                "wall_ms": 116.228905
+              }
+            ]
+          }
+        ],
+        "binaries": {
+          "keyhunt-coordinator": "c342f37fee7095a77e65c67c27e8954098478e99f06f65a54d718c4d0a4b39ca",
+          "keyhunt-worker": "4dad1217d4a4de726772486be0f5c73feb962bca8f6124fc9e659b2e9a002bcf",
+          "keyhunt": "cda762aca82e44d28bbc3da763a6c5988a31894a6c81cbc0c85138ef70af7925"
+        }
+      }
+    },
+    "dance": {
+      "workers": {
+        "tile_order": "dance",
+        "passed": true,
+        "hardware": true,
+        "backend": "cuda",
+        "oracle_commit": "0cdc758a56360bf58a851fe91085a327ec97685a",
+        "cases": [
+          {
+            "transport": "https",
+            "group_size": 1,
+            "local_results": [
+              {
+                "id": "1",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                "target": 3,
+                "target_bytes": "04d2083f9e07d640f2764fc7912d2f204420eceb4f0c00dd6eadba3cee444245e04733802b0021932f71d0e9fb7d183b9bf8ad81dabf702624d9c332a8ce3b1f59"
+              },
+              {
+                "id": "2",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000069",
+                "target": 0,
+                "target_bytes": "0470c6e4713921551b68610c90ff5142d85cfdaac48dafd6d33a09100c831ca9f66588ea2d46f9faebb63e39cb99db83dc606edb2fceadf6c8e6cca5a821b14f27"
+              },
+              {
+                "id": "3",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000036",
+                "target": 1,
+                "target_bytes": "0488c0f53200725b48cb7249baa205c70ab12fc302ff7625915bcc2e63803cbd33b84ceb4d639b902b8753472c1d5d561cca2f1913df3333a2e3d449c6b969659c"
+              },
+              {
+                "id": "4",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "scalar": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                "target": 2,
+                "target_bytes": "04ce5f0e6dc2b77311d3bf691742d4debf8e6eddd8a631957a5978603da4f02f96db6f9efc8b320982d46687230fbe18365c1e054f966c04ee15484aef38c600e3"
+              },
+              {
+                "id": "5",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "scalar": "0x00000000000000000000000000000001000000000000000000000000000000d0",
+                "target": 4,
+                "target_bytes": "04da80618bb852f44b4ccfb14e72085d13839cbb8d0eba1e3a2743387dd95f317eece9a357e25c8d7fba23055a2a541c30754bc7d5ca963fba93faea92d4d6fbb1"
+              }
+            ],
+            "server_results": [
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "id": 1,
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                "target": 3,
+                "target_bytes": "04d2083f9e07d640f2764fc7912d2f204420eceb4f0c00dd6eadba3cee444245e04733802b0021932f71d0e9fb7d183b9bf8ad81dabf702624d9c332a8ce3b1f59"
+              },
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "id": 2,
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000069",
+                "target": 0,
+                "target_bytes": "0470c6e4713921551b68610c90ff5142d85cfdaac48dafd6d33a09100c831ca9f66588ea2d46f9faebb63e39cb99db83dc606edb2fceadf6c8e6cca5a821b14f27"
+              },
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "id": 3,
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000036",
+                "target": 1,
+                "target_bytes": "0488c0f53200725b48cb7249baa205c70ab12fc302ff7625915bcc2e63803cbd33b84ceb4d639b902b8753472c1d5d561cca2f1913df3333a2e3d449c6b969659c"
+              },
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "id": 4,
+                "scalar": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                "target": 2,
+                "target_bytes": "04ce5f0e6dc2b77311d3bf691742d4debf8e6eddd8a631957a5978603da4f02f96db6f9efc8b320982d46687230fbe18365c1e054f966c04ee15484aef38c600e3"
+              },
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "id": 5,
+                "scalar": "0x00000000000000000000000000000001000000000000000000000000000000d0",
+                "target": 4,
+                "target_bytes": "04da80618bb852f44b4ccfb14e72085d13839cbb8d0eba1e3a2743387dd95f317eece9a357e25c8d7fba23055a2a541c30754bc7d5ca963fba93faea92d4d6fbb1"
+              }
+            ],
+            "events": [
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "running",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 3367422,
+                "device": 0,
+                "visible_devices": 8
+              },
+              {
+                "queue": "0",
+                "type": "self-test-start"
+              },
+              {
+                "queue": "0",
+                "self_test": {
+                  "compute_partition": "",
+                  "compute_units": 132,
+                  "driver": 13030,
+                  "memory_partition": "",
+                  "ordinal": 0,
+                  "passed": true,
+                  "pci_bus_id": "0000:1b:00.0",
+                  "runtime": 13030,
+                  "uuid": "9fdcd9f2c45469a881b044d5f5e92bb8"
+                },
+                "type": "ready",
+                "uuid": "9fdcd9f2c45469a881b044d5f5e92bb8"
+              },
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "running",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 3367422,
+                "device": 0,
+                "visible_devices": 8,
+                "project": "12a3d0dc-f68b-4afe-b4b1-83d29b9e5f60",
+                "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "assignment_generation": "1"
+              },
+              {
+                "grant": {
+                  "begin": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                  "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                  "end_exclusive": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "epoch": "fd5d28352dba7dbc982ef5871c28240a",
+                  "expires": 1793465542,
+                  "generation": 1,
+                  "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                  "owner": "37d9d196-67ae-4a7b-8db3-9084051595c6.a1ef4a65-f771-4389-ba53-70eec9e4eb0a",
+                  "project": "12a3d0dc-f68b-4afe-b4b1-83d29b9e5f60"
+                },
+                "queue": "0",
+                "type": "grant-start"
+              },
+              {
+                "interval": {
+                  "begin": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                  "end_exclusive": "0x0000000000000000000000000000000100000000000000000000000000000014"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "device_steps": 2,
+                "kernel_ms": 0.15673600137233734,
+                "sequence": 1,
+                "type": "progress"
+              },
+              {
+                "matches": 1,
+                "sequence": 3,
+                "transaction_ms": 0.848046,
+                "type": "checkpoint"
+              },
+              {
+                "interval": {
+                  "begin": "0x0000000000000000000000000000000100000000000000000000000000000036",
+                  "end_exclusive": "0x000000000000000000000000000000010000000000000000000000000000006a"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "matches": 1,
+                "sequence": 6,
+                "transaction_ms": 0.5296109999999999,
+                "type": "checkpoint"
+              },
+              {
+                "matches": 1,
+                "sequence": 10,
+                "transaction_ms": 0.519168,
+                "type": "checkpoint"
+              },
+              {
+                "interval": {
+                  "begin": "0x0000000000000000000000000000000100000000000000000000000000000014",
+                  "end_exclusive": "0x0000000000000000000000000000000100000000000000000000000000000036"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "matches": 0,
+                "sequence": 25,
+                "transaction_ms": 0.59765,
+                "type": "checkpoint"
+              },
+              {
+                "cold": true,
+                "complete": true,
+                "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000067",
+                "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000023",
+                "executor_setups": 1,
+                "grant": {
+                  "begin": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                  "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                  "end_exclusive": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "epoch": "fd5d28352dba7dbc982ef5871c28240a",
+                  "expires": 1793465542,
+                  "generation": 1,
+                  "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                  "owner": "37d9d196-67ae-4a7b-8db3-9084051595c6.a1ef4a65-f771-4389-ba53-70eec9e4eb0a",
+                  "project": "12a3d0dc-f68b-4afe-b4b1-83d29b9e5f60"
+                },
+                "kernel_ms": 3.1468160152435303,
+                "m": 17,
+                "mode": "bsgs",
+                "table_upload_ms": 0.014720000326633453,
+                "target_count": 5,
+                "tile_order": "dance",
+                "type": "grant-finish",
+                "wall_ns": 74457101,
+                "work_units": 3
+              },
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "running",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 3367422,
+                "device": 0,
+                "visible_devices": 8,
+                "project": "12a3d0dc-f68b-4afe-b4b1-83d29b9e5f60",
+                "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "assignment_generation": "2"
+              },
+              {
+                "grant": {
+                  "begin": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                  "end_exclusive": "0x00000000000000000000000000000001000000000000000000000000000000d1",
+                  "epoch": "fd5d28352dba7dbc982ef5871c28240a",
+                  "expires": 1793465542,
+                  "generation": 2,
+                  "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                  "owner": "37d9d196-67ae-4a7b-8db3-9084051595c6.a1ef4a65-f771-4389-ba53-70eec9e4eb0a",
+                  "project": "12a3d0dc-f68b-4afe-b4b1-83d29b9e5f60"
+                },
+                "queue": "0",
+                "type": "grant-start"
+              },
+              {
+                "interval": {
+                  "begin": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "end_exclusive": "0x000000000000000000000000000000010000000000000000000000000000007b"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "matches": 1,
+                "sequence": 28,
+                "transaction_ms": 0.497473,
+                "type": "checkpoint"
+              },
+              {
+                "interval": {
+                  "begin": "0x000000000000000000000000000000010000000000000000000000000000009d",
+                  "end_exclusive": "0x00000000000000000000000000000001000000000000000000000000000000d1"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "matches": 1,
+                "sequence": 33,
+                "transaction_ms": 0.515823,
+                "type": "checkpoint"
+              },
+              {
+                "interval": {
+                  "begin": "0x000000000000000000000000000000010000000000000000000000000000007b",
+                  "end_exclusive": "0x000000000000000000000000000000010000000000000000000000000000009d"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "matches": 0,
+                "sequence": 49,
+                "transaction_ms": 0.556152,
+                "type": "checkpoint"
+              },
+              {
+                "cold": false,
+                "complete": true,
+                "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000067",
+                "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000023",
+                "executor_setups": 1,
+                "grant": {
+                  "begin": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                  "end_exclusive": "0x00000000000000000000000000000001000000000000000000000000000000d1",
+                  "epoch": "fd5d28352dba7dbc982ef5871c28240a",
+                  "expires": 1793465542,
+                  "generation": 2,
+                  "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                  "owner": "37d9d196-67ae-4a7b-8db3-9084051595c6.a1ef4a65-f771-4389-ba53-70eec9e4eb0a",
+                  "project": "12a3d0dc-f68b-4afe-b4b1-83d29b9e5f60"
+                },
+                "kernel_ms": 3.1383039951324463,
+                "m": 17,
+                "mode": "bsgs",
+                "table_upload_ms": 0.014720000326633453,
+                "target_count": 5,
+                "tile_order": "dance",
+                "type": "grant-finish",
+                "wall_ns": 39775647,
+                "work_units": 3
+              },
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "idle",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 3367422,
+                "device": 0,
+                "visible_devices": 8
+              },
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "stopped",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 3367422,
+                "device": 0,
+                "visible_devices": 8
+              },
+              {
+                "completed": 2,
+                "executor_setups": 1,
+                "reason": "drained",
+                "type": "exit",
+                "wall_ms": 116.07613099999999
+              }
+            ]
+          },
+          {
+            "transport": "file",
+            "group_size": 8,
+            "local_results": [
+              {
+                "id": "1",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                "target": 3,
+                "target_bytes": "04d2083f9e07d640f2764fc7912d2f204420eceb4f0c00dd6eadba3cee444245e04733802b0021932f71d0e9fb7d183b9bf8ad81dabf702624d9c332a8ce3b1f59"
+              },
+              {
+                "id": "2",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000069",
+                "target": 0,
+                "target_bytes": "0470c6e4713921551b68610c90ff5142d85cfdaac48dafd6d33a09100c831ca9f66588ea2d46f9faebb63e39cb99db83dc606edb2fceadf6c8e6cca5a821b14f27"
+              },
+              {
+                "id": "3",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000036",
+                "target": 1,
+                "target_bytes": "0488c0f53200725b48cb7249baa205c70ab12fc302ff7625915bcc2e63803cbd33b84ceb4d639b902b8753472c1d5d561cca2f1913df3333a2e3d449c6b969659c"
+              },
+              {
+                "id": "4",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "scalar": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                "target": 2,
+                "target_bytes": "04ce5f0e6dc2b77311d3bf691742d4debf8e6eddd8a631957a5978603da4f02f96db6f9efc8b320982d46687230fbe18365c1e054f966c04ee15484aef38c600e3"
+              },
+              {
+                "id": "5",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "scalar": "0x00000000000000000000000000000001000000000000000000000000000000d0",
+                "target": 4,
+                "target_bytes": "04da80618bb852f44b4ccfb14e72085d13839cbb8d0eba1e3a2743387dd95f317eece9a357e25c8d7fba23055a2a541c30754bc7d5ca963fba93faea92d4d6fbb1"
+              }
+            ],
+            "server_results": [
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "id": 6,
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                "target": 3,
+                "target_bytes": "04d2083f9e07d640f2764fc7912d2f204420eceb4f0c00dd6eadba3cee444245e04733802b0021932f71d0e9fb7d183b9bf8ad81dabf702624d9c332a8ce3b1f59"
+              },
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "id": 7,
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000069",
+                "target": 0,
+                "target_bytes": "0470c6e4713921551b68610c90ff5142d85cfdaac48dafd6d33a09100c831ca9f66588ea2d46f9faebb63e39cb99db83dc606edb2fceadf6c8e6cca5a821b14f27"
+              },
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "id": 8,
+                "scalar": "0x0000000000000000000000000000000100000000000000000000000000000036",
+                "target": 1,
+                "target_bytes": "0488c0f53200725b48cb7249baa205c70ab12fc302ff7625915bcc2e63803cbd33b84ceb4d639b902b8753472c1d5d561cca2f1913df3333a2e3d449c6b969659c"
+              },
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "id": 9,
+                "scalar": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                "target": 2,
+                "target_bytes": "04ce5f0e6dc2b77311d3bf691742d4debf8e6eddd8a631957a5978603da4f02f96db6f9efc8b320982d46687230fbe18365c1e054f966c04ee15484aef38c600e3"
+              },
+              {
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "id": 10,
+                "scalar": "0x00000000000000000000000000000001000000000000000000000000000000d0",
+                "target": 4,
+                "target_bytes": "04da80618bb852f44b4ccfb14e72085d13839cbb8d0eba1e3a2743387dd95f317eece9a357e25c8d7fba23055a2a541c30754bc7d5ca963fba93faea92d4d6fbb1"
+              }
+            ],
+            "events": [
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "running",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 3367529,
+                "device": 0,
+                "visible_devices": 8
+              },
+              {
+                "queue": "0",
+                "type": "self-test-start"
+              },
+              {
+                "queue": "0",
+                "self_test": {
+                  "compute_partition": "",
+                  "compute_units": 132,
+                  "driver": 13030,
+                  "memory_partition": "",
+                  "ordinal": 0,
+                  "passed": true,
+                  "pci_bus_id": "0000:1b:00.0",
+                  "runtime": 13030,
+                  "uuid": "9fdcd9f2c45469a881b044d5f5e92bb8"
+                },
+                "type": "ready",
+                "uuid": "9fdcd9f2c45469a881b044d5f5e92bb8"
+              },
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "running",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 3367529,
+                "device": 0,
+                "visible_devices": 8,
+                "project": "c6e4c7ef-a437-45b0-97ad-55edf459e447",
+                "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "assignment_generation": "1"
+              },
+              {
+                "grant": {
+                  "begin": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                  "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                  "end_exclusive": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "epoch": "b9c04fe6efef86e1d08b3e92df30c384",
+                  "expires": 1793465546,
+                  "generation": 1,
+                  "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                  "owner": "37d9d196-67ae-4a7b-8db3-9084051595c6.c88175f2-0f3e-4764-a529-85d8bac09eb0",
+                  "project": "c6e4c7ef-a437-45b0-97ad-55edf459e447"
+                },
+                "queue": "0",
+                "type": "grant-start"
+              },
+              {
+                "interval": {
+                  "begin": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                  "end_exclusive": "0x0000000000000000000000000000000100000000000000000000000000000014"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "device_steps": 2,
+                "kernel_ms": 0.15936000645160675,
+                "sequence": 1,
+                "type": "progress"
+              },
+              {
+                "matches": 1,
+                "sequence": 3,
+                "transaction_ms": 0.531799,
+                "type": "checkpoint"
+              },
+              {
+                "interval": {
+                  "begin": "0x0000000000000000000000000000000100000000000000000000000000000036",
+                  "end_exclusive": "0x000000000000000000000000000000010000000000000000000000000000006a"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "matches": 1,
+                "sequence": 6,
+                "transaction_ms": 0.5477,
+                "type": "checkpoint"
+              },
+              {
+                "matches": 1,
+                "sequence": 10,
+                "transaction_ms": 0.521073,
+                "type": "checkpoint"
+              },
+              {
+                "interval": {
+                  "begin": "0x0000000000000000000000000000000100000000000000000000000000000014",
+                  "end_exclusive": "0x0000000000000000000000000000000100000000000000000000000000000036"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "matches": 0,
+                "sequence": 25,
+                "transaction_ms": 0.57832,
+                "type": "checkpoint"
+              },
+              {
+                "cold": true,
+                "complete": true,
+                "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000067",
+                "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000023",
+                "executor_setups": 1,
+                "grant": {
+                  "begin": "0x0000000000000000000000000000000100000000000000000000000000000003",
+                  "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                  "end_exclusive": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "epoch": "b9c04fe6efef86e1d08b3e92df30c384",
+                  "expires": 1793465546,
+                  "generation": 1,
+                  "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                  "owner": "37d9d196-67ae-4a7b-8db3-9084051595c6.c88175f2-0f3e-4764-a529-85d8bac09eb0",
+                  "project": "c6e4c7ef-a437-45b0-97ad-55edf459e447"
+                },
+                "kernel_ms": 3.1826880127191544,
+                "m": 17,
+                "mode": "bsgs",
+                "table_upload_ms": 0.014495999552309513,
+                "target_count": 5,
+                "tile_order": "dance",
+                "type": "grant-finish",
+                "wall_ns": 73760407,
+                "work_units": 3
+              },
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "running",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 3367529,
+                "device": 0,
+                "visible_devices": 8,
+                "project": "c6e4c7ef-a437-45b0-97ad-55edf459e447",
+                "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "assignment_generation": "2"
+              },
+              {
+                "grant": {
+                  "begin": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                  "end_exclusive": "0x00000000000000000000000000000001000000000000000000000000000000d1",
+                  "epoch": "b9c04fe6efef86e1d08b3e92df30c384",
+                  "expires": 1793465546,
+                  "generation": 2,
+                  "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                  "owner": "37d9d196-67ae-4a7b-8db3-9084051595c6.c88175f2-0f3e-4764-a529-85d8bac09eb0",
+                  "project": "c6e4c7ef-a437-45b0-97ad-55edf459e447"
+                },
+                "queue": "0",
+                "type": "grant-start"
+              },
+              {
+                "interval": {
+                  "begin": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "end_exclusive": "0x000000000000000000000000000000010000000000000000000000000000007b"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "matches": 1,
+                "sequence": 28,
+                "transaction_ms": 0.49594299999999997,
+                "type": "checkpoint"
+              },
+              {
+                "interval": {
+                  "begin": "0x000000000000000000000000000000010000000000000000000000000000009d",
+                  "end_exclusive": "0x00000000000000000000000000000001000000000000000000000000000000d1"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "matches": 1,
+                "sequence": 33,
+                "transaction_ms": 0.52933,
+                "type": "checkpoint"
+              },
+              {
+                "interval": {
+                  "begin": "0x000000000000000000000000000000010000000000000000000000000000007b",
+                  "end_exclusive": "0x000000000000000000000000000000010000000000000000000000000000009d"
+                },
+                "target_seconds": 180,
+                "type": "work-unit"
+              },
+              {
+                "matches": 0,
+                "sequence": 49,
+                "transaction_ms": 0.573074,
+                "type": "checkpoint"
+              },
+              {
+                "cold": false,
+                "complete": true,
+                "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000067",
+                "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000023",
+                "executor_setups": 1,
+                "grant": {
+                  "begin": "0x000000000000000000000000000000010000000000000000000000000000006a",
+                  "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                  "end_exclusive": "0x00000000000000000000000000000001000000000000000000000000000000d1",
+                  "epoch": "b9c04fe6efef86e1d08b3e92df30c384",
+                  "expires": 1793465546,
+                  "generation": 2,
+                  "job": "45ef2337b1b9dc4f6376d4d1cfb4dbcb0869dbd264eda7848506b6d35e531a64",
+                  "owner": "37d9d196-67ae-4a7b-8db3-9084051595c6.c88175f2-0f3e-4764-a529-85d8bac09eb0",
+                  "project": "c6e4c7ef-a437-45b0-97ad-55edf459e447"
+                },
+                "kernel_ms": 3.19580802321434,
+                "m": 17,
+                "mode": "bsgs",
+                "table_upload_ms": 0.014495999552309513,
+                "target_count": 5,
+                "tile_order": "dance",
+                "type": "grant-finish",
+                "wall_ns": 39456883,
+                "work_units": 3
+              },
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "idle",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 3367529,
+                "device": 0,
+                "visible_devices": 8
+              },
+              {
+                "type": "control",
+                "accepted": true,
+                "state": "stopped",
+                "requested": "run",
+                "durably_paused": false,
+                "durability": "local",
+                "pause_ms": 0.0,
+                "pid": 3367529,
+                "device": 0,
+                "visible_devices": 8
+              },
+              {
+                "completed": 2,
+                "executor_setups": 1,
+                "reason": "drained",
+                "type": "exit",
+                "wall_ms": 115.02029999999999
+              }
+            ]
+          }
+        ],
+        "binaries": {
+          "keyhunt-coordinator": "c342f37fee7095a77e65c67c27e8954098478e99f06f65a54d718c4d0a4b39ca",
+          "keyhunt-worker": "4dad1217d4a4de726772486be0f5c73feb962bca8f6124fc9e659b2e9a002bcf",
+          "keyhunt": "cda762aca82e44d28bbc3da763a6c5988a31894a6c81cbc0c85138ef70af7925"
+        }
+      }
+    }
+  }
+}
