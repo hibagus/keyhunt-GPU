@@ -1,0 +1,57 @@
+# C23: exact reverse scalar traversal
+
+Status: implementation in progress. This slice covers xpoint, Bitcoin
+HASH160/P2PKH, Ethereum and Bitcoin vanity, with unit or positive nonunit strides.
+BSGS/minikey traversal and endomorphism remain separate mappings.
+
+## Coverage and ordering
+
+`--range A:B --stride S --order reverse` visits the same finite progression as
+forward search, in reverse order. With `N=1+floor((B-A-1)/S)`, candidate index
+`j` in `[1,N+1)` maps to `A+(N-j)*S`. The first scalar is the last **on-lattice**
+scalar below B, which is not necessarily B-1. Bounds and stride are hexadecimal;
+`1<=A<B<=n` and `1<=S<n` remain required. No subtraction wraps modulo n.
+
+Reverse work always uses one-based candidate-index coverage, even at stride one.
+Blocks, batch intervals, receipts, saved complements and result coordinates use
+those indices. Summaries count candidates, and public results show actual
+`scalar` and `candidate_index` separately with
+`coordinate_space:"scalar-reverse-index-v1"`. Generic state/protocol interval
+records retain their existing shape and inherit meaning from the job binding.
+
+`--order forward` is the default and preserves existing version-1 unit-stride
+and version-2 nonunit-stride identities. Reverse order uses configuration version
+3 with the same 146-byte layout as the strided binding: original scalar bounds
+and positive stride follow the header. Version 3 implies reverse order and is
+valid at stride one. The exact candidate root and all mapping values are checked.
+A different order creates a different job; committed forward coverage is never
+silently reinterpreted as reverse coverage. Schema 7 and receipt bytes stay fixed.
+
+## Execution and recovery
+
+The direct kernel uses checked multiply-subtract. The stepped kernel starts at
+the batch's first mapped scalar and advances by `-SG`; cached point offsets use
+`(n-S)*2^bit mod n`. Only point arithmetic is modular. Prepared executors bind
+both stride and direction, reject mismatched work and refresh each batch seed.
+Every returned relation is checked against the mapped scalar on the CPU.
+
+Existing whole-attempt overflow rejection and bounded replay apply to candidate
+indices. Checkpoint creation binds order, while runs infer it from saved state;
+an explicit order must agree. Pause, restart, changed launch geometry/device,
+backup and ownership fences retain the original mapping.
+
+Workers must advertise an eighth capability, `scalar-reverse-v1`, before a
+coordinator allocates, renews, updates or returns cached replies for reverse jobs.
+Older capability sets retain their supported forward jobs. Fresh self-tests run
+both reverse kernels on the owned device, and prepared allocations survive grant
+handoff. HTTPS and disconnected courier transport carry the full binding.
+
+## Acceptance gates
+
+Independent integer and pinned public-key oracles must check mapping/inverse,
+non-divisible tails, wide subtraction/borrows, curve-order boundaries, skipped
+targets, both kernels and all four families. Durable tests must cover mismatched
+order, overflow, kill/restart, pause, changed visibility and exact local/server
+relations. CPU/sanitizer and real HIP/CUDA validation are required before marking
+this slice complete. Findings, source phases, binary hashes and raw evidence
+will be recorded under docs/. This slice makes no throughput or scaling claim.
