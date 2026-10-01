@@ -1,0 +1,280 @@
+{
+  "passed": true,
+  "recorded_utc": "2026-10-01T21:02:57.155282+00:00",
+  "base_commit": "3543c8a9cc4be414d2d97a1b6b76cdd1843f7d62",
+  "scope": "Seeded bounded random-window traversal for 22/30-character minikeys, stable overflow suffixes, exact ordinal recovery and supervised HTTPS/disconnected workers",
+  "source_phases": {
+    "contract": "e073ae7b74cac52014f1e16c729edd95956d76f5",
+    "implementation": "f1a07ce22d4de61d9654b7662c9ac323267d509e",
+    "native": "fc4768fb23fbc10594280c78bbe7de243703effd",
+    "checkpoints": "ba111798ace14f35362dbfaed616de73e902fd46",
+    "workers": "569ea1dada1dd8305407515154a431eb6f1e4bed",
+    "sanitizer_timeout": "0f6127d15757c769b67883dd16d765590a296b41"
+  },
+  "built_source_commit": "569ea1dada1dd8305407515154a431eb6f1e4bed",
+  "metadata": {
+    "hip": {
+      "source_commit": "0f6127d15757c769b67883dd16d765590a296b41",
+      "platform": "Linux-5.15.0-191-generic-x86_64-with-glibc2.35",
+      "binaries": {
+        "/home/bagus/keyhunt-GPU/build/hip-release": {
+          "keyhunt": "a0030e54154cd3e52267f9f6520b1bf8b6ef27878ab83426c16ec3904ad02e0a",
+          "keyhunt-worker": "bb7c457e1c928b6222e0e278f5e81b3b7ee5c0157b6720165c2f2b8c58410f2f",
+          "keyhunt-coordinator": "ae2183b0fe08607dca8fedc5dac3e57397d95880616f45de1a1c7f26578b909f",
+          "minikey_random_window_probe": "8981cf7c6a70c6a4c38a240acf06d1bdcdfedaea4fd9049b2c11bf40cbe9f0c0",
+          "minikey_order_probe": "0a502c97781552780dde809ca3dd9133748faa9103bd9c192e16d0ab373f95d0",
+          "minikey_search_test": "1271419a476a675e49913275ae060467e29f41cf84cdf6d0f92700cd9b8b9169",
+          "secp256k1_oracle": "8dc92137c49502e3de62cb20a750d1c7f0bd84294ae77c5ccc9c9dffd20763c6",
+          "storage_minikey_checkpoint_test": "fd2740caccee93ab1aec0d9804bb92fb1e5f5cea7a724c61137d8703c689c62d",
+          "storage_minikey_reverse_test": "c8e4a0f2a4a0dac387e37c2968401b2a90b3ded068f6f06776ee207b3baaa55f",
+          "storage_minikey_both_ends_test": "714b11839244e20dbd6135b29d9c116e006ae206db0c81584fad71dffded8d3e",
+          "storage_minikey_dance_test": "6186bea0ec7e8acceac918de9c57c6b891686b48fda75d50bf4e8c4723998cf6",
+          "storage_minikey_random_window_test": "9fa9bd9be0f0afe5c60def7e6760f14c4066da5a4c865fe932899ff33fc756c8",
+          "coordinator_minikeys_test": "a53a3e5b3fbe87a6bec3baed2da44ce07d7c7d021be5a2e7fa2606db9b113f77",
+          "coordinator_minikey_reverse_test": "09c0ff6f0049df786a2e334718ac6055aaad76e938e8ff72b0011e08ac6a7cad",
+          "work_unit_test": "649f118b16e43c83dff081c9ad8ead1f7e751525e821c3447a93d8994566fa6b",
+          "portable_minikey_probe": "6f26de0fae45c95b2ed34fb5cb355e4e62ed2e91a3a0a064a37b274fc96e0e30",
+          "hip_minikey_probe": "19d1b747eeca46e1e20f5a050d646a129435ed879292ab75540a49b0f7bde934",
+          "hip_minikeys_executor_test": "bd04de2a268ab2936630fe70dffb1d7f0127b28b04ba4c00e755d2fffc17116b",
+          "hip_minikeys_failure_test": "60dfefba601370a20c11a247628388d31f360ce4116d26607067660c0dae5992"
+        }
+      },
+      "build_configuration": {
+        "/home/bagus/keyhunt-GPU/build/hip-release": {
+          "CMAKE_BUILD_TYPE": "Release",
+          "CMAKE_CXX_COMPILER": "/usr/bin/c++",
+          "CMAKE_HIP_ARCHITECTURES": "gfx942",
+          "CMAKE_HIP_COMPILER": "/opt/rocm/core-10.0/lib/llvm/bin/clang++",
+          "KEYHUNT_ENABLE_COORDINATOR": "ON",
+          "KEYHUNT_ENABLE_CUDA": "OFF",
+          "KEYHUNT_ENABLE_HIP": "ON",
+          "KEYHUNT_ENABLE_HTTPS_WORKER": "ON",
+          "KEYHUNT_ENABLE_LTO": "ON",
+          "KEYHUNT_ENABLE_SANITIZERS": "OFF",
+          "KEYHUNT_GFX942_CARRY": "ON"
+        }
+      },
+      "compilers": {
+        "/opt/rocm/core-10.0/lib/llvm/bin/clang++": "AMD clang version 23.0.0git (https://github.com/ROCm/llvm-project.git 8f497e0992fb7513f7f78a6f6b6f1056c375e961)\nTarget: x86_64-unknown-linux-gnu\nThread model: posix\nInstalledDir: /opt/rocm/core-10.0/lib/llvm/bin",
+        "/usr/bin/c++": "c++ (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0\nCopyright (C) 2021 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
+      }
+    },
+    "cuda": {
+      "source_commit": "569ea1dada1dd8305407515154a431eb6f1e4bed",
+      "platform": "Linux-5.15.0-194-generic-x86_64-with-glibc2.35",
+      "binaries": {
+        "/home/bagus/keyhunt-GPU/build/cuda-h200": {
+          "keyhunt": "82ea20f0361a78f36211214dbf3c364a1ff3a7a8bd7896326c8cbfb9e1e820c8",
+          "keyhunt-worker": "9d561d7a439c41d967804469079a69aae81a1adcaa6d3877d15e923116018579",
+          "keyhunt-coordinator": "f3c8bf9c149f51aea13babe86939d2220b7fe5b02a2fbef38a21c41aaa4df65e",
+          "minikey_random_window_probe": "22ac9acc59269eade14a14f9c217c693d9a6d9d4acd55fc427520fcdced0d12e",
+          "minikey_order_probe": "0d21ccdaea72fc6a9fe1cd6ebc4963467743a1cf8a2175b7884953a5bbd857f5",
+          "minikey_search_test": "4044538864dfc5d34e01ec9ad0ea1b2c90b97907f6ecf4b39e020f1c0d89ad14",
+          "secp256k1_oracle": "039bdb67a9ec9ca522b193385033bb578e133ecd300ba32da8a550299c07e5e0",
+          "storage_minikey_checkpoint_test": "87aaedcd25b91f2294d838c115ad1660677a263b25f081b4747c96357dee9d64",
+          "storage_minikey_reverse_test": "da897da681410ffb8d08e7b722793adcbb512f95e25f44b3e1e6927988b4e8cf",
+          "storage_minikey_both_ends_test": "d3a1a79592ad5b5e38a1e35e8014fd1c9137d1fc300fa08845b0701f8ce82cb4",
+          "storage_minikey_dance_test": "a8ed96392f629c7c26ad488a9873e87432b3897ebbf3e092609e10b39f77b741",
+          "storage_minikey_random_window_test": "650a8395ae7c9b36fe0daf27c3c4bec451ebdabd1b0e4060172c3b7e85086159",
+          "coordinator_minikeys_test": "6f6fbd2c4251d8a712ccd3600f7d3443a43cf7105bcce1e4f6269ec0348ab6f0",
+          "coordinator_minikey_reverse_test": "1615e5de9acf964d0d5c9fc6efa2ff633aae3a79734b1d4216bd1680fb823fbb",
+          "work_unit_test": "97b90583cc74c291937e016e64278a9d39cf9161db486114fa58f91c90260be7",
+          "portable_minikey_probe": "4f0d4f6d1e526a623a46899ad55a20ebbdc7c1bf53783abad5c017d111f17ec3",
+          "cuda_minikey_probe": "324c77be874cc3b82dbc89b16838ff15dcb96e023d02d9f869a29de8c3b785d3",
+          "cuda_minikeys_executor_test": "4273cc02d1cfab408a2fed56758825d42fed2cdacd4dbd9c1c275b62214865cf",
+          "cuda_minikeys_failure_test": "2de91f7d2330fa56a3aa7b48af583d2ca08f5cbb75bf0f357d494c60e087efeb"
+        }
+      },
+      "build_configuration": {
+        "/home/bagus/keyhunt-GPU/build/cuda-h200": {
+          "CMAKE_BUILD_TYPE": "Release",
+          "CMAKE_CUDA_ARCHITECTURES": "90",
+          "CMAKE_CUDA_COMPILER": "/usr/local/cuda/bin/nvcc",
+          "CMAKE_CXX_COMPILER": "/usr/bin/c++",
+          "KEYHUNT_ENABLE_COORDINATOR": "ON",
+          "KEYHUNT_ENABLE_CUDA": "ON",
+          "KEYHUNT_ENABLE_HIP": "OFF",
+          "KEYHUNT_ENABLE_HTTPS_WORKER": "ON",
+          "KEYHUNT_ENABLE_LTO": "ON",
+          "KEYHUNT_ENABLE_SANITIZERS": "OFF",
+          "KEYHUNT_GFX942_CARRY": "OFF"
+        }
+      },
+      "compilers": {
+        "/usr/bin/c++": "c++ (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0\nCopyright (C) 2021 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.",
+        "/usr/local/cuda/bin/nvcc": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2026 NVIDIA Corporation\nBuilt on Tue_Jun_09_02:43:40_PM_PDT_2026\nCuda compilation tools, release 13.3, V13.3.73\nBuild cuda_13.3.r13.3/compiler.38244171_0"
+      }
+    }
+  },
+  "host_metadata": {
+    "source_commit": "569ea1dada1dd8305407515154a431eb6f1e4bed",
+    "platform": "Linux-5.15.0-191-generic-x86_64-with-glibc2.35",
+    "binaries": {
+      "/home/bagus/keyhunt-GPU/build/coordinator-release": {
+        "keyhunt": "ef042341bad3386a3b98972c0dc70226380c9edd2a9a6bea4071a216902c013f",
+        "keyhunt-worker": "dbddd2c9796b37781ca0f544693355da2ee390203ebb58bd326764f2cbfa22fc",
+        "keyhunt-coordinator": "ae2183b0fe08607dca8fedc5dac3e57397d95880616f45de1a1c7f26578b909f",
+        "minikey_random_window_probe": "8981cf7c6a70c6a4c38a240acf06d1bdcdfedaea4fd9049b2c11bf40cbe9f0c0",
+        "minikey_order_probe": "0a502c97781552780dde809ca3dd9133748faa9103bd9c192e16d0ab373f95d0",
+        "minikey_search_test": "1271419a476a675e49913275ae060467e29f41cf84cdf6d0f92700cd9b8b9169",
+        "secp256k1_oracle": "8dc92137c49502e3de62cb20a750d1c7f0bd84294ae77c5ccc9c9dffd20763c6",
+        "storage_minikey_checkpoint_test": "fd2740caccee93ab1aec0d9804bb92fb1e5f5cea7a724c61137d8703c689c62d",
+        "storage_minikey_reverse_test": "c8e4a0f2a4a0dac387e37c2968401b2a90b3ded068f6f06776ee207b3baaa55f",
+        "storage_minikey_both_ends_test": "714b11839244e20dbd6135b29d9c116e006ae206db0c81584fad71dffded8d3e",
+        "storage_minikey_dance_test": "6186bea0ec7e8acceac918de9c57c6b891686b48fda75d50bf4e8c4723998cf6",
+        "storage_minikey_random_window_test": "9fa9bd9be0f0afe5c60def7e6760f14c4066da5a4c865fe932899ff33fc756c8",
+        "coordinator_minikeys_test": "a53a3e5b3fbe87a6bec3baed2da44ce07d7c7d021be5a2e7fa2606db9b113f77",
+        "coordinator_minikey_reverse_test": "09c0ff6f0049df786a2e334718ac6055aaad76e938e8ff72b0011e08ac6a7cad",
+        "work_unit_test": "649f118b16e43c83dff081c9ad8ead1f7e751525e821c3447a93d8994566fa6b",
+        "portable_minikey_probe": "6f26de0fae45c95b2ed34fb5cb355e4e62ed2e91a3a0a064a37b274fc96e0e30"
+      },
+      "/home/bagus/keyhunt-GPU/build/coordinator-sanitizers": {
+        "minikey_random_window_probe": "ef2b791e2c103d04836c7b0996ae0acc531c2a4a39fe391a6af9c6d058014389",
+        "minikey_order_probe": "77c945e7f1635d3a3f04de38e48dfae40823b9f56719826d25582c43cb0a2e16",
+        "minikey_search_test": "e14c517b443104839d4f7646d19321f2f8d04a6e39b021855c3c1e3c1eac123f",
+        "secp256k1_oracle": "fc52fc04fe92fc395fb5a4b71b1afde220e9a4f391fd93348535291b09c3aca2",
+        "storage_minikey_checkpoint_test": "7cbc0debb014415080b53e68e724b654552f4a3b76142bed576f20ee4637ca6f",
+        "storage_minikey_reverse_test": "b945d1a5f3452ce411991a4702e00517ce1753217778ae077dd8624a7dc57d2a",
+        "storage_minikey_both_ends_test": "38f80fcedfc83c5b6213644c25298f790036e393aecb02dab0a81120b82d4d60",
+        "storage_minikey_dance_test": "3829cc9f9f47a6362d93678619edac8c4706ff2b656461cdca3e2616528716c2",
+        "storage_minikey_random_window_test": "2d7899170bc44bf4368576e6b1711c9d01764e8941c6adbd9af00ba365c6a4a7",
+        "coordinator_minikeys_test": "eb82d7eb96c49c0a8233cbd2382aecf83864da07ac71e4e376ecdf93850fd021",
+        "coordinator_minikey_reverse_test": "37d272b226e88c83f48b61be0da1c44e91a8eafcd392009d2b8cf0518116e399",
+        "work_unit_test": "45c713869969acd1a9b36a04cf78a04af8db867fcf215e9c6c30bf6e8d39c78d",
+        "portable_minikey_probe": "5ae2bee5fcee5278f4a2ad870b8b93f4083ac7e17344fd928c0e1a22da3f69e3"
+      }
+    },
+    "build_configuration": {
+      "/home/bagus/keyhunt-GPU/build/coordinator-release": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_CXX_COMPILER": "/usr/bin/c++",
+        "KEYHUNT_ENABLE_COORDINATOR": "ON",
+        "KEYHUNT_ENABLE_CUDA": "OFF",
+        "KEYHUNT_ENABLE_HIP": "OFF",
+        "KEYHUNT_ENABLE_HTTPS_WORKER": "ON",
+        "KEYHUNT_ENABLE_LTO": "ON",
+        "KEYHUNT_ENABLE_SANITIZERS": "OFF",
+        "KEYHUNT_GFX942_CARRY": "OFF"
+      },
+      "/home/bagus/keyhunt-GPU/build/coordinator-sanitizers": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_CXX_COMPILER": "/usr/bin/c++",
+        "KEYHUNT_ENABLE_COORDINATOR": "ON",
+        "KEYHUNT_ENABLE_CUDA": "OFF",
+        "KEYHUNT_ENABLE_HIP": "OFF",
+        "KEYHUNT_ENABLE_HTTPS_WORKER": "ON",
+        "KEYHUNT_ENABLE_LTO": "OFF",
+        "KEYHUNT_ENABLE_SANITIZERS": "ON",
+        "KEYHUNT_GFX942_CARRY": "OFF"
+      }
+    },
+    "compilers": {
+      "/usr/bin/c++": "c++ (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0\nCopyright (C) 2021 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
+    }
+  },
+  "checks": {
+    "cpu_release": {
+      "passed": 160,
+      "failed": 0,
+      "log": "local/full-tests.log"
+    },
+    "hip": {
+      "passed": 40,
+      "failed": 0,
+      "log": "hip/tests.log"
+    },
+    "cuda": {
+      "passed": 40,
+      "failed": 0,
+      "log": "cuda/tests.log"
+    },
+    "sanitizers_initial": {
+      "passed": 13,
+      "failed": 1,
+      "failed_gates": [
+        "storage_minikey_random_window"
+      ],
+      "log": "local/sanitizer-tests.log"
+    },
+    "sanitizers_retry": {
+      "passed": 1,
+      "failed": 0,
+      "log": "local/sanitizer-retry-tests.log"
+    },
+    "sanitizers": {
+      "distinct_passing_gates": 14,
+      "failed_remaining": 0
+    }
+  },
+  "results": {
+    "random_window_oracle_cases": 1189,
+    "earlier_order_oracle_cases": 2495,
+    "planner_enumerated_earlier_scenarios": 144,
+    "primitive_cases_per_implementation": 1781,
+    "cpu_passing_gates": 160,
+    "focused_sanitizer_gates": 14,
+    "gpu_gates_per_backend": 40,
+    "random_window_native_cases_per_backend": 90,
+    "previous_native_cases_per_backend": 296,
+    "random_window_checkpoint_cases_per_backend": 24,
+    "killed_random_window_transitions_per_backend": 18,
+    "previous_checkpoint_cases_per_backend": 56,
+    "random_window_host_lost_ack_scenarios": 40,
+    "random_window_fragmented_worker_scenarios": 4,
+    "pause_visibility_cases_per_policy_backend": 2,
+    "worker_cases_per_policy_backend": 4,
+    "worker_policies": [
+      "reverse",
+      "both-ends",
+      "dance",
+      "random-window"
+    ],
+    "worker_grants_per_case": 2,
+    "documented_examples_per_backend": 4,
+    "fault_boundaries_per_direction_backend": 29,
+    "observed_max_active_units": 73,
+    "observed_max_extra_fragments": 70,
+    "rejected_sampler_draws": 15950,
+    "unaccepted_oracle_attempts": 13152
+  },
+  "findings": [
+    "Independent tile-first and work-first models agree, including ownership starts/finishes through unaccepted attempts and changing work/batch sizes.",
+    "The storage fixture forces real overflow in a shuffled interior tile, loses a durable acknowledgment before or after that first tile completes, then recovers all missing ordinals exactly once in each policy.",
+    "The new forty-case storage fixture exceeded its initial 180-second ASan/UBSan deadline. Only its CTest timeout changed to 600 seconds; the unchanged binary passed its focused rerun. Initial and retry logs are retained. No production change was required during acceptance."
+  ],
+  "limits": [
+    "Random-window shuffles the next W tiles from the lowest missing endpoints and exhausts the window. It is local randomization, not globally uniform selection or replacement sampling.",
+    "Seed is a 256-bit hexadecimal ordering value (default zero); W is 1..256 tiles (default 64). Both overrides require random-window.",
+    "Tile/work geometry is frozen per window. Overflow replans the same tile suffix; successful sub-batches advance within it before another shuffled tile is selected. Later windows sample current limits.",
+    "At most W tile records and W active work owners exist beyond input gaps. Each owner records only its own execution/replay time, excluding pauses and other owners.",
+    "The SHA-256 domain/seed/counter stream and masked rejection draws specify portable Fisher-Yates order; no security or throughput claim.",
+    "Canonical receipts permit restart with changed seed/window, geometry, device or supported order. The stream resets over saved gaps; submission sequence may differ.",
+    "No kernel arithmetic, persisted job/configuration/schema/protocol/capability change. Existing minikeys-v1 workers remain compatible.",
+    "Both lengths and all encodings are tested. Eight-device spots alternate lengths; no full device-by-length product or fleet scaling claim.",
+    "Fourteen focused host ASan/UBSan gates; no whole-application or device-code sanitizer claim.",
+    "Scalar families\u2019 alternative traversal remains pending in C23.",
+    "Public fixtures only; no enrollment credentials or journal databases archived."
+  ],
+  "artifacts": {
+    "C23_MINIKEYS_RANDOM_WINDOW_ALGORITHMS.json": {
+      "sha256": "9871cd4f6e89d715dfbc04d39c69dc14edfc0e517c2f66828a965c4b36e96604",
+      "bytes": 2358326
+    },
+    "C23_MINIKEYS_RANDOM_WINDOW_RECOVERY.json": {
+      "sha256": "c5bdab5a3a5f7e609f2e0c829406285866e306b56bb73c96d27b4c0913b903f6",
+      "bytes": 739194
+    },
+    "C23_MINIKEYS_RANDOM_WINDOW_WORKERS.json": {
+      "sha256": "9eab7bd26bf3b2315431e96fcb564f70bef8f740355dccd38741112b40c0208c",
+      "bytes": 628017
+    },
+    "C23_MINIKEYS_RANDOM_WINDOW_EXAMPLES.json": {
+      "sha256": "57777989fe770b9ec077c3bb3ea1b83861d4b3739d938b4f99fbd8fcd1740f41",
+      "bytes": 124561
+    },
+    "C23_MINIKEYS_RANDOM_WINDOW_LOGS.tar.gz": {
+      "sha256": "b35673745680a59b40f768c30d88b616bc36582ae36f92fc2f0b290d37563935",
+      "bytes": 221419
+    }
+  }
+}
