@@ -358,21 +358,27 @@ sample current batch/work sizing; restart resets the stream on saved gaps.
 See [the contract/example](C23_MINIKEYS_RANDOM_WINDOW.md) and
 [HIP/H200 acceptance](C23_MINIKEYS_RANDOM_WINDOW_VALIDATION.md).
 
-## Both-ends scalar batches
+## Scalar batch order
 
-Scalar searches accept `--batch-order forward|both-ends` (default forward).
+Scalar searches accept `--batch-order forward|both-ends|dance` (default forward).
 This applies to xpoint, Bitcoin address/HASH160, Ethereum and vanity in native
 searches, checkpoint runs, `keyhunt-worker run-device` and the Python supervisor.
 Both-ends alternates low/high missing batches after acceptance, starting low.
-Overflow retries the same end. Each batch preserves the immutable `--order`,
+Overflow retries the same phase and endpoint. Each batch preserves the immutable `--order`,
 stride and orbit mapping; high batches are clipped at orbit variant boundaries.
-At most two adaptive work owners are active within a grant.
+Dance cycles low, high and the lowest missing endpoint at or above a fixed
+midpoint, falling back to low when the upper half is exhausted. The midpoint is
+computed once per invocation from the outer missing endpoints; batches and work
+owners cannot cross it. Both-ends has at most two adaptive owners; dance has three.
 
 Restart can switch batch order and geometry over the exact saved complement.
+Dance recomputes its midpoint and starts low on restart.
 Existing identities, receipts and capability requirements remain valid; compatible
 older workers can continue in forward batch order. Creation, BSGS and minikeys
 reject explicit `--batch-order` overrides, including forward. Mixed-mode workers
 should omit this override. Execution summaries report `batch_order`.
 See [contracts and an executable public example](C23_SCALAR_BOTH_ENDS.md) and
-[HIP/H200 validation](C23_SCALAR_BOTH_ENDS_VALIDATION.md). Scalar dance and random
-windows remain pending; this change makes no performance claim.
+[both-ends HIP/H200 validation](C23_SCALAR_BOTH_ENDS_VALIDATION.md).
+The [dance contract and public example](C23_SCALAR_DANCE.md) define the fixed
+midpoint and recovery behavior. Scalar random windows remain pending.
+Neither policy makes a performance claim.
