@@ -13,7 +13,7 @@ for name in ('coordinator', 'worker', 'keyhunt', 'oracle', 'report'):
 p.add_argument('--apache-root', default='/')
 p.add_argument('--hardware', action='store_true')
 p.add_argument('--backend', choices=('hip', 'cuda'), default='hip')
-p.add_argument('--tile-order', choices=('reverse', 'both-ends'), default='reverse')
+p.add_argument('--tile-order', choices=('reverse', 'both-ends', 'dance'), default='reverse')
 a = p.parse_args()
 worker, keyhunt = str(a.worker.resolve()), str(a.keyhunt.resolve())
 report = dict(tile_order=a.tile_order, passed=False, hardware=a.hardware, backend=a.backend, oracle_commit=check_source(), cases=[],
@@ -105,7 +105,8 @@ with tempfile.TemporaryDirectory(prefix='kh-bsgs-reverse-worker-', dir='/var/tmp
                         ordered=sorted(units)
                         assert ordered[0][0]==lower and ordered[-1][1]==upper
                         assert all(left[1]==right[0] for left,right in zip(ordered,ordered[1:]))
-                        if a.tile_order=='both-ends':assert units[0][0]==lower
+                        if a.tile_order in ('both-ends','dance'):assert units[0][0]==lower
+                        if a.tile_order=='dance':assert all(not (lo<(lower+upper)//2<hi) for lo,hi in units)
                 if transport == 'file': assert not (state / 'sync.log').exists()
                 def check(rows):
                     assert len(rows) == len(expected) and {(int(v['scalar'], 16), v['target_bytes']) for v in rows} == expected

@@ -5,7 +5,7 @@
 using namespace cfixture;
 using namespace keyhunt::storage::detail;
 int main(){try{
-    for(const auto order:{core::BsgsTileOrder::Forward,core::BsgsTileOrder::Reverse,core::BsgsTileOrder::BothEnds})for(unsigned seconds:{0U,180U}){
+    for(const auto order:{core::BsgsTileOrder::Forward,core::BsgsTileOrder::Reverse,core::BsgsTileOrder::BothEnds,core::BsgsTileOrder::Dance})for(unsigned seconds:{0U,180U}){
         const bool reverse=order==core::BsgsTileOrder::Reverse;
         Temporary server,local;int64_t now=1800000000;
         Repository repo(server.path.string(),[&]{return now;});
@@ -46,22 +46,25 @@ int main(){try{
         require(before.covered.size()==3&&before.remaining.size()==4,"fragmented recovery fixture lost islands");
         CheckpointOptions options;options.giant_steps=1;options.target_batch=2;options.checkpoint_seconds=0;
         options.bsgs_tile_order=order;options.work_unit_seconds=seconds;std::optional<ScalarInterval> previous;unsigned tiles=0;
-        auto missing=before.remaining;
+        std::set<UInt256> missing;
+        for(const auto& gap:before.remaining)for(auto n=gap.begin();n<gap.end();n=n.add(UInt256(1)))missing.insert(n);
+        const auto pivot=missing.begin()->add(missing.rbegin()->add(UInt256(1)).subtract(*missing.begin()).divmod(UInt256(2)).first);
         const auto summary=CheckpointRun::bsgs(worker.journal(),grant,targets,table,verifier,[&](const auto& batch){
             const auto& tile=batch.interval();bool inside=false;
             for(const auto& gap:before.remaining)inside|=gap.contains(tile);
             require(inside,"tile crossed previously accepted coverage");
             if(!previous||tile.begin()!=previous->begin()||tile.end()!=previous->end()){
-                const bool high=reverse||(order==core::BsgsTileOrder::BothEnds && tiles%2);
-                const auto index=high?missing.size()-1:0;const auto gap=missing[index];
-                require(gap.contains(tile) && (high?tile.end()==gap.end():tile.begin()==gap.begin()),"wrong global endpoint");
-                if(tile.size()==gap.size())missing.erase(missing.begin()+index);
-                else missing[index]=high?ScalarInterval(gap.begin(),tile.begin()):ScalarInterval(tile.end(),gap.end());
+                const bool high=reverse||(order==core::BsgsTileOrder::BothEnds && tiles%2) || (order==core::BsgsTileOrder::Dance && tiles%3==1);
+                auto low=missing.begin();
+                if(order==core::BsgsTileOrder::Dance && tiles%3==2){low=missing.lower_bound(pivot);if(low==missing.end())low=missing.begin();}
+                require(high?tile.end()==missing.rbegin()->add(UInt256(1)):tile.begin()==*low,"wrong global front");
+                if(order==core::BsgsTileOrder::Dance)require(!(tile.begin()<pivot && pivot<tile.end()),"crossed fixed pivot");
+                for(auto n=tile.begin();n<tile.end();n=n.add(UInt256(1)))require(missing.erase(n),"tile repeated a scalar");
                 previous=tile;++tiles;
             }
             return execute(batch,targets,verifier,1024);
         },options);
-        require(summary.complete&&summary.resumed_scalars==UInt256(19)&&summary.computed_scalars==UInt256(38)&&tiles==7&&missing.empty(),"fragmented complement was not exact");
+        require(summary.complete&&summary.resumed_scalars==UInt256(19)&&summary.computed_scalars==UInt256(38)&&tiles==(order==core::BsgsTileOrder::Dance?8U:7U)&&missing.empty(),"fragmented complement was not exact");
         require(worker.journal().results(grant.scope).size()==5,"recovered worker recomputed old owner's target");
         // The prior owner's result stays server-side. A lost reply must replay
         // the exact pending upload and preserve its union with the new results.
