@@ -18,6 +18,7 @@ inline thread_local const char* xpoint_test_corruption = nullptr;
 inline thread_local const char* hash160_test_corruption = nullptr;
 inline thread_local const char* ethereum_test_corruption = nullptr;
 inline thread_local const char* vanity_test_corruption = nullptr;
+inline thread_local const char* minikeys_test_corruption = nullptr;
 inline thread_local const char* bsgs_test_corruption = nullptr;
 inline thread_local const char* bsgs_search_test_corruption = nullptr;
 #endif
