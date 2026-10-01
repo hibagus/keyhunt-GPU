@@ -66,3 +66,11 @@ The first host gate passed 7048 independent integer cases, exhaustive small
 block/work/batch partitions, candidate-domain bounds, and existing forward/
 reverse/work-unit regressions. Batches stop at each variant boundary even when
 a work unit spans more than one variant; the next call continues its exact tail.
+
+## GPU mapping finding
+
+The first HIP search pass completed all 17 gates: 164 CLI cases across the four
+families, three kernels and both seed orders; independent public-key orbit
+oracles; host mapping gates; and existing executor/failure regressions. Wide
+strides, near-order seeds, duplicate seed orbits, variant boundaries, overflow
+replay and every visible MI300X passed. CUDA and durable acceptance follow.

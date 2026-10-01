@@ -16,6 +16,7 @@ inline XPointKernel scalar_search_kernel(std::string_view name) {
 struct XPointOptions {
     uint64_t max_steps = 1048576;
     core::UInt256 stride{1}; // immutable point-cache step; batch identity must agree
+    bool orbit=false; // immutable six-member candidate mapping
     bool reverse=false; // reverse walks use -SG, while the stride stays positive
     XPointKernel kernel = XPointKernel::Stepped;
     uint32_t candidate_capacity = 1024;

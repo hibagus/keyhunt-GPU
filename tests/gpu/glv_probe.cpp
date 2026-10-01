@@ -1,6 +1,6 @@
 // Shared host/native probe. Expected signed scalars and points come from Python
 // integers and pinned libsecp256k1, never from this adapter.
-#include "common/glv.h"
+#include "common/scalar_orbit.h"
 #include <algorithm>
 #include <iostream>
 #include <stdexcept>
@@ -17,7 +17,12 @@ KEYHUNT_HD Result evaluate(const Request& request) {
     if(request.operation==0){result.valid=glv_split(result.split,request.scalar);return result;}
     Point point;
     if(request.operation==1){if(!public_key_glv(point,request.scalar))return result;}
-    else{
+    else if(request.operation>=3){
+        if(!public_key(point,request.scalar))return result;
+        Point separate;
+        if(!point_orbit(separate,point,request.operation-3)||!point_orbit(point,point,request.operation-3))return result;
+        if(!equal(separate.x,point.x)||!equal(separate.y,point.y)||!equal(separate.z,point.z))return result;
+    }else{
         if(!public_key(point,request.scalar))return result;
         Point separate;point_endomorphism(separate,point);point_endomorphism(point,point);
         if(!equal(separate.x,point.x)||!equal(separate.y,point.y)||!equal(separate.z,point.z))return result;
@@ -27,7 +32,7 @@ KEYHUNT_HD Result evaluate(const Request& request) {
     to_bytes(result.point,affine.x);to_bytes(result.point+32,affine.y);result.valid=1;return result;
 }
 Request parse(const std::string& line) {
-    if(line.size()!=66||line[1]!=' '||line[0]<'0'||line[0]>'2')throw std::invalid_argument("expected operation 0..2 and 64 hex digits");
+    if(line.size()!=66||line[1]!=' '||line[0]<'0'||line[0]>'9')throw std::invalid_argument("expected operation 0..9 and 64 hex digits");
     Request request;request.operation=unsigned(line[0]-'0');uint8_t bytes[32];
     auto digit=[](char c){const auto d=std::string("0123456789abcdef").find(c);
         if(d==std::string::npos)throw std::invalid_argument("invalid hex digit");

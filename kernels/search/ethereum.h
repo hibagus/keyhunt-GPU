@@ -1,6 +1,6 @@
 #pragma once
 #include "common/scalar_stride.h"
-#include "common/glv.h"
+#include "common/scalar_orbit.h"
 #include "device_runtime.h"
 #include "common/point.h"
 #include "common/keccak.h"
@@ -67,7 +67,7 @@ __device__ inline void ethereum_normalized_lookup(const Field& px,const Field& p
 // Mapping modulo 3 selects unit-forward, strided-forward or reverse.
 // Adding 3 selects GLV point multiplication without changing candidate mapping.
 template<unsigned Mapping>
-__global__ KEYHUNT_ETHEREUM_LAUNCH_BOUND void ethereum_direct(Scalar begin,Scalar stride,uint64_t count,
+__global__ KEYHUNT_ETHEREUM_LAUNCH_BOUND void ethereum_direct(Scalar begin,Scalar stride,unsigned orbit_variant,uint64_t count,
     const EthereumDeviceTarget* targets,uint32_t target_count,core::XPointCandidate* output,
     uint32_t capacity,EthereumCounters* counters) {
     const uint64_t index=uint64_t(blockIdx.x)*blockDim.x+threadIdx.x;
@@ -82,7 +82,7 @@ __global__ KEYHUNT_ETHEREUM_LAUNCH_BOUND void ethereum_direct(Scalar begin,Scala
     Point point;bool valid;
     if constexpr(Mapping>=3)valid=public_key_glv(point,scalar);
     else valid=public_key(point,scalar);
-    if(!valid||is_infinity(point)){
+    if(!valid||is_infinity(point)||!point_orbit(point,point,orbit_variant)){
         atomicExch(&counters->invalid,1U);return;}
     Field zi;
 #if defined(__CUDACC__)

@@ -40,7 +40,7 @@ struct GpuVanityExecutor::Impl {
             throw std::invalid_argument("vanity candidate capacity must be in [1, 1048576]");
         if (options.kernel != XPointKernel::Direct && options.kernel != XPointKernel::Stepped && options.kernel != XPointKernel::Glv)
             throw std::invalid_argument("unsupported GPU vanity kernel");
-        powers_bytes = options.kernel == XPointKernel::Stepped ? 20*sizeof(gpu::VanityPower) : 0;
+        powers_bytes = options.kernel == XPointKernel::Stepped ? (options.orbit?120:20)*sizeof(gpu::VanityPower) : 0;
         // Each address matches at most one prefix per length. Count lengths for
         // each encoding, preserving overlapping prefix relations in the bound.
         if(options.candidate_capacity<targets.max_matches_per_scalar())
@@ -73,14 +73,18 @@ struct GpuVanityExecutor::Impl {
             if (powers_bytes) {
                 // Reverse point steps use n-S; candidate arithmetic itself never wraps.
                 // Preserve each backend's measured cache representation.
-                gpu::VanityPower powers[20];
-                for (unsigned bit=0;bit<20;++bit) {
-                    const auto point = seed(core::scalar_stride_power(options.reverse?core::scalar_order().subtract(options.stride):options.stride,bit));
+                gpu::VanityPower powers[120];
+                // Keep one signed point-step cache per immutable orbit variant.
+                for(unsigned variant=0;variant<(options.orbit?6U:1U);++variant){
+                    const auto step=core::scalar_orbit(options.reverse?core::scalar_order().subtract(options.stride):options.stride,variant);
+                    for (unsigned bit=0;bit<20;++bit) {
+                        const auto point = seed(core::scalar_stride_power(step,bit));
 #if defined(__CUDACC__)
-                    powers[bit] = point;
+                        powers[20*variant+bit] = point;
 #else
-                    powers[bit] = {point.x,point.y,false};
+                        powers[20*variant+bit] = {point.x,point.y,false};
 #endif
+                    }
                 }
                 gpu_check(gpuMalloc(&device_powers,powers_bytes),"gpuMalloc(powers)");
                 gpu_check(gpuMemcpy(device_powers,powers,powers_bytes,gpuMemcpyHostToDevice),"gpuMemcpy(powers)");
@@ -135,14 +139,15 @@ Ticket GpuVanityExecutor::submit(const scheduler::KernelBatch& batch) {
     if (scheduler::scalar_family(batch.work().identity().algorithm) != scheduler::WorkAlgorithm::DirectVanityV1 ||
         batch.work().identity().target_digest != s.targets.digest())
         throw std::invalid_argument("vanity target digest does not match the plan");
-    if(batch.scalar_stride()!=s.options.stride || batch.scalar_reverse()!=s.options.reverse)throw std::invalid_argument("batch stride or order differs from prepared executor");
+    if(batch.scalar_stride()!=s.options.stride || batch.scalar_reverse()!=s.options.reverse || batch.scalar_orbit()!=s.options.orbit)throw std::invalid_argument("batch stride or order differs from prepared executor");
     if (s.sequence == std::numeric_limits<uint64_t>::max()) throw std::overflow_error("GPU ticket sequence exhausted");
     s.batch = batch;
     ++s.sequence;
     s.submitted = Clock::now();
     try {
         DeviceScope selected(s.device);
-        const auto bytes = batch.scalar_at(0).bytes();
+        const auto bytes = batch.seed_scalar_at(0).bytes();
+        const auto variant=batch.orbit_variant();
         const auto begin = gpu::scalar_from_bytes(bytes.data());
         const auto stride_bytes=s.options.stride.bytes();
         const auto stride=gpu::scalar_from_bytes(stride_bytes.data());
@@ -158,15 +163,15 @@ Ticket GpuVanityExecutor::submit(const scheduler::KernelBatch& batch) {
             // candidate bounds and exact completion counters remain shared.
             if(s.options.reverse){
                 gpuLaunchKernelGGL(gpu::vanity_direct<5>,dim3((batch.step_count()+127)/128),dim3(128),0,s.stream,
-                    begin,stride,batch.step_count(),s.targets.length_mask(1),s.targets.length_mask(2),s.device_targets,uint32_t(s.targets.values().size()),
+                    begin,stride,variant,batch.step_count(),s.targets.length_mask(1),s.targets.length_mask(2),s.device_targets,uint32_t(s.targets.values().size()),
                     s.device_output,s.capacity,s.device_count);
             }else if(s.options.stride==core::UInt256(1)){
                 gpuLaunchKernelGGL(gpu::vanity_direct<3>,dim3((batch.step_count()+127)/128),dim3(128),0,s.stream,
-                    begin,stride,batch.step_count(),s.targets.length_mask(1),s.targets.length_mask(2),s.device_targets,uint32_t(s.targets.values().size()),
+                    begin,stride,variant,batch.step_count(),s.targets.length_mask(1),s.targets.length_mask(2),s.device_targets,uint32_t(s.targets.values().size()),
                     s.device_output,s.capacity,s.device_count);
             }else{
                 gpuLaunchKernelGGL(gpu::vanity_direct<4>,dim3((batch.step_count()+127)/128),dim3(128),0,s.stream,
-                    begin,stride,batch.step_count(),s.targets.length_mask(1),s.targets.length_mask(2),s.device_targets,uint32_t(s.targets.values().size()),
+                    begin,stride,variant,batch.step_count(),s.targets.length_mask(1),s.targets.length_mask(2),s.device_targets,uint32_t(s.targets.values().size()),
                     s.device_output,s.capacity,s.device_count);
             }
         } else if (s.options.kernel == XPointKernel::Direct) {
@@ -174,22 +179,22 @@ Ticket GpuVanityExecutor::submit(const scheduler::KernelBatch& batch) {
             // use checked multiply-add (forward) or multiply-subtract (reverse).
             if(s.options.reverse){
                 gpuLaunchKernelGGL(gpu::vanity_direct<2>,dim3((batch.step_count()+127)/128),dim3(128),0,s.stream,
-                    begin,stride,batch.step_count(),s.targets.length_mask(1),s.targets.length_mask(2),s.device_targets,uint32_t(s.targets.values().size()),
+                    begin,stride,variant,batch.step_count(),s.targets.length_mask(1),s.targets.length_mask(2),s.device_targets,uint32_t(s.targets.values().size()),
                     s.device_output,s.capacity,s.device_count);
             }else if(s.options.stride==core::UInt256(1)){
                 gpuLaunchKernelGGL(gpu::vanity_direct<false>,dim3((batch.step_count()+127)/128),dim3(128),0,s.stream,
-                    begin,stride,batch.step_count(),s.targets.length_mask(1),s.targets.length_mask(2),s.device_targets,uint32_t(s.targets.values().size()),
+                    begin,stride,variant,batch.step_count(),s.targets.length_mask(1),s.targets.length_mask(2),s.device_targets,uint32_t(s.targets.values().size()),
                     s.device_output,s.capacity,s.device_count);
             }else{
                 gpuLaunchKernelGGL(gpu::vanity_direct<true>,dim3((batch.step_count()+127)/128),dim3(128),0,s.stream,
-                    begin,stride,batch.step_count(),s.targets.length_mask(1),s.targets.length_mask(2),s.device_targets,uint32_t(s.targets.values().size()),
+                    begin,stride,variant,batch.step_count(),s.targets.length_mask(1),s.targets.length_mask(2),s.device_targets,uint32_t(s.targets.values().size()),
                     s.device_output,s.capacity,s.device_count);
             }
         } else {
             const auto lanes = (batch.step_count()+gpu::vanity_group-1)/gpu::vanity_group;
             const dim3 blocks((lanes+127)/128);
             gpuLaunchKernelGGL(gpu::vanity_stepped,blocks,dim3(128),0,s.stream,
-                base,batch.step_count(),s.device_powers,s.targets.length_mask(1),s.targets.length_mask(2),s.device_targets,
+                base,batch.step_count(),s.device_powers+20*variant,s.targets.length_mask(1),s.targets.length_mask(2),s.device_targets,
                 uint32_t(s.targets.values().size()),s.device_output,s.capacity,s.device_count);
         }
         gpu_check(gpuGetLastError(),"vanity launch");

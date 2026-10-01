@@ -37,13 +37,13 @@ void flush_record() {
 #endif
 }
 int ethereum_command(int argc, char** argv) {
-    const char* usage = "usage: keyhunt ethereum --backend hip|cuda --range START:END --targets FILE [--device N] [--batch-size 1..1048576] [--candidate-capacity 1..1048576] [--kernel stepped|direct|glv] [--stride HEX] [--order forward|reverse] (END is exclusive; NDJSON output)";
+    const char* usage = "usage: keyhunt ethereum --backend hip|cuda --range START:END --targets FILE [--device N] [--batch-size 1..1048576] [--candidate-capacity 1..1048576] [--kernel stepped|direct|glv] [--stride HEX] [--order forward|reverse] [--endomorphism none|orbit] (END is exclusive; NDJSON output)";
     std::map<std::string,std::string> args;
     for (int i=2;i<argc;i+=2) {
         if (i+1 == argc) throw std::invalid_argument(usage);
         const std::string key = argv[i];
         if (key != "--backend" && key != "--range" && key != "--targets" && key != "--device" &&
-            key != "--batch-size" && key != "--candidate-capacity" && key != "--kernel" && key != "--stride" && key != "--order") throw std::invalid_argument(usage);
+            key != "--batch-size" && key != "--candidate-capacity" && key != "--kernel" && key != "--stride" && key != "--order" && key != "--endomorphism") throw std::invalid_argument(usage);
         if (!args.emplace(key,argv[i+1]).second) throw std::invalid_argument("duplicate ethereum option: "+key);
     }
     if ((args["--backend"] != "hip" && args["--backend"] != "cuda") || args["--range"].empty() || args["--targets"].empty())
@@ -59,7 +59,10 @@ int ethereum_command(int argc, char** argv) {
     const auto order=args.count("--order")?args["--order"]:"forward";
     if(order!="forward" && order!="reverse")throw std::invalid_argument("order must be forward or reverse");
     const bool reverse=order=="reverse";
-    const auto mapping=stride==UInt256(1) && !reverse?std::optional<core::ScalarStride>{}:std::make_optional(core::ScalarStride(scalar_range,stride,reverse));
+    const auto endomorphism=args.count("--endomorphism")?args["--endomorphism"]:"none";
+    if(endomorphism!="none" && endomorphism!="orbit")throw std::invalid_argument("endomorphism must be none or orbit");
+    const bool orbit=endomorphism=="orbit";
+    const auto mapping=stride==UInt256(1) && !reverse && !orbit?std::optional<core::ScalarStride>{}:std::make_optional(core::ScalarStride(scalar_range,stride,reverse,orbit));
     const auto interval=mapping?mapping->indices():scalar_range;
     const uint64_t device = args.count("--device") ? decimal(args["--device"]) : 0;
     const uint64_t batch_size = args.count("--batch-size") ? decimal(args["--batch-size"]) : 1048576;
@@ -77,7 +80,7 @@ int ethereum_command(int argc, char** argv) {
     const auto selected = select_gpu(int(device));
     core::XPointVerifier verifier;
     EthereumOptions options;
-    options.stride = stride;options.reverse=reverse;
+    options.stride = stride;options.reverse=reverse;options.orbit=orbit;
     options.max_steps = batch_size; options.candidate_capacity = uint32_t(capacity);
     options.kernel = scalar_search_kernel(kernel);
     GpuEthereumExecutor executor(int(device),targets,verifier,options);
@@ -88,7 +91,7 @@ int ethereum_command(int argc, char** argv) {
     scheduler::ExecutionIdentity identity;
     identity.target_digest = targets.digest();
     identity.algorithm = scheduler::WorkAlgorithm::DirectEthereumV1;
-    if(mapping){identity.algorithm=scheduler::strided_algorithm(identity.algorithm,reverse);identity.stride_mapping=mapping;}
+    if(mapping){identity.algorithm=scheduler::strided_algorithm(identity.algorithm,reverse,orbit);identity.stride_mapping=mapping;}
     identity.assignment_id[0] = 1;
     identity.assignment_generation = identity.executor_generation = 1;
     std::cout << std::setprecision(9) << "{\"type\":\"start\",\"backend\":\"" << gpu_backend_name() << "\",\"mode\":\"ethereum\",\"device\":" << device
@@ -98,6 +101,7 @@ int ethereum_command(int argc, char** argv) {
               << "\",\"kernel\":\"" << kernel << "\",\"durable_coverage\":false,\"preparation_ms\":" << preparation_ms;
     if(mapping)std::cout<<",\"coordinate_space\":\""<<mapping->coordinate_space()<<"\",\"scalar_begin\":\""<<scalar_range.begin().hex()
         <<"\",\"scalar_end_exclusive\":\""<<scalar_range.end().hex()<<"\",\"stride\":\""<<stride.hex()<<'"';
+    if(orbit)std::cout<<",\"endomorphism\":\"orbit\",\"seed_count\":\""<<mapping->seed_count().hex()<<'"';
     std::cout<<'}';
     flush_record();
     auto cursor = interval.begin();
@@ -127,6 +131,8 @@ int ethereum_command(int argc, char** argv) {
                 std::cout << (i ? "," : "") << "{\"scalar\":\"" << (mapping?mapping->scalar(match.scalar):match.scalar).hex() << "\",\"address\":\"0x"
                           << hex_bytes(targets.values()[match.target].data(),20) << "\",\"target\":" << match.target ;
                 if(mapping)std::cout<<",\"candidate_index\":\""<<match.scalar.hex()<<'"';
+                if(orbit)std::cout<<",\"seed_scalar\":\""<<mapping->seed(match.scalar).hex()
+                    <<"\",\"orbit_variant\":"<<mapping->variant(match.scalar);
                 std::cout<<'}';
             }
             std::cout << "]}";
