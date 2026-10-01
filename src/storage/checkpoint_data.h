@@ -14,7 +14,7 @@ struct Binding {
     Bytes configuration,targets;
     Digest target_digest{},algorithm_digest{},table_checksum{};
     uint64_t m=0;
-    std::optional<core::ScalarStride> stride_mapping;
+    std::optional<core::ScalarStride> stride_mapping{}; // Absent in version-1 jobs.
     size_t count() const { return targets.size()/target_width(mode); }
     void verify(const core::XPointVerifier& verifier,const UInt256& scalar,uint32_t target) const;
 };
