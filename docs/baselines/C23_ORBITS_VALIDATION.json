@@ -1,0 +1,325 @@
+{
+  "passed": true,
+  "recorded_utc": "2026-10-01T15:25:52.514778+00:00",
+  "base_commit": "2e215ba52e85cbfba9b54982bd329fd4b1f53477",
+  "scope": "Six-member related-key orbit expansion for xpoint, Bitcoin HASH160/P2PKH, Ethereum and vanity with exact candidate coverage and durable online/offline recovery",
+  "source_phases": {
+    "contract": "ce29be79c986d9f39e47128987432bf29c9c5f82",
+    "host_mapping": "1e02a70db90dd1234b1088d0ce21deb62d64588f",
+    "gpu_search": "3834a1c14696abd18486012b827c60f62ab2e8dc",
+    "durable": "f464a1464e1d11d0a140ded9df3196200c7506c7",
+    "workers": "e6993fb35b61a432b1b86ad8df8fa45b81fa7df8",
+    "documentation": "9988db6717b24bbacd6f865693d542ec32f644e1",
+    "example_harness": "01fea60803ff28af5fcf0fa815676d696804193a"
+  },
+  "checks": {
+    "cpu_stride_compatibility": {
+      "passed": 1,
+      "failed": 0,
+      "log": "local/compatibility-tests.log"
+    },
+    "sanitizers": {
+      "passed": 5,
+      "failed": 0,
+      "log": "local/sanitizer-tests.log"
+    },
+    "hip_search": {
+      "passed": 17,
+      "failed": 0,
+      "log": "hip/search-tests.log"
+    },
+    "cuda_search": {
+      "passed": 17,
+      "failed": 0,
+      "log": "cuda/search-tests.log"
+    },
+    "hip_integration": {
+      "passed": 9,
+      "failed": 0,
+      "log": "hip/integration-tests.log"
+    },
+    "cuda_integration": {
+      "passed": 10,
+      "failed": 0,
+      "log": "cuda/integration-tests.log"
+    },
+    "cuda_synchronized_checkout": {
+      "passed": 5,
+      "failed": 0,
+      "log": "cuda/synchronized-tests.log"
+    },
+    "cpu_example": {
+      "passed": 1,
+      "failed": 0,
+      "log": "local/example-tests.log"
+    },
+    "hip_example": {
+      "passed": 1,
+      "failed": 0,
+      "log": "hip/example-tests.log"
+    },
+    "cpu_release_initial": {
+      "passed": 106,
+      "failed": 1,
+      "log": "local/full-tests.log",
+      "resolution": "The older stride denial fixture accidentally retained seven valid capabilities after the new ninth entry. Truncating to six corrects the fixture; its focused rerun passed. All 107 distinct CPU gates therefore have passing results, plus the new documented example."
+    },
+    "hip_example_initial": {
+      "passed": 0,
+      "failed": 1,
+      "log": "hip/example-tests-initial.log",
+      "resolution": "The harness treated the summary match-count string as relation records. Restricting collection to batch rows fixes the harness; exact coordinates and all 18 candidate boundaries then pass. Production results were correct."
+    },
+    "cuda_example": {
+      "passed": 1,
+      "failed": 0,
+      "log": "cuda/example-tests.log"
+    }
+  },
+  "metadata": {
+    "hip": {
+      "search": {
+        "source_commit": "1e02a70db90dd1234b1088d0ce21deb62d64588f",
+        "platform": "Linux-5.15.0-191-generic-x86_64-with-glibc2.35",
+        "binaries": {
+          "build/hip-release": {
+            "keyhunt": "4f1802e4fa52803217b0a188f0393e4dc91f7fc445e2b55b9d69d1065ddf151b",
+            "keyhunt-worker": "f5fe770f235a3a3259bbbeddd4e57282ea225ef034774fa9db0ea021e53d1209",
+            "keyhunt-coordinator": "9b56282cb40e86dce03bee5dbf60bdd47bb405e4084c5a7d64dfa8f675ad92ee",
+            "portable_glv_probe": "e5c61b4fcaf12587e3eec49439c20ee86e51f37ebb7930c8616188c71e90b5c0",
+            "hip_glv_probe": "a19b07c626118b2c84bdc95be127e7eaa00af69d5e698b1f2d2d8ef8226bf4a8",
+            "hip_glv_benchmark": "2282d927093ed2d0f630f35136b8492c5484e8f869f0f6b464c849f0ad47e0e8"
+          }
+        },
+        "build_configuration": {
+          "build/hip-release": {
+            "CMAKE_BUILD_TYPE": "Release",
+            "CMAKE_CXX_COMPILER": "/usr/bin/c++",
+            "CMAKE_HIP_ARCHITECTURES": "gfx942",
+            "CMAKE_HIP_COMPILER": "/opt/rocm/core-10.0/lib/llvm/bin/clang++",
+            "KEYHUNT_ENABLE_COORDINATOR": "ON",
+            "KEYHUNT_ENABLE_CUDA": "OFF",
+            "KEYHUNT_ENABLE_HIP": "ON",
+            "KEYHUNT_ENABLE_HTTPS_WORKER": "ON",
+            "KEYHUNT_ENABLE_LTO": "ON",
+            "KEYHUNT_ENABLE_SANITIZERS": "OFF",
+            "KEYHUNT_GFX942_CARRY": "ON"
+          }
+        },
+        "compilers": {
+          "/opt/rocm/core-10.0/lib/llvm/bin/clang++": "AMD clang version 23.0.0git (https://github.com/ROCm/llvm-project.git 8f497e0992fb7513f7f78a6f6b6f1056c375e961)\nTarget: x86_64-unknown-linux-gnu\nThread model: posix\nInstalledDir: /opt/rocm/core-10.0/lib/llvm/bin",
+          "/usr/bin/c++": "c++ (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0\nCopyright (C) 2021 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
+        },
+        "tested_source_commit": "3834a1c1",
+        "capture_note": "The search binary was built before the GPU commit; commit 3834a1c1 adds only comments/indentation beyond that build. Search source and tests are recorded at that commit. The capture source_commit is the earlier HEAD during uncommitted integration."
+      },
+      "integration": {
+        "source_commit": "e6993fb35b61a432b1b86ad8df8fa45b81fa7df8",
+        "platform": "Linux-5.15.0-191-generic-x86_64-with-glibc2.35",
+        "binaries": {
+          "build/hip-release": {
+            "keyhunt": "079f3e7be96a22af8b3b12e482255e13e9bd9d1b459a065f438e32b0f59fd004",
+            "keyhunt-worker": "e4826d8446a5cc77a16581d5ea3449818eee9b035fb7e93c493ff2bf09a44de5",
+            "keyhunt-coordinator": "fc90d99b0f5436e14e1b8051fba9392cd2fc7dc071e93df3403025801ccca124",
+            "portable_glv_probe": "e5c61b4fcaf12587e3eec49439c20ee86e51f37ebb7930c8616188c71e90b5c0",
+            "hip_glv_probe": "a19b07c626118b2c84bdc95be127e7eaa00af69d5e698b1f2d2d8ef8226bf4a8",
+            "hip_glv_benchmark": "2282d927093ed2d0f630f35136b8492c5484e8f869f0f6b464c849f0ad47e0e8"
+          }
+        },
+        "build_configuration": {
+          "build/hip-release": {
+            "CMAKE_BUILD_TYPE": "Release",
+            "CMAKE_CXX_COMPILER": "/usr/bin/c++",
+            "CMAKE_HIP_ARCHITECTURES": "gfx942",
+            "CMAKE_HIP_COMPILER": "/opt/rocm/core-10.0/lib/llvm/bin/clang++",
+            "KEYHUNT_ENABLE_COORDINATOR": "ON",
+            "KEYHUNT_ENABLE_CUDA": "OFF",
+            "KEYHUNT_ENABLE_HIP": "ON",
+            "KEYHUNT_ENABLE_HTTPS_WORKER": "ON",
+            "KEYHUNT_ENABLE_LTO": "ON",
+            "KEYHUNT_ENABLE_SANITIZERS": "OFF",
+            "KEYHUNT_GFX942_CARRY": "ON"
+          }
+        },
+        "compilers": {
+          "/opt/rocm/core-10.0/lib/llvm/bin/clang++": "AMD clang version 23.0.0git (https://github.com/ROCm/llvm-project.git 8f497e0992fb7513f7f78a6f6b6f1056c375e961)\nTarget: x86_64-unknown-linux-gnu\nThread model: posix\nInstalledDir: /opt/rocm/core-10.0/lib/llvm/bin",
+          "/usr/bin/c++": "c++ (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0\nCopyright (C) 2021 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
+        }
+      }
+    },
+    "cuda": {
+      "search": {
+        "source_commit": "3834a1c14696abd18486012b827c60f62ab2e8dc",
+        "platform": "Linux-5.15.0-194-generic-x86_64-with-glibc2.35",
+        "binaries": {
+          "/var/tmp/keyhunt-c23/build": {
+            "keyhunt": "676c159564185672c3bd9073aead4b0cdce258dd564fed08b2e75efb08fbf2e8",
+            "keyhunt-worker": "62e4bb0292b8ec566cc167659b6c22afb882799823cb61611aa4daf654c3e042",
+            "keyhunt-coordinator": "ca023ddc5a30c42d98e042655b2edba9f20ab2d611ab81b5f94c77c49b3e176e",
+            "portable_glv_probe": "a41cef012de1d876f04da6546f427f76cb45c10e71006de0374be5e6239b9b10",
+            "cuda_glv_probe": "48a3031ed40b7cc9a8ce3bbd609f21250fd7b534ad0d32b6df25f14a278f62a4",
+            "cuda_glv_benchmark": "12950f8612f93aa6bc9b0e27015f178bd096956febd5bb133cf9a0065c3fdcc6"
+          }
+        },
+        "build_configuration": {
+          "/var/tmp/keyhunt-c23/build": {
+            "CMAKE_BUILD_TYPE": "Release",
+            "CMAKE_CUDA_ARCHITECTURES": "90",
+            "CMAKE_CUDA_COMPILER": "/usr/local/cuda/bin/nvcc",
+            "CMAKE_CXX_COMPILER": "/usr/bin/c++",
+            "KEYHUNT_ENABLE_COORDINATOR": "ON",
+            "KEYHUNT_ENABLE_CUDA": "ON",
+            "KEYHUNT_ENABLE_HIP": "OFF",
+            "KEYHUNT_ENABLE_HTTPS_WORKER": "ON",
+            "KEYHUNT_ENABLE_LTO": "ON",
+            "KEYHUNT_ENABLE_SANITIZERS": "OFF",
+            "KEYHUNT_GFX942_CARRY": "OFF"
+          }
+        },
+        "compilers": {
+          "/usr/bin/c++": "c++ (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0\nCopyright (C) 2021 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.",
+          "/usr/local/cuda/bin/nvcc": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2026 NVIDIA Corporation\nBuilt on Tue_Jun_09_02:43:40_PM_PDT_2026\nCuda compilation tools, release 13.3, V13.3.73\nBuild cuda_13.3.r13.3/compiler.38244171_0"
+        }
+      },
+      "integration": {
+        "source_commit": "e6993fb35b61a432b1b86ad8df8fa45b81fa7df8",
+        "platform": "Linux-5.15.0-194-generic-x86_64-with-glibc2.35",
+        "binaries": {
+          "/home/bagus/keyhunt-GPU/build/cuda-h200": {
+            "keyhunt": "25c50b9a2dabcd386ffe6102c01e6a5789631dc347c2b53f4d58549603a203bf",
+            "keyhunt-worker": "6744940916c500f7dfdbd8ee4d333503a8853b8b61f35740e49d3ae4e28fda16",
+            "keyhunt-coordinator": "b9006b8ff7f281741d510f8129ada25f25c87f1bfbb4389a9bf958452959a109",
+            "portable_glv_probe": "a41cef012de1d876f04da6546f427f76cb45c10e71006de0374be5e6239b9b10",
+            "cuda_glv_probe": "f0ab8394f5aff42a28cd8aaf24667167480d34ab79304a27fdf9a48a155e3c22",
+            "cuda_glv_benchmark": "ab1604178f7e3f2f6c7aa8754de10055a60cf75c9e4499f1df99a0d9d25f525e"
+          }
+        },
+        "build_configuration": {
+          "/home/bagus/keyhunt-GPU/build/cuda-h200": {
+            "CMAKE_BUILD_TYPE": "Release",
+            "CMAKE_CUDA_ARCHITECTURES": "90",
+            "CMAKE_CUDA_COMPILER": "/usr/local/cuda/bin/nvcc",
+            "CMAKE_CXX_COMPILER": "/usr/bin/c++",
+            "KEYHUNT_ENABLE_COORDINATOR": "ON",
+            "KEYHUNT_ENABLE_CUDA": "ON",
+            "KEYHUNT_ENABLE_HIP": "OFF",
+            "KEYHUNT_ENABLE_HTTPS_WORKER": "ON",
+            "KEYHUNT_ENABLE_LTO": "ON",
+            "KEYHUNT_ENABLE_SANITIZERS": "OFF",
+            "KEYHUNT_GFX942_CARRY": "OFF"
+          }
+        },
+        "compilers": {
+          "/usr/bin/c++": "c++ (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0\nCopyright (C) 2021 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.",
+          "/usr/local/cuda/bin/nvcc": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2026 NVIDIA Corporation\nBuilt on Tue_Jun_09_02:43:40_PM_PDT_2026\nCuda compilation tools, release 13.3, V13.3.73\nBuild cuda_13.3.r13.3/compiler.38244171_0"
+        }
+      }
+    }
+  },
+  "sanitizer_metadata": {
+    "source_commit": "e6993fb35b61a432b1b86ad8df8fa45b81fa7df8",
+    "platform": "Linux-5.15.0-191-generic-x86_64-with-glibc2.35",
+    "binaries": {
+      "build/coordinator-sanitizers": {
+        "portable_glv_probe": "9b47b040942f890508f276ba58e26ecb254db28442c9c677fabf7c5225e018e2",
+        "secp256k1_oracle": "fc52fc04fe92fc395fb5a4b71b1afde220e9a4f391fd93348535291b09c3aca2",
+        "scalar_orbit_test": "233ef489b7efea37a742e1f80d9d0633dc66146c3df01fd93b4bb54ae8b20e6e",
+        "scalar_orbit_probe": "9916f20e56d9bbd099e27f0fd0e8edca979498816d71dbe5c77b7f84395b641a",
+        "storage_orbit_checkpoint_test": "d450605a19c6310d55082fad65332087cd4ceadc6909fc5d7c630e95f86a7303",
+        "coordinator_orbits_test": "e46ee10b4a0090189921e5a8675d33f6c0c7cf79161a37177f4fffae69e5bcbc"
+      }
+    },
+    "build_configuration": {
+      "build/coordinator-sanitizers": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_CXX_COMPILER": "/usr/bin/c++",
+        "KEYHUNT_ENABLE_COORDINATOR": "ON",
+        "KEYHUNT_ENABLE_CUDA": "OFF",
+        "KEYHUNT_ENABLE_HIP": "OFF",
+        "KEYHUNT_ENABLE_HTTPS_WORKER": "ON",
+        "KEYHUNT_ENABLE_LTO": "OFF",
+        "KEYHUNT_ENABLE_SANITIZERS": "ON",
+        "KEYHUNT_GFX942_CARRY": "OFF"
+      }
+    },
+    "compilers": {
+      "/usr/bin/c++": "c++ (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0\nCopyright (C) 2021 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
+    }
+  },
+  "synchronized_cuda_metadata": {
+    "source_commit": "01fea60803ff28af5fcf0fa815676d696804193a",
+    "platform": "Linux-5.15.0-194-generic-x86_64-with-glibc2.35",
+    "binaries": {
+      "/var/tmp/keyhunt-c23/build": {
+        "keyhunt": "c41358b5b13330605edc6f2df38bde590ceff105bac639238dd7c4b24f46098d",
+        "keyhunt-worker": "0ad10db02278a34e2300d012d65ac62ae4f3eb8d8c50a78841460def5bd39e2c",
+        "keyhunt-coordinator": "7b70d977327bb4dd52daaada12f53ff9075829bbf7f05932d9f4a869188a594f",
+        "portable_glv_probe": "a41cef012de1d876f04da6546f427f76cb45c10e71006de0374be5e6239b9b10",
+        "cuda_glv_probe": "48a3031ed40b7cc9a8ce3bbd609f21250fd7b534ad0d32b6df25f14a278f62a4",
+        "cuda_glv_benchmark": "12950f8612f93aa6bc9b0e27015f178bd096956febd5bb133cf9a0065c3fdcc6"
+      }
+    },
+    "build_configuration": {
+      "/var/tmp/keyhunt-c23/build": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_CUDA_ARCHITECTURES": "90",
+        "CMAKE_CUDA_COMPILER": "/usr/local/cuda/bin/nvcc",
+        "CMAKE_CXX_COMPILER": "/usr/bin/c++",
+        "KEYHUNT_ENABLE_COORDINATOR": "ON",
+        "KEYHUNT_ENABLE_CUDA": "ON",
+        "KEYHUNT_ENABLE_HIP": "OFF",
+        "KEYHUNT_ENABLE_HTTPS_WORKER": "ON",
+        "KEYHUNT_ENABLE_LTO": "ON",
+        "KEYHUNT_ENABLE_SANITIZERS": "OFF",
+        "KEYHUNT_GFX942_CARRY": "OFF"
+      }
+    },
+    "compilers": {
+      "/usr/bin/c++": "c++ (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0\nCopyright (C) 2021 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.",
+      "/usr/local/cuda/bin/nvcc": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2026 NVIDIA Corporation\nBuilt on Tue_Jun_09_02:43:40_PM_PDT_2026\nCuda compilation tools, release 13.3, V13.3.73\nBuild cuda_13.3.r13.3/compiler.38244171_0"
+    }
+  },
+  "results": {
+    "host_integer_cases": 7048,
+    "point_oracle_cases_per_implementation": 2521,
+    "search_cases_per_backend": 164,
+    "invalid_mapping_rejections_per_backend": 32,
+    "checkpoint_cases_per_backend": 56,
+    "killed_restarts_per_backend": 8,
+    "pause_visibility_cases_per_backend": 4,
+    "worker_transport_cases_per_backend": 16,
+    "documented_volatile_examples_per_backend": 1,
+    "documented_durable_examples_per_backend": 1
+  },
+  "limits": [
+    "Expansion is explicit; derived private scalars may fall outside seed bounds. Overlapping seeds retain separate observations.",
+    "Current candidate-index limit is 6*N+1 <= curve order; larger seed ranges require separate jobs. No silent truncation.",
+    "Default none and old configuration versions 1/2/3 retain their identities; orbit uses versions 4/5 with existing schema 7.",
+    "No BSGS/minikey expansion, extra traversal mapping, throughput claim, fleet scaling, new partition certification or public deployment.",
+    "All three kernels checked on native HIP/CUDA; stepped spot checks exercise each of eight visible ordinals. This is not an exhaustive kernel-by-ordinal product.",
+    "Sanitizers cover five focused host/portable/storage/coordinator gates, not the complete application or device code.",
+    "CUDA search and integration used separate immutable binaries and overlapped. The documented example used a separate checkout with the integration binary."
+  ],
+  "artifacts": {
+    "C23_ORBITS_ALGORITHMS.json": {
+      "sha256": "8ee9cd6c3f2b8aee7977615a7e6eef477fb2f345e4b87d1017e0ec3b281b8f53",
+      "bytes": 335255
+    },
+    "C23_ORBITS_RECOVERY.json": {
+      "sha256": "98e529ba26be369d5825a9c39264b01a4d130505ac701f7bef956ead268e2b4e",
+      "bytes": 302851
+    },
+    "C23_ORBITS_WORKERS.json": {
+      "sha256": "03567e967fef66498a10b6ffc2a74b2425d0134e3e3ad8ba6f39aa6cf9de86df",
+      "bytes": 1906868
+    },
+    "C23_ORBITS_EXAMPLES.json": {
+      "sha256": "3631ee22f04d4738ecf1826a08ef9994d81a78a7dfd3b60f8949646f1343d191",
+      "bytes": 30879
+    },
+    "C23_ORBITS_LOGS.tar.gz": {
+      "sha256": "86e65ada3d67d9c2953e4fe80786107a4b93e17773cba76a58b6a1a06c635054",
+      "bytes": 222483
+    }
+  }
+}
