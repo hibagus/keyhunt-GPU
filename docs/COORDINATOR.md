@@ -520,12 +520,14 @@ six stepped caches across grants, and stop batches at variant boundaries.
 See [contracts](C23_ORBITS.md) and [acceptance](C23_ORBITS_VALIDATION.md).
 
 
-## C23 reverse BSGS tile execution
+## C23 BSGS tile execution
 
-Pass `--tile-order reverse` to `tools/coordinator_worker.py` or `keyhunt-worker
-run-device` for BSGS queues. The default is forward. Each grant visits its highest
-uncovered scalar tile first; block claim policy still decides which grant is
-assigned. A heterogeneous queue containing scalar or minikey jobs rejects an
+Pass `--tile-order reverse` or `--tile-order both-ends` to `tools/coordinator_worker.py` or `keyhunt-worker
+run-device` for BSGS queues. The default is forward. Reverse visits each grant
+from its highest uncovered scalar tile; block claim policy still decides which grant is
+assigned. Both-ends starts low on each grant/invocation and alternates actual
+tiles across low/high frontiers, including inside adaptive work units. See
+[its coverage contract](C23_BSGS_BOTH_ENDS.md). A heterogeneous queue containing scalar or minikey jobs rejects an
 explicit tile-order override when it reaches those jobs.
 
 Tile order is execution policy: configuration version 1, protocol, schema 7 and

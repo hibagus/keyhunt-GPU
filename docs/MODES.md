@@ -94,11 +94,13 @@ commands. C11 adds [bounded HIP BSGS range search](HIP_BSGS.md), with exact tail
 all-target completion and CPU verification. The legacy commands below continue
 using their original CPU caches.
 
-C23 adds native/checkpoint/worker `--tile-order forward|reverse` for BSGS.
+C23 adds native/checkpoint/worker `--tile-order forward|reverse|both-ends` for BSGS.
 Reverse selects the highest uncovered scalar tile in each grant. It preserves
 job identity and exact scalar receipts, so a restart may change direction.
 Scalar `--order` and coordinator block claim policies remain separate options.
-See [contract and example](C23_BSGS_REVERSE.md).
+`both-ends` starts low and alternates actual low/high tiles; restart starts low on
+remaining coverage. See [reverse](C23_BSGS_REVERSE.md) and
+[both-ends](C23_BSGS_BOTH_ENDS.md) contracts and examples.
 
 Baby-step giant-step search takes full public-key targets and trades table
 memory for search work. `-n` must have an exact square root divisible by 1024;

@@ -101,3 +101,12 @@ set_tests_properties(bsgs_both_ends_search_cli PROPERTIES TIMEOUT 600 LABELS "cp
 if(KEYHUNT_ENABLE_GPU)
     set_tests_properties(bsgs_both_ends_search_cli PROPERTIES LABELS "${KEYHUNT_GPU_BACKEND};hardware;bsgs;both-ends;oracle" RESOURCE_LOCK gpu_device)
 endif()
+
+add_test(NAME bsgs_both_ends_documented_example COMMAND "${Python3_EXECUTABLE}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/bsgs_reverse_examples.py" --both-ends
+    --binary $<TARGET_FILE:keyhunt> --backend ${bsgs_reverse_example_backend}
+    --report "${CMAKE_CURRENT_BINARY_DIR}/bsgs-both-ends-documented-example.json")
+set_tests_properties(bsgs_both_ends_documented_example PROPERTIES TIMEOUT 150 LABELS "cpu;bsgs;both-ends;examples")
+if(KEYHUNT_ENABLE_GPU)
+    set_tests_properties(bsgs_both_ends_documented_example PROPERTIES LABELS "${KEYHUNT_GPU_BACKEND};hardware;bsgs;both-ends;examples" RESOURCE_LOCK gpu_device)
+endif()

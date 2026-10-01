@@ -316,10 +316,12 @@ statistic checks are retained with that report. Full CUDA fleet acceptance is
 recorded in the [C20 follow-up](C20_CUDA_VALIDATION.md); MIG remains unvalidated.
 
 
-## Reverse BSGS tiles
+## BSGS tile traversal
 
 Native `bsgs`, `checkpoint run` and supervised workers accept execution-only
-`--tile-order forward|reverse`. Reverse selects the highest remaining scalar
+`--tile-order forward|reverse|both-ends`. Reverse selects the highest remaining scalar
 tile within each grant, preserving all-target completion and actual scalar
-receipts. It can change on restart without recreating the job. See the
+receipts. Both-ends alternates low/high tiles and starts low again after restart;
+see [its contract](C23_BSGS_BOTH_ENDS.md). Tile order can change on restart without
+recreating the job. See the
 [contract and executable HIP/CUDA example](C23_BSGS_REVERSE.md).
