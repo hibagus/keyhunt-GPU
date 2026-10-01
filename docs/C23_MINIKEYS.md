@@ -2,6 +2,8 @@
 
 Status: implemented for SHA-256 minikeys of 22 or 30 characters, both public-key
 encodings, and native HIP/CUDA recovery. See [acceptance](C23_MINIKEYS_VALIDATION.md).
+Execution-only [reverse ordinal traversal](C23_MINIKEYS_REVERSE.md) is also available
+with checkpoint and supervised-worker recovery.
 
 ## Mapping and identity
 

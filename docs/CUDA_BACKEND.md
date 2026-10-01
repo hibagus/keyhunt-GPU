@@ -327,3 +327,13 @@ fixed midpoint and exact coverage; see [contract and example](C23_BSGS_DANCE.md)
 Tile order can change on restart without
 recreating the job. See the
 [contract and executable HIP/CUDA example](C23_BSGS_REVERSE.md).
+
+
+## Reverse minikey ordinals
+
+Native minikey search, checkpoint runs and workers accept `--ordinal-order
+forward|reverse` for both lengths and all supported encodings. Reverse changes
+batch selection and lane-to-ordinal mapping, preserving canonical ordinal
+receipts. Direction is read from each submission and can change after recovery.
+See [the contract/example](C23_MINIKEYS_REVERSE.md) and
+[HIP/H200 acceptance](C23_MINIKEYS_REVERSE_VALIDATION.md).

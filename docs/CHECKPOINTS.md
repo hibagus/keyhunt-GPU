@@ -534,3 +534,16 @@ certifies the expanded candidates, not a contiguous private-scalar interval.
 The current coordinate domain requires `6*N+1 <= n`; split oversized seed ranges
 into separate jobs. Direct/GLV/stepped switches, pause, backup and quarantined
 restore retain this identity. See [example and contract](C23_ORBITS.md).
+
+
+## Reverse minikey execution
+
+`checkpoint run --ordinal-order forward|reverse` selects minikey execution order
+within the grant. Reverse consumes the highest missing ordinals first, including
+inside each GPU batch. Receipts and result identities retain actual canonical
+ordinals. Direction can change on restart; omission selects forward. Adaptive
+work sizing and overflow replay preserve the exact missing complement.
+
+The option is rejected by `checkpoint create` and non-minikey runners, including
+explicit forward. Scalar `--order` remains a separate immutable mapping. See
+[the contract and executable example](C23_MINIKEYS_REVERSE.md).

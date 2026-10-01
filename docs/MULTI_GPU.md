@@ -135,6 +135,11 @@ midpoint bounds fragmentation; no tile or unit crosses it. Each unit retains its
 own timing, and a resumed grant reconstructs the midpoint from saved coverage.
 See [dance contracts](C23_BSGS_DANCE.md).
 
+Minikey workers accept `--ordinal-order reverse`, selecting contiguous work units
+and batches from the highest uncovered ordinal downward. Each device retains
+its target allocation across grants. Restart may switch direction without
+changing job identity or exact receipts. See [reverse minikey contracts](C23_MINIKEYS_REVERSE.md).
+
 For a new job, recommend a fixed width from at least five warmed, complete,
 validated single-device measurements of the exact inputs:
 

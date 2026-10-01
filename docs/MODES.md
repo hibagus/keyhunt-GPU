@@ -162,6 +162,9 @@ private keys. Public records expose the candidate ordinal and derived scalar
 separately. The legacy `-m minikeys` path remains unchanged. See the
 [contract](C23_MINIKEYS.md), [quickstart](GPU_QUICKSTART.md) and
 [checkpoint guide](CHECKPOINTS.md#minikey-ordinal-jobs).
+`--ordinal-order reverse` selects descending minikey execution for native searches,
+checkpoint runs and workers. It preserves actual ordinal receipts and can change
+on restart; see [the reverse contract and example](C23_MINIKEYS_REVERSE.md).
 
 
 ## Exact-range GLV scalar multiplication
