@@ -26,8 +26,9 @@ ScalarBatchPlanner::ScalarBatchPlanner(BlockGrid grid,UInt256 block,
        family!=WorkAlgorithm::DirectEthereumV1 && family!=WorkAlgorithm::DirectVanityV1)
         throw std::invalid_argument("batch-order applies only to scalar search families");
     const auto parent=grid_.block(block_);
-    // Validate the identity even when a finished block has no missing intervals.
-    (void)WorkUnit::plan(grid_,block_,parent.begin(),1,identity_);
+    // A completed checkpoint has no live executor generation. Validate work
+    // identities only when there is missing coverage to submit.
+    if(!gaps.empty())(void)WorkUnit::plan(grid_,block_,parent.begin(),1,identity_);
     for(size_t i=0;i<gaps.size();++i) {
         if(!parent.contains(gaps[i]) || (i && gaps[i-1].end()>gaps[i].begin()))
             throw std::invalid_argument("scalar gaps must be sorted, disjoint and inside the block");

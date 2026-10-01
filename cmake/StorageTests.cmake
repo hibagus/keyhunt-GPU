@@ -458,3 +458,33 @@ add_test(NAME storage_minikey_random_window COMMAND storage_minikey_random_windo
 # Forty crash/recovery combinations exceed 180 seconds in the ASan/UBSan build.
 # Keep the full corpus and allow instrumentation overhead without changing it.
 set_tests_properties(storage_minikey_random_window PROPERTIES TIMEOUT 600 LABELS "cpu;storage;minikeys;random-window;recovery")
+
+add_executable(storage_scalar_both_ends_test tests/storage/scalar_both_ends.cpp)
+target_include_directories(storage_scalar_both_ends_test PRIVATE src/storage)
+target_link_libraries(storage_scalar_both_ends_test PRIVATE keyhunt_storage)
+keyhunt_configure_target(storage_scalar_both_ends_test)
+add_test(NAME storage_scalar_both_ends COMMAND storage_scalar_both_ends_test)
+set_tests_properties(storage_scalar_both_ends PROPERTIES TIMEOUT 600 LABELS "cpu;storage;scalar-batches;recovery")
+
+foreach(mapping forward reverse)
+    add_test(NAME checkpoint_scalar_both_ends_${mapping} COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/stride_checkpoint_cli.py"
+        --binary $<TARGET_FILE:keyhunt> --oracle $<TARGET_FILE:secp256k1_oracle>
+        --batch-order both-ends --order ${mapping} --orbit
+        --report "${CMAKE_CURRENT_BINARY_DIR}/checkpoint-scalar-both-ends-${mapping}.json" ${checkpoint_cli_options})
+    set_tests_properties(checkpoint_scalar_both_ends_${mapping} PROPERTIES TIMEOUT 900 LABELS "cpu;storage;scalar-batches;recovery")
+    if(KEYHUNT_ENABLE_GPU)
+        set_tests_properties(checkpoint_scalar_both_ends_${mapping} PROPERTIES
+            LABELS "${KEYHUNT_GPU_BACKEND};hardware;storage;scalar-batches;recovery" RESOURCE_LOCK gpu_device)
+    endif()
+endforeach()
+if(KEYHUNT_ENABLE_GPU)
+    add_test(NAME checkpoint_scalar_both_ends_pause COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/checkpoint_pause_hip.py"
+        --binary $<TARGET_FILE:keyhunt> --oracle $<TARGET_FILE:secp256k1_oracle>
+        --backend ${KEYHUNT_GPU_BACKEND} --order reverse --stride 11 --batch-order both-ends
+        --mode xpoint --mode hash160 --mode ethereum --mode vanity
+        --report "${CMAKE_CURRENT_BINARY_DIR}/checkpoint-scalar-both-ends-pause.json")
+    set_tests_properties(checkpoint_scalar_both_ends_pause PROPERTIES TIMEOUT 480
+        LABELS "${KEYHUNT_GPU_BACKEND};hardware;storage;scalar-batches;recovery" RESOURCE_LOCK gpu_device)
+endif()

@@ -10,11 +10,12 @@ L=int('5363ad4cc05c30e0a5261c028812645a122e22ea20816678df02967c1b23bd72',16)
 p=argparse.ArgumentParser()
 for name in ('binary','oracle','report'):p.add_argument('--'+name,type=Path,required=True)
 p.add_argument('--hardware',action='store_true');p.add_argument('--backend',choices=('hip','cuda'),default='hip')
+p.add_argument('--batch-order',choices=('forward','both-ends'),default='forward')
 p.add_argument('--order',choices=('forward','reverse'),default='forward')
 p.add_argument('--orbit',action='store_true')
 p.add_argument('--kernel',choices=('direct','stepped','glv'))
 a=p.parse_args();binary=str(a.binary.resolve())
-report=dict(orbit=a.orbit,order=a.order,selected_kernel=a.kernel,passed=False,hardware=a.hardware,oracle_commit=check_source(),binary_sha256=hashlib.sha256(a.binary.read_bytes()).hexdigest(),cases=[])
+report=dict(batch_order=a.batch_order,orbit=a.orbit,order=a.order,selected_kernel=a.kernel,passed=False,hardware=a.hardware,oracle_commit=check_source(),binary_sha256=hashlib.sha256(a.binary.read_bytes()).hexdigest(),cases=[])
 with tempfile.TemporaryDirectory(prefix='kh-stride-checkpoint-') as directory:
     root=Path(directory);state=root/'state'
     def command(family,action,*words):return [binary,family,action,'--state-dir',str(state),*map(str,words)]
@@ -37,6 +38,7 @@ with tempfile.TemporaryDirectory(prefix='kh-stride-checkpoint-') as directory:
                '--block-width',f'{count:x}','--targets',file]
         if a.orbit:words+=['--endomorphism','orbit']
         if a.order=='reverse':words+=['--order','reverse']
+        assert not call('checkpoint','create',*words,'--batch-order','forward',ok=False).stdout
         created=call('checkpoint','create',*words)[0]
         file.write_text('\n'.join(reversed(lines))+ '\n'+lines[0])
         assert call('checkpoint','create',*words)[0]==created
@@ -44,7 +46,7 @@ with tempfile.TemporaryDirectory(prefix='kh-stride-checkpoint-') as directory:
         grant=call('state','claim',*scope,'--owner','test','--request','claim')[0]['assignments'][0]['grant']
         expected={(i,seed,v,k,canonical[t]) for (i,seed,v,k),pub in zip(coordinates,public) for t in relations(mode,pub,canonical)}
         bound=2*len({len(v) for v in lines}) if mode=='vanity' else 2 if mode=='hash160' else 1
-        return scope,['--backend',a.backend,'--grant',grant,'--targets',file],expected,bound
+        return scope,['--backend',a.backend,'--grant',grant,'--targets',file,'--batch-order',a.batch_order],expected,bound
     def verify(scope,expected):
         rows=call('checkpoint','results',*scope,'--limit','1000')[0]['results']
         assert all(row['coordinate_space']==('scalar-orbit-index-v1' if a.orbit else 'scalar-reverse-index-v1' if a.order=='reverse' else 'scalar-stride-index-v1') for row in rows)
@@ -66,6 +68,7 @@ with tempfile.TemporaryDirectory(prefix='kh-stride-checkpoint-') as directory:
                 if not a.hardware:
                     assert 'not built' in call('checkpoint','run',*run,ok=False).stderr;continue
                 summary=call('checkpoint','run',*run,'--batch-size','64','--candidate-capacity',bound,'--kernel',kernel)[-1]
+                assert summary['batch_order']==a.batch_order
                 assert summary['complete'] and int(summary['computed_candidates'],16)==count and (label=='overlapping-orbits' or summary['overflow_replays']>0)
                 assert summary['coordinate_space']==('scalar-orbit-index-v1' if a.orbit else 'scalar-reverse-index-v1' if a.order=='reverse' else 'scalar-stride-index-v1')
                 verify(scope,expected)
@@ -76,7 +79,10 @@ with tempfile.TemporaryDirectory(prefix='kh-stride-checkpoint-') as directory:
             begin=1<<100;step=17;count=65537 if a.orbit else 1048576
             scope,run,expected,bound=prepare(mode,'killed',begin,begin+count*step,step,[1,2,count])
             count*=6 if a.orbit else 1
-            child=subprocess.Popen(command('checkpoint','run',*run,'--batch-size','32',*(['--kernel',a.kernel or 'glv'] if a.kernel or a.orbit else [])),stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
+            initial=run.copy()
+            # Switch execution policy after a durable prefix; mapping is unchanged.
+            initial[initial.index('--batch-order')+1]='forward'
+            child=subprocess.Popen(command('checkpoint','run',*initial,'--batch-size','32',*(['--kernel',a.kernel or 'glv'] if a.kernel or a.orbit else [])),stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
             try:
                 assert select.select([child.stdout],[],[],30)[0],'no durable acknowledgment'
                 notice=json.loads(child.stdout.readline());assert notice['coordinate_space']==('scalar-orbit-index-v1' if a.orbit else 'scalar-reverse-index-v1' if a.order=='reverse' else 'scalar-stride-index-v1')
