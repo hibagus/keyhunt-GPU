@@ -5,6 +5,7 @@ namespace keyhunt::core {
 // Length is repeated in each canonical target so the existing immutable target
 // binding also defines the ordinal space. Mixed lengths within a job are invalid.
 using MinikeyTarget=std::array<uint8_t,22>;
+bool parse_minikey_order(const std::string& value); // true means reverse execution, not a scalar mapping
 UInt256 minikey_space_end(unsigned length);
 std::string minikey_text(const UInt256& ordinal,unsigned length);
 UInt256 minikey_ordinal(const std::string& text);

@@ -13,16 +13,18 @@ template<class F> void expect_error(F fn,const std::string& text) {
 }
 int main() {
     try {
+        for(const bool reverse:{false,true}){
         core::XPointVerifier verifier;
         const auto begin=core::minikey_ordinal("SzavMBLoXU6kDrqtUVmffv");
         const auto scalar=core::minikey_scalar("SzavMBLoXU6kDrqtUVmffv");
         core::MinikeyTargets targets({core::minikey_target(22,core::hash160_target(verifier.derive(*scalar),1))});
         scheduler::ExecutionIdentity id; id.target_digest=targets.digest();
-        id.algorithm=scheduler::WorkAlgorithm::DirectMinikeysV1;
+        id.algorithm=reverse?scheduler::WorkAlgorithm::ReverseMinikeysV1:scheduler::WorkAlgorithm::DirectMinikeysV1;
         id.assignment_id[0]=1; id.assignment_generation=id.executor_generation=1;
         scheduler::BlockGrid grid(core::ScalarInterval(begin,begin.add(UInt256(2))),UInt256(2));
-        auto work=*scheduler::WorkUnit::plan(grid,UInt256(0),begin,2,id);
-        auto batch=*scheduler::KernelBatch::plan(work,begin,2);
+        const auto cursor=reverse?begin.add(UInt256(2)):begin;
+        auto work=*scheduler::WorkUnit::plan(grid,UInt256(0),cursor,2,id);
+        auto batch=*scheduler::KernelBatch::plan(work,cursor,2);
         unsigned tested=0;
         for (const char* operation : {"gpuStreamCreateWithFlags","gpuEventCreate(start)","gpuEventCreate(kernel_done)",
             "gpuEventCreate(done)","gpuMalloc(targets)","gpuMalloc(output)","gpuMalloc(count)",
@@ -57,6 +59,7 @@ int main() {
         auto ticket=recovered.submit(batch); recovered.drain();
         const auto result=recovered.take(ticket);
         if (result.verified_steps!=2 || result.matches.size()!=1) throw std::runtime_error("recovery failed");
-        std::cout<<tested<<" GPU minikeys failure boundaries passed\n";
+        std::cout<<tested<<" GPU minikeys failure boundaries passed (reverse="<<reverse<<")\n";
+        }
     } catch(const std::exception& e) { std::cerr<<e.what()<<'\n'; return 1; }
 }

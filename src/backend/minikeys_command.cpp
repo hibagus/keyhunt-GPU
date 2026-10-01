@@ -37,7 +37,7 @@ void flush_record() {
 #endif
 }
 int minikeys_command(int argc, char** argv) {
-    const char* usage = "usage: keyhunt minikeys --length 22|30 --backend hip|cuda --range START:END --targets FILE [--encoding compressed|uncompressed|both] [--device N] [--batch-size 1..1048576] [--candidate-capacity 1..1048576] [--input-format address|hash160] [--kernel direct] (END is exclusive; NDJSON output)";
+    const char* usage = "usage: keyhunt minikeys --length 22|30 --backend hip|cuda --range START:END --targets FILE [--encoding compressed|uncompressed|both] [--device N] [--batch-size 1..1048576] [--candidate-capacity 1..1048576] [--input-format address|hash160] [--kernel direct] [--ordinal-order forward|reverse] (END is exclusive; NDJSON output)";
     // Inspection is CPU-only and accepts a public candidate even when its check
     // byte fails: operators can obtain an exact range start without searching.
     if(argc>=3 && std::string(argv[2])=="inspect"){
@@ -53,11 +53,12 @@ int minikeys_command(int argc, char** argv) {
         if (i+1 == argc) throw std::invalid_argument(usage);
         const std::string key = argv[i];
         if (key != "--backend" && key != "--range" && key != "--targets" && key != "--device" &&
-            key != "--length" && key != "--input-format" && key != "--encoding" && key != "--batch-size" && key != "--candidate-capacity" && key != "--kernel") throw std::invalid_argument(usage);
+            key != "--length" && key != "--input-format" && key != "--encoding" && key != "--batch-size" && key != "--candidate-capacity" && key != "--kernel" && key != "--ordinal-order") throw std::invalid_argument(usage);
         if (!args.emplace(key,argv[i+1]).second) throw std::invalid_argument("duplicate minikey option: "+key);
     }
     if ((args["--backend"] != "hip" && args["--backend"] != "cuda") || args["--range"].empty() || args["--targets"].empty())
         throw std::invalid_argument(usage);
+    const bool reverse=core::parse_minikey_order(args.count("--ordinal-order")?args["--ordinal-order"]:"forward");
     require_backend(args["--backend"]);
     const auto range = args["--range"];
     const auto colon = range.find(':');
@@ -77,7 +78,7 @@ int minikeys_command(int argc, char** argv) {
     const auto input=args.count("--input-format")?args["--input-format"]:"address";
     if(input!="address"&&input!="hash160")throw std::invalid_argument("input-format must be address or hash160");
 #ifndef KEYHUNT_HAS_GPU
-    (void)encoding;
+    (void)encoding;(void)reverse;
     discover_gpu(); // explicit error; a GPU request never falls back to CPU
     return 2;
 #else
@@ -95,16 +96,16 @@ int minikeys_command(int argc, char** argv) {
     scheduler::BlockGrid grid(interval,interval.size());
     scheduler::ExecutionIdentity identity;
     identity.target_digest = targets.digest();
-    identity.algorithm = scheduler::WorkAlgorithm::DirectMinikeysV1;
+    identity.algorithm = reverse?scheduler::WorkAlgorithm::ReverseMinikeysV1:scheduler::WorkAlgorithm::DirectMinikeysV1;
     identity.assignment_id[0] = 1;
     identity.assignment_generation = identity.executor_generation = 1;
     std::cout << std::setprecision(9) << "{\"type\":\"start\",\"backend\":\"" << gpu_backend_name() << "\",\"mode\":\"minikeys\",\"coordinate_space\":\"minikey-ordinal-v1\",\"device\":" << device
-              << ",\"uuid\":\"" << selected.device.uuid << "\",\"target_count\":" << targets.values().size()
+              << ",\"ordinal_order\":\"" << (reverse?"reverse":"forward") << "\",\"uuid\":\"" << selected.device.uuid << "\",\"target_count\":" << targets.values().size()
               << ",\"target_digest\":\"" << hex_bytes(targets.digest().data(),targets.digest().size())
               << "\",\"begin\":\"" << interval.begin().hex() << "\",\"end_exclusive\":\"" << interval.end().hex()
               << "\",\"kernel\":\"" << kernel << "\",\"durable_coverage\":false,\"preparation_ms\":" << preparation_ms << '}';
     flush_record();
-    auto cursor = interval.begin();
+    auto cursor = reverse?interval.end():interval.begin();
     UInt256 verified, attempts, match_count;
     uint64_t launches = 0, overflows = 0;
     scheduler::XPointBatchSize sizing(batch_size,uint32_t(capacity),targets.max_matches_per_scalar());
@@ -145,14 +146,14 @@ int minikeys_command(int argc, char** argv) {
             sizing.accepted(result.candidate_count);
             verified = verified.add(UInt256(result.verified_steps));
             match_count = match_count.add(UInt256(result.matches.size()));
-            cursor = batch->interval().end();
+            cursor = reverse?batch->interval().begin():batch->interval().end();
         }
     }
     if (verified != interval.size()) throw std::logic_error("minikey ordinal interval is incomplete");
     const double wall_ms = std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-wall_start).count();
     std::cout << "{\"type\":\"summary\",\"coordinate_space\":\"minikey-ordinal-v1\",\"complete\":true,\"durable_coverage\":false,\"verified_steps\":\"" << verified.hex()
               << "\",\"device_steps\":\"" << attempts.hex() << "\",\"matches\":\"" << match_count.hex()
-              << "\",\"launch_count\":" << launches << ",\"overflow_replays\":" << overflows
+              << "\",\"ordinal_order\":\"" << (reverse?"reverse":"forward") << "\",\"launch_count\":" << launches << ",\"overflow_replays\":" << overflows
               << ",\"kernel_ms\":" << kernel_ms << ",\"download_ms\":" << download_ms
               << ",\"verification_ms\":" << verification_ms << ",\"seed_ms\":" << seed_ms << ",\"wall_ms\":" << wall_ms << '}';
     flush_record();

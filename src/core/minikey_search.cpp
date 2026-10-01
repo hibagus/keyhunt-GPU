@@ -9,6 +9,11 @@ namespace {
 const std::string alphabet="123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
 void check_length(unsigned length){if(length!=22&&length!=30)throw std::invalid_argument("minikey length must be 22 or 30");}
 }
+bool parse_minikey_order(const std::string& value){
+    if(value=="forward")return false;
+    if(value=="reverse")return true;
+    throw std::invalid_argument("ordinal-order must be forward or reverse");
+}
 UInt256 minikey_space_end(unsigned length){
     check_length(length);UInt256 size(1);
     for(unsigned i=1;i<length;++i)size=size.multiply(UInt256(58));
@@ -62,7 +67,7 @@ void MinikeyTargets::validate_interval(const ScalarInterval& interval)const{
 }
 std::vector<XPointMatch> verify_minikeys(const scheduler::KernelBatch& batch,const MinikeyTargets& targets,
     std::vector<XPointCandidate> candidates,const XPointVerifier& verifier){
-    if(batch.work().identity().algorithm!=scheduler::WorkAlgorithm::DirectMinikeysV1 ||
+    if(!scheduler::is_minikeys(batch.work().identity().algorithm) ||
        batch.work().identity().target_digest!=targets.digest())throw std::invalid_argument("minikey identity does not match plan");
     targets.validate_interval(batch.interval());
     std::sort(candidates.begin(),candidates.end(),[](const auto& a,const auto& b){return std::tie(a.offset,a.target)<std::tie(b.offset,b.target);});

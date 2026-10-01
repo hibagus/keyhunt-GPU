@@ -52,3 +52,32 @@ set_tests_properties(minikeys_cli PROPERTIES TIMEOUT 600 LABELS "cpu;minikeys")
 if(KEYHUNT_ENABLE_GPU)
     set_tests_properties(minikeys_cli PROPERTIES LABELS "${KEYHUNT_GPU_BACKEND};hardware;minikeys;oracle" RESOURCE_LOCK gpu_device)
 endif()
+
+add_test(NAME minikeys_reverse_cli COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/minikeys_cli.py"
+    --binary $<TARGET_FILE:keyhunt> --oracle $<TARGET_FILE:secp256k1_oracle>
+    --reverse --report "${CMAKE_CURRENT_BINARY_DIR}/minikeys-reverse-cli-results.json" ${minikeys_cli_args})
+set_tests_properties(minikeys_reverse_cli PROPERTIES TIMEOUT 600 LABELS "cpu;minikeys")
+if(KEYHUNT_ENABLE_GPU)
+    set_tests_properties(minikeys_reverse_cli PROPERTIES LABELS "${KEYHUNT_GPU_BACKEND};hardware;minikeys;oracle" RESOURCE_LOCK gpu_device)
+endif()
+
+add_executable(minikey_order_probe tests/unit/minikey_order_probe.cpp)
+target_link_libraries(minikey_order_probe PRIVATE keyhunt_core)
+keyhunt_configure_target(minikey_order_probe)
+add_test(NAME minikey_order_oracle COMMAND "${Python3_EXECUTABLE}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests/oracle/minikey_order.py" --binary $<TARGET_FILE:minikey_order_probe>
+    --report "${CMAKE_CURRENT_BINARY_DIR}/minikey-order-oracle.json")
+set_tests_properties(minikey_order_oracle PROPERTIES TIMEOUT 180 LABELS "cpu;minikeys;reverse;oracle")
+
+set(minikey_example_backend cpu)
+if(KEYHUNT_ENABLE_GPU)
+    set(minikey_example_backend ${KEYHUNT_GPU_BACKEND})
+endif()
+add_test(NAME minikey_reverse_documented_example COMMAND "${Python3_EXECUTABLE}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/minikey_reverse_examples.py"
+    --binary $<TARGET_FILE:keyhunt> --backend ${minikey_example_backend}
+    --report "${CMAKE_CURRENT_BINARY_DIR}/minikey-reverse-documented-example.json")
+set_tests_properties(minikey_reverse_documented_example PROPERTIES TIMEOUT 150 LABELS "cpu;minikeys;reverse;examples")
+if(KEYHUNT_ENABLE_GPU)
+    set_tests_properties(minikey_reverse_documented_example PROPERTIES LABELS "${KEYHUNT_GPU_BACKEND};hardware;minikeys;reverse;examples" RESOURCE_LOCK gpu_device)
+endif()

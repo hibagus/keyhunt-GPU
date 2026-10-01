@@ -101,7 +101,7 @@ Ticket GpuMinikeysExecutor::submit(const scheduler::KernelBatch& batch) {
     s.healthy();
     if (s.batch) throw std::logic_error("GPU result slot busy; take its result before submitting");
     if (batch.step_count() > s.options.max_steps) throw std::invalid_argument("batch exceeds GPU executor capacity");
-    if (batch.work().identity().algorithm != scheduler::WorkAlgorithm::DirectMinikeysV1 ||
+    if (!scheduler::is_minikeys(batch.work().identity().algorithm) ||
         batch.work().identity().target_digest != s.targets.digest())
         throw std::invalid_argument("minikeys target digest does not match the plan");
     s.targets.validate_interval(batch.interval());
@@ -118,7 +118,7 @@ Ticket GpuMinikeysExecutor::submit(const scheduler::KernelBatch& batch) {
         gpu_check(gpuEventRecord(s.start,s.stream),"gpuEventRecord(start)");
         (void)gpuGetLastError();
         gpuLaunchKernelGGL(gpu::minikeys_direct,dim3((batch.step_count()+127)/128),dim3(128),0,s.stream,
-            begin,batch.step_count(),s.targets.length(),s.targets.encodings(),s.device_targets,uint32_t(s.targets.values().size()),
+            begin,batch.step_count(),batch.ordinal_reverse(),s.targets.length(),s.targets.encodings(),s.device_targets,uint32_t(s.targets.values().size()),
             s.device_output,s.capacity,s.device_count);
         gpu_check(gpuGetLastError(),"minikeys launch");
         gpu_check(gpuEventRecord(s.kernel_done,s.stream),"gpuEventRecord(kernel_done)");
@@ -156,7 +156,7 @@ MinikeysResult GpuMinikeysExecutor::take(Ticket ticket) {
             if (fault == "guard") s.host_output[s.capacity].offset = 0;
             if (fault == "offset") s.host_output[0].offset = s.batch->step_count();
             if (fault == "target") s.host_output[0].target = uint32_t(s.targets.values().size());
-            if (fault == "false_match") s.host_output[0].offset = 1;
+            if (fault == "false_match") s.host_output[0].offset = s.batch->ordinal_reverse()?0:1;
         }
 #endif
         const auto counters = *s.host_count;

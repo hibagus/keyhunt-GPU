@@ -8,6 +8,9 @@ namespace keyhunt::scheduler {
 using core::UInt256;
 using core::ScalarInterval;
 
+bool is_minikeys(WorkAlgorithm algorithm) {
+    return algorithm==WorkAlgorithm::DirectMinikeysV1 || algorithm==WorkAlgorithm::ReverseMinikeysV1;
+}
 bool is_strided(WorkAlgorithm algorithm) {
     return algorithm==WorkAlgorithm::StridedXPointV1 || algorithm==WorkAlgorithm::StridedHash160V1 ||
         algorithm==WorkAlgorithm::StridedEthereumV1 || algorithm==WorkAlgorithm::StridedVanityV1;
@@ -22,6 +25,7 @@ bool is_reverse(WorkAlgorithm algorithm) {
 }
 WorkAlgorithm scalar_family(WorkAlgorithm algorithm) {
     switch (algorithm) {
+    case WorkAlgorithm::ReverseMinikeysV1:return WorkAlgorithm::DirectMinikeysV1;
     case WorkAlgorithm::OrbitXPointV1:
     case WorkAlgorithm::ReverseOrbitXPointV1:
     case WorkAlgorithm::ReverseXPointV1:
@@ -53,10 +57,15 @@ WorkAlgorithm strided_algorithm(WorkAlgorithm algorithm, bool reverse, bool orbi
 
 namespace {
 std::optional<ScalarInterval> bounded_interval(const ScalarInterval& parent,
-                                              const UInt256& cursor, uint64_t max_steps) {
+                                              const UInt256& cursor, uint64_t max_steps, bool reverse=false) {
     if (!max_steps) throw std::invalid_argument("step bound must be positive");
     if (cursor < parent.begin() || cursor > parent.end())
         throw std::out_of_range("cursor outside parent interval");
+    if (reverse) {
+        if (cursor==parent.begin()) return std::nullopt;
+        const auto span=std::min(UInt256(max_steps),cursor.subtract(parent.begin()));
+        return ScalarInterval(cursor.subtract(span),cursor);
+    }
     if (cursor == parent.end()) return std::nullopt;
     const auto span = std::min(UInt256(max_steps), parent.end().subtract(cursor));
     return ScalarInterval(cursor, cursor.add(span));
@@ -97,7 +106,7 @@ std::optional<WorkUnit> WorkUnit::plan(const BlockGrid& grid, const UInt256& blo
     if (identity.stride_mapping && !identity.stride_mapping->indices().contains(grid.root()))
         throw std::invalid_argument("grid exceeds strided candidate indices");
     const auto block = grid.block(block_id);
-    const auto interval = bounded_interval(block, cursor, max_steps);
+    const auto interval = bounded_interval(block, cursor, max_steps, identity.algorithm==WorkAlgorithm::ReverseMinikeysV1);
     if (!interval) return std::nullopt;
     return WorkUnit(identity, block_id, block, *interval);
 }
@@ -108,7 +117,7 @@ std::optional<KernelBatch> KernelBatch::plan(const WorkUnit& work,
     const UInt256& cursor, uint64_t max_steps) {
     // Keep every device batch within one orbit variant. Arbitrary block/work
     // boundaries can cut a variant; callers still receive its exact prefix.
-    auto interval = bounded_interval(work.interval(), cursor, max_steps);
+    auto interval = bounded_interval(work.interval(), cursor, max_steps, work.identity().algorithm==WorkAlgorithm::ReverseMinikeysV1);
     const auto& mapping=work.identity().stride_mapping;
     if(interval && mapping && mapping->orbit())
         interval=ScalarInterval(cursor,std::min(interval->end(),mapping->variant_end(cursor)));
@@ -118,10 +127,13 @@ std::optional<KernelBatch> KernelBatch::plan(const WorkUnit& work,
 
 UInt256 KernelBatch::coordinate_at(uint64_t local_index) const {
     if (local_index >= step_count()) throw std::out_of_range("local index outside batch");
-    return interval_.begin().add(UInt256(local_index));
+    // Receipt coordinates stay canonical ordinals even when logical lanes run
+    // downward. No new candidate-index space is introduced for minikeys.
+    return ordinal_reverse()?interval_.end().subtract(UInt256(local_index+1)):
+        interval_.begin().add(UInt256(local_index));
 }
 UInt256 KernelBatch::scalar_at(uint64_t local_index) const {
-    if(work_.identity().algorithm==WorkAlgorithm::DirectMinikeysV1)throw std::logic_error("minikey work uses ordinal_at");
+    if(is_minikeys(work_.identity().algorithm))throw std::logic_error("minikey work uses ordinal_at");
     const auto coordinate=coordinate_at(local_index);
     const auto& mapping=work_.identity().stride_mapping;
     return mapping ? mapping->scalar(coordinate) : coordinate;
@@ -150,8 +162,11 @@ UInt256 KernelBatch::seed_scalar_at(uint64_t local_index) const {
 }
 
 UInt256 KernelBatch::ordinal_at(uint64_t local_index) const {
-    if(work_.identity().algorithm!=WorkAlgorithm::DirectMinikeysV1)throw std::logic_error("scalar work uses scalar_at");
+    if(!is_minikeys(work_.identity().algorithm))throw std::logic_error("scalar work uses scalar_at");
     if(local_index>=step_count())throw std::out_of_range("local index outside batch");
-    return interval_.begin().add(UInt256(local_index));
+    return coordinate_at(local_index);
+}
+bool KernelBatch::ordinal_reverse() const {
+    return work_.identity().algorithm==WorkAlgorithm::ReverseMinikeysV1;
 }
 } // namespace keyhunt::scheduler

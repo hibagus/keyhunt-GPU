@@ -8,11 +8,13 @@ struct MinikeysCounters{unsigned long long steps=0,candidates=0;unsigned overflo
 __device__ inline int minikeys_compare(const uint8_t* a,const uint8_t* b){
     for(unsigned i=0;i<22;++i)if(a[i]!=b[i])return a[i]<b[i]?-1:1;return 0;
 }
-__global__ void minikeys_direct(Scalar begin,uint64_t count,unsigned length,uint8_t encodings,
+__global__ void minikeys_direct(Scalar begin,uint64_t count,bool reverse,unsigned length,uint8_t encodings,
     const MinikeysDeviceTarget* targets,uint32_t target_count,core::XPointCandidate* output,
     uint32_t capacity,MinikeysCounters* counters){
     const uint64_t offset=uint64_t(blockIdx.x)*blockDim.x+threadIdx.x;if(offset>=count)return;
-    uint64_t carry=offset;
+    // Keep result offsets as logical lane indices. Reverse maps from the low
+    // batch endpoint using count-1-offset, avoiding device scalar subtraction.
+    uint64_t carry=reverse?count-1-offset:offset;
     for(unsigned i=0;i<8;++i){const uint64_t sum=uint64_t(begin.limb[i])+uint32_t(carry);
         begin.limb[i]=uint32_t(sum);carry=(carry>>32)+(sum>>32);}
     uint8_t text[31];Scalar scalar;

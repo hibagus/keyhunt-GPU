@@ -39,6 +39,17 @@ int main(){try{
         require(rows.size()==2&&rows[0].scalar==ordinal,"receipt did not retain ordinal");
         for(auto records:std::vector<std::vector<core::XPointCandidate>>{{{2,0,0}},{{0,2,0}},{{0,0,1}},{{0,0,0},{0,0,0}},{{1,0,0}}})
             rejects([&]{core::verify_minikeys(batch,targets,records,verifier);});
+        id.algorithm=scheduler::WorkAlgorithm::ReverseMinikeysV1;
+        const auto high=ordinal.add(UInt256(2));
+        const auto reversed_work=*scheduler::WorkUnit::plan(grid,UInt256(),high,2,id);
+        const auto reversed=*scheduler::KernelBatch::plan(reversed_work,high,2);
+        require(reversed.ordinal_at(0)==ordinal.add(UInt256(1))&&reversed.ordinal_at(1)==ordinal,"reverse lane mapping differs");
+        require(reversed.work().identity()!=batch.work().identity(),"direction absent from execution identity");
+        rejects([&]{reversed.scalar_at(0);});rejects([&]{reversed.ordinal_at(2);});
+        require(core::verify_minikeys(reversed,targets,{{1,0,0},{1,1,0}},verifier).at(0).scalar==ordinal,"reverse receipt lost ordinal");
+        rejects([&]{core::verify_minikeys(reversed,targets,{{0,0,0}},verifier);});
+        id.stride_mapping=core::ScalarStride({ordinal,high},UInt256(1),true);
+        rejects([&]{scheduler::WorkUnit::plan(grid,UInt256(),high,2,id);});id.stride_mapping.reset();
         for(auto mode:{scheduler::WorkAlgorithm::DirectXPointV1,scheduler::WorkAlgorithm::DirectHash160V1,scheduler::WorkAlgorithm::DirectEthereumV1,scheduler::WorkAlgorithm::DirectVanityV1}){
             id.algorithm=mode;rejects([&]{core::verify_minikeys(plan(),targets,{},verifier);});rejects([&]{plan().ordinal_at(0);});}
     }

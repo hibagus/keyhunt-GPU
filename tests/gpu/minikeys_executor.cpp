@@ -11,7 +11,8 @@ scheduler::KernelBatch plan(UInt256 begin,uint64_t count,const core::MinikeyTarg
     scheduler::ExecutionIdentity id;id.algorithm=algorithm;id.target_digest=targets.digest();
     id.assignment_id[0]=1;id.assignment_generation=id.executor_generation=1;
     scheduler::BlockGrid grid({begin,begin.add(UInt256(count))},UInt256(count));
-    auto work=*scheduler::WorkUnit::plan(grid,UInt256(),begin,count,id);return *scheduler::KernelBatch::plan(work,begin,count);
+    const auto cursor=algorithm==scheduler::WorkAlgorithm::ReverseMinikeysV1?begin.add(UInt256(count)):begin;
+    auto work=*scheduler::WorkUnit::plan(grid,UInt256(),cursor,count,id);return *scheduler::KernelBatch::plan(work,cursor,count);
 }
 int main(){try{
     core::XPointVerifier verifier;
@@ -26,6 +27,12 @@ int main(){try{
         for(auto steps:{0U,1048577U})rejects([&]{auto bad=options;bad.max_steps=steps;backend::GpuMinikeysExecutor e(0,targets,verifier,bad);});
         rejects([&]{auto bad=options;bad.memory_reserve_bytes=UINT64_MAX;backend::GpuMinikeysExecutor e(0,targets,verifier,bad);});
         backend::GpuMinikeysExecutor e(0,targets,verifier,options),other(0,targets,verifier,options);
+        // One prepared executor must interpret each batch's direction afresh.
+        for(auto algorithm:{scheduler::WorkAlgorithm::ReverseMinikeysV1,scheduler::WorkAlgorithm::DirectMinikeysV1}){
+            const auto batch=plan(begin,4097,targets,algorithm);auto ticket=e.submit(batch);e.drain();const auto result=e.take(ticket);
+            require(!result.overflow&&result.matches.size()==valid.size()*2,"prepared direction switch lost results");
+            for(size_t i=0;i<result.matches.size();++i)require(result.matches[i].scalar==valid[algorithm==scheduler::WorkAlgorithm::ReverseMinikeysV1?valid.size()-1-i/2:i/2],"logical lane order changed");
+        }
         const auto first=plan(begin,257,targets);const auto ticket=e.submit(first);
         rejects([&]{e.submit(first);});rejects([&]{other.poll(ticket);});
         auto second=other.submit(first);other.drain();require(other.take(second).verified_steps==257,"independent owner failed");
