@@ -1,0 +1,2085 @@
+{
+  "hip": {
+    "backend": "hip",
+    "hardware_executed": true,
+    "device": 0,
+    "binary_sha256": "9a5aec01b3bf470243e4be3e1a26db8cee3db3b8210973d875f9de10e1c56a68",
+    "document_sha256": "a6e9d718e86f5873b9139215ec2acfe9da2f7ceb608a8912bd85df72d3953357",
+    "harness_sha256": "2d39d84c3c69314b756a7a9a95a9b94aeaa9f44105119cfff618702056fe5529",
+    "script_sha256": "7d33b724fabed6afdc0c77b8674d9239ffc568ba932b61c5d4adb9122bdc9c52",
+    "blocks": [
+      "prepare",
+      "volatile",
+      "create",
+      "durable"
+    ],
+    "passed": true,
+    "artifacts": {
+      "address.ndjson": [
+        {
+          "type": "start",
+          "backend": "hip",
+          "mode": "hash160",
+          "device": 0,
+          "uuid": "30646366333934386337333264313231",
+          "target_count": 4,
+          "target_digest": "b99b4381befa9f19ccd4770ec89edd08ac5a9693e2be335869cc70c334d1fd53",
+          "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+          "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000000101",
+          "kernel": "stepped",
+          "durable_coverage": false,
+          "preparation_ms": 484.787697
+        },
+        {
+          "type": "batch",
+          "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+          "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000000101",
+          "overflow": false,
+          "verified_steps": 256,
+          "device_steps": 256,
+          "candidate_count": 2,
+          "kernel_ms": 17.2863445,
+          "download_ms": 0.01315,
+          "verification_ms": 0.012889,
+          "seed_ms": 0.001889,
+          "wall_ms": 17.3848,
+          "device_allocation_bytes": 9676,
+          "pinned_allocation_bytes": 8232,
+          "download_bytes": 8232,
+          "matches": [
+            {
+              "scalar": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "hash160": "751e76e8199196d454941c45d1b3a323f1433bd6",
+              "encoding": "compressed",
+              "target": 0
+            },
+            {
+              "scalar": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "hash160": "91b24bf9f5288532960ac687abb035127b1d28a5",
+              "encoding": "uncompressed",
+              "target": 3
+            }
+          ]
+        },
+        {
+          "type": "summary",
+          "complete": true,
+          "durable_coverage": false,
+          "verified_steps": "0x0000000000000000000000000000000000000000000000000000000000000100",
+          "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000100",
+          "matches": "0x0000000000000000000000000000000000000000000000000000000000000002",
+          "launch_count": 1,
+          "overflow_replays": 0,
+          "kernel_ms": 17.2863445,
+          "download_ms": 0.01315,
+          "verification_ms": 0.012889,
+          "seed_ms": 0.001889,
+          "wall_ms": 502.233737
+        }
+      ],
+      "bsgs-block.json": {
+        "state": "finished",
+        "started": false,
+        "expired": false,
+        "assignment": null,
+        "covered": [
+          {
+            "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000010001"
+          }
+        ],
+        "remaining": []
+      },
+      "bsgs-durable.ndjson": [
+        {
+          "type": "checkpoint",
+          "durability": "local",
+          "durable_results": true,
+          "durable_coverage": true,
+          "intervals": [
+            {
+              "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000010001"
+            }
+          ],
+          "match_observations": 1,
+          "transaction_ms": 0.599722
+        },
+        {
+          "type": "summary",
+          "complete": true,
+          "durability": "local",
+          "durable_coverage": true,
+          "resumed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000010000",
+          "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000100",
+          "match_observations": 1,
+          "batches": 1,
+          "overflow_replays": 0,
+          "checkpoints": 1,
+          "checkpoint_ms": 0.599722,
+          "metrics_version": 2,
+          "device": 0,
+          "uuid": "30646366333934386337333264313231",
+          "mode": "bsgs",
+          "checkpoint_seconds": 10,
+          "bsgs_group_size": 1,
+          "verified_device_steps": "0x0000000000000000000000000000000000000000000000000000000000000100",
+          "kernel_ms": 3.11956596375,
+          "download_ms": 0.0142729999498,
+          "seed_ms": 0.00236,
+          "verification_ms": 0.004462,
+          "revalidation_ms": 0.002507,
+          "executor_wall_ms": 3.195082,
+          "replay_kernel_ms": 0,
+          "download_bytes": "0x0000000000000000000000000000000000000000000000000000000000000050",
+          "peak_device_allocation_bytes": 16081,
+          "peak_pinned_allocation_bytes": 185,
+          "preparation_ms": 631.058716,
+          "executor_setup_ms": 363.827402,
+          "table_upload_ms": 0.0327950008214,
+          "wall_ms": 638.656718,
+          "bsgs_groups": [
+            {
+              "group_size": 1,
+              "batches": 1,
+              "overflow_replays": 0,
+              "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000100",
+              "verified_device_steps": "0x0000000000000000000000000000000000000000000000000000000000000100",
+              "kernel_ms": 3.11956596375
+            }
+          ]
+        }
+      ],
+      "bsgs-grant.json": {
+        "assignments": [
+          {
+            "project": "b76c25ce-a89a-4055-b821-a7b73b6bd481",
+            "job": "43705cd9d31557b820a0bdabcca0a302748e44d1d42cf1155ab1710e739599e8",
+            "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000010001",
+            "owner": "quickstart",
+            "generation": "1",
+            "expires_unix": 1793410805,
+            "grant": "v1:b76c25ce-a89a-4055-b821-a7b73b6bd481:43705cd9d31557b820a0bdabcca0a302748e44d1d42cf1155ab1710e739599e8:quickstart:2d18d85c30556d6a88dd4778df2e41ac:1:1793410805:0x0000000000000000000000000000000000000000000000000000000000000000"
+          }
+        ]
+      },
+      "bsgs-job.json": {
+        "project": "b76c25ce-a89a-4055-b821-a7b73b6bd481",
+        "job": "43705cd9d31557b820a0bdabcca0a302748e44d1d42cf1155ab1710e739599e8",
+        "target_digest": "7650ddf7eb9a7ae8f28817786d5e23679c2e2da6139d2deaefaf3e9222aa6381",
+        "algorithm_digest": "03af4767d3b91350d4b0c0f1ed907af4dbd0405448346913579952c990dcef89"
+      },
+      "bsgs-results.json": {
+        "results": [
+          {
+            "id": "2",
+            "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "scalar": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "target": 0,
+            "target_bytes": "0479be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8"
+          }
+        ],
+        "next_after": "2"
+      },
+      "bsgs-retry.ndjson": [
+        {
+          "type": "summary",
+          "complete": true,
+          "durability": "local",
+          "durable_coverage": true,
+          "resumed_scalars": "0x0000000000000000000000000000000000000000000000000000000000010000",
+          "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "match_observations": 0,
+          "batches": 0,
+          "overflow_replays": 0,
+          "checkpoints": 0,
+          "checkpoint_ms": 0,
+          "metrics_version": 2,
+          "device": 0,
+          "uuid": "30646366333934386337333264313231",
+          "mode": "bsgs",
+          "checkpoint_seconds": 10,
+          "bsgs_group_size": 0,
+          "verified_device_steps": "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "kernel_ms": 0,
+          "download_ms": 0,
+          "seed_ms": 0,
+          "verification_ms": 0,
+          "revalidation_ms": 0,
+          "executor_wall_ms": 0,
+          "replay_kernel_ms": 0,
+          "download_bytes": "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "peak_device_allocation_bytes": 0,
+          "peak_pinned_allocation_bytes": 0,
+          "preparation_ms": 0,
+          "executor_setup_ms": 0,
+          "table_upload_ms": 0,
+          "wall_ms": 268.249908,
+          "bsgs_groups": []
+        }
+      ],
+      "bsgs.ndjson": [
+        {
+          "type": "start",
+          "backend": "hip",
+          "mode": "bsgs",
+          "device": 0,
+          "uuid": "30646366333934386337333264313231",
+          "m": 257,
+          "table_checksum": "12af8158df481f3d0ae6d95f4192c71897fafd9cf7ba8e112aca8bd2d04c90d5",
+          "target_digest": "7650ddf7eb9a7ae8f28817786d5e23679c2e2da6139d2deaefaf3e9222aa6381",
+          "target_count": 1,
+          "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+          "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000010001",
+          "group_size": 0,
+          "durable_coverage": false,
+          "preparation_ms": 502.546171,
+          "table_upload_ms": 0.0271809995
+        },
+        {
+          "type": "batch",
+          "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+          "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000010001",
+          "first_target": 0,
+          "target_count": 1,
+          "giants_per_target": 256,
+          "group_size": 1,
+          "overflow": false,
+          "device_steps": 256,
+          "verified_steps": 256,
+          "candidate_count": 1,
+          "tail_rejections": 0,
+          "kernel_ms": 2.88326788,
+          "download_ms": 0.00853999984,
+          "verification_ms": 0.005594,
+          "seed_ms": 0.002534,
+          "wall_ms": 2.957797,
+          "device_allocation_bytes": 16081,
+          "pinned_allocation_bytes": 185,
+          "download_bytes": 80,
+          "matches": [
+            {
+              "scalar": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "target": 0,
+              "public_key": "0479be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8"
+            }
+          ]
+        },
+        {
+          "type": "tile",
+          "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+          "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000010001",
+          "targets_completed": 1,
+          "verified_target_steps": 256,
+          "durable_coverage": false
+        },
+        {
+          "type": "summary",
+          "complete": true,
+          "durable_coverage": false,
+          "verified_scalars": "0x0000000000000000000000000000000000000000000000000000000000010000",
+          "verified_target_steps": "0x0000000000000000000000000000000000000000000000000000000000000100",
+          "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000100",
+          "matches": "0x0000000000000000000000000000000000000000000000000000000000000001",
+          "launch_count": 1,
+          "overflow_replays": 0,
+          "tiles": 1,
+          "kernel_ms": 2.88326788,
+          "download_ms": 0.00853999984,
+          "verification_ms": 0.005594,
+          "seed_ms": 0.002534,
+          "wall_ms": 505.560337
+        }
+      ],
+      "check.json": {
+        "integrity": "ok"
+      },
+      "devices.json": {
+        "backend": "hip",
+        "runtime_version": 71526333,
+        "driver_version": 71526333,
+        "devices": [
+          {
+            "ordinal": 0,
+            "name": "AMD Instinct MI300X",
+            "architecture": "gfx942:sramecc+:xnack-",
+            "uuid": "30646366333934386337333264313231",
+            "pci_bus_id": "0000:1b:00.0",
+            "physical_id": "0dcf3948c732d121",
+            "physical_id_source": "sysfs.unique_id",
+            "compute_partition": "SPX",
+            "memory_partition": "NPS1",
+            "memory_allocation_mode": "CAPPING",
+            "numa_node": 0,
+            "compute_units": 304,
+            "warp_size": 64,
+            "property_memory_bytes": 206141652992,
+            "total_memory_bytes": 206141652992,
+            "free_memory_bytes": 205533478912,
+            "warnings": []
+          },
+          {
+            "ordinal": 1,
+            "name": "AMD Instinct MI300X",
+            "architecture": "gfx942:sramecc+:xnack-",
+            "uuid": "30393337633864376335303031303365",
+            "pci_bus_id": "0000:3d:00.0",
+            "physical_id": "0937c8d7c500103e",
+            "physical_id_source": "sysfs.unique_id",
+            "compute_partition": "SPX",
+            "memory_partition": "NPS1",
+            "memory_allocation_mode": "CAPPING",
+            "numa_node": 0,
+            "compute_units": 304,
+            "warp_size": 64,
+            "property_memory_bytes": 206141652992,
+            "total_memory_bytes": 206141652992,
+            "free_memory_bytes": 205533478912,
+            "warnings": []
+          },
+          {
+            "ordinal": 2,
+            "name": "AMD Instinct MI300X",
+            "architecture": "gfx942:sramecc+:xnack-",
+            "uuid": "34616433376163376162633937306666",
+            "pci_bus_id": "0000:4e:00.0",
+            "physical_id": "4ad37ac7abc970ff",
+            "physical_id_source": "sysfs.unique_id",
+            "compute_partition": "SPX",
+            "memory_partition": "NPS1",
+            "memory_allocation_mode": "CAPPING",
+            "numa_node": 0,
+            "compute_units": 304,
+            "warp_size": 64,
+            "property_memory_bytes": 206141652992,
+            "total_memory_bytes": 206141652992,
+            "free_memory_bytes": 205533478912,
+            "warnings": []
+          },
+          {
+            "ordinal": 3,
+            "name": "AMD Instinct MI300X",
+            "architecture": "gfx942:sramecc+:xnack-",
+            "uuid": "64636438643565303832323137646663",
+            "pci_bus_id": "0000:5f:00.0",
+            "physical_id": "dcd8d5e082217dfc",
+            "physical_id_source": "sysfs.unique_id",
+            "compute_partition": "SPX",
+            "memory_partition": "NPS1",
+            "memory_allocation_mode": "CAPPING",
+            "numa_node": 0,
+            "compute_units": 304,
+            "warp_size": 64,
+            "property_memory_bytes": 206141652992,
+            "total_memory_bytes": 206141652992,
+            "free_memory_bytes": 205533478912,
+            "warnings": []
+          },
+          {
+            "ordinal": 4,
+            "name": "AMD Instinct MI300X",
+            "architecture": "gfx942:sramecc+:xnack-",
+            "uuid": "63613033303464653334643962636639",
+            "pci_bus_id": "0000:9d:00.0",
+            "physical_id": "ca0304de34d9bcf9",
+            "physical_id_source": "sysfs.unique_id",
+            "compute_partition": "SPX",
+            "memory_partition": "NPS1",
+            "memory_allocation_mode": "CAPPING",
+            "numa_node": 1,
+            "compute_units": 304,
+            "warp_size": 64,
+            "property_memory_bytes": 206141652992,
+            "total_memory_bytes": 206141652992,
+            "free_memory_bytes": 205533478912,
+            "warnings": []
+          },
+          {
+            "ordinal": 5,
+            "name": "AMD Instinct MI300X",
+            "architecture": "gfx942:sramecc+:xnack-",
+            "uuid": "66366665356431386461333065623431",
+            "pci_bus_id": "0000:bd:00.0",
+            "physical_id": "f6fe5d18da30eb41",
+            "physical_id_source": "sysfs.unique_id",
+            "compute_partition": "SPX",
+            "memory_partition": "NPS1",
+            "memory_allocation_mode": "CAPPING",
+            "numa_node": 1,
+            "compute_units": 304,
+            "warp_size": 64,
+            "property_memory_bytes": 206141652992,
+            "total_memory_bytes": 206141652992,
+            "free_memory_bytes": 205533478912,
+            "warnings": []
+          },
+          {
+            "ordinal": 6,
+            "name": "AMD Instinct MI300X",
+            "architecture": "gfx942:sramecc+:xnack-",
+            "uuid": "32333266393737383136343134663766",
+            "pci_bus_id": "0000:cd:00.0",
+            "physical_id": "232f977816414f7f",
+            "physical_id_source": "sysfs.unique_id",
+            "compute_partition": "SPX",
+            "memory_partition": "NPS1",
+            "memory_allocation_mode": "CAPPING",
+            "numa_node": 1,
+            "compute_units": 304,
+            "warp_size": 64,
+            "property_memory_bytes": 206141652992,
+            "total_memory_bytes": 206141652992,
+            "free_memory_bytes": 205533478912,
+            "warnings": []
+          },
+          {
+            "ordinal": 7,
+            "name": "AMD Instinct MI300X",
+            "architecture": "gfx942:sramecc+:xnack-",
+            "uuid": "37386338613437353837623036353233",
+            "pci_bus_id": "0000:dd:00.0",
+            "physical_id": "78c8a47587b06523",
+            "physical_id_source": "sysfs.unique_id",
+            "compute_partition": "SPX",
+            "memory_partition": "NPS1",
+            "memory_allocation_mode": "CAPPING",
+            "numa_node": 1,
+            "compute_units": 304,
+            "warp_size": 64,
+            "property_memory_bytes": 206141652992,
+            "total_memory_bytes": 206141652992,
+            "free_memory_bytes": 205533478912,
+            "warnings": []
+          }
+        ]
+      },
+      "hash160-block.json": {
+        "state": "finished",
+        "started": false,
+        "expired": false,
+        "assignment": null,
+        "covered": [
+          {
+            "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000000101"
+          }
+        ],
+        "remaining": []
+      },
+      "hash160-durable.ndjson": [
+        {
+          "type": "checkpoint",
+          "durability": "local",
+          "durable_results": true,
+          "durable_coverage": true,
+          "intervals": [
+            {
+              "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000000101"
+            }
+          ],
+          "match_observations": 2,
+          "transaction_ms": 0.591615
+        },
+        {
+          "type": "summary",
+          "complete": true,
+          "durability": "local",
+          "durable_coverage": true,
+          "resumed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000100",
+          "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000100",
+          "match_observations": 2,
+          "batches": 1,
+          "overflow_replays": 0,
+          "checkpoints": 1,
+          "checkpoint_ms": 0.591615,
+          "metrics_version": 2,
+          "device": 0,
+          "uuid": "30646366333934386337333264313231",
+          "mode": "hash160",
+          "checkpoint_seconds": 10,
+          "bsgs_group_size": 0,
+          "verified_device_steps": "0x0000000000000000000000000000000000000000000000000000000000000100",
+          "kernel_ms": 14.724729538,
+          "download_ms": 0.0132299996912,
+          "seed_ms": 0.001575,
+          "verification_ms": 0.009683,
+          "revalidation_ms": 0.005783,
+          "executor_wall_ms": 14.816502,
+          "replay_kernel_ms": 0,
+          "download_bytes": "0x0000000000000000000000000000000000000000000000000000000000002028",
+          "peak_device_allocation_bytes": 9676,
+          "peak_pinned_allocation_bytes": 8232,
+          "preparation_ms": 579.117361,
+          "executor_setup_ms": 344.228724,
+          "table_upload_ms": 0,
+          "wall_ms": 596.331384,
+          "bsgs_groups": []
+        }
+      ],
+      "hash160-grant.json": {
+        "assignments": [
+          {
+            "project": "b76c25ce-a89a-4055-b821-a7b73b6bd481",
+            "job": "bad0d5435057d4af117ec21063f1c1aa35b930122892df9f333a9963fc6ba5d5",
+            "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000000101",
+            "owner": "quickstart",
+            "generation": "1",
+            "expires_unix": 1793410805,
+            "grant": "v1:b76c25ce-a89a-4055-b821-a7b73b6bd481:bad0d5435057d4af117ec21063f1c1aa35b930122892df9f333a9963fc6ba5d5:quickstart:2d18d85c30556d6a88dd4778df2e41ac:1:1793410805:0x0000000000000000000000000000000000000000000000000000000000000000"
+          }
+        ]
+      },
+      "hash160-job.json": {
+        "project": "b76c25ce-a89a-4055-b821-a7b73b6bd481",
+        "job": "bad0d5435057d4af117ec21063f1c1aa35b930122892df9f333a9963fc6ba5d5",
+        "target_digest": "b99b4381befa9f19ccd4770ec89edd08ac5a9693e2be335869cc70c334d1fd53",
+        "algorithm_digest": "a0c53c25652001401dfb1bb67244729952254cf3c380a70d2e10e8f488f012d6"
+      },
+      "hash160-results.json": {
+        "results": [
+          {
+            "id": "3",
+            "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "scalar": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "target": 0,
+            "target_bytes": "01751e76e8199196d454941c45d1b3a323f1433bd6"
+          },
+          {
+            "id": "4",
+            "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "scalar": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "target": 3,
+            "target_bytes": "0291b24bf9f5288532960ac687abb035127b1d28a5"
+          }
+        ],
+        "next_after": "4"
+      },
+      "hash160-retry.ndjson": [
+        {
+          "type": "summary",
+          "complete": true,
+          "durability": "local",
+          "durable_coverage": true,
+          "resumed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000100",
+          "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "match_observations": 0,
+          "batches": 0,
+          "overflow_replays": 0,
+          "checkpoints": 0,
+          "checkpoint_ms": 0,
+          "metrics_version": 2,
+          "device": 0,
+          "uuid": "30646366333934386337333264313231",
+          "mode": "hash160",
+          "checkpoint_seconds": 10,
+          "bsgs_group_size": 0,
+          "verified_device_steps": "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "kernel_ms": 0,
+          "download_ms": 0,
+          "seed_ms": 0,
+          "verification_ms": 0,
+          "revalidation_ms": 0,
+          "executor_wall_ms": 0,
+          "replay_kernel_ms": 0,
+          "download_bytes": "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "peak_device_allocation_bytes": 0,
+          "peak_pinned_allocation_bytes": 0,
+          "preparation_ms": 0,
+          "executor_setup_ms": 0,
+          "table_upload_ms": 0,
+          "wall_ms": 238.243156,
+          "bsgs_groups": []
+        }
+      ],
+      "hash160.ndjson": [
+        {
+          "type": "start",
+          "backend": "hip",
+          "mode": "hash160",
+          "device": 0,
+          "uuid": "30646366333934386337333264313231",
+          "target_count": 4,
+          "target_digest": "b99b4381befa9f19ccd4770ec89edd08ac5a9693e2be335869cc70c334d1fd53",
+          "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+          "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000000101",
+          "kernel": "stepped",
+          "durable_coverage": false,
+          "preparation_ms": 497.796408
+        },
+        {
+          "type": "batch",
+          "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+          "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000000101",
+          "overflow": false,
+          "verified_steps": 256,
+          "device_steps": 256,
+          "candidate_count": 2,
+          "kernel_ms": 17.2723923,
+          "download_ms": 0.0185230002,
+          "verification_ms": 0.012336,
+          "seed_ms": 0.001926,
+          "wall_ms": 17.369157,
+          "device_allocation_bytes": 9676,
+          "pinned_allocation_bytes": 8232,
+          "download_bytes": 8232,
+          "matches": [
+            {
+              "scalar": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "hash160": "751e76e8199196d454941c45d1b3a323f1433bd6",
+              "encoding": "compressed",
+              "target": 0
+            },
+            {
+              "scalar": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "hash160": "91b24bf9f5288532960ac687abb035127b1d28a5",
+              "encoding": "uncompressed",
+              "target": 3
+            }
+          ]
+        },
+        {
+          "type": "summary",
+          "complete": true,
+          "durable_coverage": false,
+          "verified_steps": "0x0000000000000000000000000000000000000000000000000000000000000100",
+          "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000100",
+          "matches": "0x0000000000000000000000000000000000000000000000000000000000000002",
+          "launch_count": 1,
+          "overflow_replays": 0,
+          "kernel_ms": 17.2723923,
+          "download_ms": 0.0185230002,
+          "verification_ms": 0.012336,
+          "seed_ms": 0.001926,
+          "wall_ms": 515.223359
+        }
+      ],
+      "preflight.json": {
+        "integrity": "ok"
+      },
+      "project.json": {
+        "project": "b76c25ce-a89a-4055-b821-a7b73b6bd481"
+      },
+      "smoke.json": {
+        "backend": "hip",
+        "diagnostic_only": true,
+        "search_coverage": false,
+        "device": 0,
+        "uuid": "30646366333934386337333264313231",
+        "architecture": "gfx942:sramecc+:xnack-",
+        "begin": "0x000000000000000000000000000000000000000100000000ffffffffffffffff",
+        "end_exclusive": "0x0000000000000000000000000000000000000001000000010000000000000100",
+        "device_steps": 257,
+        "launch_count": 1,
+        "device_allocation_bytes": 8264,
+        "pinned_allocation_bytes": 8264,
+        "download_bytes": 8264,
+        "kernel_ms": 0.494122,
+        "download_ms": 0.014313,
+        "verification_ms": 0.013222,
+        "wall_ms": 1.65044
+      },
+      "table-inspect.json": {
+        "backend": "cpu",
+        "device": null,
+        "uuid": "",
+        "format_version": 1,
+        "curve": "secp256k1",
+        "mapping": "jG:0<=j<m",
+        "m": 257,
+        "buckets": 64,
+        "bloom_words": 128,
+        "bits_per_entry": 16,
+        "resident_bytes": 13880,
+        "host_peak_bytes": 1076729,
+        "file_bytes": 14040,
+        "device_queries": 0,
+        "device_allocation_bytes": 0,
+        "pinned_allocation_bytes": 0,
+        "prepare_upload_ms": 0,
+        "query_kernel_ms": 0,
+        "query_upload_ms": 0,
+        "query_download_ms": 0,
+        "checksum": "12af8158df481f3d0ae6d95f4192c71897fafd9cf7ba8e112aca8bd2d04c90d5",
+        "search_coverage": false,
+        "wall_ms": 31.252
+      },
+      "table-validate.json": {
+        "backend": "hip",
+        "device": 0,
+        "uuid": "30646366333934386337333264313231",
+        "format_version": 1,
+        "curve": "secp256k1",
+        "mapping": "jG:0<=j<m",
+        "m": 257,
+        "buckets": 64,
+        "bloom_words": 128,
+        "bits_per_entry": 16,
+        "resident_bytes": 13880,
+        "host_peak_bytes": 1076729,
+        "file_bytes": 14040,
+        "device_queries": 514,
+        "device_allocation_bytes": 280160,
+        "pinned_allocation_bytes": 266280,
+        "prepare_upload_ms": 0.038728,
+        "query_kernel_ms": 0.542553,
+        "query_upload_ms": 0.013311,
+        "query_download_ms": 0.022851,
+        "checksum": "12af8158df481f3d0ae6d95f4192c71897fafd9cf7ba8e112aca8bd2d04c90d5",
+        "search_coverage": false,
+        "wall_ms": 442.002
+      },
+      "table.json": {
+        "backend": "cpu",
+        "device": null,
+        "uuid": "",
+        "format_version": 1,
+        "curve": "secp256k1",
+        "mapping": "jG:0<=j<m",
+        "m": 257,
+        "buckets": 64,
+        "bloom_words": 128,
+        "bits_per_entry": 16,
+        "resident_bytes": 13880,
+        "host_peak_bytes": 1076729,
+        "file_bytes": 14040,
+        "device_queries": 0,
+        "device_allocation_bytes": 0,
+        "pinned_allocation_bytes": 0,
+        "prepare_upload_ms": 0,
+        "query_kernel_ms": 0,
+        "query_upload_ms": 0,
+        "query_download_ms": 0,
+        "checksum": "12af8158df481f3d0ae6d95f4192c71897fafd9cf7ba8e112aca8bd2d04c90d5",
+        "search_coverage": false,
+        "wall_ms": 32.4734
+      },
+      "xpoint-block.json": {
+        "state": "finished",
+        "started": false,
+        "expired": false,
+        "assignment": null,
+        "covered": [
+          {
+            "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000000101"
+          }
+        ],
+        "remaining": []
+      },
+      "xpoint-durable.ndjson": [
+        {
+          "type": "checkpoint",
+          "durability": "local",
+          "durable_results": true,
+          "durable_coverage": true,
+          "intervals": [
+            {
+              "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000000101"
+            }
+          ],
+          "match_observations": 1,
+          "transaction_ms": 0.600657
+        },
+        {
+          "type": "summary",
+          "complete": true,
+          "durability": "local",
+          "durable_coverage": true,
+          "resumed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000100",
+          "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000100",
+          "match_observations": 1,
+          "batches": 1,
+          "overflow_replays": 0,
+          "checkpoints": 1,
+          "checkpoint_ms": 0.600657,
+          "metrics_version": 2,
+          "device": 0,
+          "uuid": "30646366333934386337333264313231",
+          "mode": "xpoint",
+          "checkpoint_seconds": 10,
+          "bsgs_group_size": 0,
+          "verified_device_steps": "0x0000000000000000000000000000000000000000000000000000000000000100",
+          "kernel_ms": 2.62628602982,
+          "download_ms": 0.0126689998433,
+          "seed_ms": 0.001694,
+          "verification_ms": 0.004434,
+          "revalidation_ms": 0.002625,
+          "executor_wall_ms": 2.711958,
+          "replay_kernel_ms": 0,
+          "download_bytes": "0x0000000000000000000000000000000000000000000000000000000000000048",
+          "peak_device_allocation_bytes": 1464,
+          "peak_pinned_allocation_bytes": 72,
+          "preparation_ms": 573.464461,
+          "executor_setup_ms": 334.344999,
+          "table_upload_ms": 0,
+          "wall_ms": 578.599116,
+          "bsgs_groups": []
+        }
+      ],
+      "xpoint-grant.json": {
+        "assignments": [
+          {
+            "project": "b76c25ce-a89a-4055-b821-a7b73b6bd481",
+            "job": "b2d2ed91380e2852e1561911f611c5f08c1dceb64487a56aa9bb6f35ae7d0f3e",
+            "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000000101",
+            "owner": "quickstart",
+            "generation": "1",
+            "expires_unix": 1793410805,
+            "grant": "v1:b76c25ce-a89a-4055-b821-a7b73b6bd481:b2d2ed91380e2852e1561911f611c5f08c1dceb64487a56aa9bb6f35ae7d0f3e:quickstart:2d18d85c30556d6a88dd4778df2e41ac:1:1793410805:0x0000000000000000000000000000000000000000000000000000000000000000"
+          }
+        ]
+      },
+      "xpoint-job.json": {
+        "project": "b76c25ce-a89a-4055-b821-a7b73b6bd481",
+        "job": "b2d2ed91380e2852e1561911f611c5f08c1dceb64487a56aa9bb6f35ae7d0f3e",
+        "target_digest": "6397551d436e168d9149d63428e68363a3bc5e63a1d0371f06d1810e8074d80a",
+        "algorithm_digest": "7b0099fbbb87b5e967d5308270b324ac8a7d9ed4984e4d88e603b53280cfee9e"
+      },
+      "xpoint-results.json": {
+        "results": [
+          {
+            "id": "1",
+            "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "scalar": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "target": 0,
+            "target_bytes": "79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798"
+          }
+        ],
+        "next_after": "1"
+      },
+      "xpoint-retry.ndjson": [
+        {
+          "type": "summary",
+          "complete": true,
+          "durability": "local",
+          "durable_coverage": true,
+          "resumed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000100",
+          "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "match_observations": 0,
+          "batches": 0,
+          "overflow_replays": 0,
+          "checkpoints": 0,
+          "checkpoint_ms": 0,
+          "metrics_version": 2,
+          "device": 0,
+          "uuid": "30646366333934386337333264313231",
+          "mode": "xpoint",
+          "checkpoint_seconds": 10,
+          "bsgs_group_size": 0,
+          "verified_device_steps": "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "kernel_ms": 0,
+          "download_ms": 0,
+          "seed_ms": 0,
+          "verification_ms": 0,
+          "revalidation_ms": 0,
+          "executor_wall_ms": 0,
+          "replay_kernel_ms": 0,
+          "download_bytes": "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "peak_device_allocation_bytes": 0,
+          "peak_pinned_allocation_bytes": 0,
+          "preparation_ms": 0,
+          "executor_setup_ms": 0,
+          "table_upload_ms": 0,
+          "wall_ms": 250.382603,
+          "bsgs_groups": []
+        }
+      ],
+      "xpoint.ndjson": [
+        {
+          "type": "start",
+          "backend": "hip",
+          "mode": "xpoint",
+          "device": 0,
+          "uuid": "30646366333934386337333264313231",
+          "target_count": 1,
+          "target_digest": "6397551d436e168d9149d63428e68363a3bc5e63a1d0371f06d1810e8074d80a",
+          "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+          "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000000101",
+          "kernel": "stepped",
+          "durable_coverage": false,
+          "preparation_ms": 475.776706
+        },
+        {
+          "type": "batch",
+          "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+          "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000000101",
+          "overflow": false,
+          "verified_steps": 256,
+          "device_steps": 256,
+          "candidate_count": 1,
+          "kernel_ms": 4.98376179,
+          "download_ms": 0.0128689995,
+          "verification_ms": 0.0052,
+          "seed_ms": 0.001673,
+          "wall_ms": 5.071557,
+          "device_allocation_bytes": 1464,
+          "pinned_allocation_bytes": 72,
+          "download_bytes": 72,
+          "matches": [
+            {
+              "scalar": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "x": "79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+              "target": 0
+            }
+          ]
+        },
+        {
+          "type": "summary",
+          "complete": true,
+          "durable_coverage": false,
+          "verified_steps": "0x0000000000000000000000000000000000000000000000000000000000000100",
+          "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000100",
+          "matches": "0x0000000000000000000000000000000000000000000000000000000000000001",
+          "launch_count": 1,
+          "overflow_replays": 0,
+          "kernel_ms": 4.98376179,
+          "download_ms": 0.0128689995,
+          "verification_ms": 0.0052,
+          "seed_ms": 0.001673,
+          "wall_ms": 480.910069
+        }
+      ]
+    },
+    "exit_code": 0,
+    "stdout": "/var/tmp/keyhunt-docs-nr_vpji1/keyhunt-example.LmHwy7\n",
+    "stderr": "",
+    "wall_seconds": 7.633934075944126
+  },
+  "cuda": {
+    "backend": "cuda",
+    "hardware_executed": true,
+    "device": 0,
+    "binary_sha256": "5fb7ffbe8854fc50cc904d7de93a9961b2f3830050eb5c42bccaf6b975f05db3",
+    "document_sha256": "a6e9d718e86f5873b9139215ec2acfe9da2f7ceb608a8912bd85df72d3953357",
+    "harness_sha256": "2d39d84c3c69314b756a7a9a95a9b94aeaa9f44105119cfff618702056fe5529",
+    "script_sha256": "7d33b724fabed6afdc0c77b8674d9239ffc568ba932b61c5d4adb9122bdc9c52",
+    "blocks": [
+      "prepare",
+      "volatile",
+      "create",
+      "durable"
+    ],
+    "passed": true,
+    "artifacts": {
+      "address.ndjson": [
+        {
+          "type": "start",
+          "backend": "cuda",
+          "mode": "hash160",
+          "device": 0,
+          "uuid": "9fdcd9f2c45469a881b044d5f5e92bb8",
+          "target_count": 4,
+          "target_digest": "b99b4381befa9f19ccd4770ec89edd08ac5a9693e2be335869cc70c334d1fd53",
+          "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+          "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000000101",
+          "kernel": "stepped",
+          "durable_coverage": false,
+          "preparation_ms": 2725.04627
+        },
+        {
+          "type": "batch",
+          "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+          "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000000101",
+          "overflow": false,
+          "verified_steps": 256,
+          "device_steps": 256,
+          "candidate_count": 2,
+          "kernel_ms": 5.34800005,
+          "download_ms": 0.00911999959,
+          "verification_ms": 0.010117,
+          "seed_ms": 0.002638,
+          "wall_ms": 5.415993,
+          "device_allocation_bytes": 10236,
+          "pinned_allocation_bytes": 8232,
+          "download_bytes": 8232,
+          "matches": [
+            {
+              "scalar": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "hash160": "751e76e8199196d454941c45d1b3a323f1433bd6",
+              "encoding": "compressed",
+              "target": 0
+            },
+            {
+              "scalar": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "hash160": "91b24bf9f5288532960ac687abb035127b1d28a5",
+              "encoding": "uncompressed",
+              "target": 3
+            }
+          ]
+        },
+        {
+          "type": "summary",
+          "complete": true,
+          "durable_coverage": false,
+          "verified_steps": "0x0000000000000000000000000000000000000000000000000000000000000100",
+          "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000100",
+          "matches": "0x0000000000000000000000000000000000000000000000000000000000000002",
+          "launch_count": 1,
+          "overflow_replays": 0,
+          "kernel_ms": 5.34800005,
+          "download_ms": 0.00911999959,
+          "verification_ms": 0.010117,
+          "seed_ms": 0.002638,
+          "wall_ms": 2731.0454
+        }
+      ],
+      "bsgs-block.json": {
+        "state": "finished",
+        "started": false,
+        "expired": false,
+        "assignment": null,
+        "covered": [
+          {
+            "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000010001"
+          }
+        ],
+        "remaining": []
+      },
+      "bsgs-durable.ndjson": [
+        {
+          "type": "checkpoint",
+          "durability": "local",
+          "durable_results": true,
+          "durable_coverage": true,
+          "intervals": [
+            {
+              "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000010001"
+            }
+          ],
+          "match_observations": 1,
+          "transaction_ms": 0.687982
+        },
+        {
+          "type": "summary",
+          "complete": true,
+          "durability": "local",
+          "durable_coverage": true,
+          "resumed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000010000",
+          "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000100",
+          "match_observations": 1,
+          "batches": 1,
+          "overflow_replays": 0,
+          "checkpoints": 1,
+          "checkpoint_ms": 0.687982,
+          "metrics_version": 2,
+          "device": 0,
+          "uuid": "9fdcd9f2c45469a881b044d5f5e92bb8",
+          "mode": "bsgs",
+          "checkpoint_seconds": 10,
+          "bsgs_group_size": 1,
+          "verified_device_steps": "0x0000000000000000000000000000000000000000000000000000000000000100",
+          "kernel_ms": 5.17600011826,
+          "download_ms": 0.0110719995573,
+          "seed_ms": 0.002643,
+          "verification_ms": 0.004641,
+          "revalidation_ms": 0.002219,
+          "executor_wall_ms": 5.214525,
+          "replay_kernel_ms": 0,
+          "download_bytes": "0x0000000000000000000000000000000000000000000000000000000000000050",
+          "peak_device_allocation_bytes": 16081,
+          "peak_pinned_allocation_bytes": 185,
+          "preparation_ms": 2842.348696,
+          "executor_setup_ms": 1.177125,
+          "table_upload_ms": 0.0283199995756,
+          "wall_ms": 2848.873497,
+          "bsgs_groups": [
+            {
+              "group_size": 1,
+              "batches": 1,
+              "overflow_replays": 0,
+              "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000100",
+              "verified_device_steps": "0x0000000000000000000000000000000000000000000000000000000000000100",
+              "kernel_ms": 5.17600011826
+            }
+          ]
+        }
+      ],
+      "bsgs-grant.json": {
+        "assignments": [
+          {
+            "project": "e9eeec77-793c-4651-aa21-a82c9ffbeb70",
+            "job": "43705cd9d31557b820a0bdabcca0a302748e44d1d42cf1155ab1710e739599e8",
+            "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000010001",
+            "owner": "quickstart",
+            "generation": "1",
+            "expires_unix": 1793410855,
+            "grant": "v1:e9eeec77-793c-4651-aa21-a82c9ffbeb70:43705cd9d31557b820a0bdabcca0a302748e44d1d42cf1155ab1710e739599e8:quickstart:9ca223cecbbf96dafa16b6cefccc91bf:1:1793410855:0x0000000000000000000000000000000000000000000000000000000000000000"
+          }
+        ]
+      },
+      "bsgs-job.json": {
+        "project": "e9eeec77-793c-4651-aa21-a82c9ffbeb70",
+        "job": "43705cd9d31557b820a0bdabcca0a302748e44d1d42cf1155ab1710e739599e8",
+        "target_digest": "7650ddf7eb9a7ae8f28817786d5e23679c2e2da6139d2deaefaf3e9222aa6381",
+        "algorithm_digest": "03af4767d3b91350d4b0c0f1ed907af4dbd0405448346913579952c990dcef89"
+      },
+      "bsgs-results.json": {
+        "results": [
+          {
+            "id": "2",
+            "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "scalar": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "target": 0,
+            "target_bytes": "0479be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8"
+          }
+        ],
+        "next_after": "2"
+      },
+      "bsgs-retry.ndjson": [
+        {
+          "type": "summary",
+          "complete": true,
+          "durability": "local",
+          "durable_coverage": true,
+          "resumed_scalars": "0x0000000000000000000000000000000000000000000000000000000000010000",
+          "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "match_observations": 0,
+          "batches": 0,
+          "overflow_replays": 0,
+          "checkpoints": 0,
+          "checkpoint_ms": 0,
+          "metrics_version": 2,
+          "device": 0,
+          "uuid": "9fdcd9f2c45469a881b044d5f5e92bb8",
+          "mode": "bsgs",
+          "checkpoint_seconds": 10,
+          "bsgs_group_size": 0,
+          "verified_device_steps": "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "kernel_ms": 0,
+          "download_ms": 0,
+          "seed_ms": 0,
+          "verification_ms": 0,
+          "revalidation_ms": 0,
+          "executor_wall_ms": 0,
+          "replay_kernel_ms": 0,
+          "download_bytes": "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "peak_device_allocation_bytes": 0,
+          "peak_pinned_allocation_bytes": 0,
+          "preparation_ms": 0,
+          "executor_setup_ms": 0,
+          "table_upload_ms": 0,
+          "wall_ms": 2857.175645,
+          "bsgs_groups": []
+        }
+      ],
+      "bsgs.ndjson": [
+        {
+          "type": "start",
+          "backend": "cuda",
+          "mode": "bsgs",
+          "device": 0,
+          "uuid": "9fdcd9f2c45469a881b044d5f5e92bb8",
+          "m": 257,
+          "table_checksum": "12af8158df481f3d0ae6d95f4192c71897fafd9cf7ba8e112aca8bd2d04c90d5",
+          "target_digest": "7650ddf7eb9a7ae8f28817786d5e23679c2e2da6139d2deaefaf3e9222aa6381",
+          "target_count": 1,
+          "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+          "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000010001",
+          "group_size": 0,
+          "durable_coverage": false,
+          "preparation_ms": 2747.76916,
+          "table_upload_ms": 0.0260799993
+        },
+        {
+          "type": "batch",
+          "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+          "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000010001",
+          "first_target": 0,
+          "target_count": 1,
+          "giants_per_target": 256,
+          "group_size": 1,
+          "overflow": false,
+          "device_steps": 256,
+          "verified_steps": 256,
+          "candidate_count": 1,
+          "tail_rejections": 0,
+          "kernel_ms": 5.37673616,
+          "download_ms": 0.00972799957,
+          "verification_ms": 0.005229,
+          "seed_ms": 0.003124,
+          "wall_ms": 5.414963,
+          "device_allocation_bytes": 16081,
+          "pinned_allocation_bytes": 185,
+          "download_bytes": 80,
+          "matches": [
+            {
+              "scalar": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "target": 0,
+              "public_key": "0479be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8"
+            }
+          ]
+        },
+        {
+          "type": "tile",
+          "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+          "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000010001",
+          "targets_completed": 1,
+          "verified_target_steps": 256,
+          "durable_coverage": false
+        },
+        {
+          "type": "summary",
+          "complete": true,
+          "durable_coverage": false,
+          "verified_scalars": "0x0000000000000000000000000000000000000000000000000000000000010000",
+          "verified_target_steps": "0x0000000000000000000000000000000000000000000000000000000000000100",
+          "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000100",
+          "matches": "0x0000000000000000000000000000000000000000000000000000000000000001",
+          "launch_count": 1,
+          "overflow_replays": 0,
+          "tiles": 1,
+          "kernel_ms": 5.37673616,
+          "download_ms": 0.00972799957,
+          "verification_ms": 0.005229,
+          "seed_ms": 0.003124,
+          "wall_ms": 2753.40669
+        }
+      ],
+      "check.json": {
+        "integrity": "ok"
+      },
+      "devices.json": {
+        "backend": "cuda",
+        "runtime_version": 13030,
+        "driver_version": 13030,
+        "devices": [
+          {
+            "ordinal": 0,
+            "name": "NVIDIA H200",
+            "architecture": "sm_90",
+            "uuid": "9fdcd9f2c45469a881b044d5f5e92bb8",
+            "pci_bus_id": "0000:1b:00.0",
+            "physical_id": "",
+            "physical_id_source": "",
+            "compute_partition": "",
+            "memory_partition": "",
+            "memory_allocation_mode": "",
+            "numa_node": 0,
+            "compute_units": 132,
+            "warp_size": 32,
+            "property_memory_bytes": 150101688320,
+            "total_memory_bytes": 150101688320,
+            "free_memory_bytes": 149545025536,
+            "warnings": [
+              "physical package identity unavailable",
+              "partition metadata unavailable"
+            ]
+          },
+          {
+            "ordinal": 1,
+            "name": "NVIDIA H200",
+            "architecture": "sm_90",
+            "uuid": "35e9b3332fcc91c7740d9dada8981391",
+            "pci_bus_id": "0000:3c:00.0",
+            "physical_id": "",
+            "physical_id_source": "",
+            "compute_partition": "",
+            "memory_partition": "",
+            "memory_allocation_mode": "",
+            "numa_node": 0,
+            "compute_units": 132,
+            "warp_size": 32,
+            "property_memory_bytes": 150101688320,
+            "total_memory_bytes": 150101688320,
+            "free_memory_bytes": 149545025536,
+            "warnings": [
+              "physical package identity unavailable",
+              "partition metadata unavailable"
+            ]
+          },
+          {
+            "ordinal": 2,
+            "name": "NVIDIA H200",
+            "architecture": "sm_90",
+            "uuid": "b9015ed612d65c7141653ab970cc5d89",
+            "pci_bus_id": "0000:4b:00.0",
+            "physical_id": "",
+            "physical_id_source": "",
+            "compute_partition": "",
+            "memory_partition": "",
+            "memory_allocation_mode": "",
+            "numa_node": 0,
+            "compute_units": 132,
+            "warp_size": 32,
+            "property_memory_bytes": 150101688320,
+            "total_memory_bytes": 150101688320,
+            "free_memory_bytes": 149545025536,
+            "warnings": [
+              "physical package identity unavailable",
+              "partition metadata unavailable"
+            ]
+          },
+          {
+            "ordinal": 3,
+            "name": "NVIDIA H200",
+            "architecture": "sm_90",
+            "uuid": "139f1dc5c1d8dd058d4c9b2ef33c966c",
+            "pci_bus_id": "0000:5c:00.0",
+            "physical_id": "",
+            "physical_id_source": "",
+            "compute_partition": "",
+            "memory_partition": "",
+            "memory_allocation_mode": "",
+            "numa_node": 0,
+            "compute_units": 132,
+            "warp_size": 32,
+            "property_memory_bytes": 150101688320,
+            "total_memory_bytes": 150101688320,
+            "free_memory_bytes": 149545025536,
+            "warnings": [
+              "physical package identity unavailable",
+              "partition metadata unavailable"
+            ]
+          },
+          {
+            "ordinal": 4,
+            "name": "NVIDIA H200",
+            "architecture": "sm_90",
+            "uuid": "8793d79f350ec5010a954ce29deee8a0",
+            "pci_bus_id": "0000:9a:00.0",
+            "physical_id": "",
+            "physical_id_source": "",
+            "compute_partition": "",
+            "memory_partition": "",
+            "memory_allocation_mode": "",
+            "numa_node": 1,
+            "compute_units": 132,
+            "warp_size": 32,
+            "property_memory_bytes": 150101688320,
+            "total_memory_bytes": 150101688320,
+            "free_memory_bytes": 149545025536,
+            "warnings": [
+              "physical package identity unavailable",
+              "partition metadata unavailable"
+            ]
+          },
+          {
+            "ordinal": 5,
+            "name": "NVIDIA H200",
+            "architecture": "sm_90",
+            "uuid": "0be674d0f3a86c060cebfb936d2e1cc0",
+            "pci_bus_id": "0000:bb:00.0",
+            "physical_id": "",
+            "physical_id_source": "",
+            "compute_partition": "",
+            "memory_partition": "",
+            "memory_allocation_mode": "",
+            "numa_node": 1,
+            "compute_units": 132,
+            "warp_size": 32,
+            "property_memory_bytes": 150101688320,
+            "total_memory_bytes": 150101688320,
+            "free_memory_bytes": 149545025536,
+            "warnings": [
+              "physical package identity unavailable",
+              "partition metadata unavailable"
+            ]
+          },
+          {
+            "ordinal": 6,
+            "name": "NVIDIA H200",
+            "architecture": "sm_90",
+            "uuid": "77df1e71e8323ccdd09eaa03ab3a2d7d",
+            "pci_bus_id": "0000:cd:00.0",
+            "physical_id": "",
+            "physical_id_source": "",
+            "compute_partition": "",
+            "memory_partition": "",
+            "memory_allocation_mode": "",
+            "numa_node": 1,
+            "compute_units": 132,
+            "warp_size": 32,
+            "property_memory_bytes": 150101688320,
+            "total_memory_bytes": 150101688320,
+            "free_memory_bytes": 149545025536,
+            "warnings": [
+              "physical package identity unavailable",
+              "partition metadata unavailable"
+            ]
+          },
+          {
+            "ordinal": 7,
+            "name": "NVIDIA H200",
+            "architecture": "sm_90",
+            "uuid": "ab387e304af7aaf1ece8575af15045ba",
+            "pci_bus_id": "0000:dc:00.0",
+            "physical_id": "",
+            "physical_id_source": "",
+            "compute_partition": "",
+            "memory_partition": "",
+            "memory_allocation_mode": "",
+            "numa_node": 1,
+            "compute_units": 132,
+            "warp_size": 32,
+            "property_memory_bytes": 150101688320,
+            "total_memory_bytes": 150101688320,
+            "free_memory_bytes": 149545025536,
+            "warnings": [
+              "physical package identity unavailable",
+              "partition metadata unavailable"
+            ]
+          }
+        ]
+      },
+      "hash160-block.json": {
+        "state": "finished",
+        "started": false,
+        "expired": false,
+        "assignment": null,
+        "covered": [
+          {
+            "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000000101"
+          }
+        ],
+        "remaining": []
+      },
+      "hash160-durable.ndjson": [
+        {
+          "type": "checkpoint",
+          "durability": "local",
+          "durable_results": true,
+          "durable_coverage": true,
+          "intervals": [
+            {
+              "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000000101"
+            }
+          ],
+          "match_observations": 2,
+          "transaction_ms": 0.687952
+        },
+        {
+          "type": "summary",
+          "complete": true,
+          "durability": "local",
+          "durable_coverage": true,
+          "resumed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000100",
+          "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000100",
+          "match_observations": 2,
+          "batches": 1,
+          "overflow_replays": 0,
+          "checkpoints": 1,
+          "checkpoint_ms": 0.687952,
+          "metrics_version": 2,
+          "device": 0,
+          "uuid": "9fdcd9f2c45469a881b044d5f5e92bb8",
+          "mode": "hash160",
+          "checkpoint_seconds": 10,
+          "bsgs_group_size": 0,
+          "verified_device_steps": "0x0000000000000000000000000000000000000000000000000000000000000100",
+          "kernel_ms": 5.30761623383,
+          "download_ms": 0.0109759997576,
+          "seed_ms": 0.001745,
+          "verification_ms": 0.011211,
+          "revalidation_ms": 0.005799,
+          "executor_wall_ms": 5.375819,
+          "replay_kernel_ms": 0,
+          "download_bytes": "0x0000000000000000000000000000000000000000000000000000000000002028",
+          "peak_device_allocation_bytes": 10236,
+          "peak_pinned_allocation_bytes": 8232,
+          "preparation_ms": 2829.186284,
+          "executor_setup_ms": 1.048463,
+          "table_upload_ms": 0,
+          "wall_ms": 2835.90794,
+          "bsgs_groups": []
+        }
+      ],
+      "hash160-grant.json": {
+        "assignments": [
+          {
+            "project": "e9eeec77-793c-4651-aa21-a82c9ffbeb70",
+            "job": "bad0d5435057d4af117ec21063f1c1aa35b930122892df9f333a9963fc6ba5d5",
+            "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000000101",
+            "owner": "quickstart",
+            "generation": "1",
+            "expires_unix": 1793410855,
+            "grant": "v1:e9eeec77-793c-4651-aa21-a82c9ffbeb70:bad0d5435057d4af117ec21063f1c1aa35b930122892df9f333a9963fc6ba5d5:quickstart:9ca223cecbbf96dafa16b6cefccc91bf:1:1793410855:0x0000000000000000000000000000000000000000000000000000000000000000"
+          }
+        ]
+      },
+      "hash160-job.json": {
+        "project": "e9eeec77-793c-4651-aa21-a82c9ffbeb70",
+        "job": "bad0d5435057d4af117ec21063f1c1aa35b930122892df9f333a9963fc6ba5d5",
+        "target_digest": "b99b4381befa9f19ccd4770ec89edd08ac5a9693e2be335869cc70c334d1fd53",
+        "algorithm_digest": "a0c53c25652001401dfb1bb67244729952254cf3c380a70d2e10e8f488f012d6"
+      },
+      "hash160-results.json": {
+        "results": [
+          {
+            "id": "3",
+            "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "scalar": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "target": 0,
+            "target_bytes": "01751e76e8199196d454941c45d1b3a323f1433bd6"
+          },
+          {
+            "id": "4",
+            "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "scalar": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "target": 3,
+            "target_bytes": "0291b24bf9f5288532960ac687abb035127b1d28a5"
+          }
+        ],
+        "next_after": "4"
+      },
+      "hash160-retry.ndjson": [
+        {
+          "type": "summary",
+          "complete": true,
+          "durability": "local",
+          "durable_coverage": true,
+          "resumed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000100",
+          "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "match_observations": 0,
+          "batches": 0,
+          "overflow_replays": 0,
+          "checkpoints": 0,
+          "checkpoint_ms": 0,
+          "metrics_version": 2,
+          "device": 0,
+          "uuid": "9fdcd9f2c45469a881b044d5f5e92bb8",
+          "mode": "hash160",
+          "checkpoint_seconds": 10,
+          "bsgs_group_size": 0,
+          "verified_device_steps": "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "kernel_ms": 0,
+          "download_ms": 0,
+          "seed_ms": 0,
+          "verification_ms": 0,
+          "revalidation_ms": 0,
+          "executor_wall_ms": 0,
+          "replay_kernel_ms": 0,
+          "download_bytes": "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "peak_device_allocation_bytes": 0,
+          "peak_pinned_allocation_bytes": 0,
+          "preparation_ms": 0,
+          "executor_setup_ms": 0,
+          "table_upload_ms": 0,
+          "wall_ms": 2833.22789,
+          "bsgs_groups": []
+        }
+      ],
+      "hash160.ndjson": [
+        {
+          "type": "start",
+          "backend": "cuda",
+          "mode": "hash160",
+          "device": 0,
+          "uuid": "9fdcd9f2c45469a881b044d5f5e92bb8",
+          "target_count": 4,
+          "target_digest": "b99b4381befa9f19ccd4770ec89edd08ac5a9693e2be335869cc70c334d1fd53",
+          "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+          "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000000101",
+          "kernel": "stepped",
+          "durable_coverage": false,
+          "preparation_ms": 2721.92877
+        },
+        {
+          "type": "batch",
+          "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+          "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000000101",
+          "overflow": false,
+          "verified_steps": 256,
+          "device_steps": 256,
+          "candidate_count": 2,
+          "kernel_ms": 5.31225586,
+          "download_ms": 0.00963199977,
+          "verification_ms": 0.011324,
+          "seed_ms": 0.002531,
+          "wall_ms": 5.378946,
+          "device_allocation_bytes": 10236,
+          "pinned_allocation_bytes": 8232,
+          "download_bytes": 8232,
+          "matches": [
+            {
+              "scalar": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "hash160": "751e76e8199196d454941c45d1b3a323f1433bd6",
+              "encoding": "compressed",
+              "target": 0
+            },
+            {
+              "scalar": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "hash160": "91b24bf9f5288532960ac687abb035127b1d28a5",
+              "encoding": "uncompressed",
+              "target": 3
+            }
+          ]
+        },
+        {
+          "type": "summary",
+          "complete": true,
+          "durable_coverage": false,
+          "verified_steps": "0x0000000000000000000000000000000000000000000000000000000000000100",
+          "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000100",
+          "matches": "0x0000000000000000000000000000000000000000000000000000000000000002",
+          "launch_count": 1,
+          "overflow_replays": 0,
+          "kernel_ms": 5.31225586,
+          "download_ms": 0.00963199977,
+          "verification_ms": 0.011324,
+          "seed_ms": 0.002531,
+          "wall_ms": 2727.83915
+        }
+      ],
+      "preflight.json": {
+        "integrity": "ok"
+      },
+      "project.json": {
+        "project": "e9eeec77-793c-4651-aa21-a82c9ffbeb70"
+      },
+      "smoke.json": {
+        "backend": "cuda",
+        "diagnostic_only": true,
+        "search_coverage": false,
+        "device": 0,
+        "uuid": "9fdcd9f2c45469a881b044d5f5e92bb8",
+        "architecture": "sm_90",
+        "begin": "0x000000000000000000000000000000000000000100000000ffffffffffffffff",
+        "end_exclusive": "0x0000000000000000000000000000000000000001000000010000000000000100",
+        "device_steps": 257,
+        "launch_count": 1,
+        "device_allocation_bytes": 8264,
+        "pinned_allocation_bytes": 8264,
+        "download_bytes": 8264,
+        "kernel_ms": 0.140384,
+        "download_ms": 0.018624,
+        "verification_ms": 0.015938,
+        "wall_ms": 1.2822
+      },
+      "table-inspect.json": {
+        "backend": "cpu",
+        "device": null,
+        "uuid": "",
+        "format_version": 1,
+        "curve": "secp256k1",
+        "mapping": "jG:0<=j<m",
+        "m": 257,
+        "buckets": 64,
+        "bloom_words": 128,
+        "bits_per_entry": 16,
+        "resident_bytes": 13880,
+        "host_peak_bytes": 1076729,
+        "file_bytes": 14040,
+        "device_queries": 0,
+        "device_allocation_bytes": 0,
+        "pinned_allocation_bytes": 0,
+        "prepare_upload_ms": 0,
+        "query_kernel_ms": 0,
+        "query_upload_ms": 0,
+        "query_download_ms": 0,
+        "checksum": "12af8158df481f3d0ae6d95f4192c71897fafd9cf7ba8e112aca8bd2d04c90d5",
+        "search_coverage": false,
+        "wall_ms": 32.5988
+      },
+      "table-validate.json": {
+        "backend": "cuda",
+        "device": 0,
+        "uuid": "9fdcd9f2c45469a881b044d5f5e92bb8",
+        "format_version": 1,
+        "curve": "secp256k1",
+        "mapping": "jG:0<=j<m",
+        "m": 257,
+        "buckets": 64,
+        "bloom_words": 128,
+        "bits_per_entry": 16,
+        "resident_bytes": 13880,
+        "host_peak_bytes": 1076729,
+        "file_bytes": 14040,
+        "device_queries": 514,
+        "device_allocation_bytes": 280160,
+        "pinned_allocation_bytes": 266280,
+        "prepare_upload_ms": 0.029984,
+        "query_kernel_ms": 0.230144,
+        "query_upload_ms": 0.016192,
+        "query_download_ms": 0.01984,
+        "checksum": "12af8158df481f3d0ae6d95f4192c71897fafd9cf7ba8e112aca8bd2d04c90d5",
+        "search_coverage": false,
+        "wall_ms": 2738.09
+      },
+      "table.json": {
+        "backend": "cpu",
+        "device": null,
+        "uuid": "",
+        "format_version": 1,
+        "curve": "secp256k1",
+        "mapping": "jG:0<=j<m",
+        "m": 257,
+        "buckets": 64,
+        "bloom_words": 128,
+        "bits_per_entry": 16,
+        "resident_bytes": 13880,
+        "host_peak_bytes": 1076729,
+        "file_bytes": 14040,
+        "device_queries": 0,
+        "device_allocation_bytes": 0,
+        "pinned_allocation_bytes": 0,
+        "prepare_upload_ms": 0,
+        "query_kernel_ms": 0,
+        "query_upload_ms": 0,
+        "query_download_ms": 0,
+        "checksum": "12af8158df481f3d0ae6d95f4192c71897fafd9cf7ba8e112aca8bd2d04c90d5",
+        "search_coverage": false,
+        "wall_ms": 33.4435
+      },
+      "xpoint-block.json": {
+        "state": "finished",
+        "started": false,
+        "expired": false,
+        "assignment": null,
+        "covered": [
+          {
+            "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000000101"
+          }
+        ],
+        "remaining": []
+      },
+      "xpoint-durable.ndjson": [
+        {
+          "type": "checkpoint",
+          "durability": "local",
+          "durable_results": true,
+          "durable_coverage": true,
+          "intervals": [
+            {
+              "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000000101"
+            }
+          ],
+          "match_observations": 1,
+          "transaction_ms": 0.683166
+        },
+        {
+          "type": "summary",
+          "complete": true,
+          "durability": "local",
+          "durable_coverage": true,
+          "resumed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000100",
+          "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000100",
+          "match_observations": 1,
+          "batches": 1,
+          "overflow_replays": 0,
+          "checkpoints": 1,
+          "checkpoint_ms": 0.683166,
+          "metrics_version": 2,
+          "device": 0,
+          "uuid": "9fdcd9f2c45469a881b044d5f5e92bb8",
+          "mode": "xpoint",
+          "checkpoint_seconds": 10,
+          "bsgs_group_size": 0,
+          "verified_device_steps": "0x0000000000000000000000000000000000000000000000000000000000000100",
+          "kernel_ms": 4.47654390335,
+          "download_ms": 0.011264000088,
+          "seed_ms": 0.001945,
+          "verification_ms": 0.004031,
+          "revalidation_ms": 0.002656,
+          "executor_wall_ms": 4.522525,
+          "replay_kernel_ms": 0,
+          "download_bytes": "0x0000000000000000000000000000000000000000000000000000000000000048",
+          "peak_device_allocation_bytes": 2024,
+          "peak_pinned_allocation_bytes": 72,
+          "preparation_ms": 2828.400164,
+          "executor_setup_ms": 1.061026,
+          "table_upload_ms": 0,
+          "wall_ms": 2834.188009,
+          "bsgs_groups": []
+        }
+      ],
+      "xpoint-grant.json": {
+        "assignments": [
+          {
+            "project": "e9eeec77-793c-4651-aa21-a82c9ffbeb70",
+            "job": "b2d2ed91380e2852e1561911f611c5f08c1dceb64487a56aa9bb6f35ae7d0f3e",
+            "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000000101",
+            "owner": "quickstart",
+            "generation": "1",
+            "expires_unix": 1793410855,
+            "grant": "v1:e9eeec77-793c-4651-aa21-a82c9ffbeb70:b2d2ed91380e2852e1561911f611c5f08c1dceb64487a56aa9bb6f35ae7d0f3e:quickstart:9ca223cecbbf96dafa16b6cefccc91bf:1:1793410855:0x0000000000000000000000000000000000000000000000000000000000000000"
+          }
+        ]
+      },
+      "xpoint-job.json": {
+        "project": "e9eeec77-793c-4651-aa21-a82c9ffbeb70",
+        "job": "b2d2ed91380e2852e1561911f611c5f08c1dceb64487a56aa9bb6f35ae7d0f3e",
+        "target_digest": "6397551d436e168d9149d63428e68363a3bc5e63a1d0371f06d1810e8074d80a",
+        "algorithm_digest": "7b0099fbbb87b5e967d5308270b324ac8a7d9ed4984e4d88e603b53280cfee9e"
+      },
+      "xpoint-results.json": {
+        "results": [
+          {
+            "id": "1",
+            "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "scalar": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "target": 0,
+            "target_bytes": "79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798"
+          }
+        ],
+        "next_after": "1"
+      },
+      "xpoint-retry.ndjson": [
+        {
+          "type": "summary",
+          "complete": true,
+          "durability": "local",
+          "durable_coverage": true,
+          "resumed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000100",
+          "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "match_observations": 0,
+          "batches": 0,
+          "overflow_replays": 0,
+          "checkpoints": 0,
+          "checkpoint_ms": 0,
+          "metrics_version": 2,
+          "device": 0,
+          "uuid": "9fdcd9f2c45469a881b044d5f5e92bb8",
+          "mode": "xpoint",
+          "checkpoint_seconds": 10,
+          "bsgs_group_size": 0,
+          "verified_device_steps": "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "kernel_ms": 0,
+          "download_ms": 0,
+          "seed_ms": 0,
+          "verification_ms": 0,
+          "revalidation_ms": 0,
+          "executor_wall_ms": 0,
+          "replay_kernel_ms": 0,
+          "download_bytes": "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "peak_device_allocation_bytes": 0,
+          "peak_pinned_allocation_bytes": 0,
+          "preparation_ms": 0,
+          "executor_setup_ms": 0,
+          "table_upload_ms": 0,
+          "wall_ms": 2821.567165,
+          "bsgs_groups": []
+        }
+      ],
+      "xpoint.ndjson": [
+        {
+          "type": "start",
+          "backend": "cuda",
+          "mode": "xpoint",
+          "device": 0,
+          "uuid": "9fdcd9f2c45469a881b044d5f5e92bb8",
+          "target_count": 1,
+          "target_digest": "6397551d436e168d9149d63428e68363a3bc5e63a1d0371f06d1810e8074d80a",
+          "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+          "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000000101",
+          "kernel": "stepped",
+          "durable_coverage": false,
+          "preparation_ms": 2741.32569
+        },
+        {
+          "type": "batch",
+          "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+          "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000000101",
+          "overflow": false,
+          "verified_steps": 256,
+          "device_steps": 256,
+          "candidate_count": 1,
+          "kernel_ms": 4.4111681,
+          "download_ms": 0.0113279996,
+          "verification_ms": 0.00434,
+          "seed_ms": 0.00205,
+          "wall_ms": 4.456903,
+          "device_allocation_bytes": 2024,
+          "pinned_allocation_bytes": 72,
+          "download_bytes": 72,
+          "matches": [
+            {
+              "scalar": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "x": "79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+              "target": 0
+            }
+          ]
+        },
+        {
+          "type": "summary",
+          "complete": true,
+          "durable_coverage": false,
+          "verified_steps": "0x0000000000000000000000000000000000000000000000000000000000000100",
+          "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000100",
+          "matches": "0x0000000000000000000000000000000000000000000000000000000000000001",
+          "launch_count": 1,
+          "overflow_replays": 0,
+          "kernel_ms": 4.4111681,
+          "download_ms": 0.0113279996,
+          "verification_ms": 0.00434,
+          "seed_ms": 0.00205,
+          "wall_ms": 2745.84801
+        }
+      ]
+    },
+    "exit_code": 0,
+    "stdout": "/var/tmp/keyhunt-docs-p1riuwj2/keyhunt-example.v1658A\n",
+    "stderr": "",
+    "wall_seconds": 42.97101599100279
+  },
+  "cpu": {
+    "backend": "cpu",
+    "hardware_executed": false,
+    "device": 0,
+    "binary_sha256": "ef1f739ac404ee637abcee984db987e60624bf24bb3ca5c642d0ec1517cf1fa1",
+    "document_sha256": "a6e9d718e86f5873b9139215ec2acfe9da2f7ceb608a8912bd85df72d3953357",
+    "harness_sha256": "2d39d84c3c69314b756a7a9a95a9b94aeaa9f44105119cfff618702056fe5529",
+    "script_sha256": "b091f6cd46d59648513165b74f583e9771eee8c6ed9fd6ca2c55887d61ff2f84",
+    "blocks": [
+      "prepare",
+      "create"
+    ],
+    "passed": true,
+    "artifacts": {
+      "bsgs-grant.json": {
+        "assignments": [
+          {
+            "project": "ab194e80-9c5d-46dc-acc0-79074474477c",
+            "job": "43705cd9d31557b820a0bdabcca0a302748e44d1d42cf1155ab1710e739599e8",
+            "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000010001",
+            "owner": "quickstart",
+            "generation": "1",
+            "expires_unix": 1793410797,
+            "grant": "v1:ab194e80-9c5d-46dc-acc0-79074474477c:43705cd9d31557b820a0bdabcca0a302748e44d1d42cf1155ab1710e739599e8:quickstart:5f4b70eeaf454c4d818bac79fe915385:1:1793410797:0x0000000000000000000000000000000000000000000000000000000000000000"
+          }
+        ]
+      },
+      "bsgs-job.json": {
+        "project": "ab194e80-9c5d-46dc-acc0-79074474477c",
+        "job": "43705cd9d31557b820a0bdabcca0a302748e44d1d42cf1155ab1710e739599e8",
+        "target_digest": "7650ddf7eb9a7ae8f28817786d5e23679c2e2da6139d2deaefaf3e9222aa6381",
+        "algorithm_digest": "03af4767d3b91350d4b0c0f1ed907af4dbd0405448346913579952c990dcef89"
+      },
+      "hash160-grant.json": {
+        "assignments": [
+          {
+            "project": "ab194e80-9c5d-46dc-acc0-79074474477c",
+            "job": "bad0d5435057d4af117ec21063f1c1aa35b930122892df9f333a9963fc6ba5d5",
+            "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000000101",
+            "owner": "quickstart",
+            "generation": "1",
+            "expires_unix": 1793410797,
+            "grant": "v1:ab194e80-9c5d-46dc-acc0-79074474477c:bad0d5435057d4af117ec21063f1c1aa35b930122892df9f333a9963fc6ba5d5:quickstart:5f4b70eeaf454c4d818bac79fe915385:1:1793410797:0x0000000000000000000000000000000000000000000000000000000000000000"
+          }
+        ]
+      },
+      "hash160-job.json": {
+        "project": "ab194e80-9c5d-46dc-acc0-79074474477c",
+        "job": "bad0d5435057d4af117ec21063f1c1aa35b930122892df9f333a9963fc6ba5d5",
+        "target_digest": "b99b4381befa9f19ccd4770ec89edd08ac5a9693e2be335869cc70c334d1fd53",
+        "algorithm_digest": "a0c53c25652001401dfb1bb67244729952254cf3c380a70d2e10e8f488f012d6"
+      },
+      "preflight.json": {
+        "integrity": "ok"
+      },
+      "project.json": {
+        "project": "ab194e80-9c5d-46dc-acc0-79074474477c"
+      },
+      "table-inspect.json": {
+        "backend": "cpu",
+        "device": null,
+        "uuid": "",
+        "format_version": 1,
+        "curve": "secp256k1",
+        "mapping": "jG:0<=j<m",
+        "m": 257,
+        "buckets": 64,
+        "bloom_words": 128,
+        "bits_per_entry": 16,
+        "resident_bytes": 13880,
+        "host_peak_bytes": 1076729,
+        "file_bytes": 14040,
+        "device_queries": 0,
+        "device_allocation_bytes": 0,
+        "pinned_allocation_bytes": 0,
+        "prepare_upload_ms": 0,
+        "query_kernel_ms": 0,
+        "query_upload_ms": 0,
+        "query_download_ms": 0,
+        "checksum": "12af8158df481f3d0ae6d95f4192c71897fafd9cf7ba8e112aca8bd2d04c90d5",
+        "search_coverage": false,
+        "wall_ms": 31.5639
+      },
+      "table.json": {
+        "backend": "cpu",
+        "device": null,
+        "uuid": "",
+        "format_version": 1,
+        "curve": "secp256k1",
+        "mapping": "jG:0<=j<m",
+        "m": 257,
+        "buckets": 64,
+        "bloom_words": 128,
+        "bits_per_entry": 16,
+        "resident_bytes": 13880,
+        "host_peak_bytes": 1076729,
+        "file_bytes": 14040,
+        "device_queries": 0,
+        "device_allocation_bytes": 0,
+        "pinned_allocation_bytes": 0,
+        "prepare_upload_ms": 0,
+        "query_kernel_ms": 0,
+        "query_upload_ms": 0,
+        "query_download_ms": 0,
+        "checksum": "12af8158df481f3d0ae6d95f4192c71897fafd9cf7ba8e112aca8bd2d04c90d5",
+        "search_coverage": false,
+        "wall_ms": 33.0727
+      },
+      "xpoint-grant.json": {
+        "assignments": [
+          {
+            "project": "ab194e80-9c5d-46dc-acc0-79074474477c",
+            "job": "b2d2ed91380e2852e1561911f611c5f08c1dceb64487a56aa9bb6f35ae7d0f3e",
+            "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000000101",
+            "owner": "quickstart",
+            "generation": "1",
+            "expires_unix": 1793410797,
+            "grant": "v1:ab194e80-9c5d-46dc-acc0-79074474477c:b2d2ed91380e2852e1561911f611c5f08c1dceb64487a56aa9bb6f35ae7d0f3e:quickstart:5f4b70eeaf454c4d818bac79fe915385:1:1793410797:0x0000000000000000000000000000000000000000000000000000000000000000"
+          }
+        ]
+      },
+      "xpoint-job.json": {
+        "project": "ab194e80-9c5d-46dc-acc0-79074474477c",
+        "job": "b2d2ed91380e2852e1561911f611c5f08c1dceb64487a56aa9bb6f35ae7d0f3e",
+        "target_digest": "6397551d436e168d9149d63428e68363a3bc5e63a1d0371f06d1810e8074d80a",
+        "algorithm_digest": "7b0099fbbb87b5e967d5308270b324ac8a7d9ed4984e4d88e603b53280cfee9e"
+      }
+    },
+    "exit_code": 0,
+    "stdout": "/var/tmp/keyhunt-docs-ofsl0u3m/keyhunt-example.vi51fF\n",
+    "stderr": "",
+    "wall_seconds": 0.2989578100387007
+  }
+}

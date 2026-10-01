@@ -1,14 +1,16 @@
 # Build and test
 
 The preserved CPU engine requires Linux x86-64 and SSSE3 for its assembly and
-hashes. Optional HIP discovery, diagnostics, bounded xpoint and BSGS searches,
+hashes. Optional HIP discovery, diagnostics, bounded xpoint, BSGS and Bitcoin HASH160 searches,
 and table preparation/lookup are implemented. `KEYHUNT_ENABLE_CUDA` builds the
 native NVIDIA backend; see [the C18 guide](CUDA_BACKEND.md). CPU builds never
 probe or download either GPU SDK.
 
 Use CMake 3.22+, GCC/G++ (11.4.0 tested), Make, SQLite 3.51.3+ development
 headers/library, and Python 3.9+ for tests. A
-production-only build can omit Python with `-DBUILD_TESTING=OFF`. No dependencies
+production-only build can omit Python with `-DBUILD_TESTING=OFF`. HASH160 oracle
+tests use Python hashlib and OpenSSL RIPEMD-160, with a legacy-provider or
+low-level libcrypto fallback where needed. No dependencies
 are fetched by the build. Non-HIP Clang host builds have not been validated here; the HIP compiler
 combination is recorded below.
 
@@ -54,7 +56,7 @@ cmake --build --preset cpu-sanitizers --parallel 4
 Use a separate build directory for each backend. HIP and CUDA cannot be enabled
 in the same configuration. The GPU preset still builds the CPU verifier and
 legacy CPU modes; `-m` flags never select a GPU. Both native backends support the
-same exact xpoint, BSGS, checkpoint and supervised execution commands.
+same exact xpoint, BSGS, HASH160, checkpoint and supervised execution commands.
 
 These are recorded working combinations, not minimum SDK or driver versions:
 
@@ -136,8 +138,8 @@ and [concurrent ownership](MULTI_GPU.md) before starting multiple queues.
 | `KEYHUNT_BUILD_LEGACY` | OFF | Separate GMP/OpenSSL executable |
 | `KEYHUNT_BUILD_BSGSD` | OFF | Original local BSGS daemon |
 | `BUILD_TESTING` | ON | Python/CTest regression checks |
-| `KEYHUNT_ENABLE_HIP` | OFF | AMD HIP discovery, diagnostics, xpoint/BSGS searches and tables; requires ROCm AMD clang/runtime |
-| `KEYHUNT_ENABLE_CUDA` | OFF | Native NVIDIA discovery, xpoint, BSGS and checkpoints |
+| `KEYHUNT_ENABLE_HIP` | OFF | AMD HIP discovery, diagnostics, xpoint/BSGS/HASH160 searches and tables; requires ROCm AMD clang/runtime |
+| `KEYHUNT_ENABLE_CUDA` | OFF | Native NVIDIA discovery, xpoint, BSGS, HASH160 and checkpoints |
 | `KEYHUNT_GFX942_CARRY` | OFF | Opt-in AMD Clang carry/borrow intrinsics for gfx942; native HIP required; [measurements and fallback](GFX942_SPECIALIZATIONS.md) |
 | `KEYHUNT_ENABLE_COORDINATOR` | OFF | Registry, coordinator and durable HTTPS worker support; needs OpenSSL 3 and nlohmann JSON >=3.10 |
 | `KEYHUNT_ENABLE_HTTPS_WORKER` | ON | With coordination enabled, build the libcurl HTTPS worker and Python supervisor; disable for server-only builds |
