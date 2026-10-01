@@ -33,7 +33,7 @@ int checkpoint_command(int argc,char** argv){
     static const std::map<std::string,std::set<std::string>> allowed{
         {"create",{"project","mode","range","block-width","targets","table","host-memory","encoding","length","input-format","stride","order","endomorphism"}},
         {"run",{"backend","grant","targets","table","device","batch-size","kernel","giant-batch",
-                "target-batch","candidate-capacity","group-size","host-memory","reserve-bytes","checkpoint-seconds","encoding","input-format","length","stride","order","endomorphism","tile-order","ordinal-order","tile-seed","tile-window"}},
+                "target-batch","candidate-capacity","group-size","host-memory","reserve-bytes","checkpoint-seconds","encoding","input-format","length","stride","order","endomorphism","tile-order","ordinal-order","ordinal-seed","ordinal-window","tile-seed","tile-window"}},
         {"results",{"project","job","after","limit"}},
         {"pause",{"slot"}},{"resume",{"slot"}},{"stop",{"slot"}},{"status",{"slot"}}};
     if(argc<3)throw std::invalid_argument("usage: keyhunt checkpoint create|run|results|pause|resume|stop|status [--state-dir DIR] ...; see docs/CHECKPOINTS.md");
@@ -155,6 +155,11 @@ int checkpoint_command(int argc,char** argv){
     if(args.count("ordinal-order")){
         if(mode!=Mode::Minikeys)throw std::invalid_argument("ordinal-order applies only to minikeys");
         options.minikey_order=core::parse_minikey_order(required(args,"ordinal-order"));
+    }
+    if(args.count("ordinal-seed") || args.count("ordinal-window") || options.minikey_order==core::MinikeyOrder::RandomWindow){
+        if(mode!=Mode::Minikeys)throw std::invalid_argument("ordinal-seed/ordinal-window apply only to minikeys");
+        options.minikey_random_window=core::parse_minikey_random_window(optional(args,"ordinal-seed","0"),optional(args,"ordinal-window","64"));
+        core::validate_minikey_random_window(options.minikey_order.value_or(core::MinikeyOrder::Forward),options.minikey_random_window);
     }
     if(args.count("tile-order")){
         if(mode!=Mode::Bsgs)throw std::invalid_argument("tile-order applies only to BSGS");
@@ -332,6 +337,8 @@ int checkpoint_command(int argc,char** argv){
     std::cout<<']';
     if(mode==Mode::Minikeys)std::cout<<",\"ordinal_order\":"<<quote(optional(args,"ordinal-order","forward"));
     if(mode==Mode::Bsgs)std::cout<<",\"tile_order\":"<<quote(optional(args,"tile-order","forward"));
+    if(options.minikey_random_window)std::cout<<",\"ordinal_seed\":"<<quote(options.minikey_random_window->seed.hex())
+        <<",\"ordinal_window\":"<<options.minikey_random_window->tiles;
     if(options.bsgs_random_window)std::cout<<",\"tile_seed\":"<<quote(options.bsgs_random_window->seed.hex())
         <<",\"tile_window\":"<<options.bsgs_random_window->tiles;
     std::cout<<'}';flush();return 0;

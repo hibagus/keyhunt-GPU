@@ -6,7 +6,10 @@ namespace keyhunt::core {
 // Length is repeated in each canonical target so the existing immutable target
 // binding also defines the ordinal space. Mixed lengths within a job are invalid.
 using MinikeyTarget=std::array<uint8_t,22>;
-enum class MinikeyOrder { Forward, Reverse, BothEnds, Dance };
+enum class MinikeyOrder { Forward, Reverse, BothEnds, Dance, RandomWindow };
+struct MinikeyRandomWindow { UInt256 seed{0}; unsigned tiles=64; };
+MinikeyRandomWindow parse_minikey_random_window(const std::string& seed,const std::string& window);
+void validate_minikey_random_window(MinikeyOrder order,const std::optional<MinikeyRandomWindow>& settings);
 MinikeyOrder parse_minikey_order(const std::string& value);
 const char* minikey_order_name(MinikeyOrder order);
 
@@ -20,7 +23,8 @@ struct MinikeyPlannedBatch {
 class MinikeyBatchPlanner {
 public:
     MinikeyBatchPlanner(scheduler::BlockGrid grid,UInt256 block,
-        const std::vector<ScalarInterval>& gaps,scheduler::ExecutionIdentity identity,MinikeyOrder order);
+        const std::vector<ScalarInterval>& gaps,scheduler::ExecutionIdentity identity,MinikeyOrder order,
+        std::optional<MinikeyRandomWindow> random=std::nullopt);
     std::optional<MinikeyPlannedBatch> plan(const UInt256& work_span,uint64_t max_steps);
     void accept();
 private:
@@ -34,6 +38,15 @@ private:
     std::map<UInt256,Remaining> remaining_;
     std::optional<MinikeyPlannedBatch> pending_;
     UInt256 selected_;
+    // A shuffled tile can contain several accepted sub-batches after overflow.
+    // Its remaining suffix stays selected until exhausted, without a new draw.
+    struct WindowTile { ScalarInterval remaining,work; bool starts_work,finishes_work; };
+    MinikeyRandomWindow random_;
+    UInt256 random_counter_;
+    std::vector<WindowTile> window_;
+    size_t window_next_=0;
+    unsigned random_below(unsigned bound);
+    void fill_window(const UInt256& work_span,uint64_t max_steps);
 };
 UInt256 minikey_space_end(unsigned length);
 std::string minikey_text(const UInt256& ordinal,unsigned length);

@@ -15,6 +15,7 @@ struct CheckpointOptions {
     std::optional<core::BsgsTileOrder> bsgs_tile_order;
     std::optional<core::BsgsRandomWindow> bsgs_random_window;
     std::optional<core::MinikeyOrder> minikey_order; // Execution-only; receipts remain canonical ordinals.
+    std::optional<core::MinikeyRandomWindow> minikey_random_window;
     // Supervised devices share the journal but retain an exclusive block guard.
     // Standalone callers keep the original whole-journal exclusion by default.
     bool concurrent_blocks=false;

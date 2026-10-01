@@ -117,3 +117,11 @@ set_tests_properties(minikey_dance_documented_example PROPERTIES TIMEOUT 150 LAB
 if(KEYHUNT_ENABLE_GPU)
     set_tests_properties(minikey_dance_documented_example PROPERTIES LABELS "${KEYHUNT_GPU_BACKEND};hardware;minikeys;dance;examples" RESOURCE_LOCK gpu_device)
 endif()
+
+add_executable(minikey_random_window_probe tests/unit/minikey_random_window_probe.cpp)
+target_link_libraries(minikey_random_window_probe PRIVATE keyhunt_core)
+keyhunt_configure_target(minikey_random_window_probe)
+add_test(NAME minikey_random_window_oracle COMMAND "${Python3_EXECUTABLE}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests/oracle/minikey_random_windows.py" --binary $<TARGET_FILE:minikey_random_window_probe>
+    --report "${CMAKE_CURRENT_BINARY_DIR}/minikey-random-window-oracle.json")
+set_tests_properties(minikey_random_window_oracle PROPERTIES TIMEOUT 240 LABELS "cpu;minikeys;random-window;oracle")

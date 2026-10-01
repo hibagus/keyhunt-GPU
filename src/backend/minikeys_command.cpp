@@ -37,7 +37,7 @@ void flush_record() {
 #endif
 }
 int minikeys_command(int argc, char** argv) {
-    const char* usage = "usage: keyhunt minikeys --length 22|30 --backend hip|cuda --range START:END --targets FILE [--encoding compressed|uncompressed|both] [--device N] [--batch-size 1..1048576] [--candidate-capacity 1..1048576] [--input-format address|hash160] [--kernel direct] [--ordinal-order forward|reverse|both-ends|dance] (END is exclusive; NDJSON output)";
+    const char* usage = "usage: keyhunt minikeys --length 22|30 --backend hip|cuda --range START:END --targets FILE [--encoding compressed|uncompressed|both] [--device N] [--batch-size 1..1048576] [--candidate-capacity 1..1048576] [--input-format address|hash160] [--kernel direct] [--ordinal-order forward|reverse|both-ends|dance|random-window] [--ordinal-seed HEX] [--ordinal-window 1..256] (END is exclusive; NDJSON output)";
     // Inspection is CPU-only and accepts a public candidate even when its check
     // byte fails: operators can obtain an exact range start without searching.
     if(argc>=3 && std::string(argv[2])=="inspect"){
@@ -53,12 +53,16 @@ int minikeys_command(int argc, char** argv) {
         if (i+1 == argc) throw std::invalid_argument(usage);
         const std::string key = argv[i];
         if (key != "--backend" && key != "--range" && key != "--targets" && key != "--device" &&
-            key != "--length" && key != "--input-format" && key != "--encoding" && key != "--batch-size" && key != "--candidate-capacity" && key != "--kernel" && key != "--ordinal-order") throw std::invalid_argument(usage);
+            key != "--length" && key != "--input-format" && key != "--encoding" && key != "--batch-size" && key != "--candidate-capacity" && key != "--kernel" && key != "--ordinal-order" && key != "--ordinal-seed" && key != "--ordinal-window") throw std::invalid_argument(usage);
         if (!args.emplace(key,argv[i+1]).second) throw std::invalid_argument("duplicate minikey option: "+key);
     }
     if ((args["--backend"] != "hip" && args["--backend"] != "cuda") || args["--range"].empty() || args["--targets"].empty())
         throw std::invalid_argument(usage);
     const auto order=core::parse_minikey_order(args.count("--ordinal-order")?args["--ordinal-order"]:"forward");
+    std::optional<core::MinikeyRandomWindow> random;
+    if(args.count("--ordinal-seed") || args.count("--ordinal-window") || order==core::MinikeyOrder::RandomWindow)
+        random=core::parse_minikey_random_window(args.count("--ordinal-seed")?args["--ordinal-seed"]:"0",args.count("--ordinal-window")?args["--ordinal-window"]:"64");
+    core::validate_minikey_random_window(order,random);
     require_backend(args["--backend"]);
     const auto range = args["--range"];
     const auto colon = range.find(':');
@@ -103,9 +107,11 @@ int minikeys_command(int argc, char** argv) {
               << ",\"ordinal_order\":\"" << core::minikey_order_name(order) << "\",\"uuid\":\"" << selected.device.uuid << "\",\"target_count\":" << targets.values().size()
               << ",\"target_digest\":\"" << hex_bytes(targets.digest().data(),targets.digest().size())
               << "\",\"begin\":\"" << interval.begin().hex() << "\",\"end_exclusive\":\"" << interval.end().hex()
-              << "\",\"kernel\":\"" << kernel << "\",\"durable_coverage\":false,\"preparation_ms\":" << preparation_ms << '}';
+              << "\",\"kernel\":\"" << kernel << "\",\"durable_coverage\":false,\"preparation_ms\":" << preparation_ms;
+    if(random)std::cout<<",\"ordinal_seed\":"<<std::quoted(random->seed.hex())<<",\"ordinal_window\":"<<random->tiles;
+    std::cout<<'}';
     flush_record();
-    core::MinikeyBatchPlanner planner(grid,UInt256(),{interval},identity,order);
+    core::MinikeyBatchPlanner planner(grid,UInt256(),{interval},identity,order,random);
     UInt256 verified, attempts, match_count;
     uint64_t launches = 0, overflows = 0;
     scheduler::XPointBatchSize sizing(batch_size,uint32_t(capacity),targets.max_matches_per_scalar());
@@ -154,7 +160,9 @@ int minikeys_command(int argc, char** argv) {
               << "\",\"device_steps\":\"" << attempts.hex() << "\",\"matches\":\"" << match_count.hex()
               << "\",\"ordinal_order\":\"" << core::minikey_order_name(order) << "\",\"launch_count\":" << launches << ",\"overflow_replays\":" << overflows
               << ",\"kernel_ms\":" << kernel_ms << ",\"download_ms\":" << download_ms
-              << ",\"verification_ms\":" << verification_ms << ",\"seed_ms\":" << seed_ms << ",\"wall_ms\":" << wall_ms << '}';
+              << ",\"verification_ms\":" << verification_ms << ",\"seed_ms\":" << seed_ms << ",\"wall_ms\":" << wall_ms;
+    if(random)std::cout<<",\"ordinal_seed\":"<<std::quoted(random->seed.hex())<<",\"ordinal_window\":"<<random->tiles;
+    std::cout<<'}';
     flush_record();
     return 0;
 #endif

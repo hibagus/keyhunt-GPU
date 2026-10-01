@@ -143,7 +143,9 @@ def main():
                         help="allow a stopped queue to move to a different UUID")
     parser.add_argument("--stall-seconds", type=int, default=300)
     parser.add_argument("--kernel", choices=("direct", "stepped", "glv"), help="scalar search also accepts glv; override the mode default: direct for minikeys, stepped for scalar search")
-    parser.add_argument("--ordinal-order", choices=("forward", "reverse", "both-ends", "dance"), help="Minikeys only: choose ordinal execution order within each grant")
+    parser.add_argument("--ordinal-order", choices=("forward", "reverse", "both-ends", "dance", "random-window"), help="Minikeys only: choose ordinal execution order within each grant")
+    parser.add_argument("--ordinal-seed", help="minikey random-window only: hexadecimal 256-bit seed (default zero)")
+    parser.add_argument("--ordinal-window", type=int, help="minikey random-window only: shuffle 1..256 ordinal tiles (default 64)")
     parser.add_argument("--tile-order", choices=("forward", "reverse", "both-ends", "dance", "random-window"), help="BSGS only: choose tiles within each grant; saved scalar coverage is unchanged")
     parser.add_argument("--tile-seed", help="random-window only: hexadecimal 256-bit seed (default zero)")
     parser.add_argument("--tile-window", type=int, help="random-window only: shuffle 1..256 tiles (default 64)")
@@ -156,6 +158,12 @@ def main():
                         help="aggregate table/target budget across selected device processes")
     parser.add_argument("--backend", choices=("hip", "cuda"), default="hip")
     args = parser.parse_args()
+    if (args.ordinal_seed is not None or args.ordinal_window is not None) and args.ordinal_order != "random-window":
+        parser.error("ordinal-seed/ordinal-window require ordinal-order random-window")
+    if args.ordinal_window is not None and not 1 <= args.ordinal_window <= 256:
+        parser.error("ordinal-window must be 1..256")
+    if args.ordinal_seed is not None and not re.fullmatch(r"(?:0[xX])?[0-9a-fA-F]{1,64}", args.ordinal_seed):
+        parser.error("ordinal-seed must be a hexadecimal 256-bit integer")
     if (args.tile_seed is not None or args.tile_window is not None) and args.tile_order != "random-window":
         parser.error("tile-seed/tile-window require tile-order random-window")
     if args.tile_window is not None and not 1 <= args.tile_window <= 256:
@@ -291,6 +299,8 @@ def main():
             words += ["--kernel", args.kernel]
         if args.ordinal_order:
             words += ["--ordinal-order", args.ordinal_order]
+        if args.ordinal_seed is not None:words += ["--ordinal-seed", args.ordinal_seed]
+        if args.ordinal_window is not None:words += ["--ordinal-window", str(args.ordinal_window)]
         if args.tile_order:
             words += ["--tile-order", args.tile_order]
         if args.tile_seed is not None:words += ["--tile-seed", args.tile_seed]

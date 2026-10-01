@@ -55,7 +55,7 @@ struct Cleanup {
     ~Cleanup(){if(stop)stop();} // a throwing stop is a fatal ownership-contract violation
 };
 void validate_options(const CheckpointOptions& o,bool bsgs){
-    if(bsgs && o.minikey_order)throw std::invalid_argument("ordinal-order applies only to minikeys");
+    if(bsgs && (o.minikey_order || o.minikey_random_window))throw std::invalid_argument("ordinal-order applies only to minikeys");
     if(!bsgs && (o.bsgs_tile_order || o.bsgs_random_window))throw std::invalid_argument("tile-order applies only to BSGS");
     if(o.work_unit_seconds>300 || (o.work_unit_seconds && o.work_unit_seconds<60) || o.checkpoint_seconds>60 || !o.candidate_capacity ||
        o.candidate_capacity>(bsgs?65536U:1048576U))throw std::invalid_argument("invalid checkpoint interval/candidate capacity");
@@ -304,7 +304,8 @@ CheckpointSummary CheckpointRun::ethereum(Journal& journal,const Grant& grant,co
 CheckpointSummary CheckpointRun::Impl::scalar(Journal& journal,const Grant& grant,detail::Binding input,unsigned matches_per_scalar,
     const core::XPointVerifier& verifier,const XPointRunner& run,CheckpointOptions o,CheckpointObserver observer,CheckpointCleanup cleanup,CheckpointControl control){
     validate_options(o,false);
-    if(o.minikey_order && input.mode!=Mode::Minikeys)throw std::invalid_argument("ordinal-order applies only to minikeys");
+    if((o.minikey_order || o.minikey_random_window) && input.mode!=Mode::Minikeys)throw std::invalid_argument("ordinal-order applies only to minikeys");
+    if(input.mode==Mode::Minikeys)core::validate_minikey_random_window(o.minikey_order.value_or(core::MinikeyOrder::Forward),o.minikey_random_window);
     const auto mapping=journal.stride_mapping(grant.scope);
     if(o.stride){
         core::validate_scalar_stride(*o.stride);
@@ -364,8 +365,8 @@ CheckpointSummary CheckpointRun::Impl::scalar(Journal& journal,const Grant& gran
         return !result.overflow;
     };
     if(state.input.mode==Mode::Minikeys){
-        core::MinikeyBatchPlanner planner(grid,grant.block,state.remaining,identity,o.minikey_order.value_or(core::MinikeyOrder::Forward));
-        // At most three reservations (low/high/middle) can be active. Charge each one's
+        core::MinikeyBatchPlanner planner(grid,grant.block,state.remaining,identity,o.minikey_order.value_or(core::MinikeyOrder::Forward),o.minikey_random_window);
+        // Active reservations are bounded (three for dance, W for random-window). Charge each one's
         // execution/replay time separately, even when both fronts share it.
         std::map<UInt256,uint64_t> active_work;
         for(;;){
