@@ -122,3 +122,29 @@ if(KEYHUNT_ENABLE_GPU)
     set_tests_properties(checkpoint_ethereum_pause_${KEYHUNT_GPU_BACKEND} PROPERTIES TIMEOUT 180
         LABELS "${KEYHUNT_GPU_BACKEND};hardware;storage;ethereum;recovery" RESOURCE_LOCK gpu_device)
 endif()
+
+add_executable(storage_vanity_checkpoint_test tests/storage/vanity_checkpoint.cpp)
+target_include_directories(storage_vanity_checkpoint_test PRIVATE src/storage)
+target_link_libraries(storage_vanity_checkpoint_test PRIVATE keyhunt_storage)
+keyhunt_configure_target(storage_vanity_checkpoint_test)
+add_test(NAME storage_vanity_checkpoint COMMAND storage_vanity_checkpoint_test)
+set_tests_properties(storage_vanity_checkpoint PROPERTIES TIMEOUT 120 LABELS "cpu;storage;vanity;recovery")
+
+if(KEYHUNT_ENABLE_GPU)
+    add_test(NAME checkpoint_vanity_pause_${KEYHUNT_GPU_BACKEND} COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/checkpoint_pause_hip.py"
+        --binary $<TARGET_FILE:keyhunt> --oracle $<TARGET_FILE:secp256k1_oracle>
+        --backend ${KEYHUNT_GPU_BACKEND} --mode vanity
+        --report "${CMAKE_CURRENT_BINARY_DIR}/checkpoint-vanity-pause-${KEYHUNT_GPU_BACKEND}.json")
+    set_tests_properties(checkpoint_vanity_pause_${KEYHUNT_GPU_BACKEND} PROPERTIES TIMEOUT 180
+        LABELS "${KEYHUNT_GPU_BACKEND};hardware;storage;vanity;recovery" RESOURCE_LOCK gpu_device)
+endif()
+
+add_test(NAME checkpoint_vanity_cli COMMAND "${Python3_EXECUTABLE}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/vanity_checkpoint_cli.py"
+    --binary $<TARGET_FILE:keyhunt> --oracle $<TARGET_FILE:secp256k1_oracle>
+    --report "${CMAKE_CURRENT_BINARY_DIR}/checkpoint-vanity-cli.json" ${checkpoint_cli_options})
+set_tests_properties(checkpoint_vanity_cli PROPERTIES TIMEOUT 180 LABELS "cpu;storage;vanity;recovery")
+if(KEYHUNT_ENABLE_GPU)
+    set_tests_properties(checkpoint_vanity_cli PROPERTIES LABELS "${KEYHUNT_GPU_BACKEND};hardware;storage;vanity;recovery" RESOURCE_LOCK gpu_device)
+endif()

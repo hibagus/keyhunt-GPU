@@ -1,6 +1,6 @@
 # Verified local checkpoints (C13)
 
-The checkpoint commands connect exact HIP/CUDA xpoint, BSGS, HASH160 and Ethereum execution to the
+The checkpoint commands connect exact HIP/CUDA xpoint, BSGS, HASH160, Ethereum and vanity execution to the
 [local journal](STORAGE.md). The guarantee is at-least-once computation with exact
 locally acknowledged coverage and deduplicated CPU-verified matches. Start with
 the runnable [GPU quickstart](GPU_QUICKSTART.md). C13 introduced this contract;
@@ -11,19 +11,19 @@ Standalone execution has no server acknowledgment. The optional
 [C15 coordinator](COORDINATOR.md) adds HTTPS synchronization and a durable worker
 outbox; [C20](MULTI_GPU.md) adds concurrent owners on both backends. C14's
 [graceful signals and controls](PAUSE_RESUME.md) apply to durable execution.
-Ordinary `keyhunt xpoint`, `bsgs`, `hash160`, `address` and `ethereum` commands remain volatile.
+Ordinary `keyhunt xpoint`, `bsgs`, `hash160`, `address`, `ethereum` and `vanity` commands remain volatile.
 
 ## Binding real inputs
 
 A checkpoint job uses the same immutable C12 manifest/root/block grid, with target
 and algorithm digests derived from actual loaded inputs. Canonical target sets
 are persisted as sorted unique 32-byte X values or 65-byte uncompressed SEC1
-points, plus C23's 21-byte encoding/HASH160 relations and 20-byte Ethereum addresses. The existing target loaders reject malformed/noncanonical inputs;
+points, plus C23's 21-byte encoding/HASH160 relations , 20-byte Ethereum addresses and 36-byte vanity prefix relations. The existing target loaders reject malformed/noncanonical inputs;
 compressed/uncompressed encodings of the same BSGS point identify one target.
 
 The algorithm fingerprint is SHA256 of exactly 50 bytes: `khsearch` (8 bytes),
-semantic version 1, mode byte (1=xpoint, 2=BSGS, 3=HASH160, 4=Ethereum), big-endian 64-bit `m`, and the
-32-byte table checksum. Xpoint, HASH160 and Ethereum use zero `m` and checksum. Semantics are secp256k1,
+semantic version 1, mode byte (1=xpoint, 2=BSGS, 3=HASH160, 4=Ethereum, 5=vanity), big-endian 64-bit `m`, and the
+32-byte table checksum. Xpoint, HASH160, Ethereum and vanity use zero `m` and checksum. Semantics are secp256k1,
 stride one, exhaustive all-target coverage. BSGS binds the validated C10 cache
 including its table size and checksum. Changing `m` or rebuilding a differently
 encoded cache requires a new job; incompatible progress is never silently reused.
@@ -37,6 +37,22 @@ A C12 job with synthetic/raw coverage cannot be promoted into a verified search.
 The bind operation rejects existing partial or finished coverage unless a search
 binding was already registered. For bound jobs, raw `record_coverage` is disabled.
 Only the checkpoint owner can call the private result/coverage transaction.
+
+## Bitcoin vanity prefix jobs
+
+Use `checkpoint create --mode vanity --targets FILE` with case-sensitive Bitcoin
+mainnet P2PKH prefixes. Each line starts with `1` and contains 1..34 Base58
+characters. Repeat `--encoding compressed|uncompressed|both` (default both) on
+create and run. Canonical targets bind mode 5 and preserve prefix length, case,
+encoding and zero padding. Results carry those full 36 bytes in `target_bytes`.
+
+Select scalar `--batch-size` and `--kernel stepped|direct`. Capacity must fit the
+sum of distinct prefix lengths for each enabled encoding (at most 68). Overflow
+retries the whole attempted interval before committing coverage. Every overlapping
+prefix match at the same scalar remains a separate relation; exact duplicate
+relations deduplicate. The CPU validates the complete P2PKH address before each
+commit. Input-format and BSGS options are rejected. See [contracts](C23_VANITY.md)
+and the [executable example](GPU_QUICKSTART.md).
 
 ## Ethereum jobs
 
@@ -255,7 +271,7 @@ printf '%s\n' 0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798
 
 | Action | Options |
 | --- | --- |
-| `create` | Required `--project`, `--mode xpoint\|bsgs\|hash160\|address\|ethereum`, `--range`, `--block-width`, `--targets`; BSGS requires `--table` and accepts `--host-memory` |
+| `create` | Required `--project`, `--mode xpoint\|bsgs\|hash160\|address\|ethereum\|vanity`, `--range`, `--block-width`, `--targets`; BSGS requires `--table` and accepts `--host-memory` |
 | `run`, common | Required `--backend hip\|cuda`, `--grant`, `--targets`; optional `--device` (0), `--candidate-capacity` (1024), `--checkpoint-seconds 0..60` (10) |
 | `run`, xpoint | `--batch-size 1..1048576` (1048576), `--kernel stepped\|direct` (stepped); capacity 1..1048576 |
 | `run`, BSGS | Required `--table`; `--giant-batch` (16384), `--target-batch 1..64` (64), product at most 1048576; capacity 1..65536; `--group-size auto\|1\|8`; `--host-memory` (1073741824 bytes), `--reserve-bytes` (67108864 bytes) |

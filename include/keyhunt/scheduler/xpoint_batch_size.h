@@ -5,7 +5,8 @@
 
 namespace keyhunt::scheduler {
 // Scalar searches emit a bounded number of candidates per scalar (one for
-// xpoint, up to two for HASH160). Replay divides capacity by that bound.
+// xpoint/Ethereum, up to two for HASH160, distinct prefix lengths for vanity).
+// Replay divides capacity by that bound.
 // Spare output capacity lets later sparse work recover exponentially instead
 // of retaining that small launch size for the rest of the assignment.
 class XPointBatchSize {

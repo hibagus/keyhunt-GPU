@@ -34,6 +34,10 @@ Binding binding(const core::EthereumTargets& targets) {
     Bytes bytes;for(const auto& t:targets.values())bytes.insert(bytes.end(),t.begin(),t.end());
     return make(Mode::Ethereum,bytes,targets.digest(),0,{});
 }
+Binding binding(const core::VanityTargets& targets) {
+    Bytes bytes;for(const auto& t:targets.values())bytes.insert(bytes.end(),t.begin(),t.end());
+    return make(Mode::Vanity,bytes,targets.digest(),0,{});
+}
 Binding binding(const core::BsgsPublicKeyTargets& targets,const bsgs::Table& table) {
     Bytes bytes;for(const auto& t:targets.values())bytes.insert(bytes.end(),t.begin(),t.end());
     return make(Mode::Bsgs,bytes,targets.digest(),table.memory().m,table.checksum());
@@ -63,6 +67,12 @@ Binding decode_binding(const Manifest& manifest,const Bytes& config,const Bytes&
         std::vector<core::EthereumTarget> targets(bytes.size()/20);
         for(size_t i=0;i<targets.size();++i)std::copy_n(bytes.begin()+20*i,20,targets[i].begin());
         result=binding(core::EthereumTargets(std::move(targets)));
+    }else if(manifest.mode==Mode::Vanity){
+        if(m || checksum!=Digest{} || bytes.size()%36 || bytes.size()/36>4096)
+            throw std::runtime_error("invalid Vanity binding");
+        std::vector<core::VanityTarget> targets(bytes.size()/36);
+        for(size_t i=0;i<targets.size();++i)std::copy_n(bytes.begin()+36*i,36,targets[i].begin());
+        result=binding(core::VanityTargets(std::move(targets)));
     }else if(manifest.mode==Mode::Bsgs){
         if(!m || bytes.size()%65 || bytes.size()/65>65536)throw std::runtime_error("invalid BSGS binding");
         std::vector<core::UncompressedPublicKey> targets(bytes.size()/65);
@@ -87,6 +97,9 @@ void Binding::verify(const core::XPointVerifier& verifier,const UInt256& scalar,
     }else if(mode==Mode::Ethereum){
         const auto address=core::ethereum_target(pub);
         if(std::equal(address.begin(),address.end(),expected))return;
+    }else if(mode==Mode::Vanity){
+        core::VanityTarget prefix{};std::copy_n(expected,36,prefix.begin());
+        if(core::vanity_matches(core::bitcoin_address(pub,prefix[0]),prefix))return;
     }else{
         const auto begin=pub.begin()+(mode==Mode::XPoint?1:0);
         if(std::equal(begin,begin+width,expected))return;

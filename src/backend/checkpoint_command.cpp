@@ -62,8 +62,8 @@ int checkpoint_command(int argc,char** argv){
         if(colon==std::string::npos || range.find(':',colon+1)!=std::string::npos)throw std::invalid_argument("range must be half-open HEX:HEX");
         const ScalarInterval root(UInt256::from_hex(range.substr(0,colon)),UInt256::from_hex(range.substr(colon+1)));
         const auto width=UInt256::from_hex(required(args,"block-width"));const auto mode=required(args,"mode");
-        if(mode!="hash160" && mode!="address" && args.count("encoding"))
-            throw std::invalid_argument("--encoding applies only to HASH160/address jobs");
+        if(mode!="hash160" && mode!="address" && mode!="vanity" && args.count("encoding"))
+            throw std::invalid_argument("--encoding applies only to HASH160/address/vanity jobs");
         Scope id;
         if(mode=="xpoint"){
             if(args.count("table")||args.count("host-memory"))throw std::invalid_argument("xpoint has no BSGS table/memory option");
@@ -75,6 +75,10 @@ int checkpoint_command(int argc,char** argv){
                 mode=="address"?core::Hash160Input::BitcoinAddress:core::Hash160Input::Hex,
                 core::hash160_encoding(optional(args,"encoding","both")));
             id=CheckpointRun::create_hash160(journal,required(args,"project"),root,width,targets);
+        }else if(mode=="vanity"){
+            if(args.count("table")||args.count("host-memory"))throw std::invalid_argument("vanity has no BSGS table/memory option");
+            const auto targets=core::VanityTargets::load(required(args,"targets"),core::hash160_encoding(optional(args,"encoding","both")));
+            id=CheckpointRun::create_vanity(journal,required(args,"project"),root,width,targets);
         }else if(mode=="ethereum"){
             if(args.count("table")||args.count("host-memory"))throw std::invalid_argument("Ethereum has no BSGS table/memory option");
             const auto targets=core::EthereumTargets::load(required(args,"targets"));
@@ -82,7 +86,7 @@ int checkpoint_command(int argc,char** argv){
         }else if(mode=="bsgs"){
             const auto targets=core::BsgsPublicKeyTargets::load(required(args,"targets"));const auto table=load_table(args,targets);
             id=CheckpointRun::create_bsgs(journal,required(args,"project"),root,width,targets,table);
-        }else throw std::invalid_argument("checkpoint mode must be xpoint, bsgs, hash160, address or ethereum");
+        }else throw std::invalid_argument("checkpoint mode must be xpoint, bsgs, hash160, address, ethereum or vanity");
         const auto manifest=journal.manifest(id);
         std::cout<<"{\"project\":"<<quote(id.project)<<",\"job\":"<<quote(hex(id.job.data(),32))
             <<",\"target_digest\":"<<quote(hex(manifest.targets.data(),32))
@@ -104,15 +108,17 @@ int checkpoint_command(int argc,char** argv){
         std::cout<<"],\"next_after\":"<<quote(std::to_string(rows.empty()?after:uint64_t(rows.back().id)))<<"}";flush();return 0;
     }
     const auto grant=parse_grant(journal,required(args,"grant"));const auto mode=journal.manifest(grant.scope).mode;
-    if(mode!=Mode::Hash160 && (args.count("encoding") || args.count("input-format")))
-        throw std::invalid_argument("encoding/input-format applies only to HASH160 jobs");
+    if(mode!=Mode::Hash160 && args.count("input-format"))
+        throw std::invalid_argument("input-format applies only to HASH160 jobs");
+    if(mode!=Mode::Hash160 && mode!=Mode::Vanity && args.count("encoding"))
+        throw std::invalid_argument("encoding applies only to HASH160/vanity jobs");
     const auto format=optional(args,"input-format","hash160");
     if(format!="hash160" && format!="address")throw std::invalid_argument("input-format must be hash160 or address");
     const auto device=decimal(optional(args,"device","0"),std::numeric_limits<int>::max());
     CheckpointOptions options;
     options.candidate_capacity=uint32_t(number(optional(args,"candidate-capacity","1024"),mode==Mode::Bsgs?65536:1048576));
     options.checkpoint_seconds=uint32_t(decimal(optional(args,"checkpoint-seconds","10"),60));
-    if(mode==Mode::XPoint || mode==Mode::Hash160 || mode==Mode::Ethereum){
+    if(mode==Mode::XPoint || mode==Mode::Hash160 || mode==Mode::Ethereum || mode==Mode::Vanity){
         for(const auto* key:{"table","giant-batch","target-batch","group-size","host-memory","reserve-bytes"})
             if(args.count(key))throw std::invalid_argument(std::string("scalar search does not accept --")+key);
         options.xpoint_steps=uint64_t(number(optional(args,"batch-size","1048576"),1048576));
@@ -167,6 +173,19 @@ int checkpoint_command(int argc,char** argv){
             if(!executor){
                 const auto setup_start=elapsed();
                 executor=std::make_unique<GpuHash160Executor>(int(device),targets,verifier,gpu);
+                executor_setup_ms=elapsed()-setup_start;preparation_ms=elapsed();
+            }
+            const auto ticket=executor->submit(batch);executor->drain();return executor->take(ticket);
+        },options,notify,[&]{executor.reset();control.close();},control.callbacks());
+    }else if(mode==Mode::Vanity){
+        const auto targets=core::VanityTargets::load(required(args,"targets"),core::hash160_encoding(optional(args,"encoding","both")));
+        VanityOptions gpu;gpu.max_steps=options.xpoint_steps;gpu.candidate_capacity=options.candidate_capacity;
+        gpu.kernel=optional(args,"kernel","stepped")=="direct"?XPointKernel::Direct:XPointKernel::Stepped;
+        std::unique_ptr<GpuVanityExecutor> executor;
+        summary=CheckpointRun::vanity(journal,grant,targets,verifier,[&](const auto& batch){
+            if(!executor){
+                const auto setup_start=elapsed();
+                executor=std::make_unique<GpuVanityExecutor>(int(device),targets,verifier,gpu);
                 executor_setup_ms=elapsed()-setup_start;preparation_ms=elapsed();
             }
             const auto ticket=executor->submit(batch);executor->drain();return executor->take(ticket);

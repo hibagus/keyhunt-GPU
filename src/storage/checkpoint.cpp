@@ -120,9 +120,9 @@ struct CheckpointRun::Impl {
         std::set<UInt256> scalars;std::set<uint32_t> targets;
         std::set<std::pair<UInt256,uint32_t>> relations;
         for(const auto& m:matches){
-            // HASH160 may legitimately match both encodings at the same scalar.
+            // HASH160 may match both encodings; vanity can also match overlapping prefixes.
             // Reject duplicate relations while retaining existing mode invariants.
-            const bool fresh=input.mode==Mode::Hash160?relations.emplace(m.scalar,m.target).second:
+            const bool fresh=(input.mode==Mode::Hash160 || input.mode==Mode::Vanity)?relations.emplace(m.scalar,m.target).second:
                 unique_target?targets.insert(m.target).second:scalars.insert(m.scalar).second;
             if(!interval.contains(m.scalar) || !fresh)
                 throw std::runtime_error("duplicate or out-of-batch checkpoint match");
@@ -206,6 +206,11 @@ Scope CheckpointRun::create_hash160(Journal& journal,const std::string& project,
     const auto scope=journal.create_job(project,{Mode::Hash160,root,width,input.target_digest,input.algorithm_digest});
     journal.bind_search(scope,input);return scope;
 }
+Scope CheckpointRun::create_vanity(Journal& journal,const std::string& project,ScalarInterval root,UInt256 width,const core::VanityTargets& targets){
+    const auto input=detail::binding(targets);
+    const auto scope=journal.create_job(project,{Mode::Vanity,root,width,input.target_digest,input.algorithm_digest});
+    journal.bind_search(scope,input);return scope;
+}
 Scope CheckpointRun::create_ethereum(Journal& journal,const std::string& project,ScalarInterval root,UInt256 width,const core::EthereumTargets& targets){
     const auto input=detail::binding(targets);
     const auto scope=journal.create_job(project,{Mode::Ethereum,root,width,input.target_digest,input.algorithm_digest});
@@ -221,6 +226,11 @@ CheckpointSummary CheckpointRun::xpoint(Journal& journal,const Grant& grant,cons
     return Impl::scalar(journal,grant,detail::binding(targets),1,verifier,run,o,std::move(observer),std::move(cleanup),std::move(control));
 }
 CheckpointSummary CheckpointRun::hash160(Journal& journal,const Grant& grant,const core::Hash160Targets& targets,
+    const core::XPointVerifier& verifier,const XPointRunner& run,CheckpointOptions o,CheckpointObserver observer,CheckpointCleanup cleanup,CheckpointControl control){
+    return Impl::scalar(journal,grant,detail::binding(targets),targets.max_matches_per_scalar(),verifier,run,o,
+                        std::move(observer),std::move(cleanup),std::move(control));
+}
+CheckpointSummary CheckpointRun::vanity(Journal& journal,const Grant& grant,const core::VanityTargets& targets,
     const core::XPointVerifier& verifier,const XPointRunner& run,CheckpointOptions o,CheckpointObserver observer,CheckpointCleanup cleanup,CheckpointControl control){
     return Impl::scalar(journal,grant,detail::binding(targets),targets.max_matches_per_scalar(),verifier,run,o,
                         std::move(observer),std::move(cleanup),std::move(control));
@@ -246,6 +256,7 @@ CheckpointSummary CheckpointRun::Impl::scalar(Journal& journal,const Grant& gran
     case Mode::XPoint:identity.algorithm=scheduler::WorkAlgorithm::DirectXPointV1;break;
     case Mode::Hash160:identity.algorithm=scheduler::WorkAlgorithm::DirectHash160V1;break;
     case Mode::Ethereum:identity.algorithm=scheduler::WorkAlgorithm::DirectEthereumV1;break;
+    case Mode::Vanity:identity.algorithm=scheduler::WorkAlgorithm::DirectVanityV1;break;
     default:throw std::invalid_argument("unsupported scalar checkpoint mode");
     }
     identity.job_digest=grant.scope.job;identity.target_digest=manifest.targets;identity.algorithm_digest=manifest.algorithm;
