@@ -32,6 +32,8 @@ jobs:
           ./configure --prefix="$RUNNER_TEMP/sqlite" --disable-shared --disable-readline
           make --jobs=2
           make install
+      - name: Install independent Keccak oracle
+        run: python3 -m pip install --requirement tests/oracle/requirements.txt
       - name: Configure CPU build
         run: >-
           cmake --preset cpu-release

@@ -1,0 +1,2 @@
+# Independent test oracle only; production builds do not import Python packages.
+pycryptodome==3.23.0
