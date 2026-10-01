@@ -32,7 +32,7 @@ void flush_record() {
 #endif
 }
 int bsgs_command(int argc,char** argv) {
-    const char* usage="usage: keyhunt bsgs --backend hip|cuda --range START:END --targets FILE --table FILE [--device N] [--giant-batch 1..1048576] [--target-batch 1..64] [--candidate-capacity 1..65536] [--group-size auto|1|8] [--tile-order forward|reverse] [--host-memory BYTES] [--reserve-bytes BYTES] (END exclusive; NDJSON output)";
+    const char* usage="usage: keyhunt bsgs --backend hip|cuda --range START:END --targets FILE --table FILE [--device N] [--giant-batch 1..1048576] [--target-batch 1..64] [--candidate-capacity 1..65536] [--group-size auto|1|8] [--tile-order forward|reverse|both-ends] [--host-memory BYTES] [--reserve-bytes BYTES] (END exclusive; NDJSON output)";
     std::map<std::string,std::string> args;
     for(int i=2;i<argc;i+=2) {
         if(i+1==argc) throw std::invalid_argument(usage);
@@ -45,8 +45,7 @@ int bsgs_command(int argc,char** argv) {
     if((args["--backend"]!="hip" && args["--backend"]!="cuda") || args["--range"].empty() || args["--targets"].empty() || args["--table"].empty())
         throw std::invalid_argument(usage);
     const auto tile_order=args.count("--tile-order")?args["--tile-order"]:"forward";
-    if(tile_order!="forward" && tile_order!="reverse")throw std::invalid_argument("tile-order must be forward or reverse");
-    const bool reverse_tiles=tile_order=="reverse";
+    const auto order=core::parse_bsgs_tile_order(tile_order);
     require_backend(args["--backend"]);
     const auto range=args["--range"]; const auto colon=range.find(':');
     if(colon==std::string::npos) throw std::invalid_argument(usage);
@@ -61,7 +60,7 @@ int bsgs_command(int argc,char** argv) {
     if(device>std::numeric_limits<int>::max() || !target_batch || target_batch>64 || !giants || giants>1048576/target_batch ||
        !capacity || capacity>65536 || (group!=0 && group!=1 && group!=8) || !host_memory) throw std::invalid_argument(usage);
 #ifndef KEYHUNT_HAS_GPU
-    (void)reserve;(void)reverse_tiles;
+    (void)reserve;(void)order;
     discover_gpu(); // a GPU request never silently falls back to CPU
     return 2;
 #else
@@ -87,14 +86,15 @@ int bsgs_command(int argc,char** argv) {
         <<"\",\"group_size\":"<<group<<",\"tile_order\":"<<std::quoted(tile_order)<<",\"durable_coverage\":false,\"preparation_ms\":"<<elapsed()
         <<",\"table_upload_ms\":"<<executor.table_upload_ms()<<'}';
     flush_record();
-    UInt256 cursor=reverse_tiles?interval.end():interval.begin(),verified_scalars,verified_steps,device_steps,match_count;
+    core::BsgsTilePlanner planner({interval},table.memory().m,giants,order);
+    const auto tile_width=UInt256(table.memory().m).multiply(UInt256(giants));
+    UInt256 verified_scalars,verified_steps,device_steps,match_count;
     uint64_t launches=0,overflows=0,tiles=0;
     double kernel_ms=0,download_ms=0,verification_ms=0,seed_ms=0;
-    while(reverse_tiles?cursor>interval.begin():cursor<interval.end()) {
-        // Traversal changes which scalar tile is selected, never its coordinates
-        // or the all-target completion rule used to certify that tile.
-        const auto remaining=reverse_tiles?core::ScalarInterval(interval.begin(),cursor):core::ScalarInterval(cursor,interval.end());
-        const auto tile=core::bsgs_tile(remaining,table.memory().m,giants,reverse_tiles);
+    while(const auto selected_tile=planner.next(tile_width)) {
+        const auto& tile=selected_tile->interval;
+        // Advance to the other end only after every target subset of this tile,
+        // including overflow retries, has completed and its receipt is emitted.
         uint32_t first=0,limit=uint32_t(target_batch);
         uint64_t tile_steps=0;
         while(first<targets.values().size()) {
@@ -133,7 +133,7 @@ int bsgs_command(int argc,char** argv) {
         std::cout<<"{\"type\":\"tile\",\"begin\":\""<<tile.begin().hex()<<"\",\"end_exclusive\":\""<<tile.end().hex()
             <<"\",\"targets_completed\":"<<first<<",\"verified_target_steps\":"<<tile_steps<<",\"durable_coverage\":false}";
         flush_record();
-        cursor=reverse_tiles?tile.begin():tile.end(); verified_scalars=verified_scalars.add(tile.size()); ++tiles;
+        verified_scalars=verified_scalars.add(tile.size()); ++tiles;
     }
     if(verified_scalars!=interval.size()) throw std::logic_error("BSGS interval incomplete");
     std::cout<<"{\"type\":\"summary\",\"complete\":true,\"durable_coverage\":false,\"verified_scalars\":\""<<verified_scalars.hex()

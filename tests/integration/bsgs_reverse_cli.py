@@ -9,8 +9,10 @@ p=argparse.ArgumentParser()
 for name in ('binary','oracle','report'):p.add_argument('--'+name,type=Path,required=True)
 p.add_argument('--backend',choices=('hip','cuda'),default='hip');p.add_argument('--hardware',action='store_true')
 p.add_argument('--suite',choices=('search','recovery'),required=True)
+p.add_argument('--both-ends',action='store_true')
 a=p.parse_args();binary=str(a.binary.resolve())
-report=dict(passed=False,suite=a.suite,backend=a.backend,hardware=a.hardware,cases=[],oracle_commit=check_source(),binary_sha256=hashlib.sha256(a.binary.read_bytes()).hexdigest())
+orders=('both-ends',) if a.both_ends else ('forward','reverse')
+report=dict(passed=False,both_ends=a.both_ends,suite=a.suite,backend=a.backend,hardware=a.hardware,cases=[],oracle_commit=check_source(),binary_sha256=hashlib.sha256(a.binary.read_bytes()).hexdigest())
 def run(words,ok=True):
     result=subprocess.run([binary,*map(str,words)],capture_output=True,text=True,timeout=120)
     assert (result.returncode==0)==ok,(words,result.stdout[-2000:],result.stderr)
@@ -32,7 +34,7 @@ with tempfile.TemporaryDirectory(prefix='kh-bsgs-reverse-',dir='/var/tmp') as te
             words=['bsgs','--backend',a.backend,'--device',device,'--range',f'{begin:x}:{end:x}','--targets',file,'--table',table,
                    '--tile-order',order,'--group-size',group,'--giant-batch',giants,'--target-batch',1 if giants==1048576 else 8,'--candidate-capacity',1 if dense else 1024]
             if not a.hardware:assert 'not built' in run(words,False).stderr;return
-            rows=run(words);summary=rows[-1];cursor=end if order=='reverse' else begin;found=[]
+            rows=run(words);summary=rows[-1];low,high=begin,end;turn=0;found=[]
             assert rows[0]['tile_order']==summary['tile_order']==order
             for row in rows[1:-1]:
                 if row['type']=='batch':
@@ -40,20 +42,23 @@ with tempfile.TemporaryDirectory(prefix='kh-bsgs-reverse-',dir='/var/tmp') as te
                     else:found.extend((int(m['scalar'],16),m['public_key']) for m in row['matches'])
                 if row['type']=='tile':
                     lo,hi=int(row['begin'],16),int(row['end_exclusive'],16)
-                    width=min(17*giants,cursor-begin if order=='reverse' else end-cursor)
-                    assert (lo,hi)==((cursor-width,cursor) if order=='reverse' else (cursor,cursor+width))
-                    cursor=lo if order=='reverse' else hi
-            assert cursor==(begin if order=='reverse' else end)
+                    width=min(17*giants,high-low)
+                    from_high=order=='reverse' or (order=='both-ends' and turn%2==1)
+                    assert (lo,hi)==((high-width,high) if from_high else (low,low+width))
+                    if from_high:high=lo
+                    else:low=hi
+                    turn+=1
+            assert low==high
             assert len(found)==len(wanted) and set(found)==wanted
             assert summary['complete'] and int(summary['verified_scalars'],16)==end-begin
             if dense:assert summary['overflow_replays']>0
             report['cases'].append(dict(name=label,order=order,group=group,device=device,relations=len(wanted),summary=summary))
-        for order in ('forward','reverse'):
+        for order in orders:
             for group in (1,8):
                 for case in fixtures:exercise(*case,order,group)
         if a.hardware:
-            for device in range(len(inventory['devices'])):exercise('ordinal',101,179,False,False,'reverse',8,device)
-            for group in (1,8):exercise('maximum-tail',1<<128,(1<<128)+17*1048576+1,False,False,'reverse',group,giants=1048576)
+            for device in range(len(inventory['devices'])):exercise('ordinal',101,179,False,False,'both-ends' if a.both_ends else 'reverse',8,device)
+            for group in (1,8):exercise('maximum-tail',1<<128,(1<<128)+17*1048576+1,False,False,'both-ends' if a.both_ends else 'reverse',group,giants=1048576)
         for value in ('random','backward',''):
             rejected=run(['bsgs','--backend',a.backend,'--range','1:2','--targets',root/'unused','--table',table,'--tile-order',value],False)
             assert 'tile-order must be' in rejected.stderr and not rejected.stdout
@@ -82,11 +87,11 @@ with tempfile.TemporaryDirectory(prefix='kh-bsgs-reverse-',dir='/var/tmp') as te
             job=call('checkpoint','create','--project',project,'--mode','xpoint','--range','65:67','--block-width','2','--targets',xfile)[0]
             scope=['--project',project,'--job',job['job']]
             grant=call('state','claim',*scope,'--owner','test','--request','wrong-mode')[0]['assignments'][0]['grant']
-            for order in ('forward','reverse'):
+            for order in orders:
                 error=call('checkpoint','run','--backend',a.backend,'--grant',grant,'--targets',xfile,'--tile-order',order,ok=False)
                 assert 'tile-order applies only to BSGS' in error.stderr and not error.stdout
             assert not call('state','block',*scope,'--block',0)[0]['covered']
-        for order in ('forward','reverse'):
+        for order in orders:
             for group in (1,8):
                 scope,words,wanted=prepare(order+str(group),101,147,True)
                 if not a.hardware:assert 'not built' in call('checkpoint','run',*words,'--tile-order',order,ok=False).stderr;continue
@@ -97,8 +102,9 @@ with tempfile.TemporaryDirectory(prefix='kh-bsgs-reverse-',dir='/var/tmp') as te
                 assert retry['complete'] and retry['batches']==0 and int(retry['resumed_scalars'],16)==46
                 report['cases'].append(dict(name='dense',order=order,group=group,summary=result,retry=retry))
         if a.hardware:
-            for first in ('forward','reverse'):
-                for resume in ('forward','reverse'):
+            for first in ('forward','reverse','both-ends') if a.both_ends else ('forward','reverse'):
+                for resume in ('forward','reverse','both-ends') if a.both_ends else ('forward','reverse'):
+                    if a.both_ends and 'both-ends' not in (first,resume):continue
                     begin=(1<<128)+3;end=begin+1048577
                     scope,words,wanted=prepare('killed-'+first+'-'+resume,begin,end)
                     command=[binary,'checkpoint','run','--state-dir',state,*words,'--tile-order',first,'--giant-batch',1,'--target-batch',1,'--group-size',1]
