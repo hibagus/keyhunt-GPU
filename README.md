@@ -12,7 +12,8 @@ on each host; [C23](docs/C23_VALIDATION.md) adds Bitcoin/HASH160 execution and r
 [the Ethereum family](docs/C23_ETHEREUM_VALIDATION.md) adds Keccak parity and recovery;
 [vanity](docs/C23_VANITY_VALIDATION.md) adds exact P2PKH prefixes and recovery;
 [minikeys](docs/C23_MINIKEYS_VALIDATION.md) adds 22/30-character ordinal search and recovery;
-[positive strides](docs/C23_STRIDES.md) and [reverse traversal](docs/C23_REVERSE.md) add exact scalar progressions and candidate-index checkpoints.
+[positive strides](docs/C23_STRIDES.md) and [reverse traversal](docs/C23_REVERSE.md) add exact scalar progressions and candidate-index checkpoints;
+[exact-range GLV](docs/C23_GLV_VALIDATION.md) adds an opt-in scalar multiplication kernel.
 Authenticated coordination adds mTLS, project roles, an offline outbox and fenced
 recovery, plus [manual offline file exchange](docs/OFFLINE_ASSIGNMENTS.md). Its
 deployment gate is isolated localhost. Other search modes retain
@@ -150,7 +151,7 @@ server acknowledgment are separate states. HTTPS workers sync every two hours;
 [offline workers](docs/OFFLINE_ASSIGNMENTS.md) use `file-export`, `file-relay` and
 `file-import`, with enrolled credentials held by a connected courier. C23's
 Bitcoin/HASH160, Ethereum, vanity and 22/30-character minikey families are validated;
-exact positive scalar strides and reverse traversal are also implemented; endomorphism and other search mappings require separate parity gates.
+exact positive scalar strides, reverse traversal and opt-in [GLV multiplication](docs/C23_GLV.md) are also implemented. Legacy related-key orbit expansion and other search mappings require separate parity gates.
 
 ## Roadmap
 
@@ -176,7 +177,7 @@ exact positive scalar strides and reverse traversal are also implemented; endomo
 - [x] C20: [concurrent HIP/CUDA scheduling, balancing and recovery](docs/MULTI_GPU.md); [H200 acceptance](docs/C20_CUDA_VALIDATION.md).
 - [x] C21: [validated GPU build/operations guides and executable quickstarts](docs/C21_VALIDATION.md).
 - [x] C22: [offline assignment export, trusted courier exchange and reconciliation](docs/C22_VALIDATION.md).
-- [ ] C23: [Bitcoin P2PKH/HASH160](docs/C23_VALIDATION.md), [Ethereum](docs/C23_ETHEREUM_VALIDATION.md), [vanity](docs/C23_VANITY_VALIDATION.md), [minikeys 22/30](docs/C23_MINIKEYS_VALIDATION.md), [positive scalar strides](docs/C23_STRIDES.md) and [reverse traversal](docs/C23_REVERSE_VALIDATION.md) complete; endomorphism and other mappings pending.
+- [ ] C23: [Bitcoin P2PKH/HASH160](docs/C23_VALIDATION.md), [Ethereum](docs/C23_ETHEREUM_VALIDATION.md), [vanity](docs/C23_VANITY_VALIDATION.md), [minikeys 22/30](docs/C23_MINIKEYS_VALIDATION.md), [positive scalar strides](docs/C23_STRIDES.md), [reverse traversal](docs/C23_REVERSE_VALIDATION.md) and [exact-range GLV](docs/C23_GLV_VALIDATION.md) complete; legacy related-key orbit expansion and other mappings pending.
 
 See [implementation status](docs/IMPLEMENTATION_STATUS.md) for evidence and
 [acceptance gates](docs/GPU_REDESIGN_PLAN.md#10-commit-sized-implementation-sequence)

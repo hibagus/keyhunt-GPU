@@ -230,7 +230,8 @@ launched work, avoiding the reference's build-only integration problem.
 | `rmd160`, Bitcoin `address` | Preserve CPU behavior initially | SHA-256/RIPEMD-160 GPU pipeline, both key encodings |
 | Ethereum address | Preserve CPU behavior initially | Keccak and encoding parity |
 | `pub2rmd`, `vanity`, `minikeys` | Preserve CPU behavior initially | Separate mode designs and parity gates; no blanket GPU claim |
-| Scalar strides and reverse order | Exact candidate-index mappings on HIP/CUDA | [Stride](C23_STRIDES.md) and [reverse](C23_REVERSE.md) contracts; endomorphism and other orders remain on CPU |
+| Scalar strides and reverse order | Exact candidate-index mappings on HIP/CUDA | [Stride](C23_STRIDES.md) and [reverse](C23_REVERSE.md) contracts; other orders remain on CPU |
+| Exact-range GLV multiplication | Opt-in `--kernel glv` for all four scalar families | [HIP/CUDA acceptance](C23_GLV_VALIDATION.md); legacy related-key orbit expansion remains separate |
 | Apple Silicon | Preserve useful CPU portability work selectively | Metal is outside this AMD/NVIDIA redesign |
 
 The first GPU release has a published mode matrix. Full CPU mode preservation
@@ -622,6 +623,8 @@ content, search mode, compression/network/hash options, stride/endomorphism
 coverage rules, and logical block geometry. Normalize target order/duplicates
 only where semantics allow it. Table/algorithm parameters affecting resumable
 work units have their own compatibility fingerprint bound to each assignment.
+Exact-range GLV changes only multiplication, so it shares direct/stepped job
+identity; related-key orbit expansion would require separate coverage semantics.
 
 Store schema version, algorithm semantic version, table checksum, and software
 version. Hardware, thread count, GPU model, and launch geometry are execution
@@ -905,7 +908,7 @@ implementation evidence in [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md).
 | C20 | `feat: schedule and balance multiple GPU devices` | C14–C17 | Completed (HIP and CUDA / localhost): calibrated immutable twelve-hour-target blocks, transactional balancing, persistent device owners, local controls, safe restart/handoff, batched sync, 1/2/4/8-GPU scaling and isolated memory/stall recovery pass; [C20 implementation and evidence](MULTI_GPU.md) |
 | C21 | `docs: publish validated GPU build and operations guides` | C14, C16, C20 | Completed: current build/mode matrices, executable HIP/CUDA searches/checkpoints, CPU CI preparation, localhost worker operations, benchmark/recovery limits and checked links; [C21 acceptance](C21_VALIDATION.md) |
 | C22 | `feat: export and reconcile offline work assignments` | C15 | Completed: trusted courier files over authenticated sync, schema-v7 receipts, reservation exclusion, duplicate imports, revocation/generation/deadline fences, incompatible manifests and exact unions; disconnected HIP/CUDA xpoint/BSGS pass; [C22 acceptance](C22_VALIDATION.md) |
-| C23 | `feat: extend GPU mode coverage` | C18, C20 | Partial: Bitcoin mainnet P2PKH/HASH160 family complete with HIP/CUDA algorithm and recovery parity; [acceptance](C23_VALIDATION.md). [Ethereum](C23_ETHEREUM_VALIDATION.md) is also complete with Keccak/encoding and recovery parity. [Vanity](C23_VANITY_VALIDATION.md) adds exact P2PKH prefix and recovery parity. [Minikeys 22/30](C23_MINIKEYS_VALIDATION.md) adds exact candidate ordinals, both encodings and recovery parity. [Positive scalar strides](C23_STRIDES.md) add exact affine progressions, candidate-index checkpoints and online/offline worker parity. [Reverse traversal](C23_REVERSE_VALIDATION.md) visits the same progression in descending order, including unit strides, exact checkpoints and online/offline owners. Endomorphism and other search mappings remain pending, each requiring separate parity gates. |
+| C23 | `feat: extend GPU mode coverage` | C18, C20 | Partial: Bitcoin mainnet P2PKH/HASH160 family complete with HIP/CUDA algorithm and recovery parity; [acceptance](C23_VALIDATION.md). [Ethereum](C23_ETHEREUM_VALIDATION.md) is also complete with Keccak/encoding and recovery parity. [Vanity](C23_VANITY_VALIDATION.md) adds exact P2PKH prefix and recovery parity. [Minikeys 22/30](C23_MINIKEYS_VALIDATION.md) adds exact candidate ordinals, both encodings and recovery parity. [Positive scalar strides](C23_STRIDES.md) add exact affine progressions, candidate-index checkpoints and online/offline worker parity. [Reverse traversal](C23_REVERSE_VALIDATION.md) visits the same progression in descending order, including unit strides, exact checkpoints and online/offline owners. [Exact-range GLV](C23_GLV_VALIDATION.md) adds an opt-in multiplication kernel with unchanged identities, recovery, both transports and paired measurements. Legacy related-key orbit expansion and other search mappings remain pending, each requiring separate parity gates. |
 
 C12 can be developed after C05 without waiting for HIP; its integration still
 requires GPU completion contracts to pass. NVIDIA validation requires access to a

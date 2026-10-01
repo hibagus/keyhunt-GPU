@@ -1,6 +1,7 @@
 # C23: exact-range GLV scalar multiplication
 
-Status: implementation in progress. This slice adds an opt-in `--kernel glv`
+Status: implemented and validated on HIP and CUDA. See
+[acceptance and evidence](C23_GLV_VALIDATION.md). This slice adds opt-in `--kernel glv`
 for xpoint, Bitcoin HASH160/P2PKH, Ethereum and vanity. It is a direct-search
 implementation choice; the default remains `stepped`. Legacy related-key orbit
 expansion, BSGS/minikey GLV kernels and other search orders remain separate work.
@@ -83,7 +84,7 @@ still rejects every kernel except direct.
 
 The paired MI300X run uses 65,536 candidates in each of five scalar regions and
 four families, with two warmup rounds and nine measured rounds per kernel.
-Dense 256-bit inputs show GLV kernel-event speedups of 1.39–1.47x over direct;
+Dense inputs show GLV kernel-event speedups of 1.39–1.47x over direct;
 sparse high-bit inputs are slower than direct. Stepped remains faster on the
 dense region for every family. Near-order inputs decompose into small signed
 components and behave differently. This supports keeping GLV opt-in, with no
