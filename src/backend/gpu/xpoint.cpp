@@ -134,7 +134,8 @@ Ticket GpuXPointExecutor::submit(const scheduler::KernelBatch& batch) {
     s.healthy();
     if (s.batch) throw std::logic_error("GPU result slot busy; take its result before submitting");
     if (batch.step_count() > s.options.max_steps) throw std::invalid_argument("batch exceeds GPU executor capacity");
-    if (batch.work().identity().target_digest != s.targets.digest())
+    if (batch.work().identity().algorithm != scheduler::WorkAlgorithm::DirectXPointV1 ||
+        batch.work().identity().target_digest != s.targets.digest())
         throw std::invalid_argument("xpoint target digest does not match the plan");
     if (s.sequence == std::numeric_limits<uint64_t>::max()) throw std::overflow_error("GPU ticket sequence exhausted");
     s.batch = batch;

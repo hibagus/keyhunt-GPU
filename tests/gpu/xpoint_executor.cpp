@@ -8,8 +8,8 @@ using namespace keyhunt;
 using core::UInt256;
 void require(bool value,const char* text) { if (!value) throw std::runtime_error(text); }
 template<class F> void rejects(F fn) { try { fn(); } catch (const std::exception&) { return; } throw std::runtime_error("expected rejection"); }
-scheduler::KernelBatch plan(UInt256 begin, uint64_t count, const core::XPointTargets& targets) {
-    scheduler::ExecutionIdentity identity;
+scheduler::KernelBatch plan(UInt256 begin, uint64_t count, const core::XPointTargets& targets, scheduler::WorkAlgorithm algorithm=scheduler::WorkAlgorithm::DirectXPointV1) {
+    scheduler::ExecutionIdentity identity;identity.algorithm=algorithm;
     identity.target_digest=targets.digest(); identity.job_digest[0]=11;
     identity.assignment_id[5]=44; identity.assignment_generation=5; identity.executor_generation=6;
     scheduler::BlockGrid grid(core::ScalarInterval(begin.subtract(UInt256(count+2)),begin.add(UInt256(count))),UInt256(count+1));
@@ -82,6 +82,7 @@ int main() {
         require(small.take(replay).matches.size()==1,"replay failed");
         require(kept.matches.front().scalar==begin && kept.matches.back().scalar==begin.add(UInt256(256)),"owned result mutated");
         rejects([&] { e.submit(plan(begin,1026,targets)); });
+        rejects([&] { e.submit(plan(begin,1,targets,scheduler::WorkAlgorithm::DirectHash160V1)); });
         rejects([&] { e.submit(plan(begin,1,core::XPointTargets({core::XPointBytes{}}))); });
         backend::GpuDiagnosticExecutor diagnostic(0);
         auto dt=diagnostic.submit(first);

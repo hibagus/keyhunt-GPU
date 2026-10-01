@@ -62,7 +62,10 @@ UncompressedPublicKey XPointVerifier::derive(const UInt256& scalar) const {
 }
 std::vector<XPointMatch> XPointVerifier::verify(const scheduler::KernelBatch& batch,
     const XPointTargets& targets, std::vector<XPointCandidate> candidates) const {
-    if (batch.work().identity().target_digest != targets.digest())
+    // The scalar planner now supports multiple search families. A matching
+    // digest alone must not let an xpoint verifier accept another mode's label.
+    if (batch.work().identity().algorithm != scheduler::WorkAlgorithm::DirectXPointV1 ||
+        batch.work().identity().target_digest != targets.digest())
         throw std::invalid_argument("xpoint target digest does not match the plan");
     std::sort(candidates.begin(), candidates.end(), [](const auto& a,const auto& b){return a.offset < b.offset;});
     std::vector<XPointMatch> matches;

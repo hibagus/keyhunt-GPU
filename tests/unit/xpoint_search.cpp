@@ -53,6 +53,9 @@ int main() {
         rejects([&] { verifier.verify(batch,targets,{{1,1,0}}); });
         rejects([&] { verifier.verify(batch,targets,{{0,0,0}}); });
         rejects([&] { verifier.verify(batch,core::XPointTargets({x}),{}); });
+        identity.algorithm=scheduler::WorkAlgorithm::DirectHash160V1;
+        const auto mislabeled=*scheduler::WorkUnit::plan(grid,UInt256(0),UInt256(1),3,identity);
+        rejects([&]{verifier.verify(*scheduler::KernelBatch::plan(mislabeled,UInt256(1),3),targets,{});});
         std::cout << "Xpoint target identity and CPU candidate validation passed\n";
     } catch(const std::exception& error) { std::cerr<<error.what()<<'\n'; return 1; }
 }
