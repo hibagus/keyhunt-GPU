@@ -125,3 +125,21 @@ add_test(NAME minikey_random_window_oracle COMMAND "${Python3_EXECUTABLE}"
     "${CMAKE_CURRENT_SOURCE_DIR}/tests/oracle/minikey_random_windows.py" --binary $<TARGET_FILE:minikey_random_window_probe>
     --report "${CMAKE_CURRENT_BINARY_DIR}/minikey-random-window-oracle.json")
 set_tests_properties(minikey_random_window_oracle PROPERTIES TIMEOUT 240 LABELS "cpu;minikeys;random-window;oracle")
+
+add_test(NAME minikeys_random_window_cli COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/minikeys_cli.py"
+    --binary $<TARGET_FILE:keyhunt> --oracle $<TARGET_FILE:secp256k1_oracle>
+    --random-window --report "${CMAKE_CURRENT_BINARY_DIR}/minikeys-random-window-cli-results.json" ${minikeys_cli_args})
+set_tests_properties(minikeys_random_window_cli PROPERTIES TIMEOUT 600 LABELS "cpu;minikeys")
+if(KEYHUNT_ENABLE_GPU)
+    set_tests_properties(minikeys_random_window_cli PROPERTIES LABELS "${KEYHUNT_GPU_BACKEND};hardware;minikeys;oracle" RESOURCE_LOCK gpu_device)
+endif()
+
+
+add_test(NAME minikey_random_window_documented_example COMMAND "${Python3_EXECUTABLE}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/minikey_random_window_examples.py"
+    --binary $<TARGET_FILE:keyhunt> --backend ${minikey_example_backend}
+    --report "${CMAKE_CURRENT_BINARY_DIR}/minikey-random-window-documented-example.json")
+set_tests_properties(minikey_random_window_documented_example PROPERTIES TIMEOUT 150 LABELS "cpu;minikeys;random-window;examples")
+if(KEYHUNT_ENABLE_GPU)
+    set_tests_properties(minikey_random_window_documented_example PROPERTIES LABELS "${KEYHUNT_GPU_BACKEND};hardware;minikeys;random-window;examples" RESOURCE_LOCK gpu_device)
+endif()

@@ -62,3 +62,51 @@ interrupted recovery, old-worker capabilities, pause/restore and supervised
 HTTPS/disconnected transports on HIP and H200 CUDA. Keep source/binary identities,
 executable examples and raw evidence under docs/. Scalar families' alternative
 traversal remains pending; this slice does not complete all of C23.
+
+## Executable public example
+
+Choose `KEYHUNT_BIN` and `GPU_BACKEND` as in [GPU_QUICKSTART.md](GPU_QUICKSTART.md).
+This published 30-character minikey matches at the highest ordinal of a
+101-candidate range. Tiles of 17 candidates are shuffled in windows of four,
+using seed `2a`. Run both blocks in the same Bash shell.
+
+<!-- minikey-random-window-example: prepare -->
+```bash
+set -euo pipefail
+: "${KEYHUNT_BIN:?choose the built executable}"
+umask 077
+minikey_random_window_dir="$(mktemp -d "${EXAMPLE_PARENT:-/var/tmp}/keyhunt-minikey-random-window.XXXXXX")"
+export KEYHUNT_STATE_DIR="$minikey_random_window_dir/state"
+printf '%s\n' 1CciesT23BNionJeXrbxmjc7ywfiyM4oLW > "$minikey_random_window_dir/addresses.txt"
+"$KEYHUNT_BIN" minikeys inspect --key S6c56bnXQiBjk9mqSYE7ykVQ7NzrRy > "$minikey_random_window_dir/inspect.json"
+minikey_random_window_range="$(python3 -c 'import json,sys; o=int(json.load(open(sys.argv[1]))["ordinal"],16); print(f"{o-100:x}:{o+1:x}")' "$minikey_random_window_dir/inspect.json")"
+"$KEYHUNT_BIN" state project-create --name 'Public random-window minikey example' > "$minikey_random_window_dir/project.json"
+minikey_random_window_project="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["project"])' "$minikey_random_window_dir/project.json")"
+"$KEYHUNT_BIN" checkpoint create --project "$minikey_random_window_project" --mode minikeys --length 30 \
+  --range "$minikey_random_window_range" --block-width 65 --targets "$minikey_random_window_dir/addresses.txt" \
+  > "$minikey_random_window_dir/job.json"
+minikey_random_window_job="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["job"])' "$minikey_random_window_dir/job.json")"
+"$KEYHUNT_BIN" state claim --project "$minikey_random_window_project" --job "$minikey_random_window_job" \
+  --owner example --request first > "$minikey_random_window_dir/grant.json"
+minikey_random_window_grant="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["assignments"][0]["grant"])' "$minikey_random_window_dir/grant.json")"
+```
+
+<!-- minikey-random-window-example: execute -->
+```bash
+: "${GPU_BACKEND:?choose hip or cuda}"
+"$KEYHUNT_BIN" minikeys --backend "$GPU_BACKEND" --device "${GPU_DEVICE:-0}" --length 30 \
+  --range "$minikey_random_window_range" --targets "$minikey_random_window_dir/addresses.txt" \
+  --batch-size 17 --ordinal-order random-window --ordinal-seed 2a --ordinal-window 4 > "$minikey_random_window_dir/volatile.ndjson"
+"$KEYHUNT_BIN" checkpoint run --backend "$GPU_BACKEND" --device "${GPU_DEVICE:-0}" --length 30 \
+  --grant "$minikey_random_window_grant" --targets "$minikey_random_window_dir/addresses.txt" \
+  --batch-size 17 --ordinal-order random-window --ordinal-seed 2a --ordinal-window 4 > "$minikey_random_window_dir/durable.ndjson"
+"$KEYHUNT_BIN" checkpoint run --backend "$GPU_BACKEND" --device "${GPU_DEVICE:-0}" --length 30 \
+  --grant "$minikey_random_window_grant" --targets "$minikey_random_window_dir/addresses.txt" \
+  --ordinal-order reverse > "$minikey_random_window_dir/retry.ndjson"
+"$KEYHUNT_BIN" checkpoint results --project "$minikey_random_window_project" --job "$minikey_random_window_job" \
+  > "$minikey_random_window_dir/results.json"
+"$KEYHUNT_BIN" state check > "$minikey_random_window_dir/check.json"
+```
+
+`results.json` contains the published minikey's uncompressed relation once.
+The completed-grant reverse retry reports 101 resumed ordinals and zero batches.
