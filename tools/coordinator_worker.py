@@ -69,6 +69,7 @@ class Device:
     buffer: bytes = b""
     state: str = "pending"
     last_progress: float = 0
+    terminal_at: object = None
     sequence: int = 0
     drain_at: object = None
     kill_sent: bool = False
@@ -82,6 +83,15 @@ class Device:
 
     def event(self, event, now):
         kind = event.get("type")
+        # A terminal notification precedes executor destruction. Keep watching
+        # the PID, and never let later log output renew its teardown deadline.
+        if self.terminal_at is not None:
+            if "error" in event:
+                self.error = event["error"]
+            return
+        if kind == "exit" or (kind == "control" and event.get("state") == "stopped"):
+            self.terminal_at, self.state = now, "stopped"
+            return
         if kind == "ready":
             self.ready, self.uuid, self.last_progress = True, event["uuid"], now
         elif kind in ("progress", "checkpoint"):
@@ -106,8 +116,11 @@ class Device:
     def stalled(self, now, deadline):
         # Pauses received through the local socket are as authoritative as a
         # supervisor signal. Draining still has a deadline: it may hide a hang.
-        return (self.child is not None and self.state not in ("idle", "paused", "stopped")
-                and now - self.last_progress >= deadline)
+        if self.child is None:
+            return False
+        if self.terminal_at is not None:
+            return now - self.terminal_at >= deadline
+        return self.state not in ("idle", "paused") and now - self.last_progress >= deadline
 
     def snapshot(self):
         return dict(pid=self.child.pid if self.child else None, ordinal=self.ordinal, uuid=self.uuid,
@@ -271,6 +284,7 @@ def main():
         selector.register(device.child.stdout, selectors.EVENT_READ, device)
         device.buffer, device.sequence = b"", 0
         device.last_progress, device.state, device.ready = now, "pending", False
+        device.terminal_at = None
         device.drain_at, device.kill_sent = None, False
 
     try:

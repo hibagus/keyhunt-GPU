@@ -29,6 +29,20 @@ assert device.stalled(1000062, 60)
 device.event({"type": "blocked", "reason": "server-paused"}, 1000063)
 assert not device.stalled(2000000, 60)
 
+# Teardown starts a fresh clock after any length of pause. Repeated terminal
+# messages, increasing counters and bogus resumptions cannot postpone PID exit.
+device.event({"type": "control", "state": "stopped"}, 2000001)
+assert not device.stalled(2000060, 60)
+for event in ({"type": "exit", "reason": "drained"}, {"type": "progress", "sequence": 999},
+              {"type": "control", "state": "paused"}, {"type": "control", "state": "stopped"}):
+    device.event(event, 2000050)
+assert device.stalled(2000061, 60)
+device.child = None
+assert not device.stalled(3000000, 60)
+terminal_only = module.Device("0", "0", child=object(), state="idle")
+terminal_only.event({"type": "exit", "reason": "drained"}, 10)
+assert not terminal_only.stalled(69, 60) and terminal_only.stalled(70, 60)
+
 # An uninterruptible driver PID can survive SIGKILL. Model that OS behavior and
 # prove the fleet shares 30 + 5 seconds, independent of its device count.
 clock = [0.0]
@@ -49,7 +63,7 @@ finally:
     module.time.monotonic = real_clock
 
 FAKE = r'''#!/usr/bin/env python3
-import json, pathlib, sys, time
+import json, pathlib, signal, sys, time
 args = dict(zip(sys.argv[2::2], sys.argv[3::2]))
 root = pathlib.Path(args["--state-dir"])
 action = sys.argv[1]
@@ -83,35 +97,52 @@ elif action == "run-device":
     emit(type="grant-finish", complete=True)
     emit(type="control", state="stopped")
     emit(type="exit", reason="drained")
+    if queue == "0" and (root / "terminal-hang").exists():
+        signal.signal(signal.SIGTERM, signal.SIG_IGN)
+        while True: time.sleep(.05)
 '''
 with tempfile.TemporaryDirectory(prefix="kh-c20-supervisor-") as directory:
     root = Path(directory)
     fake = root / "worker"
     fake.write_text(FAKE)
     fake.chmod(0o700)
-    for fault, file_only in ((False, False), (True, False), (False, True)):
-        state = root / (str(fault) + str(file_only))
+    # Accelerate only the supervisor's injected clock; real subprocesses still
+    # emit, terminate and reap normally. No production fault switch is added.
+    accelerated = root / "accelerated.py"
+    accelerated.write_text("import importlib.util, sys, time, types\n"
+        + "spec=importlib.util.spec_from_file_location('supervisor', " + repr(str(ROOT / 'tools/coordinator_worker.py')) + ")\n"
+        + "module=importlib.util.module_from_spec(spec);sys.modules[spec.name]=module;spec.loader.exec_module(module)\n"
+        + "clock=time.monotonic;origin=clock()\n"
+        + "module.time=types.SimpleNamespace(monotonic=lambda: origin+(clock()-origin)*20)\n"
+        + "module.main()\n")
+    for fault, file_only, terminal_hang in ((False, False, False), (True, False, False),
+                                           (False, True, False), (False, True, True)):
+        state = root / (str(fault) + str(file_only) + str(terminal_hang))
         state.mkdir(mode=0o700)
         if fault:
             (state / "fail-one").touch()
         if file_only:
             (state / "file-only").touch()
-        result = subprocess.run([sys.executable, str(ROOT / "tools/coordinator_worker.py"),
+        if terminal_hang:
+            (state / "terminal-hang").touch()
+        driver = accelerated if terminal_hang else ROOT / "tools/coordinator_worker.py"
+        failed = fault or terminal_hang
+        result = subprocess.run([sys.executable, str(driver),
             "--state-dir", str(state), "--worker", str(fake), "--keyhunt", str(fake),
-            "--host-memory-total", "100", "--once"], capture_output=True, text=True, timeout=30)
-        assert (result.returncode != 0) == fault, (result.stdout, result.stderr)
+            "--host-memory-total", "100", "--stall-seconds", "60", "--once"], capture_output=True, text=True, timeout=30)
+        assert (result.returncode != 0) == failed, (result.stdout, result.stderr)
         if not fault:
             assert (state / "execution-0.log.1").exists(), "long-running diagnostic log did not rotate"
             assert all(path.stat().st_size <= 8 * 1024 * 1024 for path in state.glob("execution-0.log*"))
         saved = json.loads((state / "supervisor.json").read_text())
         assert saved["devices"]["1"]["completed"] == 1
         assert saved["failures"].get("1", 0) == 0
-        assert saved["failures"].get("0", 0) == (3 if fault else 0)
+        assert saved["failures"].get("0", 0) == (3 if failed else 0)
         if file_only:
             assert not (state / "sync-count").exists(), "file-only worker spawned network child"
             assert not (state / "sync.log").exists(), "file-only mode attempted synchronization"
         else:
             assert (state / "sync-count").read_text() == "1", "per-device/completion synchronization"
         assert len(json.loads((state / "self-tests.json").read_text())) == 2
-        assert saved["devices"]["0"]["state"] == ("quarantined" if fault else "stopped")
-print("Concurrent children, isolated quarantine, bounded retries, one sync, file-only isolation and pause-aware watchdog passed")
+        assert saved["devices"]["0"]["state"] == ("quarantined" if failed else "stopped")
+print("Concurrent children, isolated quarantine, bounded retries, one sync, file-only isolation, pause and terminal-exit watchdogs passed")
