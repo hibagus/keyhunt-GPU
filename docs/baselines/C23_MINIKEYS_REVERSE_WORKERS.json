@@ -1,0 +1,3018 @@
+{
+  "hip": {
+    "workers": {
+      "ordinal_order": "reverse",
+      "passed": true,
+      "hardware": true,
+      "backend": "hip",
+      "oracle_commit": "0cdc758a56360bf58a851fe91085a327ec97685a",
+      "cases": [
+        {
+          "transport": "https",
+          "length": 22,
+          "local_results": [
+            {
+              "id": "1",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "coordinate_space": "minikey-ordinal-v1",
+              "ordinal": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b8202",
+              "minikey": "SzavMBLoXU6kDrqtUVmghv",
+              "scalar": "0xb64f484a0c4e0987f300316c7b1844d996d59508f05c01cc82dddccd4b624d61",
+              "target": 1,
+              "target_bytes": "160193438aff7c66b1e40ea6c8ec7b3f3af9eeb762f9"
+            },
+            {
+              "id": "2",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "coordinate_space": "minikey-ordinal-v1",
+              "ordinal": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b8202",
+              "minikey": "SzavMBLoXU6kDrqtUVmghv",
+              "scalar": "0xb64f484a0c4e0987f300316c7b1844d996d59508f05c01cc82dddccd4b624d61",
+              "target": 5,
+              "target_bytes": "1602fe640919437f2d646f17fee2064ba4bd27e7b123"
+            },
+            {
+              "id": "3",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "coordinate_space": "minikey-ordinal-v1",
+              "ordinal": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b746a",
+              "minikey": "SzavMBLoXU6kDrqtUVmffv",
+              "scalar": "0xe9873d79c6d87dc0fb6a5778633389f4453213303da61f20bd67fc233aa33262",
+              "target": 0,
+              "target_bytes": "16015ac36b4aff945da30c16bf6c25dbac434664da8c"
+            },
+            {
+              "id": "4",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "coordinate_space": "minikey-ordinal-v1",
+              "ordinal": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b746a",
+              "minikey": "SzavMBLoXU6kDrqtUVmffv",
+              "scalar": "0xe9873d79c6d87dc0fb6a5778633389f4453213303da61f20bd67fc233aa33262",
+              "target": 3,
+              "target_bytes": "16027ac00f979ff0df2fdcb65761dc8f9ef8b37142db"
+            },
+            {
+              "id": "5",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "ordinal": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b93f2",
+              "minikey": "SzavMBLoXU6kDrqtUVmi56",
+              "scalar": "0x815ec8543bd3aff396de2c7f878ac80738e4ebd3517ad6c3f4f9d2b12053cb7c",
+              "target": 2,
+              "target_bytes": "1601b014f734973da34a7415e7ed54edbfb7da2c66c7"
+            },
+            {
+              "id": "6",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "ordinal": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b93f2",
+              "minikey": "SzavMBLoXU6kDrqtUVmi56",
+              "scalar": "0x815ec8543bd3aff396de2c7f878ac80738e4ebd3517ad6c3f4f9d2b12053cb7c",
+              "target": 4,
+              "target_bytes": "1602b3823670ece4eac343a08e84525f413ff331d507"
+            }
+          ],
+          "server_results": [
+            {
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "coordinate_space": "minikey-ordinal-v1",
+              "id": 1,
+              "minikey": "SzavMBLoXU6kDrqtUVmghv",
+              "ordinal": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b8202",
+              "scalar": "0xb64f484a0c4e0987f300316c7b1844d996d59508f05c01cc82dddccd4b624d61",
+              "target": 1,
+              "target_bytes": "160193438aff7c66b1e40ea6c8ec7b3f3af9eeb762f9"
+            },
+            {
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "coordinate_space": "minikey-ordinal-v1",
+              "id": 2,
+              "minikey": "SzavMBLoXU6kDrqtUVmghv",
+              "ordinal": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b8202",
+              "scalar": "0xb64f484a0c4e0987f300316c7b1844d996d59508f05c01cc82dddccd4b624d61",
+              "target": 5,
+              "target_bytes": "1602fe640919437f2d646f17fee2064ba4bd27e7b123"
+            },
+            {
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "coordinate_space": "minikey-ordinal-v1",
+              "id": 3,
+              "minikey": "SzavMBLoXU6kDrqtUVmffv",
+              "ordinal": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b746a",
+              "scalar": "0xe9873d79c6d87dc0fb6a5778633389f4453213303da61f20bd67fc233aa33262",
+              "target": 0,
+              "target_bytes": "16015ac36b4aff945da30c16bf6c25dbac434664da8c"
+            },
+            {
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "coordinate_space": "minikey-ordinal-v1",
+              "id": 4,
+              "minikey": "SzavMBLoXU6kDrqtUVmffv",
+              "ordinal": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b746a",
+              "scalar": "0xe9873d79c6d87dc0fb6a5778633389f4453213303da61f20bd67fc233aa33262",
+              "target": 3,
+              "target_bytes": "16027ac00f979ff0df2fdcb65761dc8f9ef8b37142db"
+            },
+            {
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "id": 5,
+              "minikey": "SzavMBLoXU6kDrqtUVmi56",
+              "ordinal": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b93f2",
+              "scalar": "0x815ec8543bd3aff396de2c7f878ac80738e4ebd3517ad6c3f4f9d2b12053cb7c",
+              "target": 2,
+              "target_bytes": "1601b014f734973da34a7415e7ed54edbfb7da2c66c7"
+            },
+            {
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "id": 6,
+              "minikey": "SzavMBLoXU6kDrqtUVmi56",
+              "ordinal": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b93f2",
+              "scalar": "0x815ec8543bd3aff396de2c7f878ac80738e4ebd3517ad6c3f4f9d2b12053cb7c",
+              "target": 4,
+              "target_bytes": "1602b3823670ece4eac343a08e84525f413ff331d507"
+            }
+          ],
+          "events": [
+            {
+              "type": "control",
+              "accepted": true,
+              "state": "running",
+              "requested": "run",
+              "durably_paused": false,
+              "durability": "local",
+              "pause_ms": 0.0,
+              "pid": 1093253,
+              "device": 0,
+              "visible_devices": 8
+            },
+            {
+              "queue": "0",
+              "type": "self-test-start"
+            },
+            {
+              "queue": "0",
+              "self_test": {
+                "compute_partition": "SPX",
+                "compute_units": 304,
+                "driver": 71526333,
+                "memory_partition": "NPS1",
+                "ordinal": 0,
+                "passed": true,
+                "pci_bus_id": "0000:1b:00.0",
+                "runtime": 71526333,
+                "uuid": "30646366333934386337333264313231"
+              },
+              "type": "ready",
+              "uuid": "30646366333934386337333264313231"
+            },
+            {
+              "type": "control",
+              "accepted": true,
+              "state": "running",
+              "requested": "run",
+              "durably_paused": false,
+              "durability": "local",
+              "pause_ms": 0.0,
+              "pid": 1093253,
+              "device": 0,
+              "visible_devices": 8,
+              "project": "4f7fbd9f-c725-4ec9-8227-256bf7795bad",
+              "job": "9c4a463842bc8dac0e25d8d01e5c95240f4387f2f85687b6b8f5c4b4bf7d79d7",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "assignment_generation": "1"
+            },
+            {
+              "grant": {
+                "begin": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b746a",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "end_exclusive": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b846b",
+                "epoch": "9fc434a1fd9493ced2b9f9a2638ce836",
+                "expires": 1793466723,
+                "generation": 1,
+                "job": "9c4a463842bc8dac0e25d8d01e5c95240f4387f2f85687b6b8f5c4b4bf7d79d7",
+                "owner": "89304f59-8d3a-4fc1-9415-400dad9c3baa.6741bfc4-43c3-486d-8a0d-320ec4a05388",
+                "project": "4f7fbd9f-c725-4ec9-8227-256bf7795bad"
+              },
+              "queue": "0",
+              "type": "grant-start"
+            },
+            {
+              "interval": {
+                "begin": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b83ea",
+                "end_exclusive": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b846b"
+              },
+              "target_seconds": 180,
+              "type": "work-unit"
+            },
+            {
+              "device_steps": 129,
+              "kernel_ms": 3.507843017578125,
+              "sequence": 1,
+              "type": "progress"
+            },
+            {
+              "interval": {
+                "begin": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b746a",
+                "end_exclusive": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b83ea"
+              },
+              "target_seconds": 180,
+              "type": "work-unit"
+            },
+            {
+              "matches": 2,
+              "sequence": 6,
+              "transaction_ms": 0.378488,
+              "type": "checkpoint"
+            },
+            {
+              "matches": 2,
+              "sequence": 34,
+              "transaction_ms": 0.475294,
+              "type": "checkpoint"
+            },
+            {
+              "cold": true,
+              "complete": true,
+              "computed_ordinals": "0x0000000000000000000000000000000000000000000000000000000000001001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "device_steps": "0x0000000000000000000000000000000000000000000000000000000000001001",
+              "executor_setups": 1,
+              "grant": {
+                "begin": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b746a",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "end_exclusive": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b846b",
+                "epoch": "9fc434a1fd9493ced2b9f9a2638ce836",
+                "expires": 1793466723,
+                "generation": 1,
+                "job": "9c4a463842bc8dac0e25d8d01e5c95240f4387f2f85687b6b8f5c4b4bf7d79d7",
+                "owner": "89304f59-8d3a-4fc1-9415-400dad9c3baa.6741bfc4-43c3-486d-8a0d-320ec4a05388",
+                "project": "4f7fbd9f-c725-4ec9-8227-256bf7795bad"
+              },
+              "kernel_ms": 54.74783914536238,
+              "m": 1,
+              "mode": "minikeys",
+              "ordinal_order": "reverse",
+              "table_upload_ms": 0.0,
+              "target_count": 6,
+              "type": "grant-finish",
+              "wall_ns": 92838676,
+              "work_units": 2
+            },
+            {
+              "type": "control",
+              "accepted": true,
+              "state": "running",
+              "requested": "run",
+              "durably_paused": false,
+              "durability": "local",
+              "pause_ms": 0.0,
+              "pid": 1093253,
+              "device": 0,
+              "visible_devices": 8,
+              "project": "4f7fbd9f-c725-4ec9-8227-256bf7795bad",
+              "job": "9c4a463842bc8dac0e25d8d01e5c95240f4387f2f85687b6b8f5c4b4bf7d79d7",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "assignment_generation": "2"
+            },
+            {
+              "grant": {
+                "begin": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b846b",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "end_exclusive": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b946c",
+                "epoch": "9fc434a1fd9493ced2b9f9a2638ce836",
+                "expires": 1793466723,
+                "generation": 2,
+                "job": "9c4a463842bc8dac0e25d8d01e5c95240f4387f2f85687b6b8f5c4b4bf7d79d7",
+                "owner": "89304f59-8d3a-4fc1-9415-400dad9c3baa.6741bfc4-43c3-486d-8a0d-320ec4a05388",
+                "project": "4f7fbd9f-c725-4ec9-8227-256bf7795bad"
+              },
+              "queue": "0",
+              "type": "grant-start"
+            },
+            {
+              "interval": {
+                "begin": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b93eb",
+                "end_exclusive": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b946c"
+              },
+              "target_seconds": 180,
+              "type": "work-unit"
+            },
+            {
+              "matches": 2,
+              "sequence": 36,
+              "transaction_ms": 0.350618,
+              "type": "checkpoint"
+            },
+            {
+              "interval": {
+                "begin": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b846b",
+                "end_exclusive": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b93eb"
+              },
+              "target_seconds": 180,
+              "type": "work-unit"
+            },
+            {
+              "matches": 0,
+              "sequence": 68,
+              "transaction_ms": 0.37482299999999996,
+              "type": "checkpoint"
+            },
+            {
+              "cold": false,
+              "complete": true,
+              "computed_ordinals": "0x0000000000000000000000000000000000000000000000000000000000001001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "device_steps": "0x0000000000000000000000000000000000000000000000000000000000001001",
+              "executor_setups": 1,
+              "grant": {
+                "begin": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b846b",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "end_exclusive": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b946c",
+                "epoch": "9fc434a1fd9493ced2b9f9a2638ce836",
+                "expires": 1793466723,
+                "generation": 2,
+                "job": "9c4a463842bc8dac0e25d8d01e5c95240f4387f2f85687b6b8f5c4b4bf7d79d7",
+                "owner": "89304f59-8d3a-4fc1-9415-400dad9c3baa.6741bfc4-43c3-486d-8a0d-320ec4a05388",
+                "project": "4f7fbd9f-c725-4ec9-8227-256bf7795bad"
+              },
+              "kernel_ms": 39.9293287396431,
+              "m": 1,
+              "mode": "minikeys",
+              "ordinal_order": "reverse",
+              "table_upload_ms": 0.0,
+              "target_count": 6,
+              "type": "grant-finish",
+              "wall_ns": 74614164,
+              "work_units": 2
+            },
+            {
+              "type": "control",
+              "accepted": true,
+              "state": "idle",
+              "requested": "run",
+              "durably_paused": false,
+              "durability": "local",
+              "pause_ms": 0.0,
+              "pid": 1093253,
+              "device": 0,
+              "visible_devices": 8
+            },
+            {
+              "type": "control",
+              "accepted": true,
+              "state": "stopped",
+              "requested": "run",
+              "durably_paused": false,
+              "durability": "local",
+              "pause_ms": 0.0,
+              "pid": 1093253,
+              "device": 0,
+              "visible_devices": 8
+            },
+            {
+              "completed": 2,
+              "executor_setups": 1,
+              "reason": "drained",
+              "type": "exit",
+              "wall_ms": 168.749278
+            }
+          ]
+        },
+        {
+          "transport": "file",
+          "length": 22,
+          "local_results": [
+            {
+              "id": "1",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "coordinate_space": "minikey-ordinal-v1",
+              "ordinal": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b8202",
+              "minikey": "SzavMBLoXU6kDrqtUVmghv",
+              "scalar": "0xb64f484a0c4e0987f300316c7b1844d996d59508f05c01cc82dddccd4b624d61",
+              "target": 1,
+              "target_bytes": "160193438aff7c66b1e40ea6c8ec7b3f3af9eeb762f9"
+            },
+            {
+              "id": "2",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "coordinate_space": "minikey-ordinal-v1",
+              "ordinal": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b8202",
+              "minikey": "SzavMBLoXU6kDrqtUVmghv",
+              "scalar": "0xb64f484a0c4e0987f300316c7b1844d996d59508f05c01cc82dddccd4b624d61",
+              "target": 5,
+              "target_bytes": "1602fe640919437f2d646f17fee2064ba4bd27e7b123"
+            },
+            {
+              "id": "3",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "coordinate_space": "minikey-ordinal-v1",
+              "ordinal": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b746a",
+              "minikey": "SzavMBLoXU6kDrqtUVmffv",
+              "scalar": "0xe9873d79c6d87dc0fb6a5778633389f4453213303da61f20bd67fc233aa33262",
+              "target": 0,
+              "target_bytes": "16015ac36b4aff945da30c16bf6c25dbac434664da8c"
+            },
+            {
+              "id": "4",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "coordinate_space": "minikey-ordinal-v1",
+              "ordinal": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b746a",
+              "minikey": "SzavMBLoXU6kDrqtUVmffv",
+              "scalar": "0xe9873d79c6d87dc0fb6a5778633389f4453213303da61f20bd67fc233aa33262",
+              "target": 3,
+              "target_bytes": "16027ac00f979ff0df2fdcb65761dc8f9ef8b37142db"
+            },
+            {
+              "id": "5",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "ordinal": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b93f2",
+              "minikey": "SzavMBLoXU6kDrqtUVmi56",
+              "scalar": "0x815ec8543bd3aff396de2c7f878ac80738e4ebd3517ad6c3f4f9d2b12053cb7c",
+              "target": 2,
+              "target_bytes": "1601b014f734973da34a7415e7ed54edbfb7da2c66c7"
+            },
+            {
+              "id": "6",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "ordinal": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b93f2",
+              "minikey": "SzavMBLoXU6kDrqtUVmi56",
+              "scalar": "0x815ec8543bd3aff396de2c7f878ac80738e4ebd3517ad6c3f4f9d2b12053cb7c",
+              "target": 4,
+              "target_bytes": "1602b3823670ece4eac343a08e84525f413ff331d507"
+            }
+          ],
+          "server_results": [
+            {
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "coordinate_space": "minikey-ordinal-v1",
+              "id": 7,
+              "minikey": "SzavMBLoXU6kDrqtUVmghv",
+              "ordinal": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b8202",
+              "scalar": "0xb64f484a0c4e0987f300316c7b1844d996d59508f05c01cc82dddccd4b624d61",
+              "target": 1,
+              "target_bytes": "160193438aff7c66b1e40ea6c8ec7b3f3af9eeb762f9"
+            },
+            {
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "coordinate_space": "minikey-ordinal-v1",
+              "id": 8,
+              "minikey": "SzavMBLoXU6kDrqtUVmghv",
+              "ordinal": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b8202",
+              "scalar": "0xb64f484a0c4e0987f300316c7b1844d996d59508f05c01cc82dddccd4b624d61",
+              "target": 5,
+              "target_bytes": "1602fe640919437f2d646f17fee2064ba4bd27e7b123"
+            },
+            {
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "coordinate_space": "minikey-ordinal-v1",
+              "id": 9,
+              "minikey": "SzavMBLoXU6kDrqtUVmffv",
+              "ordinal": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b746a",
+              "scalar": "0xe9873d79c6d87dc0fb6a5778633389f4453213303da61f20bd67fc233aa33262",
+              "target": 0,
+              "target_bytes": "16015ac36b4aff945da30c16bf6c25dbac434664da8c"
+            },
+            {
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "coordinate_space": "minikey-ordinal-v1",
+              "id": 10,
+              "minikey": "SzavMBLoXU6kDrqtUVmffv",
+              "ordinal": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b746a",
+              "scalar": "0xe9873d79c6d87dc0fb6a5778633389f4453213303da61f20bd67fc233aa33262",
+              "target": 3,
+              "target_bytes": "16027ac00f979ff0df2fdcb65761dc8f9ef8b37142db"
+            },
+            {
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "id": 11,
+              "minikey": "SzavMBLoXU6kDrqtUVmi56",
+              "ordinal": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b93f2",
+              "scalar": "0x815ec8543bd3aff396de2c7f878ac80738e4ebd3517ad6c3f4f9d2b12053cb7c",
+              "target": 2,
+              "target_bytes": "1601b014f734973da34a7415e7ed54edbfb7da2c66c7"
+            },
+            {
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "id": 12,
+              "minikey": "SzavMBLoXU6kDrqtUVmi56",
+              "ordinal": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b93f2",
+              "scalar": "0x815ec8543bd3aff396de2c7f878ac80738e4ebd3517ad6c3f4f9d2b12053cb7c",
+              "target": 4,
+              "target_bytes": "1602b3823670ece4eac343a08e84525f413ff331d507"
+            }
+          ],
+          "events": [
+            {
+              "type": "control",
+              "accepted": true,
+              "state": "running",
+              "requested": "run",
+              "durably_paused": false,
+              "durability": "local",
+              "pause_ms": 0.0,
+              "pid": 1093304,
+              "device": 0,
+              "visible_devices": 8
+            },
+            {
+              "queue": "0",
+              "type": "self-test-start"
+            },
+            {
+              "queue": "0",
+              "self_test": {
+                "compute_partition": "SPX",
+                "compute_units": 304,
+                "driver": 71526333,
+                "memory_partition": "NPS1",
+                "ordinal": 0,
+                "passed": true,
+                "pci_bus_id": "0000:1b:00.0",
+                "runtime": 71526333,
+                "uuid": "30646366333934386337333264313231"
+              },
+              "type": "ready",
+              "uuid": "30646366333934386337333264313231"
+            },
+            {
+              "type": "control",
+              "accepted": true,
+              "state": "running",
+              "requested": "run",
+              "durably_paused": false,
+              "durability": "local",
+              "pause_ms": 0.0,
+              "pid": 1093304,
+              "device": 0,
+              "visible_devices": 8,
+              "project": "73821f0d-0380-41f3-b9d5-497d4613fe1a",
+              "job": "9c4a463842bc8dac0e25d8d01e5c95240f4387f2f85687b6b8f5c4b4bf7d79d7",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "assignment_generation": "1"
+            },
+            {
+              "grant": {
+                "begin": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b746a",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "end_exclusive": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b846b",
+                "epoch": "bf143fece493333b2259653580e34712",
+                "expires": 1793466725,
+                "generation": 1,
+                "job": "9c4a463842bc8dac0e25d8d01e5c95240f4387f2f85687b6b8f5c4b4bf7d79d7",
+                "owner": "89304f59-8d3a-4fc1-9415-400dad9c3baa.a8ff871d-0fa8-4594-b524-e9f8e1a77886",
+                "project": "73821f0d-0380-41f3-b9d5-497d4613fe1a"
+              },
+              "queue": "0",
+              "type": "grant-start"
+            },
+            {
+              "interval": {
+                "begin": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b83ea",
+                "end_exclusive": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b846b"
+              },
+              "target_seconds": 180,
+              "type": "work-unit"
+            },
+            {
+              "device_steps": 129,
+              "kernel_ms": 3.508043050765991,
+              "sequence": 1,
+              "type": "progress"
+            },
+            {
+              "interval": {
+                "begin": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b746a",
+                "end_exclusive": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b83ea"
+              },
+              "target_seconds": 180,
+              "type": "work-unit"
+            },
+            {
+              "matches": 2,
+              "sequence": 6,
+              "transaction_ms": 0.368535,
+              "type": "checkpoint"
+            },
+            {
+              "matches": 2,
+              "sequence": 34,
+              "transaction_ms": 0.44639799999999996,
+              "type": "checkpoint"
+            },
+            {
+              "cold": true,
+              "complete": true,
+              "computed_ordinals": "0x0000000000000000000000000000000000000000000000000000000000001001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "device_steps": "0x0000000000000000000000000000000000000000000000000000000000001001",
+              "executor_setups": 1,
+              "grant": {
+                "begin": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b746a",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "end_exclusive": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b846b",
+                "epoch": "bf143fece493333b2259653580e34712",
+                "expires": 1793466725,
+                "generation": 1,
+                "job": "9c4a463842bc8dac0e25d8d01e5c95240f4387f2f85687b6b8f5c4b4bf7d79d7",
+                "owner": "89304f59-8d3a-4fc1-9415-400dad9c3baa.a8ff871d-0fa8-4594-b524-e9f8e1a77886",
+                "project": "73821f0d-0380-41f3-b9d5-497d4613fe1a"
+              },
+              "kernel_ms": 54.72142035514116,
+              "m": 1,
+              "mode": "minikeys",
+              "ordinal_order": "reverse",
+              "table_upload_ms": 0.0,
+              "target_count": 6,
+              "type": "grant-finish",
+              "wall_ns": 93238431,
+              "work_units": 2
+            },
+            {
+              "type": "control",
+              "accepted": true,
+              "state": "running",
+              "requested": "run",
+              "durably_paused": false,
+              "durability": "local",
+              "pause_ms": 0.0,
+              "pid": 1093304,
+              "device": 0,
+              "visible_devices": 8,
+              "project": "73821f0d-0380-41f3-b9d5-497d4613fe1a",
+              "job": "9c4a463842bc8dac0e25d8d01e5c95240f4387f2f85687b6b8f5c4b4bf7d79d7",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "assignment_generation": "2"
+            },
+            {
+              "grant": {
+                "begin": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b846b",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "end_exclusive": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b946c",
+                "epoch": "bf143fece493333b2259653580e34712",
+                "expires": 1793466725,
+                "generation": 2,
+                "job": "9c4a463842bc8dac0e25d8d01e5c95240f4387f2f85687b6b8f5c4b4bf7d79d7",
+                "owner": "89304f59-8d3a-4fc1-9415-400dad9c3baa.a8ff871d-0fa8-4594-b524-e9f8e1a77886",
+                "project": "73821f0d-0380-41f3-b9d5-497d4613fe1a"
+              },
+              "queue": "0",
+              "type": "grant-start"
+            },
+            {
+              "interval": {
+                "begin": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b93eb",
+                "end_exclusive": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b946c"
+              },
+              "target_seconds": 180,
+              "type": "work-unit"
+            },
+            {
+              "matches": 2,
+              "sequence": 36,
+              "transaction_ms": 0.32931099999999996,
+              "type": "checkpoint"
+            },
+            {
+              "interval": {
+                "begin": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b846b",
+                "end_exclusive": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b93eb"
+              },
+              "target_seconds": 180,
+              "type": "work-unit"
+            },
+            {
+              "matches": 0,
+              "sequence": 68,
+              "transaction_ms": 0.358701,
+              "type": "checkpoint"
+            },
+            {
+              "cold": false,
+              "complete": true,
+              "computed_ordinals": "0x0000000000000000000000000000000000000000000000000000000000001001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "device_steps": "0x0000000000000000000000000000000000000000000000000000000000001001",
+              "executor_setups": 1,
+              "grant": {
+                "begin": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b846b",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "end_exclusive": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b946c",
+                "epoch": "bf143fece493333b2259653580e34712",
+                "expires": 1793466725,
+                "generation": 2,
+                "job": "9c4a463842bc8dac0e25d8d01e5c95240f4387f2f85687b6b8f5c4b4bf7d79d7",
+                "owner": "89304f59-8d3a-4fc1-9415-400dad9c3baa.a8ff871d-0fa8-4594-b524-e9f8e1a77886",
+                "project": "73821f0d-0380-41f3-b9d5-497d4613fe1a"
+              },
+              "kernel_ms": 39.933733467012644,
+              "m": 1,
+              "mode": "minikeys",
+              "ordinal_order": "reverse",
+              "table_upload_ms": 0.0,
+              "target_count": 6,
+              "type": "grant-finish",
+              "wall_ns": 74617592,
+              "work_units": 2
+            },
+            {
+              "type": "control",
+              "accepted": true,
+              "state": "idle",
+              "requested": "run",
+              "durably_paused": false,
+              "durability": "local",
+              "pause_ms": 0.0,
+              "pid": 1093304,
+              "device": 0,
+              "visible_devices": 8
+            },
+            {
+              "type": "control",
+              "accepted": true,
+              "state": "stopped",
+              "requested": "run",
+              "durably_paused": false,
+              "durability": "local",
+              "pause_ms": 0.0,
+              "pid": 1093304,
+              "device": 0,
+              "visible_devices": 8
+            },
+            {
+              "completed": 2,
+              "executor_setups": 1,
+              "reason": "drained",
+              "type": "exit",
+              "wall_ms": 169.127633
+            }
+          ]
+        },
+        {
+          "transport": "https",
+          "length": 30,
+          "local_results": [
+            {
+              "id": "1",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "coordinate_space": "minikey-ordinal-v1",
+              "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f145",
+              "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7NzrRy",
+              "scalar": "0x4c7a9640c72dc2099f23715d0c8a0d8a35f8906e3cab61dd3f78b67bf887c9ab",
+              "target": 1,
+              "target_bytes": "1e01f78c1591f3f34fd1fe339dc371069b7b492bf370"
+            },
+            {
+              "id": "2",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "coordinate_space": "minikey-ordinal-v1",
+              "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f145",
+              "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7NzrRy",
+              "scalar": "0x4c7a9640c72dc2099f23715d0c8a0d8a35f8906e3cab61dd3f78b67bf887c9ab",
+              "target": 3,
+              "target_bytes": "1e027f6ab65fa911f558ca2dde3e9d073acb02c0d5c6"
+            },
+            {
+              "id": "3",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b80ff3",
+              "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7NztmP",
+              "scalar": "0x881473584d68c4cea4d57904ea40830af7b6fa59f86dcfaee3f209ed775f2377",
+              "target": 2,
+              "target_bytes": "1e01f7c3f510d1874dbd13195241256a8721f3d22e2c"
+            },
+            {
+              "id": "4",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b80ff3",
+              "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7NztmP",
+              "scalar": "0x881473584d68c4cea4d57904ea40830af7b6fa59f86dcfaee3f209ed775f2377",
+              "target": 5,
+              "target_bytes": "1e02cf0749c082fdbdef24c6551a73818dcba9235233"
+            },
+            {
+              "id": "5",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b801d4",
+              "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7Nzsh4",
+              "scalar": "0xbc88f968d3a5b5f2af9a6f6ee86bcf20029ee511e08e73814dbb3ae40c8ca738",
+              "target": 0,
+              "target_bytes": "1e01099de9ab308d8a2d82b603bdeafa1038b894ce12"
+            },
+            {
+              "id": "6",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b801d4",
+              "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7Nzsh4",
+              "scalar": "0xbc88f968d3a5b5f2af9a6f6ee86bcf20029ee511e08e73814dbb3ae40c8ca738",
+              "target": 4,
+              "target_bytes": "1e029d4385491ef2d0f0040d3c7bf8fd7c376279345a"
+            }
+          ],
+          "server_results": [
+            {
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "coordinate_space": "minikey-ordinal-v1",
+              "id": 13,
+              "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7NzrRy",
+              "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f145",
+              "scalar": "0x4c7a9640c72dc2099f23715d0c8a0d8a35f8906e3cab61dd3f78b67bf887c9ab",
+              "target": 1,
+              "target_bytes": "1e01f78c1591f3f34fd1fe339dc371069b7b492bf370"
+            },
+            {
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "coordinate_space": "minikey-ordinal-v1",
+              "id": 14,
+              "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7NzrRy",
+              "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f145",
+              "scalar": "0x4c7a9640c72dc2099f23715d0c8a0d8a35f8906e3cab61dd3f78b67bf887c9ab",
+              "target": 3,
+              "target_bytes": "1e027f6ab65fa911f558ca2dde3e9d073acb02c0d5c6"
+            },
+            {
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "id": 15,
+              "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7NztmP",
+              "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b80ff3",
+              "scalar": "0x881473584d68c4cea4d57904ea40830af7b6fa59f86dcfaee3f209ed775f2377",
+              "target": 2,
+              "target_bytes": "1e01f7c3f510d1874dbd13195241256a8721f3d22e2c"
+            },
+            {
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "id": 16,
+              "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7NztmP",
+              "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b80ff3",
+              "scalar": "0x881473584d68c4cea4d57904ea40830af7b6fa59f86dcfaee3f209ed775f2377",
+              "target": 5,
+              "target_bytes": "1e02cf0749c082fdbdef24c6551a73818dcba9235233"
+            },
+            {
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "id": 17,
+              "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7Nzsh4",
+              "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b801d4",
+              "scalar": "0xbc88f968d3a5b5f2af9a6f6ee86bcf20029ee511e08e73814dbb3ae40c8ca738",
+              "target": 0,
+              "target_bytes": "1e01099de9ab308d8a2d82b603bdeafa1038b894ce12"
+            },
+            {
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "id": 18,
+              "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7Nzsh4",
+              "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b801d4",
+              "scalar": "0xbc88f968d3a5b5f2af9a6f6ee86bcf20029ee511e08e73814dbb3ae40c8ca738",
+              "target": 4,
+              "target_bytes": "1e029d4385491ef2d0f0040d3c7bf8fd7c376279345a"
+            }
+          ],
+          "events": [
+            {
+              "type": "control",
+              "accepted": true,
+              "state": "running",
+              "requested": "run",
+              "durably_paused": false,
+              "durability": "local",
+              "pause_ms": 0.0,
+              "pid": 1093423,
+              "device": 0,
+              "visible_devices": 8
+            },
+            {
+              "queue": "0",
+              "type": "self-test-start"
+            },
+            {
+              "queue": "0",
+              "self_test": {
+                "compute_partition": "SPX",
+                "compute_units": 304,
+                "driver": 71526333,
+                "memory_partition": "NPS1",
+                "ordinal": 0,
+                "passed": true,
+                "pci_bus_id": "0000:1b:00.0",
+                "runtime": 71526333,
+                "uuid": "30646366333934386337333264313231"
+              },
+              "type": "ready",
+              "uuid": "30646366333934386337333264313231"
+            },
+            {
+              "type": "control",
+              "accepted": true,
+              "state": "running",
+              "requested": "run",
+              "durably_paused": false,
+              "durability": "local",
+              "pause_ms": 0.0,
+              "pid": 1093423,
+              "device": 0,
+              "visible_devices": 8,
+              "project": "f03701df-38a4-4437-9ef3-a80e71de07ec",
+              "job": "37767179b3924ed8cdcf5aa80c950314dc9fbf1d9735cf0d8ed0a47335328b6d",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "assignment_generation": "1"
+            },
+            {
+              "grant": {
+                "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f145",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b80146",
+                "epoch": "00212b8f0c90c9d4077984d243941bcb",
+                "expires": 1793466727,
+                "generation": 1,
+                "job": "37767179b3924ed8cdcf5aa80c950314dc9fbf1d9735cf0d8ed0a47335328b6d",
+                "owner": "89304f59-8d3a-4fc1-9415-400dad9c3baa.eca5f299-ed27-494d-a7f0-9beb0736186a",
+                "project": "f03701df-38a4-4437-9ef3-a80e71de07ec"
+              },
+              "queue": "0",
+              "type": "grant-start"
+            },
+            {
+              "interval": {
+                "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b800c5",
+                "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b80146"
+              },
+              "target_seconds": 180,
+              "type": "work-unit"
+            },
+            {
+              "device_steps": 129,
+              "kernel_ms": 0.05801200121641159,
+              "sequence": 1,
+              "type": "progress"
+            },
+            {
+              "interval": {
+                "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f145",
+                "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b800c5"
+              },
+              "target_seconds": 180,
+              "type": "work-unit"
+            },
+            {
+              "matches": 2,
+              "sequence": 33,
+              "transaction_ms": 0.45547099999999996,
+              "type": "checkpoint"
+            },
+            {
+              "cold": true,
+              "complete": true,
+              "computed_ordinals": "0x0000000000000000000000000000000000000000000000000000000000001001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "device_steps": "0x0000000000000000000000000000000000000000000000000000000000001001",
+              "executor_setups": 1,
+              "grant": {
+                "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f145",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b80146",
+                "epoch": "00212b8f0c90c9d4077984d243941bcb",
+                "expires": 1793466727,
+                "generation": 1,
+                "job": "37767179b3924ed8cdcf5aa80c950314dc9fbf1d9735cf0d8ed0a47335328b6d",
+                "owner": "89304f59-8d3a-4fc1-9415-400dad9c3baa.eca5f299-ed27-494d-a7f0-9beb0736186a",
+                "project": "f03701df-38a4-4437-9ef3-a80e71de07ec"
+              },
+              "kernel_ms": 54.852274373173714,
+              "m": 1,
+              "mode": "minikeys",
+              "ordinal_order": "reverse",
+              "table_upload_ms": 0.0,
+              "target_count": 6,
+              "type": "grant-finish",
+              "wall_ns": 92414973,
+              "work_units": 2
+            },
+            {
+              "type": "control",
+              "accepted": true,
+              "state": "running",
+              "requested": "run",
+              "durably_paused": false,
+              "durability": "local",
+              "pause_ms": 0.0,
+              "pid": 1093423,
+              "device": 0,
+              "visible_devices": 8,
+              "project": "f03701df-38a4-4437-9ef3-a80e71de07ec",
+              "job": "37767179b3924ed8cdcf5aa80c950314dc9fbf1d9735cf0d8ed0a47335328b6d",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "assignment_generation": "2"
+            },
+            {
+              "grant": {
+                "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b80146",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b81147",
+                "epoch": "00212b8f0c90c9d4077984d243941bcb",
+                "expires": 1793466727,
+                "generation": 2,
+                "job": "37767179b3924ed8cdcf5aa80c950314dc9fbf1d9735cf0d8ed0a47335328b6d",
+                "owner": "89304f59-8d3a-4fc1-9415-400dad9c3baa.eca5f299-ed27-494d-a7f0-9beb0736186a",
+                "project": "f03701df-38a4-4437-9ef3-a80e71de07ec"
+              },
+              "queue": "0",
+              "type": "grant-start"
+            },
+            {
+              "interval": {
+                "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b810c6",
+                "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b81147"
+              },
+              "target_seconds": 180,
+              "type": "work-unit"
+            },
+            {
+              "interval": {
+                "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b80146",
+                "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b810c6"
+              },
+              "target_seconds": 180,
+              "type": "work-unit"
+            },
+            {
+              "matches": 2,
+              "sequence": 37,
+              "transaction_ms": 0.36743499999999996,
+              "type": "checkpoint"
+            },
+            {
+              "matches": 2,
+              "sequence": 66,
+              "transaction_ms": 0.344921,
+              "type": "checkpoint"
+            },
+            {
+              "matches": 0,
+              "sequence": 68,
+              "transaction_ms": 0.390791,
+              "type": "checkpoint"
+            },
+            {
+              "cold": false,
+              "complete": true,
+              "computed_ordinals": "0x0000000000000000000000000000000000000000000000000000000000001001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "device_steps": "0x0000000000000000000000000000000000000000000000000000000000001001",
+              "executor_setups": 1,
+              "grant": {
+                "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b80146",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b81147",
+                "epoch": "00212b8f0c90c9d4077984d243941bcb",
+                "expires": 1793466727,
+                "generation": 2,
+                "job": "37767179b3924ed8cdcf5aa80c950314dc9fbf1d9735cf0d8ed0a47335328b6d",
+                "owner": "89304f59-8d3a-4fc1-9415-400dad9c3baa.eca5f299-ed27-494d-a7f0-9beb0736186a",
+                "project": "f03701df-38a4-4437-9ef3-a80e71de07ec"
+              },
+              "kernel_ms": 50.36012164130807,
+              "m": 1,
+              "mode": "minikeys",
+              "ordinal_order": "reverse",
+              "table_upload_ms": 0.0,
+              "target_count": 6,
+              "type": "grant-finish",
+              "wall_ns": 85750837,
+              "work_units": 2
+            },
+            {
+              "type": "control",
+              "accepted": true,
+              "state": "idle",
+              "requested": "run",
+              "durably_paused": false,
+              "durability": "local",
+              "pause_ms": 0.0,
+              "pid": 1093423,
+              "device": 0,
+              "visible_devices": 8
+            },
+            {
+              "type": "control",
+              "accepted": true,
+              "state": "stopped",
+              "requested": "run",
+              "durably_paused": false,
+              "durability": "local",
+              "pause_ms": 0.0,
+              "pid": 1093423,
+              "device": 0,
+              "visible_devices": 8
+            },
+            {
+              "completed": 2,
+              "executor_setups": 1,
+              "reason": "drained",
+              "type": "exit",
+              "wall_ms": 179.46178799999998
+            }
+          ]
+        },
+        {
+          "transport": "file",
+          "length": 30,
+          "local_results": [
+            {
+              "id": "1",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "coordinate_space": "minikey-ordinal-v1",
+              "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f145",
+              "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7NzrRy",
+              "scalar": "0x4c7a9640c72dc2099f23715d0c8a0d8a35f8906e3cab61dd3f78b67bf887c9ab",
+              "target": 1,
+              "target_bytes": "1e01f78c1591f3f34fd1fe339dc371069b7b492bf370"
+            },
+            {
+              "id": "2",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "coordinate_space": "minikey-ordinal-v1",
+              "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f145",
+              "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7NzrRy",
+              "scalar": "0x4c7a9640c72dc2099f23715d0c8a0d8a35f8906e3cab61dd3f78b67bf887c9ab",
+              "target": 3,
+              "target_bytes": "1e027f6ab65fa911f558ca2dde3e9d073acb02c0d5c6"
+            },
+            {
+              "id": "3",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b80ff3",
+              "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7NztmP",
+              "scalar": "0x881473584d68c4cea4d57904ea40830af7b6fa59f86dcfaee3f209ed775f2377",
+              "target": 2,
+              "target_bytes": "1e01f7c3f510d1874dbd13195241256a8721f3d22e2c"
+            },
+            {
+              "id": "4",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b80ff3",
+              "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7NztmP",
+              "scalar": "0x881473584d68c4cea4d57904ea40830af7b6fa59f86dcfaee3f209ed775f2377",
+              "target": 5,
+              "target_bytes": "1e02cf0749c082fdbdef24c6551a73818dcba9235233"
+            },
+            {
+              "id": "5",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b801d4",
+              "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7Nzsh4",
+              "scalar": "0xbc88f968d3a5b5f2af9a6f6ee86bcf20029ee511e08e73814dbb3ae40c8ca738",
+              "target": 0,
+              "target_bytes": "1e01099de9ab308d8a2d82b603bdeafa1038b894ce12"
+            },
+            {
+              "id": "6",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b801d4",
+              "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7Nzsh4",
+              "scalar": "0xbc88f968d3a5b5f2af9a6f6ee86bcf20029ee511e08e73814dbb3ae40c8ca738",
+              "target": 4,
+              "target_bytes": "1e029d4385491ef2d0f0040d3c7bf8fd7c376279345a"
+            }
+          ],
+          "server_results": [
+            {
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "coordinate_space": "minikey-ordinal-v1",
+              "id": 19,
+              "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7NzrRy",
+              "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f145",
+              "scalar": "0x4c7a9640c72dc2099f23715d0c8a0d8a35f8906e3cab61dd3f78b67bf887c9ab",
+              "target": 1,
+              "target_bytes": "1e01f78c1591f3f34fd1fe339dc371069b7b492bf370"
+            },
+            {
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "coordinate_space": "minikey-ordinal-v1",
+              "id": 20,
+              "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7NzrRy",
+              "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f145",
+              "scalar": "0x4c7a9640c72dc2099f23715d0c8a0d8a35f8906e3cab61dd3f78b67bf887c9ab",
+              "target": 3,
+              "target_bytes": "1e027f6ab65fa911f558ca2dde3e9d073acb02c0d5c6"
+            },
+            {
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "id": 21,
+              "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7NztmP",
+              "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b80ff3",
+              "scalar": "0x881473584d68c4cea4d57904ea40830af7b6fa59f86dcfaee3f209ed775f2377",
+              "target": 2,
+              "target_bytes": "1e01f7c3f510d1874dbd13195241256a8721f3d22e2c"
+            },
+            {
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "id": 22,
+              "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7NztmP",
+              "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b80ff3",
+              "scalar": "0x881473584d68c4cea4d57904ea40830af7b6fa59f86dcfaee3f209ed775f2377",
+              "target": 5,
+              "target_bytes": "1e02cf0749c082fdbdef24c6551a73818dcba9235233"
+            },
+            {
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "id": 23,
+              "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7Nzsh4",
+              "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b801d4",
+              "scalar": "0xbc88f968d3a5b5f2af9a6f6ee86bcf20029ee511e08e73814dbb3ae40c8ca738",
+              "target": 0,
+              "target_bytes": "1e01099de9ab308d8a2d82b603bdeafa1038b894ce12"
+            },
+            {
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "id": 24,
+              "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7Nzsh4",
+              "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b801d4",
+              "scalar": "0xbc88f968d3a5b5f2af9a6f6ee86bcf20029ee511e08e73814dbb3ae40c8ca738",
+              "target": 4,
+              "target_bytes": "1e029d4385491ef2d0f0040d3c7bf8fd7c376279345a"
+            }
+          ],
+          "events": [
+            {
+              "type": "control",
+              "accepted": true,
+              "state": "running",
+              "requested": "run",
+              "durably_paused": false,
+              "durability": "local",
+              "pause_ms": 0.0,
+              "pid": 1093474,
+              "device": 0,
+              "visible_devices": 8
+            },
+            {
+              "queue": "0",
+              "type": "self-test-start"
+            },
+            {
+              "queue": "0",
+              "self_test": {
+                "compute_partition": "SPX",
+                "compute_units": 304,
+                "driver": 71526333,
+                "memory_partition": "NPS1",
+                "ordinal": 0,
+                "passed": true,
+                "pci_bus_id": "0000:1b:00.0",
+                "runtime": 71526333,
+                "uuid": "30646366333934386337333264313231"
+              },
+              "type": "ready",
+              "uuid": "30646366333934386337333264313231"
+            },
+            {
+              "type": "control",
+              "accepted": true,
+              "state": "running",
+              "requested": "run",
+              "durably_paused": false,
+              "durability": "local",
+              "pause_ms": 0.0,
+              "pid": 1093474,
+              "device": 0,
+              "visible_devices": 8,
+              "project": "dcc26a41-5268-436d-8018-d833874bfa52",
+              "job": "37767179b3924ed8cdcf5aa80c950314dc9fbf1d9735cf0d8ed0a47335328b6d",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "assignment_generation": "1"
+            },
+            {
+              "grant": {
+                "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f145",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b80146",
+                "epoch": "3f75585d13b613df6a5b4d86674d2865",
+                "expires": 1793466729,
+                "generation": 1,
+                "job": "37767179b3924ed8cdcf5aa80c950314dc9fbf1d9735cf0d8ed0a47335328b6d",
+                "owner": "89304f59-8d3a-4fc1-9415-400dad9c3baa.7f8e2d91-2a8e-463f-a08f-79686af46238",
+                "project": "dcc26a41-5268-436d-8018-d833874bfa52"
+              },
+              "queue": "0",
+              "type": "grant-start"
+            },
+            {
+              "interval": {
+                "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b800c5",
+                "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b80146"
+              },
+              "target_seconds": 180,
+              "type": "work-unit"
+            },
+            {
+              "device_steps": 129,
+              "kernel_ms": 0.05716999992728233,
+              "sequence": 1,
+              "type": "progress"
+            },
+            {
+              "interval": {
+                "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f145",
+                "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b800c5"
+              },
+              "target_seconds": 180,
+              "type": "work-unit"
+            },
+            {
+              "matches": 2,
+              "sequence": 33,
+              "transaction_ms": 0.467464,
+              "type": "checkpoint"
+            },
+            {
+              "cold": true,
+              "complete": true,
+              "computed_ordinals": "0x0000000000000000000000000000000000000000000000000000000000001001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "device_steps": "0x0000000000000000000000000000000000000000000000000000000000001001",
+              "executor_setups": 1,
+              "grant": {
+                "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f145",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b80146",
+                "epoch": "3f75585d13b613df6a5b4d86674d2865",
+                "expires": 1793466729,
+                "generation": 1,
+                "job": "37767179b3924ed8cdcf5aa80c950314dc9fbf1d9735cf0d8ed0a47335328b6d",
+                "owner": "89304f59-8d3a-4fc1-9415-400dad9c3baa.7f8e2d91-2a8e-463f-a08f-79686af46238",
+                "project": "dcc26a41-5268-436d-8018-d833874bfa52"
+              },
+              "kernel_ms": 54.82842730358243,
+              "m": 1,
+              "mode": "minikeys",
+              "ordinal_order": "reverse",
+              "table_upload_ms": 0.0,
+              "target_count": 6,
+              "type": "grant-finish",
+              "wall_ns": 92319021,
+              "work_units": 2
+            },
+            {
+              "type": "control",
+              "accepted": true,
+              "state": "running",
+              "requested": "run",
+              "durably_paused": false,
+              "durability": "local",
+              "pause_ms": 0.0,
+              "pid": 1093474,
+              "device": 0,
+              "visible_devices": 8,
+              "project": "dcc26a41-5268-436d-8018-d833874bfa52",
+              "job": "37767179b3924ed8cdcf5aa80c950314dc9fbf1d9735cf0d8ed0a47335328b6d",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "assignment_generation": "2"
+            },
+            {
+              "grant": {
+                "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b80146",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b81147",
+                "epoch": "3f75585d13b613df6a5b4d86674d2865",
+                "expires": 1793466729,
+                "generation": 2,
+                "job": "37767179b3924ed8cdcf5aa80c950314dc9fbf1d9735cf0d8ed0a47335328b6d",
+                "owner": "89304f59-8d3a-4fc1-9415-400dad9c3baa.7f8e2d91-2a8e-463f-a08f-79686af46238",
+                "project": "dcc26a41-5268-436d-8018-d833874bfa52"
+              },
+              "queue": "0",
+              "type": "grant-start"
+            },
+            {
+              "interval": {
+                "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b810c6",
+                "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b81147"
+              },
+              "target_seconds": 180,
+              "type": "work-unit"
+            },
+            {
+              "interval": {
+                "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b80146",
+                "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b810c6"
+              },
+              "target_seconds": 180,
+              "type": "work-unit"
+            },
+            {
+              "matches": 2,
+              "sequence": 37,
+              "transaction_ms": 0.334825,
+              "type": "checkpoint"
+            },
+            {
+              "matches": 2,
+              "sequence": 66,
+              "transaction_ms": 0.31032,
+              "type": "checkpoint"
+            },
+            {
+              "matches": 0,
+              "sequence": 68,
+              "transaction_ms": 0.34913,
+              "type": "checkpoint"
+            },
+            {
+              "cold": false,
+              "complete": true,
+              "computed_ordinals": "0x0000000000000000000000000000000000000000000000000000000000001001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "device_steps": "0x0000000000000000000000000000000000000000000000000000000000001001",
+              "executor_setups": 1,
+              "grant": {
+                "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b80146",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b81147",
+                "epoch": "3f75585d13b613df6a5b4d86674d2865",
+                "expires": 1793466729,
+                "generation": 2,
+                "job": "37767179b3924ed8cdcf5aa80c950314dc9fbf1d9735cf0d8ed0a47335328b6d",
+                "owner": "89304f59-8d3a-4fc1-9415-400dad9c3baa.7f8e2d91-2a8e-463f-a08f-79686af46238",
+                "project": "dcc26a41-5268-436d-8018-d833874bfa52"
+              },
+              "kernel_ms": 50.338275007903576,
+              "m": 1,
+              "mode": "minikeys",
+              "ordinal_order": "reverse",
+              "table_upload_ms": 0.0,
+              "target_count": 6,
+              "type": "grant-finish",
+              "wall_ns": 85563146,
+              "work_units": 2
+            },
+            {
+              "type": "control",
+              "accepted": true,
+              "state": "idle",
+              "requested": "run",
+              "durably_paused": false,
+              "durability": "local",
+              "pause_ms": 0.0,
+              "pid": 1093474,
+              "device": 0,
+              "visible_devices": 8
+            },
+            {
+              "type": "control",
+              "accepted": true,
+              "state": "stopped",
+              "requested": "run",
+              "durably_paused": false,
+              "durability": "local",
+              "pause_ms": 0.0,
+              "pid": 1093474,
+              "device": 0,
+              "visible_devices": 8
+            },
+            {
+              "completed": 2,
+              "executor_setups": 1,
+              "reason": "drained",
+              "type": "exit",
+              "wall_ms": 179.155955
+            }
+          ]
+        }
+      ],
+      "binaries": {
+        "keyhunt-coordinator": "5a7f5799eaf4bcb9db4942e369c4f13d2ac866be0f5a5b1af8a2a40a5383902c",
+        "keyhunt-worker": "320696b8bc968bf5c4ced130b09d4dc64c71ce6ed790a64de37484b2870647f3",
+        "keyhunt": "83fd5166e55c5ea25d9ee352619242dca8f487093d4779663886827a307bcd44"
+      }
+    }
+  },
+  "cuda": {
+    "workers": {
+      "ordinal_order": "reverse",
+      "passed": true,
+      "hardware": true,
+      "backend": "cuda",
+      "oracle_commit": "0cdc758a56360bf58a851fe91085a327ec97685a",
+      "cases": [
+        {
+          "transport": "https",
+          "length": 22,
+          "local_results": [
+            {
+              "id": "1",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "coordinate_space": "minikey-ordinal-v1",
+              "ordinal": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b8202",
+              "minikey": "SzavMBLoXU6kDrqtUVmghv",
+              "scalar": "0xb64f484a0c4e0987f300316c7b1844d996d59508f05c01cc82dddccd4b624d61",
+              "target": 1,
+              "target_bytes": "160193438aff7c66b1e40ea6c8ec7b3f3af9eeb762f9"
+            },
+            {
+              "id": "2",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "coordinate_space": "minikey-ordinal-v1",
+              "ordinal": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b8202",
+              "minikey": "SzavMBLoXU6kDrqtUVmghv",
+              "scalar": "0xb64f484a0c4e0987f300316c7b1844d996d59508f05c01cc82dddccd4b624d61",
+              "target": 5,
+              "target_bytes": "1602fe640919437f2d646f17fee2064ba4bd27e7b123"
+            },
+            {
+              "id": "3",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "coordinate_space": "minikey-ordinal-v1",
+              "ordinal": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b746a",
+              "minikey": "SzavMBLoXU6kDrqtUVmffv",
+              "scalar": "0xe9873d79c6d87dc0fb6a5778633389f4453213303da61f20bd67fc233aa33262",
+              "target": 0,
+              "target_bytes": "16015ac36b4aff945da30c16bf6c25dbac434664da8c"
+            },
+            {
+              "id": "4",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "coordinate_space": "minikey-ordinal-v1",
+              "ordinal": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b746a",
+              "minikey": "SzavMBLoXU6kDrqtUVmffv",
+              "scalar": "0xe9873d79c6d87dc0fb6a5778633389f4453213303da61f20bd67fc233aa33262",
+              "target": 3,
+              "target_bytes": "16027ac00f979ff0df2fdcb65761dc8f9ef8b37142db"
+            },
+            {
+              "id": "5",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "ordinal": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b93f2",
+              "minikey": "SzavMBLoXU6kDrqtUVmi56",
+              "scalar": "0x815ec8543bd3aff396de2c7f878ac80738e4ebd3517ad6c3f4f9d2b12053cb7c",
+              "target": 2,
+              "target_bytes": "1601b014f734973da34a7415e7ed54edbfb7da2c66c7"
+            },
+            {
+              "id": "6",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "ordinal": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b93f2",
+              "minikey": "SzavMBLoXU6kDrqtUVmi56",
+              "scalar": "0x815ec8543bd3aff396de2c7f878ac80738e4ebd3517ad6c3f4f9d2b12053cb7c",
+              "target": 4,
+              "target_bytes": "1602b3823670ece4eac343a08e84525f413ff331d507"
+            }
+          ],
+          "server_results": [
+            {
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "coordinate_space": "minikey-ordinal-v1",
+              "id": 1,
+              "minikey": "SzavMBLoXU6kDrqtUVmghv",
+              "ordinal": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b8202",
+              "scalar": "0xb64f484a0c4e0987f300316c7b1844d996d59508f05c01cc82dddccd4b624d61",
+              "target": 1,
+              "target_bytes": "160193438aff7c66b1e40ea6c8ec7b3f3af9eeb762f9"
+            },
+            {
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "coordinate_space": "minikey-ordinal-v1",
+              "id": 2,
+              "minikey": "SzavMBLoXU6kDrqtUVmghv",
+              "ordinal": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b8202",
+              "scalar": "0xb64f484a0c4e0987f300316c7b1844d996d59508f05c01cc82dddccd4b624d61",
+              "target": 5,
+              "target_bytes": "1602fe640919437f2d646f17fee2064ba4bd27e7b123"
+            },
+            {
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "coordinate_space": "minikey-ordinal-v1",
+              "id": 3,
+              "minikey": "SzavMBLoXU6kDrqtUVmffv",
+              "ordinal": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b746a",
+              "scalar": "0xe9873d79c6d87dc0fb6a5778633389f4453213303da61f20bd67fc233aa33262",
+              "target": 0,
+              "target_bytes": "16015ac36b4aff945da30c16bf6c25dbac434664da8c"
+            },
+            {
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "coordinate_space": "minikey-ordinal-v1",
+              "id": 4,
+              "minikey": "SzavMBLoXU6kDrqtUVmffv",
+              "ordinal": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b746a",
+              "scalar": "0xe9873d79c6d87dc0fb6a5778633389f4453213303da61f20bd67fc233aa33262",
+              "target": 3,
+              "target_bytes": "16027ac00f979ff0df2fdcb65761dc8f9ef8b37142db"
+            },
+            {
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "id": 5,
+              "minikey": "SzavMBLoXU6kDrqtUVmi56",
+              "ordinal": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b93f2",
+              "scalar": "0x815ec8543bd3aff396de2c7f878ac80738e4ebd3517ad6c3f4f9d2b12053cb7c",
+              "target": 2,
+              "target_bytes": "1601b014f734973da34a7415e7ed54edbfb7da2c66c7"
+            },
+            {
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "id": 6,
+              "minikey": "SzavMBLoXU6kDrqtUVmi56",
+              "ordinal": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b93f2",
+              "scalar": "0x815ec8543bd3aff396de2c7f878ac80738e4ebd3517ad6c3f4f9d2b12053cb7c",
+              "target": 4,
+              "target_bytes": "1602b3823670ece4eac343a08e84525f413ff331d507"
+            }
+          ],
+          "events": [
+            {
+              "type": "control",
+              "accepted": true,
+              "state": "running",
+              "requested": "run",
+              "durably_paused": false,
+              "durability": "local",
+              "pause_ms": 0.0,
+              "pid": 3391961,
+              "device": 0,
+              "visible_devices": 8
+            },
+            {
+              "queue": "0",
+              "type": "self-test-start"
+            },
+            {
+              "queue": "0",
+              "self_test": {
+                "compute_partition": "",
+                "compute_units": 132,
+                "driver": 13030,
+                "memory_partition": "",
+                "ordinal": 0,
+                "passed": true,
+                "pci_bus_id": "0000:1b:00.0",
+                "runtime": 13030,
+                "uuid": "9fdcd9f2c45469a881b044d5f5e92bb8"
+              },
+              "type": "ready",
+              "uuid": "9fdcd9f2c45469a881b044d5f5e92bb8"
+            },
+            {
+              "type": "control",
+              "accepted": true,
+              "state": "running",
+              "requested": "run",
+              "durably_paused": false,
+              "durability": "local",
+              "pause_ms": 0.0,
+              "pid": 3391961,
+              "device": 0,
+              "visible_devices": 8,
+              "project": "f52e7b9e-ba00-4420-ac8b-8076d9e30b81",
+              "job": "9c4a463842bc8dac0e25d8d01e5c95240f4387f2f85687b6b8f5c4b4bf7d79d7",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "assignment_generation": "1"
+            },
+            {
+              "grant": {
+                "begin": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b746a",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "end_exclusive": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b846b",
+                "epoch": "fa28b64485bc6c94f4cc1b6ab1191bd7",
+                "expires": 1793467480,
+                "generation": 1,
+                "job": "9c4a463842bc8dac0e25d8d01e5c95240f4387f2f85687b6b8f5c4b4bf7d79d7",
+                "owner": "aa4b1d13-5757-4b19-aed7-fced5c5491f7.fc0ed894-807c-44b9-837a-9e40260454d2",
+                "project": "f52e7b9e-ba00-4420-ac8b-8076d9e30b81"
+              },
+              "queue": "0",
+              "type": "grant-start"
+            },
+            {
+              "interval": {
+                "begin": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b83ea",
+                "end_exclusive": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b846b"
+              },
+              "target_seconds": 180,
+              "type": "work-unit"
+            },
+            {
+              "device_steps": 129,
+              "kernel_ms": 2.137984037399292,
+              "sequence": 1,
+              "type": "progress"
+            },
+            {
+              "interval": {
+                "begin": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b746a",
+                "end_exclusive": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b83ea"
+              },
+              "target_seconds": 180,
+              "type": "work-unit"
+            },
+            {
+              "matches": 2,
+              "sequence": 6,
+              "transaction_ms": 0.586357,
+              "type": "checkpoint"
+            },
+            {
+              "matches": 2,
+              "sequence": 34,
+              "transaction_ms": 0.627713,
+              "type": "checkpoint"
+            },
+            {
+              "cold": true,
+              "complete": true,
+              "computed_ordinals": "0x0000000000000000000000000000000000000000000000000000000000001001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "device_steps": "0x0000000000000000000000000000000000000000000000000000000000001001",
+              "executor_setups": 1,
+              "grant": {
+                "begin": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b746a",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "end_exclusive": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b846b",
+                "epoch": "fa28b64485bc6c94f4cc1b6ab1191bd7",
+                "expires": 1793467480,
+                "generation": 1,
+                "job": "9c4a463842bc8dac0e25d8d01e5c95240f4387f2f85687b6b8f5c4b4bf7d79d7",
+                "owner": "aa4b1d13-5757-4b19-aed7-fced5c5491f7.fc0ed894-807c-44b9-837a-9e40260454d2",
+                "project": "f52e7b9e-ba00-4420-ac8b-8076d9e30b81"
+              },
+              "kernel_ms": 32.76870385557413,
+              "m": 1,
+              "mode": "minikeys",
+              "ordinal_order": "reverse",
+              "table_upload_ms": 0.0,
+              "target_count": 6,
+              "type": "grant-finish",
+              "wall_ns": 71194547,
+              "work_units": 2
+            },
+            {
+              "type": "control",
+              "accepted": true,
+              "state": "running",
+              "requested": "run",
+              "durably_paused": false,
+              "durability": "local",
+              "pause_ms": 0.0,
+              "pid": 3391961,
+              "device": 0,
+              "visible_devices": 8,
+              "project": "f52e7b9e-ba00-4420-ac8b-8076d9e30b81",
+              "job": "9c4a463842bc8dac0e25d8d01e5c95240f4387f2f85687b6b8f5c4b4bf7d79d7",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "assignment_generation": "2"
+            },
+            {
+              "grant": {
+                "begin": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b846b",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "end_exclusive": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b946c",
+                "epoch": "fa28b64485bc6c94f4cc1b6ab1191bd7",
+                "expires": 1793467480,
+                "generation": 2,
+                "job": "9c4a463842bc8dac0e25d8d01e5c95240f4387f2f85687b6b8f5c4b4bf7d79d7",
+                "owner": "aa4b1d13-5757-4b19-aed7-fced5c5491f7.fc0ed894-807c-44b9-837a-9e40260454d2",
+                "project": "f52e7b9e-ba00-4420-ac8b-8076d9e30b81"
+              },
+              "queue": "0",
+              "type": "grant-start"
+            },
+            {
+              "interval": {
+                "begin": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b93eb",
+                "end_exclusive": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b946c"
+              },
+              "target_seconds": 180,
+              "type": "work-unit"
+            },
+            {
+              "matches": 2,
+              "sequence": 36,
+              "transaction_ms": 0.512033,
+              "type": "checkpoint"
+            },
+            {
+              "interval": {
+                "begin": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b846b",
+                "end_exclusive": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b93eb"
+              },
+              "target_seconds": 180,
+              "type": "work-unit"
+            },
+            {
+              "matches": 0,
+              "sequence": 68,
+              "transaction_ms": 0.557605,
+              "type": "checkpoint"
+            },
+            {
+              "cold": false,
+              "complete": true,
+              "computed_ordinals": "0x0000000000000000000000000000000000000000000000000000000000001001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "device_steps": "0x0000000000000000000000000000000000000000000000000000000000001001",
+              "executor_setups": 1,
+              "grant": {
+                "begin": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b846b",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "end_exclusive": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b946c",
+                "epoch": "fa28b64485bc6c94f4cc1b6ab1191bd7",
+                "expires": 1793467480,
+                "generation": 2,
+                "job": "9c4a463842bc8dac0e25d8d01e5c95240f4387f2f85687b6b8f5c4b4bf7d79d7",
+                "owner": "aa4b1d13-5757-4b19-aed7-fced5c5491f7.fc0ed894-807c-44b9-837a-9e40260454d2",
+                "project": "f52e7b9e-ba00-4420-ac8b-8076d9e30b81"
+              },
+              "kernel_ms": 23.819743951782584,
+              "m": 1,
+              "mode": "minikeys",
+              "ordinal_order": "reverse",
+              "table_upload_ms": 0.0,
+              "target_count": 6,
+              "type": "grant-finish",
+              "wall_ns": 60875187,
+              "work_units": 2
+            },
+            {
+              "type": "control",
+              "accepted": true,
+              "state": "idle",
+              "requested": "run",
+              "durably_paused": false,
+              "durability": "local",
+              "pause_ms": 0.0,
+              "pid": 3391961,
+              "device": 0,
+              "visible_devices": 8
+            },
+            {
+              "type": "control",
+              "accepted": true,
+              "state": "stopped",
+              "requested": "run",
+              "durably_paused": false,
+              "durability": "local",
+              "pause_ms": 0.0,
+              "pid": 3391961,
+              "device": 0,
+              "visible_devices": 8
+            },
+            {
+              "completed": 2,
+              "executor_setups": 1,
+              "reason": "drained",
+              "type": "exit",
+              "wall_ms": 133.885666
+            }
+          ]
+        },
+        {
+          "transport": "file",
+          "length": 22,
+          "local_results": [
+            {
+              "id": "1",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "coordinate_space": "minikey-ordinal-v1",
+              "ordinal": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b8202",
+              "minikey": "SzavMBLoXU6kDrqtUVmghv",
+              "scalar": "0xb64f484a0c4e0987f300316c7b1844d996d59508f05c01cc82dddccd4b624d61",
+              "target": 1,
+              "target_bytes": "160193438aff7c66b1e40ea6c8ec7b3f3af9eeb762f9"
+            },
+            {
+              "id": "2",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "coordinate_space": "minikey-ordinal-v1",
+              "ordinal": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b8202",
+              "minikey": "SzavMBLoXU6kDrqtUVmghv",
+              "scalar": "0xb64f484a0c4e0987f300316c7b1844d996d59508f05c01cc82dddccd4b624d61",
+              "target": 5,
+              "target_bytes": "1602fe640919437f2d646f17fee2064ba4bd27e7b123"
+            },
+            {
+              "id": "3",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "coordinate_space": "minikey-ordinal-v1",
+              "ordinal": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b746a",
+              "minikey": "SzavMBLoXU6kDrqtUVmffv",
+              "scalar": "0xe9873d79c6d87dc0fb6a5778633389f4453213303da61f20bd67fc233aa33262",
+              "target": 0,
+              "target_bytes": "16015ac36b4aff945da30c16bf6c25dbac434664da8c"
+            },
+            {
+              "id": "4",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "coordinate_space": "minikey-ordinal-v1",
+              "ordinal": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b746a",
+              "minikey": "SzavMBLoXU6kDrqtUVmffv",
+              "scalar": "0xe9873d79c6d87dc0fb6a5778633389f4453213303da61f20bd67fc233aa33262",
+              "target": 3,
+              "target_bytes": "16027ac00f979ff0df2fdcb65761dc8f9ef8b37142db"
+            },
+            {
+              "id": "5",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "ordinal": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b93f2",
+              "minikey": "SzavMBLoXU6kDrqtUVmi56",
+              "scalar": "0x815ec8543bd3aff396de2c7f878ac80738e4ebd3517ad6c3f4f9d2b12053cb7c",
+              "target": 2,
+              "target_bytes": "1601b014f734973da34a7415e7ed54edbfb7da2c66c7"
+            },
+            {
+              "id": "6",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "ordinal": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b93f2",
+              "minikey": "SzavMBLoXU6kDrqtUVmi56",
+              "scalar": "0x815ec8543bd3aff396de2c7f878ac80738e4ebd3517ad6c3f4f9d2b12053cb7c",
+              "target": 4,
+              "target_bytes": "1602b3823670ece4eac343a08e84525f413ff331d507"
+            }
+          ],
+          "server_results": [
+            {
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "coordinate_space": "minikey-ordinal-v1",
+              "id": 7,
+              "minikey": "SzavMBLoXU6kDrqtUVmghv",
+              "ordinal": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b8202",
+              "scalar": "0xb64f484a0c4e0987f300316c7b1844d996d59508f05c01cc82dddccd4b624d61",
+              "target": 1,
+              "target_bytes": "160193438aff7c66b1e40ea6c8ec7b3f3af9eeb762f9"
+            },
+            {
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "coordinate_space": "minikey-ordinal-v1",
+              "id": 8,
+              "minikey": "SzavMBLoXU6kDrqtUVmghv",
+              "ordinal": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b8202",
+              "scalar": "0xb64f484a0c4e0987f300316c7b1844d996d59508f05c01cc82dddccd4b624d61",
+              "target": 5,
+              "target_bytes": "1602fe640919437f2d646f17fee2064ba4bd27e7b123"
+            },
+            {
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "coordinate_space": "minikey-ordinal-v1",
+              "id": 9,
+              "minikey": "SzavMBLoXU6kDrqtUVmffv",
+              "ordinal": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b746a",
+              "scalar": "0xe9873d79c6d87dc0fb6a5778633389f4453213303da61f20bd67fc233aa33262",
+              "target": 0,
+              "target_bytes": "16015ac36b4aff945da30c16bf6c25dbac434664da8c"
+            },
+            {
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "coordinate_space": "minikey-ordinal-v1",
+              "id": 10,
+              "minikey": "SzavMBLoXU6kDrqtUVmffv",
+              "ordinal": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b746a",
+              "scalar": "0xe9873d79c6d87dc0fb6a5778633389f4453213303da61f20bd67fc233aa33262",
+              "target": 3,
+              "target_bytes": "16027ac00f979ff0df2fdcb65761dc8f9ef8b37142db"
+            },
+            {
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "id": 11,
+              "minikey": "SzavMBLoXU6kDrqtUVmi56",
+              "ordinal": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b93f2",
+              "scalar": "0x815ec8543bd3aff396de2c7f878ac80738e4ebd3517ad6c3f4f9d2b12053cb7c",
+              "target": 2,
+              "target_bytes": "1601b014f734973da34a7415e7ed54edbfb7da2c66c7"
+            },
+            {
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "id": 12,
+              "minikey": "SzavMBLoXU6kDrqtUVmi56",
+              "ordinal": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b93f2",
+              "scalar": "0x815ec8543bd3aff396de2c7f878ac80738e4ebd3517ad6c3f4f9d2b12053cb7c",
+              "target": 4,
+              "target_bytes": "1602b3823670ece4eac343a08e84525f413ff331d507"
+            }
+          ],
+          "events": [
+            {
+              "type": "control",
+              "accepted": true,
+              "state": "running",
+              "requested": "run",
+              "durably_paused": false,
+              "durability": "local",
+              "pause_ms": 0.0,
+              "pid": 3392046,
+              "device": 0,
+              "visible_devices": 8
+            },
+            {
+              "queue": "0",
+              "type": "self-test-start"
+            },
+            {
+              "queue": "0",
+              "self_test": {
+                "compute_partition": "",
+                "compute_units": 132,
+                "driver": 13030,
+                "memory_partition": "",
+                "ordinal": 0,
+                "passed": true,
+                "pci_bus_id": "0000:1b:00.0",
+                "runtime": 13030,
+                "uuid": "9fdcd9f2c45469a881b044d5f5e92bb8"
+              },
+              "type": "ready",
+              "uuid": "9fdcd9f2c45469a881b044d5f5e92bb8"
+            },
+            {
+              "type": "control",
+              "accepted": true,
+              "state": "running",
+              "requested": "run",
+              "durably_paused": false,
+              "durability": "local",
+              "pause_ms": 0.0,
+              "pid": 3392046,
+              "device": 0,
+              "visible_devices": 8,
+              "project": "25cc61fe-af31-4853-bf7e-9b5ad9487ca9",
+              "job": "9c4a463842bc8dac0e25d8d01e5c95240f4387f2f85687b6b8f5c4b4bf7d79d7",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "assignment_generation": "1"
+            },
+            {
+              "grant": {
+                "begin": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b746a",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "end_exclusive": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b846b",
+                "epoch": "23bd6c99bdb9d0afbdf8ecbf669d7d5f",
+                "expires": 1793467484,
+                "generation": 1,
+                "job": "9c4a463842bc8dac0e25d8d01e5c95240f4387f2f85687b6b8f5c4b4bf7d79d7",
+                "owner": "aa4b1d13-5757-4b19-aed7-fced5c5491f7.105472a7-637c-43fa-ae1e-6a821c15e1f4",
+                "project": "25cc61fe-af31-4853-bf7e-9b5ad9487ca9"
+              },
+              "queue": "0",
+              "type": "grant-start"
+            },
+            {
+              "interval": {
+                "begin": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b83ea",
+                "end_exclusive": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b846b"
+              },
+              "target_seconds": 180,
+              "type": "work-unit"
+            },
+            {
+              "device_steps": 129,
+              "kernel_ms": 2.1383039951324463,
+              "sequence": 1,
+              "type": "progress"
+            },
+            {
+              "interval": {
+                "begin": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b746a",
+                "end_exclusive": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b83ea"
+              },
+              "target_seconds": 180,
+              "type": "work-unit"
+            },
+            {
+              "matches": 2,
+              "sequence": 6,
+              "transaction_ms": 0.566603,
+              "type": "checkpoint"
+            },
+            {
+              "matches": 2,
+              "sequence": 34,
+              "transaction_ms": 0.64151,
+              "type": "checkpoint"
+            },
+            {
+              "cold": true,
+              "complete": true,
+              "computed_ordinals": "0x0000000000000000000000000000000000000000000000000000000000001001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "device_steps": "0x0000000000000000000000000000000000000000000000000000000000001001",
+              "executor_setups": 1,
+              "grant": {
+                "begin": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b746a",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "end_exclusive": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b846b",
+                "epoch": "23bd6c99bdb9d0afbdf8ecbf669d7d5f",
+                "expires": 1793467484,
+                "generation": 1,
+                "job": "9c4a463842bc8dac0e25d8d01e5c95240f4387f2f85687b6b8f5c4b4bf7d79d7",
+                "owner": "aa4b1d13-5757-4b19-aed7-fced5c5491f7.105472a7-637c-43fa-ae1e-6a821c15e1f4",
+                "project": "25cc61fe-af31-4853-bf7e-9b5ad9487ca9"
+              },
+              "kernel_ms": 32.76969594322145,
+              "m": 1,
+              "mode": "minikeys",
+              "ordinal_order": "reverse",
+              "table_upload_ms": 0.0,
+              "target_count": 6,
+              "type": "grant-finish",
+              "wall_ns": 71124930,
+              "work_units": 2
+            },
+            {
+              "type": "control",
+              "accepted": true,
+              "state": "running",
+              "requested": "run",
+              "durably_paused": false,
+              "durability": "local",
+              "pause_ms": 0.0,
+              "pid": 3392046,
+              "device": 0,
+              "visible_devices": 8,
+              "project": "25cc61fe-af31-4853-bf7e-9b5ad9487ca9",
+              "job": "9c4a463842bc8dac0e25d8d01e5c95240f4387f2f85687b6b8f5c4b4bf7d79d7",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "assignment_generation": "2"
+            },
+            {
+              "grant": {
+                "begin": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b846b",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "end_exclusive": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b946c",
+                "epoch": "23bd6c99bdb9d0afbdf8ecbf669d7d5f",
+                "expires": 1793467484,
+                "generation": 2,
+                "job": "9c4a463842bc8dac0e25d8d01e5c95240f4387f2f85687b6b8f5c4b4bf7d79d7",
+                "owner": "aa4b1d13-5757-4b19-aed7-fced5c5491f7.105472a7-637c-43fa-ae1e-6a821c15e1f4",
+                "project": "25cc61fe-af31-4853-bf7e-9b5ad9487ca9"
+              },
+              "queue": "0",
+              "type": "grant-start"
+            },
+            {
+              "interval": {
+                "begin": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b93eb",
+                "end_exclusive": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b946c"
+              },
+              "target_seconds": 180,
+              "type": "work-unit"
+            },
+            {
+              "matches": 2,
+              "sequence": 36,
+              "transaction_ms": 0.524239,
+              "type": "checkpoint"
+            },
+            {
+              "interval": {
+                "begin": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b846b",
+                "end_exclusive": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b93eb"
+              },
+              "target_seconds": 180,
+              "type": "work-unit"
+            },
+            {
+              "matches": 0,
+              "sequence": 68,
+              "transaction_ms": 0.554939,
+              "type": "checkpoint"
+            },
+            {
+              "cold": false,
+              "complete": true,
+              "computed_ordinals": "0x0000000000000000000000000000000000000000000000000000000000001001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "device_steps": "0x0000000000000000000000000000000000000000000000000000000000001001",
+              "executor_setups": 1,
+              "grant": {
+                "begin": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b846b",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "end_exclusive": "0x00000000000000000000000000000000080a4c77e06856b4e84a21a7fe3b946c",
+                "epoch": "23bd6c99bdb9d0afbdf8ecbf669d7d5f",
+                "expires": 1793467484,
+                "generation": 2,
+                "job": "9c4a463842bc8dac0e25d8d01e5c95240f4387f2f85687b6b8f5c4b4bf7d79d7",
+                "owner": "aa4b1d13-5757-4b19-aed7-fced5c5491f7.105472a7-637c-43fa-ae1e-6a821c15e1f4",
+                "project": "25cc61fe-af31-4853-bf7e-9b5ad9487ca9"
+              },
+              "kernel_ms": 23.818303706124425,
+              "m": 1,
+              "mode": "minikeys",
+              "ordinal_order": "reverse",
+              "table_upload_ms": 0.0,
+              "target_count": 6,
+              "type": "grant-finish",
+              "wall_ns": 60682044,
+              "work_units": 2
+            },
+            {
+              "type": "control",
+              "accepted": true,
+              "state": "idle",
+              "requested": "run",
+              "durably_paused": false,
+              "durability": "local",
+              "pause_ms": 0.0,
+              "pid": 3392046,
+              "device": 0,
+              "visible_devices": 8
+            },
+            {
+              "type": "control",
+              "accepted": true,
+              "state": "stopped",
+              "requested": "run",
+              "durably_paused": false,
+              "durability": "local",
+              "pause_ms": 0.0,
+              "pid": 3392046,
+              "device": 0,
+              "visible_devices": 8
+            },
+            {
+              "completed": 2,
+              "executor_setups": 1,
+              "reason": "drained",
+              "type": "exit",
+              "wall_ms": 133.538736
+            }
+          ]
+        },
+        {
+          "transport": "https",
+          "length": 30,
+          "local_results": [
+            {
+              "id": "1",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "coordinate_space": "minikey-ordinal-v1",
+              "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f145",
+              "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7NzrRy",
+              "scalar": "0x4c7a9640c72dc2099f23715d0c8a0d8a35f8906e3cab61dd3f78b67bf887c9ab",
+              "target": 1,
+              "target_bytes": "1e01f78c1591f3f34fd1fe339dc371069b7b492bf370"
+            },
+            {
+              "id": "2",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "coordinate_space": "minikey-ordinal-v1",
+              "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f145",
+              "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7NzrRy",
+              "scalar": "0x4c7a9640c72dc2099f23715d0c8a0d8a35f8906e3cab61dd3f78b67bf887c9ab",
+              "target": 3,
+              "target_bytes": "1e027f6ab65fa911f558ca2dde3e9d073acb02c0d5c6"
+            },
+            {
+              "id": "3",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b80ff3",
+              "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7NztmP",
+              "scalar": "0x881473584d68c4cea4d57904ea40830af7b6fa59f86dcfaee3f209ed775f2377",
+              "target": 2,
+              "target_bytes": "1e01f7c3f510d1874dbd13195241256a8721f3d22e2c"
+            },
+            {
+              "id": "4",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b80ff3",
+              "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7NztmP",
+              "scalar": "0x881473584d68c4cea4d57904ea40830af7b6fa59f86dcfaee3f209ed775f2377",
+              "target": 5,
+              "target_bytes": "1e02cf0749c082fdbdef24c6551a73818dcba9235233"
+            },
+            {
+              "id": "5",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b801d4",
+              "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7Nzsh4",
+              "scalar": "0xbc88f968d3a5b5f2af9a6f6ee86bcf20029ee511e08e73814dbb3ae40c8ca738",
+              "target": 0,
+              "target_bytes": "1e01099de9ab308d8a2d82b603bdeafa1038b894ce12"
+            },
+            {
+              "id": "6",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b801d4",
+              "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7Nzsh4",
+              "scalar": "0xbc88f968d3a5b5f2af9a6f6ee86bcf20029ee511e08e73814dbb3ae40c8ca738",
+              "target": 4,
+              "target_bytes": "1e029d4385491ef2d0f0040d3c7bf8fd7c376279345a"
+            }
+          ],
+          "server_results": [
+            {
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "coordinate_space": "minikey-ordinal-v1",
+              "id": 13,
+              "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7NzrRy",
+              "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f145",
+              "scalar": "0x4c7a9640c72dc2099f23715d0c8a0d8a35f8906e3cab61dd3f78b67bf887c9ab",
+              "target": 1,
+              "target_bytes": "1e01f78c1591f3f34fd1fe339dc371069b7b492bf370"
+            },
+            {
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "coordinate_space": "minikey-ordinal-v1",
+              "id": 14,
+              "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7NzrRy",
+              "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f145",
+              "scalar": "0x4c7a9640c72dc2099f23715d0c8a0d8a35f8906e3cab61dd3f78b67bf887c9ab",
+              "target": 3,
+              "target_bytes": "1e027f6ab65fa911f558ca2dde3e9d073acb02c0d5c6"
+            },
+            {
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "id": 15,
+              "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7NztmP",
+              "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b80ff3",
+              "scalar": "0x881473584d68c4cea4d57904ea40830af7b6fa59f86dcfaee3f209ed775f2377",
+              "target": 2,
+              "target_bytes": "1e01f7c3f510d1874dbd13195241256a8721f3d22e2c"
+            },
+            {
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "id": 16,
+              "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7NztmP",
+              "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b80ff3",
+              "scalar": "0x881473584d68c4cea4d57904ea40830af7b6fa59f86dcfaee3f209ed775f2377",
+              "target": 5,
+              "target_bytes": "1e02cf0749c082fdbdef24c6551a73818dcba9235233"
+            },
+            {
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "id": 17,
+              "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7Nzsh4",
+              "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b801d4",
+              "scalar": "0xbc88f968d3a5b5f2af9a6f6ee86bcf20029ee511e08e73814dbb3ae40c8ca738",
+              "target": 0,
+              "target_bytes": "1e01099de9ab308d8a2d82b603bdeafa1038b894ce12"
+            },
+            {
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "id": 18,
+              "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7Nzsh4",
+              "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b801d4",
+              "scalar": "0xbc88f968d3a5b5f2af9a6f6ee86bcf20029ee511e08e73814dbb3ae40c8ca738",
+              "target": 4,
+              "target_bytes": "1e029d4385491ef2d0f0040d3c7bf8fd7c376279345a"
+            }
+          ],
+          "events": [
+            {
+              "type": "control",
+              "accepted": true,
+              "state": "running",
+              "requested": "run",
+              "durably_paused": false,
+              "durability": "local",
+              "pause_ms": 0.0,
+              "pid": 3392208,
+              "device": 0,
+              "visible_devices": 8
+            },
+            {
+              "queue": "0",
+              "type": "self-test-start"
+            },
+            {
+              "queue": "0",
+              "self_test": {
+                "compute_partition": "",
+                "compute_units": 132,
+                "driver": 13030,
+                "memory_partition": "",
+                "ordinal": 0,
+                "passed": true,
+                "pci_bus_id": "0000:1b:00.0",
+                "runtime": 13030,
+                "uuid": "9fdcd9f2c45469a881b044d5f5e92bb8"
+              },
+              "type": "ready",
+              "uuid": "9fdcd9f2c45469a881b044d5f5e92bb8"
+            },
+            {
+              "type": "control",
+              "accepted": true,
+              "state": "running",
+              "requested": "run",
+              "durably_paused": false,
+              "durability": "local",
+              "pause_ms": 0.0,
+              "pid": 3392208,
+              "device": 0,
+              "visible_devices": 8,
+              "project": "96459fc9-169c-4e33-bef8-b2e9863a4e9c",
+              "job": "37767179b3924ed8cdcf5aa80c950314dc9fbf1d9735cf0d8ed0a47335328b6d",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "assignment_generation": "1"
+            },
+            {
+              "grant": {
+                "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f145",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b80146",
+                "epoch": "d44991b1a99d275c800e5f5a1c15a7de",
+                "expires": 1793467489,
+                "generation": 1,
+                "job": "37767179b3924ed8cdcf5aa80c950314dc9fbf1d9735cf0d8ed0a47335328b6d",
+                "owner": "aa4b1d13-5757-4b19-aed7-fced5c5491f7.a81504dd-b5bc-4eca-a288-851936354e0d",
+                "project": "96459fc9-169c-4e33-bef8-b2e9863a4e9c"
+              },
+              "queue": "0",
+              "type": "grant-start"
+            },
+            {
+              "interval": {
+                "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b800c5",
+                "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b80146"
+              },
+              "target_seconds": 180,
+              "type": "work-unit"
+            },
+            {
+              "device_steps": 129,
+              "kernel_ms": 0.02502400055527687,
+              "sequence": 1,
+              "type": "progress"
+            },
+            {
+              "interval": {
+                "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f145",
+                "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b800c5"
+              },
+              "target_seconds": 180,
+              "type": "work-unit"
+            },
+            {
+              "matches": 2,
+              "sequence": 33,
+              "transaction_ms": 1.412302,
+              "type": "checkpoint"
+            },
+            {
+              "cold": true,
+              "complete": true,
+              "computed_ordinals": "0x0000000000000000000000000000000000000000000000000000000000001001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "device_steps": "0x0000000000000000000000000000000000000000000000000000000000001001",
+              "executor_setups": 1,
+              "grant": {
+                "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f145",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b80146",
+                "epoch": "d44991b1a99d275c800e5f5a1c15a7de",
+                "expires": 1793467489,
+                "generation": 1,
+                "job": "37767179b3924ed8cdcf5aa80c950314dc9fbf1d9735cf0d8ed0a47335328b6d",
+                "owner": "aa4b1d13-5757-4b19-aed7-fced5c5491f7.a81504dd-b5bc-4eca-a288-851936354e0d",
+                "project": "96459fc9-169c-4e33-bef8-b2e9863a4e9c"
+              },
+              "kernel_ms": 32.31446363963187,
+              "m": 1,
+              "mode": "minikeys",
+              "ordinal_order": "reverse",
+              "table_upload_ms": 0.0,
+              "target_count": 6,
+              "type": "grant-finish",
+              "wall_ns": 70697665,
+              "work_units": 2
+            },
+            {
+              "type": "control",
+              "accepted": true,
+              "state": "running",
+              "requested": "run",
+              "durably_paused": false,
+              "durability": "local",
+              "pause_ms": 0.0,
+              "pid": 3392208,
+              "device": 0,
+              "visible_devices": 8,
+              "project": "96459fc9-169c-4e33-bef8-b2e9863a4e9c",
+              "job": "37767179b3924ed8cdcf5aa80c950314dc9fbf1d9735cf0d8ed0a47335328b6d",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "assignment_generation": "2"
+            },
+            {
+              "grant": {
+                "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b80146",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b81147",
+                "epoch": "d44991b1a99d275c800e5f5a1c15a7de",
+                "expires": 1793467489,
+                "generation": 2,
+                "job": "37767179b3924ed8cdcf5aa80c950314dc9fbf1d9735cf0d8ed0a47335328b6d",
+                "owner": "aa4b1d13-5757-4b19-aed7-fced5c5491f7.a81504dd-b5bc-4eca-a288-851936354e0d",
+                "project": "96459fc9-169c-4e33-bef8-b2e9863a4e9c"
+              },
+              "queue": "0",
+              "type": "grant-start"
+            },
+            {
+              "interval": {
+                "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b810c6",
+                "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b81147"
+              },
+              "target_seconds": 180,
+              "type": "work-unit"
+            },
+            {
+              "interval": {
+                "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b80146",
+                "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b810c6"
+              },
+              "target_seconds": 180,
+              "type": "work-unit"
+            },
+            {
+              "matches": 2,
+              "sequence": 37,
+              "transaction_ms": 0.519988,
+              "type": "checkpoint"
+            },
+            {
+              "matches": 2,
+              "sequence": 66,
+              "transaction_ms": 0.524162,
+              "type": "checkpoint"
+            },
+            {
+              "matches": 0,
+              "sequence": 68,
+              "transaction_ms": 0.546854,
+              "type": "checkpoint"
+            },
+            {
+              "cold": false,
+              "complete": true,
+              "computed_ordinals": "0x0000000000000000000000000000000000000000000000000000000000001001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "device_steps": "0x0000000000000000000000000000000000000000000000000000000000001001",
+              "executor_setups": 1,
+              "grant": {
+                "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b80146",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b81147",
+                "epoch": "d44991b1a99d275c800e5f5a1c15a7de",
+                "expires": 1793467489,
+                "generation": 2,
+                "job": "37767179b3924ed8cdcf5aa80c950314dc9fbf1d9735cf0d8ed0a47335328b6d",
+                "owner": "aa4b1d13-5757-4b19-aed7-fced5c5491f7.a81504dd-b5bc-4eca-a288-851936354e0d",
+                "project": "96459fc9-169c-4e33-bef8-b2e9863a4e9c"
+              },
+              "kernel_ms": 29.197439612820745,
+              "m": 1,
+              "mode": "minikeys",
+              "ordinal_order": "reverse",
+              "table_upload_ms": 0.0,
+              "target_count": 6,
+              "type": "grant-finish",
+              "wall_ns": 66940692,
+              "work_units": 2
+            },
+            {
+              "type": "control",
+              "accepted": true,
+              "state": "idle",
+              "requested": "run",
+              "durably_paused": false,
+              "durability": "local",
+              "pause_ms": 0.0,
+              "pid": 3392208,
+              "device": 0,
+              "visible_devices": 8
+            },
+            {
+              "type": "control",
+              "accepted": true,
+              "state": "stopped",
+              "requested": "run",
+              "durably_paused": false,
+              "durability": "local",
+              "pause_ms": 0.0,
+              "pid": 3392208,
+              "device": 0,
+              "visible_devices": 8
+            },
+            {
+              "completed": 2,
+              "executor_setups": 1,
+              "reason": "drained",
+              "type": "exit",
+              "wall_ms": 139.465663
+            }
+          ]
+        },
+        {
+          "transport": "file",
+          "length": 30,
+          "local_results": [
+            {
+              "id": "1",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "coordinate_space": "minikey-ordinal-v1",
+              "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f145",
+              "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7NzrRy",
+              "scalar": "0x4c7a9640c72dc2099f23715d0c8a0d8a35f8906e3cab61dd3f78b67bf887c9ab",
+              "target": 1,
+              "target_bytes": "1e01f78c1591f3f34fd1fe339dc371069b7b492bf370"
+            },
+            {
+              "id": "2",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "coordinate_space": "minikey-ordinal-v1",
+              "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f145",
+              "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7NzrRy",
+              "scalar": "0x4c7a9640c72dc2099f23715d0c8a0d8a35f8906e3cab61dd3f78b67bf887c9ab",
+              "target": 3,
+              "target_bytes": "1e027f6ab65fa911f558ca2dde3e9d073acb02c0d5c6"
+            },
+            {
+              "id": "3",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b80ff3",
+              "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7NztmP",
+              "scalar": "0x881473584d68c4cea4d57904ea40830af7b6fa59f86dcfaee3f209ed775f2377",
+              "target": 2,
+              "target_bytes": "1e01f7c3f510d1874dbd13195241256a8721f3d22e2c"
+            },
+            {
+              "id": "4",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b80ff3",
+              "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7NztmP",
+              "scalar": "0x881473584d68c4cea4d57904ea40830af7b6fa59f86dcfaee3f209ed775f2377",
+              "target": 5,
+              "target_bytes": "1e02cf0749c082fdbdef24c6551a73818dcba9235233"
+            },
+            {
+              "id": "5",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b801d4",
+              "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7Nzsh4",
+              "scalar": "0xbc88f968d3a5b5f2af9a6f6ee86bcf20029ee511e08e73814dbb3ae40c8ca738",
+              "target": 0,
+              "target_bytes": "1e01099de9ab308d8a2d82b603bdeafa1038b894ce12"
+            },
+            {
+              "id": "6",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b801d4",
+              "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7Nzsh4",
+              "scalar": "0xbc88f968d3a5b5f2af9a6f6ee86bcf20029ee511e08e73814dbb3ae40c8ca738",
+              "target": 4,
+              "target_bytes": "1e029d4385491ef2d0f0040d3c7bf8fd7c376279345a"
+            }
+          ],
+          "server_results": [
+            {
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "coordinate_space": "minikey-ordinal-v1",
+              "id": 19,
+              "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7NzrRy",
+              "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f145",
+              "scalar": "0x4c7a9640c72dc2099f23715d0c8a0d8a35f8906e3cab61dd3f78b67bf887c9ab",
+              "target": 1,
+              "target_bytes": "1e01f78c1591f3f34fd1fe339dc371069b7b492bf370"
+            },
+            {
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "coordinate_space": "minikey-ordinal-v1",
+              "id": 20,
+              "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7NzrRy",
+              "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f145",
+              "scalar": "0x4c7a9640c72dc2099f23715d0c8a0d8a35f8906e3cab61dd3f78b67bf887c9ab",
+              "target": 3,
+              "target_bytes": "1e027f6ab65fa911f558ca2dde3e9d073acb02c0d5c6"
+            },
+            {
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "id": 21,
+              "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7NztmP",
+              "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b80ff3",
+              "scalar": "0x881473584d68c4cea4d57904ea40830af7b6fa59f86dcfaee3f209ed775f2377",
+              "target": 2,
+              "target_bytes": "1e01f7c3f510d1874dbd13195241256a8721f3d22e2c"
+            },
+            {
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "id": 22,
+              "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7NztmP",
+              "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b80ff3",
+              "scalar": "0x881473584d68c4cea4d57904ea40830af7b6fa59f86dcfaee3f209ed775f2377",
+              "target": 5,
+              "target_bytes": "1e02cf0749c082fdbdef24c6551a73818dcba9235233"
+            },
+            {
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "id": 23,
+              "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7Nzsh4",
+              "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b801d4",
+              "scalar": "0xbc88f968d3a5b5f2af9a6f6ee86bcf20029ee511e08e73814dbb3ae40c8ca738",
+              "target": 0,
+              "target_bytes": "1e01099de9ab308d8a2d82b603bdeafa1038b894ce12"
+            },
+            {
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "id": 24,
+              "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7Nzsh4",
+              "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b801d4",
+              "scalar": "0xbc88f968d3a5b5f2af9a6f6ee86bcf20029ee511e08e73814dbb3ae40c8ca738",
+              "target": 4,
+              "target_bytes": "1e029d4385491ef2d0f0040d3c7bf8fd7c376279345a"
+            }
+          ],
+          "events": [
+            {
+              "type": "control",
+              "accepted": true,
+              "state": "running",
+              "requested": "run",
+              "durably_paused": false,
+              "durability": "local",
+              "pause_ms": 0.0,
+              "pid": 3392306,
+              "device": 0,
+              "visible_devices": 8
+            },
+            {
+              "queue": "0",
+              "type": "self-test-start"
+            },
+            {
+              "queue": "0",
+              "self_test": {
+                "compute_partition": "",
+                "compute_units": 132,
+                "driver": 13030,
+                "memory_partition": "",
+                "ordinal": 0,
+                "passed": true,
+                "pci_bus_id": "0000:1b:00.0",
+                "runtime": 13030,
+                "uuid": "9fdcd9f2c45469a881b044d5f5e92bb8"
+              },
+              "type": "ready",
+              "uuid": "9fdcd9f2c45469a881b044d5f5e92bb8"
+            },
+            {
+              "type": "control",
+              "accepted": true,
+              "state": "running",
+              "requested": "run",
+              "durably_paused": false,
+              "durability": "local",
+              "pause_ms": 0.0,
+              "pid": 3392306,
+              "device": 0,
+              "visible_devices": 8,
+              "project": "d87873da-d817-4d4e-8940-fb6f0c5821f2",
+              "job": "37767179b3924ed8cdcf5aa80c950314dc9fbf1d9735cf0d8ed0a47335328b6d",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "assignment_generation": "1"
+            },
+            {
+              "grant": {
+                "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f145",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b80146",
+                "epoch": "e5433e0eeaa76810a8462878920a46de",
+                "expires": 1793467493,
+                "generation": 1,
+                "job": "37767179b3924ed8cdcf5aa80c950314dc9fbf1d9735cf0d8ed0a47335328b6d",
+                "owner": "aa4b1d13-5757-4b19-aed7-fced5c5491f7.e1a04b2b-5409-45f5-8f3d-26ae46d69640",
+                "project": "d87873da-d817-4d4e-8940-fb6f0c5821f2"
+              },
+              "queue": "0",
+              "type": "grant-start"
+            },
+            {
+              "interval": {
+                "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b800c5",
+                "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b80146"
+              },
+              "target_seconds": 180,
+              "type": "work-unit"
+            },
+            {
+              "device_steps": 129,
+              "kernel_ms": 0.024320000782608986,
+              "sequence": 1,
+              "type": "progress"
+            },
+            {
+              "interval": {
+                "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f145",
+                "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b800c5"
+              },
+              "target_seconds": 180,
+              "type": "work-unit"
+            },
+            {
+              "matches": 2,
+              "sequence": 33,
+              "transaction_ms": 0.6912929999999999,
+              "type": "checkpoint"
+            },
+            {
+              "cold": true,
+              "complete": true,
+              "computed_ordinals": "0x0000000000000000000000000000000000000000000000000000000000001001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "device_steps": "0x0000000000000000000000000000000000000000000000000000000000001001",
+              "executor_setups": 1,
+              "grant": {
+                "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f145",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b80146",
+                "epoch": "e5433e0eeaa76810a8462878920a46de",
+                "expires": 1793467493,
+                "generation": 1,
+                "job": "37767179b3924ed8cdcf5aa80c950314dc9fbf1d9735cf0d8ed0a47335328b6d",
+                "owner": "aa4b1d13-5757-4b19-aed7-fced5c5491f7.e1a04b2b-5409-45f5-8f3d-26ae46d69640",
+                "project": "d87873da-d817-4d4e-8940-fb6f0c5821f2"
+              },
+              "kernel_ms": 32.32208026945591,
+              "m": 1,
+              "mode": "minikeys",
+              "ordinal_order": "reverse",
+              "table_upload_ms": 0.0,
+              "target_count": 6,
+              "type": "grant-finish",
+              "wall_ns": 70257170,
+              "work_units": 2
+            },
+            {
+              "type": "control",
+              "accepted": true,
+              "state": "running",
+              "requested": "run",
+              "durably_paused": false,
+              "durability": "local",
+              "pause_ms": 0.0,
+              "pid": 3392306,
+              "device": 0,
+              "visible_devices": 8,
+              "project": "d87873da-d817-4d4e-8940-fb6f0c5821f2",
+              "job": "37767179b3924ed8cdcf5aa80c950314dc9fbf1d9735cf0d8ed0a47335328b6d",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "assignment_generation": "2"
+            },
+            {
+              "grant": {
+                "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b80146",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b81147",
+                "epoch": "e5433e0eeaa76810a8462878920a46de",
+                "expires": 1793467493,
+                "generation": 2,
+                "job": "37767179b3924ed8cdcf5aa80c950314dc9fbf1d9735cf0d8ed0a47335328b6d",
+                "owner": "aa4b1d13-5757-4b19-aed7-fced5c5491f7.e1a04b2b-5409-45f5-8f3d-26ae46d69640",
+                "project": "d87873da-d817-4d4e-8940-fb6f0c5821f2"
+              },
+              "queue": "0",
+              "type": "grant-start"
+            },
+            {
+              "interval": {
+                "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b810c6",
+                "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b81147"
+              },
+              "target_seconds": 180,
+              "type": "work-unit"
+            },
+            {
+              "interval": {
+                "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b80146",
+                "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b810c6"
+              },
+              "target_seconds": 180,
+              "type": "work-unit"
+            },
+            {
+              "matches": 2,
+              "sequence": 37,
+              "transaction_ms": 0.5446529999999999,
+              "type": "checkpoint"
+            },
+            {
+              "matches": 2,
+              "sequence": 66,
+              "transaction_ms": 0.529386,
+              "type": "checkpoint"
+            },
+            {
+              "matches": 0,
+              "sequence": 68,
+              "transaction_ms": 0.563315,
+              "type": "checkpoint"
+            },
+            {
+              "cold": false,
+              "complete": true,
+              "computed_ordinals": "0x0000000000000000000000000000000000000000000000000000000000001001",
+              "coordinate_space": "minikey-ordinal-v1",
+              "device_steps": "0x0000000000000000000000000000000000000000000000000000000000001001",
+              "executor_setups": 1,
+              "grant": {
+                "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b80146",
+                "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b81147",
+                "epoch": "e5433e0eeaa76810a8462878920a46de",
+                "expires": 1793467493,
+                "generation": 2,
+                "job": "37767179b3924ed8cdcf5aa80c950314dc9fbf1d9735cf0d8ed0a47335328b6d",
+                "owner": "aa4b1d13-5757-4b19-aed7-fced5c5491f7.e1a04b2b-5409-45f5-8f3d-26ae46d69640",
+                "project": "d87873da-d817-4d4e-8940-fb6f0c5821f2"
+              },
+              "kernel_ms": 29.194752464070916,
+              "m": 1,
+              "mode": "minikeys",
+              "ordinal_order": "reverse",
+              "table_upload_ms": 0.0,
+              "target_count": 6,
+              "type": "grant-finish",
+              "wall_ns": 66973295,
+              "work_units": 2
+            },
+            {
+              "type": "control",
+              "accepted": true,
+              "state": "idle",
+              "requested": "run",
+              "durably_paused": false,
+              "durability": "local",
+              "pause_ms": 0.0,
+              "pid": 3392306,
+              "device": 0,
+              "visible_devices": 8
+            },
+            {
+              "type": "control",
+              "accepted": true,
+              "state": "stopped",
+              "requested": "run",
+              "durably_paused": false,
+              "durability": "local",
+              "pause_ms": 0.0,
+              "pid": 3392306,
+              "device": 0,
+              "visible_devices": 8
+            },
+            {
+              "completed": 2,
+              "executor_setups": 1,
+              "reason": "drained",
+              "type": "exit",
+              "wall_ms": 139.058002
+            }
+          ]
+        }
+      ],
+      "binaries": {
+        "keyhunt-coordinator": "f7f04d207957f183defe1fd57e1c33ef26a7fa28f5ecd1c114d75645a99bb766",
+        "keyhunt-worker": "21dabc42e3b3e19b92e2066c3a5634486b98da60ab96e8bb35d1bf7fb74c4abc",
+        "keyhunt": "51db5958a15554d4ad79c8df8fadeb57ea641e678b487e7b844498ff9aee47df"
+      }
+    }
+  }
+}

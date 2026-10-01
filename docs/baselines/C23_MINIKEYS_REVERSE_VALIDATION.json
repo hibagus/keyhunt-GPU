@@ -1,0 +1,252 @@
+{
+  "passed": true,
+  "recorded_utc": "2026-10-01T17:27:53.107790+00:00",
+  "base_commit": "cdfb7fac7166aff73812260769377f639a2b89d3",
+  "scope": "Exact reverse 22/30-character minikey ordinal execution, canonical receipt recovery, and supervised HTTPS/disconnected workers",
+  "source_phases": {
+    "contract": "b140e3c806c05937fb376ad7918f34b93a38894b",
+    "native": "68526af2c92159df865dd509f02efb709db3b3b8",
+    "checkpoints": "d056b28ec6f1e075c539eed689a2f87725b357f9",
+    "workers": "f74ac06da23ef0216bab1d727d774ed7ec871ad8",
+    "fixture": "1ba413ddd311b2fae3213ecc5bde89a6f2f78bac"
+  },
+  "metadata": {
+    "hip": {
+      "source_commit": "1ba413ddd311b2fae3213ecc5bde89a6f2f78bac",
+      "platform": "Linux-5.15.0-191-generic-x86_64-with-glibc2.35",
+      "binaries": {
+        "/home/bagus/keyhunt-GPU/build/hip-release": {
+          "keyhunt": "83fd5166e55c5ea25d9ee352619242dca8f487093d4779663886827a307bcd44",
+          "keyhunt-worker": "320696b8bc968bf5c4ced130b09d4dc64c71ce6ed790a64de37484b2870647f3",
+          "keyhunt-coordinator": "5a7f5799eaf4bcb9db4942e369c4f13d2ac866be0f5a5b1af8a2a40a5383902c",
+          "minikey_order_probe": "50731f7f8e450b07a913a656f9dd31e4a07f9211f0940599ca117feda0df1975",
+          "minikey_search_test": "8b839cf0c5bd552d294ad9734112446db994ad0eed16c2c027b027611915c8f3",
+          "secp256k1_oracle": "8dc92137c49502e3de62cb20a750d1c7f0bd84294ae77c5ccc9c9dffd20763c6",
+          "storage_minikey_checkpoint_test": "dd7b60850675d0672906370bb88018c55d8351f6e37e6f2b2a02ea6e82c1ed2f",
+          "storage_minikey_reverse_test": "f2ccf934f1caf7ee125ea9c76b3e9fa1f1ec7c4d79fc8b17fe61bdf9b7547e44",
+          "coordinator_minikeys_test": "fa205606e9a137da93272f45ef7a18e72dd09650934675753a117dbf13444196",
+          "coordinator_minikey_reverse_test": "18b4f630ea0106dacc507510ac489970c753c2e6d8049f9ee223c7d7f6b9b0ec",
+          "work_unit_test": "649f118b16e43c83dff081c9ad8ead1f7e751525e821c3447a93d8994566fa6b",
+          "portable_minikey_probe": "6f26de0fae45c95b2ed34fb5cb355e4e62ed2e91a3a0a064a37b274fc96e0e30",
+          "hip_minikey_probe": "19d1b747eeca46e1e20f5a050d646a129435ed879292ab75540a49b0f7bde934"
+        }
+      },
+      "build_configuration": {
+        "/home/bagus/keyhunt-GPU/build/hip-release": {
+          "CMAKE_BUILD_TYPE": "Release",
+          "CMAKE_CXX_COMPILER": "/usr/bin/c++",
+          "CMAKE_HIP_ARCHITECTURES": "gfx942",
+          "CMAKE_HIP_COMPILER": "/opt/rocm/core-10.0/lib/llvm/bin/clang++",
+          "KEYHUNT_ENABLE_COORDINATOR": "ON",
+          "KEYHUNT_ENABLE_CUDA": "OFF",
+          "KEYHUNT_ENABLE_HIP": "ON",
+          "KEYHUNT_ENABLE_HTTPS_WORKER": "ON",
+          "KEYHUNT_ENABLE_LTO": "ON",
+          "KEYHUNT_ENABLE_SANITIZERS": "OFF",
+          "KEYHUNT_GFX942_CARRY": "ON"
+        }
+      },
+      "compilers": {
+        "/opt/rocm/core-10.0/lib/llvm/bin/clang++": "AMD clang version 23.0.0git (https://github.com/ROCm/llvm-project.git 8f497e0992fb7513f7f78a6f6b6f1056c375e961)\nTarget: x86_64-unknown-linux-gnu\nThread model: posix\nInstalledDir: /opt/rocm/core-10.0/lib/llvm/bin",
+        "/usr/bin/c++": "c++ (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0\nCopyright (C) 2021 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
+      }
+    },
+    "cuda": {
+      "source_commit": "1ba413ddd311b2fae3213ecc5bde89a6f2f78bac",
+      "platform": "Linux-5.15.0-194-generic-x86_64-with-glibc2.35",
+      "binaries": {
+        "/home/bagus/keyhunt-GPU/build/cuda-h200": {
+          "keyhunt": "51db5958a15554d4ad79c8df8fadeb57ea641e678b487e7b844498ff9aee47df",
+          "keyhunt-worker": "21dabc42e3b3e19b92e2066c3a5634486b98da60ab96e8bb35d1bf7fb74c4abc",
+          "keyhunt-coordinator": "f7f04d207957f183defe1fd57e1c33ef26a7fa28f5ecd1c114d75645a99bb766",
+          "minikey_order_probe": "6b6a37f36d6e4d472c14e53d9b955f7e8d60b9858d86e6c5a863d8b3c113c603",
+          "minikey_search_test": "ac1f0c4ffb327884d4fd567834391f09d34bad927b1b22693ea6e463e19c5bdd",
+          "secp256k1_oracle": "039bdb67a9ec9ca522b193385033bb578e133ecd300ba32da8a550299c07e5e0",
+          "storage_minikey_checkpoint_test": "aa7d471d52aa7ff5f8ef40c8f5be65bf1ecea7b9e50ec73c66ddfc5c09f49857",
+          "storage_minikey_reverse_test": "f47188d89a50f0744016e12ab8f636f3e75deec3752f3b93f84b76a7502ba46a",
+          "coordinator_minikeys_test": "589da05a76db2d9ca3cb4131b36e7fe2486f740f50d8ab7c144e9d121d548fbe",
+          "coordinator_minikey_reverse_test": "69145b28ce17635e9233de88f4d39d982574a144eb4a89f46ba12f78ba17c0e5",
+          "work_unit_test": "97b90583cc74c291937e016e64278a9d39cf9161db486114fa58f91c90260be7",
+          "portable_minikey_probe": "4f0d4f6d1e526a623a46899ad55a20ebbdc7c1bf53783abad5c017d111f17ec3",
+          "cuda_minikey_probe": "324c77be874cc3b82dbc89b16838ff15dcb96e023d02d9f869a29de8c3b785d3"
+        }
+      },
+      "build_configuration": {
+        "/home/bagus/keyhunt-GPU/build/cuda-h200": {
+          "CMAKE_BUILD_TYPE": "Release",
+          "CMAKE_CUDA_ARCHITECTURES": "90",
+          "CMAKE_CUDA_COMPILER": "/usr/local/cuda/bin/nvcc",
+          "CMAKE_CXX_COMPILER": "/usr/bin/c++",
+          "KEYHUNT_ENABLE_COORDINATOR": "ON",
+          "KEYHUNT_ENABLE_CUDA": "ON",
+          "KEYHUNT_ENABLE_HIP": "OFF",
+          "KEYHUNT_ENABLE_HTTPS_WORKER": "ON",
+          "KEYHUNT_ENABLE_LTO": "ON",
+          "KEYHUNT_ENABLE_SANITIZERS": "OFF",
+          "KEYHUNT_GFX942_CARRY": "OFF"
+        }
+      },
+      "compilers": {
+        "/usr/bin/c++": "c++ (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0\nCopyright (C) 2021 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.",
+        "/usr/local/cuda/bin/nvcc": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2026 NVIDIA Corporation\nBuilt on Tue_Jun_09_02:43:40_PM_PDT_2026\nCuda compilation tools, release 13.3, V13.3.73\nBuild cuda_13.3.r13.3/compiler.38244171_0"
+      }
+    }
+  },
+  "host_metadata": {
+    "source_commit": "1ba413ddd311b2fae3213ecc5bde89a6f2f78bac",
+    "platform": "Linux-5.15.0-191-generic-x86_64-with-glibc2.35",
+    "binaries": {
+      "/home/bagus/keyhunt-GPU/build/coordinator-release": {
+        "keyhunt": "45afbb7be19a5d1c82324028cc87b5d6fd285e08eaa3b69eb4bce75acf85f89f",
+        "keyhunt-worker": "3a9624a21cacd692d37cb3a95ef79a23ebaadd700af3039fe57c050ddd26401a",
+        "keyhunt-coordinator": "5a7f5799eaf4bcb9db4942e369c4f13d2ac866be0f5a5b1af8a2a40a5383902c",
+        "minikey_order_probe": "50731f7f8e450b07a913a656f9dd31e4a07f9211f0940599ca117feda0df1975",
+        "minikey_search_test": "8b839cf0c5bd552d294ad9734112446db994ad0eed16c2c027b027611915c8f3",
+        "secp256k1_oracle": "8dc92137c49502e3de62cb20a750d1c7f0bd84294ae77c5ccc9c9dffd20763c6",
+        "storage_minikey_checkpoint_test": "dd7b60850675d0672906370bb88018c55d8351f6e37e6f2b2a02ea6e82c1ed2f",
+        "storage_minikey_reverse_test": "f2ccf934f1caf7ee125ea9c76b3e9fa1f1ec7c4d79fc8b17fe61bdf9b7547e44",
+        "coordinator_minikeys_test": "fa205606e9a137da93272f45ef7a18e72dd09650934675753a117dbf13444196",
+        "coordinator_minikey_reverse_test": "18b4f630ea0106dacc507510ac489970c753c2e6d8049f9ee223c7d7f6b9b0ec",
+        "work_unit_test": "649f118b16e43c83dff081c9ad8ead1f7e751525e821c3447a93d8994566fa6b",
+        "portable_minikey_probe": "6f26de0fae45c95b2ed34fb5cb355e4e62ed2e91a3a0a064a37b274fc96e0e30"
+      },
+      "/home/bagus/keyhunt-GPU/build/coordinator-sanitizers": {
+        "minikey_order_probe": "c6af32b509e04c00c4a9bd24e46739ee89f5e70044a0a1dcecfb0424715e7608",
+        "minikey_search_test": "fa76b5cbbc6bd8cc1913c5b4afba6f0c8fc38fcc070427ab24e5e361a294b859",
+        "secp256k1_oracle": "fc52fc04fe92fc395fb5a4b71b1afde220e9a4f391fd93348535291b09c3aca2",
+        "storage_minikey_checkpoint_test": "748f40bebe1ef74b1dbb1cf62b9b63383a5d43ef8c9b55e438dd2008fa11591e",
+        "storage_minikey_reverse_test": "17083d14b9001d68c3eee41bb1b0a4775e8ca9722c169833d26bca9842e7387a",
+        "coordinator_minikeys_test": "3024f9110f1aca3fb3350f00b2ed715ddc99ae2cc068a09096549be4b20a2820",
+        "coordinator_minikey_reverse_test": "0feeea9fde8005426a413b3e0624f3e840dc0e5cb540da2fad91d0dffb867f9c",
+        "work_unit_test": "45c713869969acd1a9b36a04cf78a04af8db867fcf215e9c6c30bf6e8d39c78d",
+        "portable_minikey_probe": "5ae2bee5fcee5278f4a2ad870b8b93f4083ac7e17344fd928c0e1a22da3f69e3"
+      }
+    },
+    "build_configuration": {
+      "/home/bagus/keyhunt-GPU/build/coordinator-release": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_CXX_COMPILER": "/usr/bin/c++",
+        "KEYHUNT_ENABLE_COORDINATOR": "ON",
+        "KEYHUNT_ENABLE_CUDA": "OFF",
+        "KEYHUNT_ENABLE_HIP": "OFF",
+        "KEYHUNT_ENABLE_HTTPS_WORKER": "ON",
+        "KEYHUNT_ENABLE_LTO": "ON",
+        "KEYHUNT_ENABLE_SANITIZERS": "OFF",
+        "KEYHUNT_GFX942_CARRY": "OFF"
+      },
+      "/home/bagus/keyhunt-GPU/build/coordinator-sanitizers": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_CXX_COMPILER": "/usr/bin/c++",
+        "KEYHUNT_ENABLE_COORDINATOR": "ON",
+        "KEYHUNT_ENABLE_CUDA": "OFF",
+        "KEYHUNT_ENABLE_HIP": "OFF",
+        "KEYHUNT_ENABLE_HTTPS_WORKER": "ON",
+        "KEYHUNT_ENABLE_LTO": "OFF",
+        "KEYHUNT_ENABLE_SANITIZERS": "ON",
+        "KEYHUNT_GFX942_CARRY": "OFF"
+      }
+    },
+    "compilers": {
+      "/usr/bin/c++": "c++ (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0\nCopyright (C) 2021 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
+    }
+  },
+  "checks": {
+    "cpu_release": {
+      "passed": 134,
+      "failed": 0,
+      "log": "local/full-tests.log"
+    },
+    "cpu_fixture_final": {
+      "passed": 1,
+      "failed": 0,
+      "log": "local/fixture-tests.log"
+    },
+    "sanitizer_fixture_final": {
+      "passed": 1,
+      "failed": 0,
+      "log": "local/sanitizer-recovery-final.log"
+    },
+    "hip": {
+      "passed": 19,
+      "failed": 0,
+      "log": "hip/tests.log"
+    },
+    "cuda": {
+      "passed": 19,
+      "failed": 0,
+      "log": "cuda/tests.log"
+    },
+    "hip_fixture_final": {
+      "passed": 3,
+      "failed": 0,
+      "log": "hip/fixture-tests.log"
+    },
+    "cuda_fixture_final": {
+      "passed": 3,
+      "failed": 0,
+      "log": "cuda/fixture-tests.log"
+    },
+    "initial_sanitizers": {
+      "passed": 6,
+      "timed_out": 1,
+      "log": "local/sanitizer-tests.log",
+      "resolution": "Eight reverse recovery scenarios shared one journal, repeatedly auditing prior jobs. Isolating each journal retained all direction/adaptation cases and passed the focused rerun; the timeout is now 180 seconds."
+    },
+    "initial_fixture": {
+      "passed": 13,
+      "failed": 1,
+      "log": "local/focused-tests.log",
+      "resolution": "Reusing the same project created an already completed idempotent job on the next scenario. Each scenario now has its own project and journal."
+    }
+  },
+  "results": {
+    "order_oracle_cases": 1251,
+    "primitive_cases_per_implementation": 1781,
+    "cpu_distinct_passing_gates": 134,
+    "focused_sanitizer_gates": 7,
+    "gpu_distinct_gates_per_backend": 19,
+    "reverse_native_cases_per_backend": 70,
+    "forward_native_cases_per_backend": 70,
+    "reverse_checkpoint_cases_per_backend": 12,
+    "reverse_killed_restarts_per_backend": 6,
+    "forward_checkpoint_cases_per_backend": 8,
+    "pause_visibility_cases_per_policy_backend": 2,
+    "reverse_worker_cases_per_backend": 4,
+    "worker_grants_per_case": 2,
+    "documented_examples_per_backend": 1,
+    "fault_boundaries_per_direction_backend": 29
+  },
+  "limits": [
+    "Reverse selects high missing ordinals and maps logical lane i to H-1-i; concurrent lanes do not promise serial wall-clock order.",
+    "Receipts and results retain canonical minikey ordinals. Restart may change direction and geometry without a new job.",
+    "The internal reverse execution tag participates in batch identity checks; no persisted job/configuration/schema/protocol/capability change.",
+    "Scalar --order and BSGS --tile-order remain separate. --ordinal-order is rejected for job creation and non-minikey execution.",
+    "Both lengths and all encodings are tested. Device ordinal spots alternate lengths; no exhaustive length-by-device product, fleet scaling or partition claim.",
+    "Seven focused host sanitizer gates, with the timed-out shared-journal fixture corrected and rerun. No whole-application or device-code sanitizer claim.",
+    "Forward/reverse primitives, executors, failures, native searches and recovery are covered; no throughput improvement claim.",
+    "Additional random traversal semantics and other minikey orders remain pending.",
+    "Public fixtures only; no enrollment credentials or journal databases archived."
+  ],
+  "artifacts": {
+    "C23_MINIKEYS_REVERSE_ALGORITHMS.json": {
+      "sha256": "0859e13dfd01eed08b641f05772e274eff4ff817266740fa3bd0897f5145fc4b",
+      "bytes": 283264
+    },
+    "C23_MINIKEYS_REVERSE_RECOVERY.json": {
+      "sha256": "1fd07e47375625689541b982fd024726ecde709781ab53819fdfb98b22313c8b",
+      "bytes": 188509
+    },
+    "C23_MINIKEYS_REVERSE_WORKERS.json": {
+      "sha256": "b9b3f1ffc2965d665261405ca403e2abb2ca12b1144fe8812f006ffc63046487",
+      "bytes": 134963
+    },
+    "C23_MINIKEYS_REVERSE_EXAMPLES.json": {
+      "sha256": "08274b39f2a27d752d7457f98e40ddd7b24ab0cc4b868545b8455c9e4b72da8d",
+      "bytes": 29155
+    },
+    "C23_MINIKEYS_REVERSE_LOGS.tar.gz": {
+      "sha256": "a11c053bbab087c8e6eaa2bd4e1bda07d667aca0e23d140b99141ace85b8894e",
+      "bytes": 89706
+    }
+  }
+}
