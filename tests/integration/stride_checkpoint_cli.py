@@ -10,7 +10,7 @@ L=int('5363ad4cc05c30e0a5261c028812645a122e22ea20816678df02967c1b23bd72',16)
 p=argparse.ArgumentParser()
 for name in ('binary','oracle','report'):p.add_argument('--'+name,type=Path,required=True)
 p.add_argument('--hardware',action='store_true');p.add_argument('--backend',choices=('hip','cuda'),default='hip')
-p.add_argument('--batch-order',choices=('forward','both-ends'),default='forward')
+p.add_argument('--batch-order',choices=('forward','both-ends','dance'),default='forward')
 p.add_argument('--order',choices=('forward','reverse'),default='forward')
 p.add_argument('--orbit',action='store_true')
 p.add_argument('--kernel',choices=('direct','stepped','glv'))
@@ -81,7 +81,7 @@ with tempfile.TemporaryDirectory(prefix='kh-stride-checkpoint-') as directory:
             count*=6 if a.orbit else 1
             initial=run.copy()
             # Switch execution policy after a durable prefix; mapping is unchanged.
-            initial[initial.index('--batch-order')+1]='forward'
+            initial[initial.index('--batch-order')+1]='both-ends' if a.batch_order=='dance' else 'forward'
             child=subprocess.Popen(command('checkpoint','run',*initial,'--batch-size','32',*(['--kernel',a.kernel or 'glv'] if a.kernel or a.orbit else [])),stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
             try:
                 assert select.select([child.stdout],[],[],30)[0],'no durable acknowledgment'

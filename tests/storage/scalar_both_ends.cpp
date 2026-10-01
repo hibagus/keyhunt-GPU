@@ -9,7 +9,7 @@ using scheduler::ScalarBatchOrder;
 
 template<class Targets,class Create,class Run>
 void exercise(const Targets& targets,Create create,Run run,const std::optional<core::ScalarStride>& mapping,
-              bool adaptive,unsigned transition,unsigned fault,unsigned bound) {
+              bool adaptive,unsigned transition,unsigned fault,unsigned bound,bool dance) {
     Temporary temporary;Journal journal(temporary.path.string());core::XPointVerifier verifier;
     const core::ScalarInterval scalars=mapping?mapping->scalars():core::ScalarInterval(UInt256(101),UInt256(118));
     const auto root=mapping?mapping->indices():scalars;
@@ -37,9 +37,22 @@ void exercise(const Targets& targets,Create create,Run run,const std::optional<c
     }};reload();
     CheckpointOptions options;options.xpoint_steps=11;options.candidate_capacity=bound;options.checkpoint_seconds=0;
     options.work_unit_seconds=adaptive?60:0;
-    options.scalar_batch_order=transition==1?ScalarBatchOrder::Forward:ScalarBatchOrder::BothEnds;
+    const auto policy=dance?ScalarBatchOrder::Dance:ScalarBatchOrder::BothEnds;
+    options.scalar_batch_order=transition==1?ScalarBatchOrder::Forward:
+        transition==4?ScalarBatchOrder::BothEnds:policy;
+    unsigned phase=0;
+    auto pivot=missing.begin()->add(missing.rbegin()->add(UInt256(1)).subtract(*missing.begin()).divmod(UInt256(2)).first);
     unsigned accepted=0,overflows=0;bool faulted=false,cleaned=false;
     const auto runner=[&](const scheduler::KernelBatch& batch){
+        // Check endpoints against an independent set of missing coordinates.
+        // Overflow leaves both this set and the expected phase unchanged.
+        const auto order=*options.scalar_batch_order;
+        const bool high=order!=ScalarBatchOrder::Forward && phase==1;
+        auto next=missing.begin();
+        if(order==ScalarBatchOrder::Dance && phase==2){next=missing.lower_bound(pivot);if(next==missing.end())next=missing.begin();}
+        require((high?batch.interval().end().subtract(UInt256(1)):batch.interval().begin())==
+                (high?*missing.rbegin():*next),"wrong recovery phase endpoint");
+        if(order==ScalarBatchOrder::Dance)require(!(batch.interval().begin()<pivot && pivot<batch.interval().end()),"batch crossed fixed pivot");
         backend::XPointResult result{batch,{}};result.device_steps=batch.step_count();
         for(uint64_t j=0;j<batch.step_count();++j){const auto i=batch.coordinate_at(j);
             require(missing.count(i),"submitted previously saved coverage");
@@ -52,6 +65,7 @@ void exercise(const Targets& targets,Create create,Run run,const std::optional<c
             // rediscovered by the next invocation's saved complement.
             if(fault==0 && accepted==3 && !faulted){faulted=true;throw std::runtime_error("before receipt");}
             result.verified_steps=result.device_steps;++accepted;
+            if(order!=ScalarBatchOrder::Forward)phase=(phase+1)%(order==ScalarBatchOrder::Dance?3:2);
             for(uint64_t j=0;j<batch.step_count();++j)missing.erase(batch.coordinate_at(j));
         }
         return result;
@@ -62,7 +76,10 @@ void exercise(const Targets& targets,Create create,Run run,const std::optional<c
     require(faulted&&cleaned&&overflows,"fault/overflow fixture did not trigger");reload();
     const auto left=missing.size();require(left>0 && left<root.size().to_uint64(),"no partial durable progress");
     const auto retained=root.size().subtract(UInt256(left));
-    options.scalar_batch_order=transition==0?ScalarBatchOrder::Forward:ScalarBatchOrder::BothEnds;
+    options.scalar_batch_order=transition==0?ScalarBatchOrder::Forward:
+        transition==3?ScalarBatchOrder::BothEnds:policy;
+    phase=0;
+    pivot=missing.begin()->add(missing.rbegin()->add(UInt256(1)).subtract(*missing.begin()).divmod(UInt256(2)).first);
     options.xpoint_steps=1;options.candidate_capacity=1024;
     CheckpointRequest request=CheckpointRequest::Run;bool paused=false;unsigned planned=0;
     CheckpointControl controls;controls.poll=[&]{return request;};controls.wait=[&]{request=CheckpointRequest::Run;};
@@ -76,14 +93,15 @@ void exercise(const Targets& targets,Create create,Run run,const std::optional<c
     require(result.work_units==planned,"owner announcement count differs");
     const auto rows=journal.results(scope,0,1000);require(rows.size()==total,"lost or duplicated results");
     for(const auto& row:rows)input.verify(verifier,row.scalar,row.target);
-    options.scalar_batch_order=ScalarBatchOrder::BothEnds;
+    options.scalar_batch_order=policy;
     const auto done=run(journal,grant,targets,verifier,[](const auto&)->backend::XPointResult{throw std::runtime_error("finished job ran");},options,
         CheckpointObserver{},CheckpointCleanup{},CheckpointControl{});
     require(done.batches==0&&done.resumed_scalars==root.size(),"completed retry changed coverage");
     journal.backup(temporary.path.string()+"/snapshot");Journal backup(temporary.path.string()+"/snapshot");backup.check();
     require(backup.results(scope,0,1000).size()==total,"backup lost results");journal.check();
 }
-int main(){try{
+int main(int argc,char** argv){try{
+    const bool dance=argc==2 && std::string(argv[1])=="--dance";
     unsigned cases=0;core::XPointVerifier verifier;
     for(unsigned kind=0;kind<5;++kind){
         const bool orbit=kind>=3,reverse=kind==2||kind==4;
@@ -97,13 +115,13 @@ int main(){try{
             for(unsigned tag:{1,2}){hv.push_back(core::hash160_target(pub,tag));vv.push_back(core::vanity_target(core::bitcoin_address(pub,tag),tag));}
         }
         const core::XPointTargets xt(xv);const core::Hash160Targets ht(hv);const core::EthereumTargets et(ev);const core::VanityTargets vt(vv);
-        for(bool adaptive:{false,true})for(unsigned transition=0;transition<3;++transition)for(unsigned fault=0;fault<2;++fault){
-            exercise(xt,orbit?CheckpointRun::create_orbit_xpoint:CheckpointRun::create_xpoint,CheckpointRun::xpoint,mapping,adaptive,transition,fault,1);
-            exercise(ht,orbit?CheckpointRun::create_orbit_hash160:CheckpointRun::create_hash160,CheckpointRun::hash160,mapping,adaptive,transition,fault,2);
-            exercise(et,orbit?CheckpointRun::create_orbit_ethereum:CheckpointRun::create_ethereum,CheckpointRun::ethereum,mapping,adaptive,transition,fault,1);
-            exercise(vt,orbit?CheckpointRun::create_orbit_vanity:CheckpointRun::create_vanity,CheckpointRun::vanity,mapping,adaptive,transition,fault,vt.max_matches_per_scalar());
+        for(bool adaptive:{false,true})for(unsigned transition=0;transition<(dance?5u:3u);++transition)for(unsigned fault=0;fault<2;++fault){
+            exercise(xt,orbit?CheckpointRun::create_orbit_xpoint:CheckpointRun::create_xpoint,CheckpointRun::xpoint,mapping,adaptive,transition,fault,1,dance);
+            exercise(ht,orbit?CheckpointRun::create_orbit_hash160:CheckpointRun::create_hash160,CheckpointRun::hash160,mapping,adaptive,transition,fault,2,dance);
+            exercise(et,orbit?CheckpointRun::create_orbit_ethereum:CheckpointRun::create_ethereum,CheckpointRun::ethereum,mapping,adaptive,transition,fault,1,dance);
+            exercise(vt,orbit?CheckpointRun::create_orbit_vanity:CheckpointRun::create_vanity,CheckpointRun::vanity,mapping,adaptive,transition,fault,vt.max_matches_per_scalar(),dance);
             cases+=4;
         }
     }
-    std::cout<<"Passed "<<cases<<" scalar both-ends recovery combinations\n";
+    std::cout<<"Passed "<<cases<<" scalar "<<(dance?"dance":"both-ends")<<" recovery combinations\n";
 }catch(const std::exception& e){std::cerr<<e.what()<<'\n';return 1;}}
