@@ -12,7 +12,7 @@ using AssignmentId = std::array<uint8_t, 16>;
 
 // The first executor mapping is k = batch.begin + local_index. BSGS, strides,
 // endomorphisms and minikey ordinals need separately validated mappings.
-enum class WorkAlgorithm : uint8_t { DirectXPointV1 = 1, DirectHash160V1 = 2, DirectEthereumV1 = 3 };
+enum class WorkAlgorithm : uint8_t { DirectXPointV1 = 1, DirectHash160V1 = 2, DirectEthereumV1 = 3, DirectVanityV1 = 4 };
 
 struct ExecutionIdentity {
     Digest job_digest{};

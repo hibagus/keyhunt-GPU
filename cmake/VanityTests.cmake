@@ -1,0 +1,5 @@
+add_executable(vanity_search_test tests/unit/vanity_search.cpp)
+target_link_libraries(vanity_search_test PRIVATE keyhunt_core)
+keyhunt_configure_target(vanity_search_test)
+add_test(NAME vanity_search_contract COMMAND vanity_search_test)
+set_tests_properties(vanity_search_contract PROPERTIES TIMEOUT 30 LABELS "cpu;core;vanity")
