@@ -389,3 +389,21 @@ endif()
 
 add_test(NAME coordinator_minikey_random_window COMMAND coordinator_minikey_reverse_test --random-window)
 set_tests_properties(coordinator_minikey_random_window PROPERTIES TIMEOUT 180 LABELS "cpu;coordinator;minikeys;random-window;recovery")
+
+add_test(NAME coordinator_scalar_both_ends COMMAND coordinator_reverse_test --both-ends)
+set_tests_properties(coordinator_scalar_both_ends PROPERTIES TIMEOUT 180 LABELS "cpu;coordinator;scalar-batches;recovery")
+if(KEYHUNT_TEST_APACHE_ROOT AND TARGET keyhunt-worker)
+    foreach(mapping forward reverse)
+        add_test(NAME coordinator_scalar_both_ends_${mapping}_cli COMMAND ${Python3_EXECUTABLE}
+            ${PROJECT_SOURCE_DIR}/tests/coordinator/strides_cli.py
+            --coordinator $<TARGET_FILE:keyhunt-coordinator> --worker $<TARGET_FILE:keyhunt-worker>
+            --keyhunt $<TARGET_FILE:keyhunt> --oracle $<TARGET_FILE:secp256k1_oracle>
+            --apache-root ${KEYHUNT_TEST_APACHE_ROOT} --order ${mapping} --orbit --batch-order both-ends
+            --report ${CMAKE_CURRENT_BINARY_DIR}/coordinator-scalar-both-ends-${mapping}.json ${coordinator_worker_options})
+        set_tests_properties(coordinator_scalar_both_ends_${mapping}_cli PROPERTIES TIMEOUT 600 LABELS "cpu;coordinator;scalar-batches;recovery")
+        if(KEYHUNT_ENABLE_GPU)
+            set_tests_properties(coordinator_scalar_both_ends_${mapping}_cli PROPERTIES
+                LABELS "${KEYHUNT_GPU_BACKEND};hardware;coordinator;scalar-batches;recovery" RESOURCE_LOCK gpu_device)
+        endif()
+    endforeach()
+endif()

@@ -13,11 +13,12 @@ p=argparse.ArgumentParser()
 for name in ('coordinator','worker','keyhunt','oracle','report'):p.add_argument('--'+name,type=Path,required=True)
 p.add_argument('--apache-root',default='/');p.add_argument('--hardware',action='store_true')
 p.add_argument('--backend',choices=('hip','cuda'),default='hip')
+p.add_argument('--batch-order',choices=('forward','both-ends'),default='forward')
 p.add_argument('--order',choices=('forward','reverse'),default='forward')
 p.add_argument('--orbit',action='store_true')
 p.add_argument('--kernel',choices=('direct','stepped','glv'));a=p.parse_args()
 worker=str(a.worker.resolve());keyhunt=str(a.keyhunt.resolve())
-report=dict(orbit=a.orbit,order=a.order,selected_kernel=a.kernel,passed=False,hardware=a.hardware,backend=a.backend,oracle_commit=check_source(),cases=[],
+report=dict(batch_order=a.batch_order,orbit=a.orbit,order=a.order,selected_kernel=a.kernel,passed=False,hardware=a.hardware,backend=a.backend,oracle_commit=check_source(),cases=[],
             binaries={v.name:hashlib.sha256(v.read_bytes()).hexdigest() for v in (a.coordinator,a.worker,a.keyhunt)})
 def command(words,ok=True):
     r=subprocess.run(list(map(str,words)),capture_output=True,text=True,timeout=180)
@@ -82,9 +83,10 @@ with tempfile.TemporaryDirectory(prefix='kh-stride-worker-',dir='/var/tmp') as t
                 if a.hardware:
                     if transport=='file':env.stop()
                     command([sys.executable,REPO/'tools/coordinator_worker.py','--state-dir',state,'--worker',worker,'--keyhunt',keyhunt,
-                             '--backend',a.backend,'--kernel',a.kernel or ('direct' if transport=='https' else 'stepped'),'--batch-size','8','--once'])
+                             '--backend',a.backend,'--kernel',a.kernel or ('direct' if transport=='https' else 'stepped'),'--batch-size','8','--batch-order',a.batch_order,'--once'])
                     events=[json.loads(v) for v in (state/'execution-0.log').read_text().splitlines()]
                     finished=[v for v in events if v.get('type')=='grant-finish']
+                    assert all(v['batch_order']==a.batch_order for v in finished)
                     assert len(finished)==2 and [int(v['computed_candidates'],16) for v in finished]==[width,count-width] and all(v['executor_setups']==1 and v['coordinate_space']==('scalar-orbit-index-v1' if a.orbit else 'scalar-reverse-index-v1' if a.order=='reverse' else 'scalar-stride-index-v1') for v in finished)
                     assert finished[0]['cold'] and not finished[1]['cold']
                     if transport=='file':assert not (state/'sync.log').exists()

@@ -3,7 +3,8 @@
 #include <iostream>
 using namespace cfixture;
 using namespace keyhunt::storage::detail;
-int main(){try{
+int main(int argc,char** argv){try{
+    const bool both=argc==2 && std::string(argv[1])=="--both-ends";
     for(const auto mode:{Mode::XPoint,Mode::Hash160,Mode::Ethereum,Mode::Vanity}){
         Temporary server,local;int64_t now=1800000000,monotonic=boot_seconds();
         Repository repo(server.path.string(),[&]{return now;});
@@ -51,7 +52,18 @@ int main(){try{
         while(auto grant=worker.next("gpu0")){
             require(worker.journal().stride_mapping(grant->scope)==input.stride_mapping,"worker lost mapping");
             CheckpointOptions options;options.xpoint_steps=5;options.checkpoint_seconds=0;
-            const auto runner=[&](const auto& batch){backend::XPointResult result{batch,{}};result.device_steps=result.verified_steps=batch.step_count();
+            if(both)options.scalar_batch_order=scheduler::ScalarBatchOrder::BothEnds;
+            std::set<UInt256> missing;const auto bounds=worker.journal().manifest(grant->scope);
+            const auto interval=scheduler::BlockGrid(bounds.root,bounds.block_width).block(grant->block);
+            for(auto i=interval.begin();i<interval.end();i=i.add(UInt256(1)))missing.insert(i);
+            bool high=false;
+            const auto runner=[&](const auto& batch){
+                if(both){
+                    require((high?batch.interval().end().subtract(UInt256(1)):batch.interval().begin())==(high?*missing.rbegin():*missing.begin()),"wrong batch endpoint");
+                    high=!high;
+                }
+                for(auto i=batch.interval().begin();i<batch.interval().end();i=i.add(UInt256(1)))require(missing.erase(i)==1,"duplicate coordinate");
+                backend::XPointResult result{batch,{}};result.device_steps=result.verified_steps=batch.step_count();
                 if(batch.interval().contains(UInt256(34)))for(uint32_t t=0;t<input.count();++t)result.matches.push_back({UInt256(34),t});
                 result.candidate_count=result.matches.size();return result;};
             CheckpointSummary result;
@@ -59,6 +71,7 @@ int main(){try{
             if(mode==Mode::Hash160)result=CheckpointRun::hash160(worker.journal(),*grant,ht,verifier,runner,options);
             if(mode==Mode::Ethereum)result=CheckpointRun::ethereum(worker.journal(),*grant,et,verifier,runner,options);
             if(mode==Mode::Vanity)result=CheckpointRun::vanity(worker.journal(),*grant,vt,verifier,runner,options);
+            require(missing.empty(),"worker skipped missing coordinate");
             require(result.complete&&result.computed_scalars==UInt256(17),"candidate grant incomplete");++completed;
         }
         require(completed==2&&repo.request(cert,"GET",path+"/results").empty(),"offline reservation/coverage mismatch");
