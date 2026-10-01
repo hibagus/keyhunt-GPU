@@ -51,3 +51,10 @@ whole linked executable is MIT-only. Resolve incomplete upstream licensing
 records before distributing binary packages. Future imported code requires its
 own provenance and compatible notices; the fixture generator and new build
 files do not change the licensing of existing code.
+
+C23's separate [GLV device arithmetic](kernels/common/glv.h) uses the published
+secp256k1 lattice and reciprocal constants described by Pieter Wuille's
+`scalar_impl.h` in that pinned MIT-licensed source. Its notice is retained in the
+header and the upstream [COPYING](third_party/secp256k1-oracle/COPYING). The
+32-bit product/signed-component implementation is local; the oracle library
+remains test-only and is not linked into production.

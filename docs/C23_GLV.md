@@ -48,3 +48,13 @@ repeated raw samples, fixed candidates/targets, allocation and binary/device
 metadata. Any speed claim is limited to those measurements; the default changes
 only with separate evidence. Decisions, failures and acceptance evidence belong
 under docs/, with logical implementation changes committed separately.
+
+## Arithmetic implementation finding
+
+Portable C++ and native HIP passed 5,973 oracle cases: 5,328 decomposition inputs,
+603 full public keys, 36 endomorphism points/alias checks and invalid-key checks.
+The integer corpus exercises all four sign combinations and values immediately
+around reciprocal rounding boundaries. Production computes signed lattice
+residuals using low 256-bit two's-complement words and rejects magnitudes outside
+the proven 128-bit bound. Independent point verification confirms the scalar
+relation, rather than accepting a decomposition solely because it is small.
