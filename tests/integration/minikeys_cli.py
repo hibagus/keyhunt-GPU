@@ -9,8 +9,8 @@ from hash160 import hash160,address
 p=argparse.ArgumentParser()
 for name in ('binary','oracle','report'):p.add_argument('--'+name,type=Path,required=True)
 p.add_argument('--hardware',action='store_true');p.add_argument('--backend',choices=('hip','cuda'),default='hip')
-orders=p.add_mutually_exclusive_group();orders.add_argument('--reverse',action='store_true');orders.add_argument('--both-ends',action='store_true')
-a=p.parse_args();order='both-ends' if a.both_ends else 'reverse' if a.reverse else 'forward';binary=str(a.binary.resolve());report=dict(oracle_commit=check_source(),cases=[],rejections=0,inspections=0,hardware=a.hardware,reverse=a.reverse,ordinal_order=order)
+orders=p.add_mutually_exclusive_group();orders.add_argument('--reverse',action='store_true');orders.add_argument('--both-ends',action='store_true');orders.add_argument('--dance',action='store_true')
+a=p.parse_args();order='dance' if a.dance else 'both-ends' if a.both_ends else 'reverse' if a.reverse else 'forward';binary=str(a.binary.resolve());report=dict(oracle_commit=check_source(),cases=[],rejections=0,inspections=0,hardware=a.hardware,reverse=a.reverse,ordinal_order=order)
 def invoke(words):return subprocess.run([binary,'minikeys',*map(str,words),*(['--ordinal-order',order] if order!='forward' and (not words or words[0]!='inspect') else [])],capture_output=True,text=True,timeout=150)
 for key in (*PUBLIC_KEYS,'S'+'1'*21,'S'+'z'*29):
     result=invoke(['inspect','--key',key]);assert result.returncode==0,result
@@ -60,7 +60,7 @@ with tempfile.TemporaryDirectory(prefix='kh-minikeys-') as temporary:
             # All admitted candidates in a full launch are targets. This detects
             # skipped valid ordinals, not only false positives at selected indices.
             cases.append((f'maximum_batch_{length}',length,1,1048576,'both','hash160',1048576,32768,0))
-        if a.both_ends:
+        if a.both_ends or a.dance:
             for length,key in zip((22,30),PUBLIC_KEYS):
                 cases += [(f'meeting_{count}_{batch}_{length}',length,ordinal(key),count,'both','hash160',batch,4096,0) for count,batch in ((3,2),(35,17),(257,129),(33,1))]
         cases += [(f"device_{d['ordinal']}",22 if d['ordinal']%2==0 else 30,ordinal(PUBLIC_KEYS[d['ordinal']%2]),1025,
@@ -83,8 +83,14 @@ with tempfile.TemporaryDirectory(prefix='kh-minikeys-') as temporary:
             records=[json.loads(line) for line in result.stdout.splitlines()];start=records[0]
             assert start['mode']=='minikeys' and start['coordinate_space']=='minikey-ordinal-v1'
             assert start['target_digest']==hashlib.sha256(b'minikeys-v1\0'+b''.join(targets)).hexdigest() and start['target_count']==len(targets)
-            low,high=begin,begin+count;reverse=order=='reverse';actual=[];attempts=overflows=0;sequence=[]
+            pivot=begin+count//2
+            remaining=[(begin,pivot),(pivot,begin+count)] if a.dance and pivot>begin else [(begin,begin+count)]
+            actual=[];attempts=overflows=phase=0;sequence=[]
             for row in records[1:-1]:
+                reverse=order=='reverse' or (a.both_ends and phase%2==1) or (a.dance and phase%3==1)
+                chosen=len(remaining)-1 if reverse else 0
+                if a.dance and phase%3==2:chosen=next((i for i,v in enumerate(remaining) if v[0]>=pivot),0)
+                low,high=remaining[chosen]
                 lo,hi=int(row['begin'],16),int(row['end_exclusive'],16)
                 assert low<=lo<hi<=high and (hi==high if reverse else lo==low) and row['device_steps']==hi-lo
                 sequence.append(dict(begin=lo,end_exclusive=hi,reverse=reverse,overflow=row['overflow']))
@@ -97,16 +103,16 @@ with tempfile.TemporaryDirectory(prefix='kh-minikeys-') as temporary:
                     wanted=sorted((v for v in expected if lo<=v[0]<hi),key=lambda v:(-v[0] if reverse else v[0],v[-1]))
                     assert observed==wanted,(name,lo,hi,reverse)
                     actual+=observed
-                    if reverse:high=lo
-                    else:low=hi
-                    if a.both_ends:reverse=not reverse
+                    rest=(low,lo) if reverse else (hi,high)
+                    remaining[chosen:chosen+1]=[rest] if rest[0]<rest[1] else []
+                    phase+=1
             summary=records[-1]
-            assert low==high and sorted(actual)==expected,(name,len(actual),len(expected))
+            assert not remaining and sorted(actual)==expected,(name,len(actual),len(expected))
             assert start['ordinal_order']==summary['ordinal_order']==order
             assert summary['complete'] and not summary['durable_coverage'] and summary['coordinate_space']=='minikey-ordinal-v1'
             assert int(summary['verified_steps'],16)==count and int(summary['device_steps'],16)==attempts
             assert int(summary['matches'],16)==len(expected) and summary['overflow_replays']==overflows
             if name.startswith('overflow'):assert overflows>0
-            report['cases'].append(dict(name=name,length=length,device=device,count=count,admitted=len(admitted),summary=summary,**(dict(sequence=sequence) if a.both_ends else {})))
+            report['cases'].append(dict(name=name,length=length,device=device,count=count,admitted=len(admitted),summary=summary,**(dict(sequence=sequence) if a.both_ends or a.dance else {})))
 report['passed']=True;report['binary_sha256']=hashlib.sha256(a.binary.read_bytes()).hexdigest()
 a.report.write_text(json.dumps(report,indent=2)+'\n');print(f"Minikeys: {len(report['cases'])} independent searches, {report['rejections']} rejections, {report['inspections']} inspections")

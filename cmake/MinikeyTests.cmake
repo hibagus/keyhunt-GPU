@@ -99,3 +99,21 @@ set_tests_properties(minikey_both_ends_documented_example PROPERTIES TIMEOUT 150
 if(KEYHUNT_ENABLE_GPU)
     set_tests_properties(minikey_both_ends_documented_example PROPERTIES LABELS "${KEYHUNT_GPU_BACKEND};hardware;minikeys;both-ends;examples" RESOURCE_LOCK gpu_device)
 endif()
+
+add_test(NAME minikeys_dance_cli COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/minikeys_cli.py"
+    --binary $<TARGET_FILE:keyhunt> --oracle $<TARGET_FILE:secp256k1_oracle>
+    --dance --report "${CMAKE_CURRENT_BINARY_DIR}/minikeys-dance-cli-results.json" ${minikeys_cli_args})
+set_tests_properties(minikeys_dance_cli PROPERTIES TIMEOUT 600 LABELS "cpu;minikeys")
+if(KEYHUNT_ENABLE_GPU)
+    set_tests_properties(minikeys_dance_cli PROPERTIES LABELS "${KEYHUNT_GPU_BACKEND};hardware;minikeys;oracle" RESOURCE_LOCK gpu_device)
+endif()
+
+
+add_test(NAME minikey_dance_documented_example COMMAND "${Python3_EXECUTABLE}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/minikey_dance_examples.py"
+    --binary $<TARGET_FILE:keyhunt> --backend ${minikey_example_backend}
+    --report "${CMAKE_CURRENT_BINARY_DIR}/minikey-dance-documented-example.json")
+set_tests_properties(minikey_dance_documented_example PROPERTIES TIMEOUT 150 LABELS "cpu;minikeys;dance;examples")
+if(KEYHUNT_ENABLE_GPU)
+    set_tests_properties(minikey_dance_documented_example PROPERTIES LABELS "${KEYHUNT_GPU_BACKEND};hardware;minikeys;dance;examples" RESOURCE_LOCK gpu_device)
+endif()
