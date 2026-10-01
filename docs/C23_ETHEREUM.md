@@ -54,3 +54,17 @@ and [PyCryptodome Keccak documentation](https://www.pycryptodome.org/src/hash/ke
    makes no throughput, scaling, tuning, MIG or partition certification claim.
 
 Only public, deliberately small scalar fixtures are used for validation.
+
+## Implementation findings
+
+The first MI300X run passed all 412 native Keccak vectors, both executor variants,
+31 injected failure boundaries and both independent CLI corpora (48 searches and
+25 rejection cases per kernel across eight visible devices). The maximum batch
+case exercises all 20 cached offset bits. These are correctness measurements;
+CUDA and durable acceptance are still required.
+
+The initial implementation keeps Ethereum kernel/executor translation units
+separate from Bitcoin HASH160. This preserves the accepted Bitcoin register and
+serialization paths while the new hash receives its own parity gates. Shared
+checkpoint ownership and receipt logic remain common. A future common GPU owner
+refactor should retain both families' fault and native regression corpora.

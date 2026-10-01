@@ -19,6 +19,7 @@ int checkpoint_command(int argc, char** argv);
 int state_command(int argc, char** argv);
 int xpoint_command(int argc, char** argv);
 int hash160_command(int argc, char** argv);
+int ethereum_command(int argc, char** argv);
 int bsgs_table_command(int argc, char** argv);
 int bsgs_command(int argc, char** argv);
 namespace {
@@ -124,12 +125,13 @@ int smoke(int argc, char** argv) {
 int dispatch_command(int argc, char** argv) {
     if (argc < 2) return -1;
     const std::string command = argv[1];
-    if (command != "devices" && command != "gpu-smoke" && command != "xpoint" && command != "hash160" && command != "address" && command != "bsgs-table" && command != "bsgs" && command != "state" && command != "checkpoint") return -1;
+    if (command != "devices" && command != "gpu-smoke" && command != "xpoint" && command != "ethereum" && command != "hash160" && command != "address" && command != "bsgs-table" && command != "bsgs" && command != "state" && command != "checkpoint") return -1;
     try {
         if (command == "checkpoint") return checkpoint_command(argc, argv);
         if (command == "state") return state_command(argc, argv);
         if (command == "gpu-smoke") return smoke(argc, argv);
         if (command == "xpoint") return xpoint_command(argc, argv);
+        if (command == "ethereum") return ethereum_command(argc, argv);
         if (command == "hash160" || command == "address") return hash160_command(argc, argv);
         if (command == "bsgs") return bsgs_command(argc, argv);
         if (command == "bsgs-table") return bsgs_table_command(argc, argv);

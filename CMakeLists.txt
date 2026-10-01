@@ -166,7 +166,7 @@ target_compile_definitions(keyhunt_storage PRIVATE KEYHUNT_SOURCE_ROOT="${CMAKE_
 target_link_libraries(keyhunt_storage PUBLIC keyhunt_core SQLite::SQLite3)
 keyhunt_configure_target(keyhunt_storage)
 
-set(gpu_executor_sources src/backend/gpu/executor.cpp src/backend/gpu/xpoint.cpp src/backend/gpu/hash160.cpp
+set(gpu_executor_sources src/backend/gpu/executor.cpp src/backend/gpu/xpoint.cpp src/backend/gpu/hash160.cpp src/backend/gpu/ethereum.cpp
     src/backend/gpu/bsgs_table.cpp src/backend/gpu/bsgs_search.cpp)
 add_library(keyhunt_backend STATIC src/backend/availability.cpp)
 if(KEYHUNT_ENABLE_GPU)
@@ -181,7 +181,7 @@ if(KEYHUNT_ENABLE_GPU)
     set_target_properties(keyhunt_backend PROPERTIES INTERPROCEDURAL_OPTIMIZATION OFF LINKER_LANGUAGE CXX)
 endif()
 target_include_directories(keyhunt_backend PUBLIC include)
-add_library(keyhunt_backend_commands STATIC src/backend/commands.cpp src/backend/state_command.cpp src/backend/checkpoint_command.cpp src/backend/checkpoint_control.cpp src/backend/xpoint_command.cpp src/backend/hash160_command.cpp src/backend/bsgs_table_command.cpp src/backend/bsgs_command.cpp)
+add_library(keyhunt_backend_commands STATIC src/backend/commands.cpp src/backend/state_command.cpp src/backend/checkpoint_command.cpp src/backend/checkpoint_control.cpp src/backend/xpoint_command.cpp src/backend/hash160_command.cpp src/backend/ethereum_command.cpp src/backend/bsgs_table_command.cpp src/backend/bsgs_command.cpp)
 target_link_libraries(keyhunt_backend_commands PUBLIC keyhunt_backend keyhunt_core keyhunt_storage)
 target_compile_options(keyhunt_backend_commands PRIVATE -Wall -Wextra)
 if(KEYHUNT_ENABLE_SANITIZERS)
