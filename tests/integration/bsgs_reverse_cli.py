@@ -5,6 +5,7 @@ from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'oracle'))
 from oracle_selftest import check_source,run as oracle_run
 from model import N
+from bsgs_random_window import RandomWindow
 p=argparse.ArgumentParser()
 for name in ('binary','oracle','report'):p.add_argument('--'+name,type=Path,required=True)
 p.add_argument('--backend',choices=('hip','cuda'),default='hip');p.add_argument('--hardware',action='store_true')
@@ -12,11 +13,14 @@ p.add_argument('--suite',choices=('search','recovery'),required=True)
 choice=p.add_mutually_exclusive_group()
 choice.add_argument('--both-ends',action='store_true')
 choice.add_argument('--dance',action='store_true')
+choice.add_argument('--random-window',action='store_true')
 a=p.parse_args();binary=str(a.binary.resolve())
-selected='dance' if a.dance else 'both-ends' if a.both_ends else None
+selected='random-window' if a.random_window else 'dance' if a.dance else 'both-ends' if a.both_ends else None
 orders=(selected,) if selected else ('forward','reverse')
-switches=('forward','reverse','both-ends','dance') if a.dance else ('forward','reverse','both-ends') if a.both_ends else ('forward','reverse')
-report=dict(passed=False,both_ends=a.both_ends,dance=a.dance,suite=a.suite,backend=a.backend,hardware=a.hardware,cases=[],oracle_commit=check_source(),binary_sha256=hashlib.sha256(a.binary.read_bytes()).hexdigest())
+switches=('forward','reverse','both-ends','dance','random-window') if a.random_window else ('forward','reverse','both-ends','dance') if a.dance else ('forward','reverse','both-ends') if a.both_ends else ('forward','reverse')
+report=dict(random_window=a.random_window,passed=False,both_ends=a.both_ends,dance=a.dance,suite=a.suite,backend=a.backend,hardware=a.hardware,cases=[],oracle_commit=check_source(),binary_sha256=hashlib.sha256(a.binary.read_bytes()).hexdigest())
+def tuning(order,seed=42,window=4):
+    return ['--tile-seed',f'{seed:x}','--tile-window',window] if order=='random-window' else []
 def run(words,ok=True):
     result=subprocess.run([binary,*map(str,words)],capture_output=True,text=True,timeout=120)
     assert (result.returncode==0)==ok,(words,result.stdout[-2000:],result.stderr)
@@ -33,21 +37,29 @@ with tempfile.TemporaryDirectory(prefix='kh-bsgs-reverse-',dir='/var/tmp') as te
         inventory=run(['devices','--backend',a.backend])[0] if a.hardware else None;report['inventory']=inventory
         fixtures=[('low',1,82,False,False),('wide',(1<<200)-3,(1<<200)+70,False,False),
                   ('order',N-73,N,False,False),('single',N-1,N,False,False),('miss',101,144,False,True),('dense',101,147,True,False)]
-        def exercise(label,begin,end,dense,miss,order,group,device=0,giants=2):
+        def exercise(label,begin,end,dense,miss,order,group,device=0,giants=2,seed=42,window=4,defaults=False):
             file,wanted=fixture(label,begin,end,dense,miss)
             words=['bsgs','--backend',a.backend,'--device',device,'--range',f'{begin:x}:{end:x}','--targets',file,'--table',table,
                    '--tile-order',order,'--group-size',group,'--giant-batch',giants,'--target-batch',1 if giants==1048576 else 8,'--candidate-capacity',1 if dense else 1024]
+            if not defaults:words+=tuning(order,seed,window)
             if not a.hardware:assert 'not built' in run(words,False).stderr;return
             rows=run(words);summary=rows[-1];turn=0;found=[]
+            random=RandomWindow([(begin,end)],17,giants,seed,window) if order=='random-window' else None
+            planned=random.next(17*giants) if random else None;sequence=[]
+            if random:
+                for value in (rows[0],summary):assert int(value['tile_seed'],16)==seed and value['tile_window']==window
             pivot=begin+(end-begin)//2
             missing=[(begin,pivot),(pivot,end)] if order=='dance' and begin<pivot<end else [(begin,end)]
             assert rows[0]['tile_order']==summary['tile_order']==order
             for row in rows[1:-1]:
                 if row['type']=='batch':
+                    if random:assert (int(row['begin'],16),int(row['end_exclusive'],16))==planned[:2]
                     if row['overflow']:assert row['verified_steps']==0 and not row['matches']
                     else:found.extend((int(m['scalar'],16),m['public_key']) for m in row['matches'])
                 if row['type']=='tile':
                     lo,hi=int(row['begin'],16),int(row['end_exclusive'],16)
+                    if random:
+                        assert (lo,hi)==planned[:2];sequence.append([lo,hi]);planned=random.next(17*giants);turn+=1;continue
                     from_high=order=='reverse' or (order=='both-ends' and turn%2==1) or (order=='dance' and turn%3==1)
                     index=len(missing)-1 if from_high else 0
                     if order=='dance' and turn%3==2:index=next((i for i,(x,y) in enumerate(missing) if x>=pivot),0)
@@ -56,17 +68,26 @@ with tempfile.TemporaryDirectory(prefix='kh-bsgs-reverse-',dir='/var/tmp') as te
                     if (lo,hi)==(low,high):missing.pop(index)
                     else:missing[index]=(low,lo) if from_high else (hi,high)
                     turn+=1
-            assert not missing
+            assert planned is None if random else not missing
             assert len(found)==len(wanted) and set(found)==wanted
             assert summary['complete'] and int(summary['verified_scalars'],16)==end-begin
             if dense:assert summary['overflow_replays']>0
-            report['cases'].append(dict(name=label,order=order,group=group,device=device,relations=len(wanted),summary=summary))
+            report['cases'].append(dict(name=label,order=order,group=group,device=device,relations=len(wanted),summary=summary,**(dict(seed=seed,window=window,sequence=sequence) if random else {})))
         for order in orders:
             for group in (1,8):
                 for case in fixtures:exercise(*case,order,group)
         if a.hardware:
             for device in range(len(inventory['devices'])):exercise('ordinal',101,179,False,False,selected or 'reverse',8,device)
             for group in (1,8):exercise('maximum-tail',1<<128,(1<<128)+17*1048576+1,False,False,selected or 'reverse',group,giants=1048576)
+        if a.random_window:
+            for window,seed in ((1,0),(2,1),(3,42),(64,0),(256,2**256-1)):
+                for group in (1,8):exercise('window-'+str(window),101,101+34*(window+1)+3,False,False,'random-window',group,seed=seed,window=window)
+            exercise('defaults',101,300,False,False,'random-window',8,seed=0,window=64,defaults=True)
+            base=['bsgs','--backend',a.backend,'--range','1:2','--targets',root/'unused','--table',table]
+            for order in ('forward','reverse','both-ends','dance'):
+                assert 'require tile-order random-window' in run(base+['--tile-order',order,'--tile-seed','0'],False).stderr
+            for words in (['--tile-window','0'],['--tile-window','257'],['--tile-window','-1'],['--tile-window','x'],['--tile-seed','g'],['--tile-seed','1'+'0'*64],['--tile-seed','']):
+                error=run(base+['--tile-order','random-window']+words,False);assert not error.stdout
         for value in ('random','backward',''):
             rejected=run(['bsgs','--backend',a.backend,'--range','1:2','--targets',root/'unused','--table',table,'--tile-order',value],False)
             assert 'tile-order must be' in rejected.stderr and not rejected.stdout
@@ -80,6 +101,8 @@ with tempfile.TemporaryDirectory(prefix='kh-bsgs-reverse-',dir='/var/tmp') as te
             job=call('checkpoint','create',*words)[0]
             assert call('checkpoint','create',*words)[0]==job
             assert not call('checkpoint','create',*words,'--tile-order','reverse',ok=False).stdout
+            if a.random_window:
+                for extra in (['--tile-seed','0'],['--tile-window','4']):assert not call('checkpoint','create',*words,*extra,ok=False).stdout
             scope=['--project',project,'--job',job['job']]
             grant=call('state','claim',*scope,'--owner','test','--request','claim')[0]['assignments'][0]['grant']
             return scope,['--backend',a.backend,'--grant',grant,'--targets',file,'--table',table],wanted
@@ -103,8 +126,9 @@ with tempfile.TemporaryDirectory(prefix='kh-bsgs-reverse-',dir='/var/tmp') as te
             for group in (1,8):
                 scope,words,wanted=prepare(order+str(group),101,147,True)
                 if not a.hardware:assert 'not built' in call('checkpoint','run',*words,'--tile-order',order,ok=False).stderr;continue
-                result=call('checkpoint','run',*words,'--tile-order',order,'--group-size',group,'--giant-batch',2,'--target-batch',8,'--candidate-capacity',1)[-1]
+                result=call('checkpoint','run',*words,'--tile-order',order,*tuning(order),'--group-size',group,'--giant-batch',2,'--target-batch',8,'--candidate-capacity',1)[-1]
                 assert result['complete'] and result['tile_order']==order and int(result['computed_scalars'],16)==46 and result['overflow_replays']>0
+                if order=='random-window':assert int(result['tile_seed'],16)==42 and result['tile_window']==4
                 verify(scope,wanted)
                 retry=call('checkpoint','run',*words,'--tile-order','forward' if order=='reverse' else 'reverse')[-1]
                 assert retry['complete'] and retry['batches']==0 and int(retry['resumed_scalars'],16)==46
@@ -116,10 +140,11 @@ with tempfile.TemporaryDirectory(prefix='kh-bsgs-reverse-',dir='/var/tmp') as te
                     begin=(1<<128)+3;end=begin+1048577
                     scope,words,wanted=prepare('killed-'+first+'-'+resume,begin,end)
                     command=[binary,'checkpoint','run','--state-dir',state,*words,'--tile-order',first,'--giant-batch',1,'--target-batch',1,'--group-size',1]
+                    command+=tuning(first)
                     child=subprocess.Popen(list(map(str,command)),stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
                     try:
                         assert select.select([child.stdout],[],[],30)[0],'no durable acknowledgment'
-                        notice=json.loads(child.stdout.readline());assert notice['durable_results'] and not notice['durable_coverage']
+                        notice=json.loads(child.stdout.readline());assert notice['durable_results'] and (first=='random-window' or not notice['durable_coverage'])
                         assert 'already held' in call('checkpoint','run',*words,'--tile-order',resume,ok=False).stderr
                         child.kill();child.communicate(timeout=30)
                     finally:
@@ -127,7 +152,8 @@ with tempfile.TemporaryDirectory(prefix='kh-bsgs-reverse-',dir='/var/tmp') as te
                     saved=call('state','block',*scope,'--block',0)[0]
                     covered=sum(int(v['end_exclusive'],16)-int(v['begin'],16) for v in saved['covered'])
                     assert covered<end-begin
-                    result=call('checkpoint','run',*words,'--tile-order',resume,'--giant-batch',65536,'--target-batch',8,'--group-size',8)[-1]
+                    result=call('checkpoint','run',*words,'--tile-order',resume,*tuning(resume,seed=2**256-1,window=3),'--giant-batch',65536,'--target-batch',8,'--group-size',8)[-1]
                     assert result['complete'] and int(result['resumed_scalars'],16)==covered and covered+int(result['computed_scalars'],16)==end-begin
+                    if resume=='random-window':assert int(result['tile_seed'],16)==2**256-1 and result['tile_window']==3
                     verify(scope,wanted);report['cases'].append(dict(name='kill-restart',first=first,resume=resume,partial_ack=notice,retained=saved,summary=result))
 report['passed']=True;a.report.write_text(json.dumps(report,indent=2)+'\n');print('PASS BSGS tile '+a.suite)

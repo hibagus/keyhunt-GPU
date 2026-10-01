@@ -139,3 +139,22 @@ add_test(NAME bsgs_random_window_plan_oracle COMMAND "${Python3_EXECUTABLE}"
     "${CMAKE_CURRENT_SOURCE_DIR}/tests/oracle/bsgs_random_windows.py" --binary $<TARGET_FILE:bsgs_plan_probe>
     --report "${CMAKE_CURRENT_BINARY_DIR}/bsgs-random-window-plan-oracle.json")
 set_tests_properties(bsgs_random_window_plan_oracle PROPERTIES TIMEOUT 210 LABELS "cpu;bsgs;random-window;oracle")
+
+add_test(NAME bsgs_random_window_search_cli COMMAND "${Python3_EXECUTABLE}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/bsgs_reverse_cli.py" --binary $<TARGET_FILE:keyhunt>
+    --oracle $<TARGET_FILE:secp256k1_oracle> --suite search --random-window
+    --report "${CMAKE_CURRENT_BINARY_DIR}/bsgs-random-window-search-cli.json" ${bsgs_search_args})
+set_tests_properties(bsgs_random_window_search_cli PROPERTIES TIMEOUT 600 LABELS "cpu;bsgs;random-window;oracle")
+if(KEYHUNT_ENABLE_GPU)
+    set_tests_properties(bsgs_random_window_search_cli PROPERTIES LABELS "${KEYHUNT_GPU_BACKEND};hardware;bsgs;random-window;oracle" RESOURCE_LOCK gpu_device)
+endif()
+
+
+add_test(NAME bsgs_random_window_documented_example COMMAND "${Python3_EXECUTABLE}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/bsgs_reverse_examples.py" --random-window
+    --binary $<TARGET_FILE:keyhunt> --backend ${bsgs_reverse_example_backend}
+    --report "${CMAKE_CURRENT_BINARY_DIR}/bsgs-random-window-documented-example.json")
+set_tests_properties(bsgs_random_window_documented_example PROPERTIES TIMEOUT 150 LABELS "cpu;bsgs;random-window;examples")
+if(KEYHUNT_ENABLE_GPU)
+    set_tests_properties(bsgs_random_window_documented_example PROPERTIES LABELS "${KEYHUNT_GPU_BACKEND};hardware;bsgs;random-window;examples" RESOURCE_LOCK gpu_device)
+endif()

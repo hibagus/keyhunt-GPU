@@ -62,3 +62,54 @@ subgroup overflow, lost acknowledgments and killed policy-switch restarts.
 Validate both GPU kernels, every visible device, pause/restore and supervised
 HTTPS/disconnected file transports on HIP and CUDA. Preserve raw evidence and
 executable examples. Other families' random traversal remains pending in C23.
+
+## Executable public example
+
+Choose `KEYHUNT_BIN` and `GPU_BACKEND` as in [GPU_QUICKSTART.md](GPU_QUICKSTART.md).
+Run both blocks in the same Bash shell. The hexadecimal range `1:65` contains 100
+scalars. With m=17, two giants per tile, seed `2a` and window size four,
+the three tiles are shuffled reproducibly. The full range is covered exactly;
+scalar 1 matches the public generator once.
+
+<!-- bsgs-random-window-example: prepare -->
+```bash
+set -euo pipefail
+: "${KEYHUNT_BIN:?choose the built executable}"
+umask 077
+bsgs_random_window_dir="$(mktemp -d "${EXAMPLE_PARENT:-/var/tmp}/keyhunt-bsgs-random-window.XXXXXX")"
+export KEYHUNT_STATE_DIR="$bsgs_random_window_dir/state"
+printf '%s\n' 0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798 \
+  > "$bsgs_random_window_dir/points.txt"
+"$KEYHUNT_BIN" bsgs-table build --m 17 --output "$bsgs_random_window_dir/babies.khb" \
+  > "$bsgs_random_window_dir/table.json"
+"$KEYHUNT_BIN" state project-create --name 'Public random-window BSGS example' > "$bsgs_random_window_dir/project.json"
+bsgs_random_window_project="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["project"])' "$bsgs_random_window_dir/project.json")"
+"$KEYHUNT_BIN" checkpoint create --project "$bsgs_random_window_project" --mode bsgs \
+  --range 1:65 --block-width 64 --targets "$bsgs_random_window_dir/points.txt" \
+  --table "$bsgs_random_window_dir/babies.khb" > "$bsgs_random_window_dir/job.json"
+bsgs_random_window_job="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["job"])' "$bsgs_random_window_dir/job.json")"
+"$KEYHUNT_BIN" state claim --project "$bsgs_random_window_project" --job "$bsgs_random_window_job" \
+  --owner example --request first > "$bsgs_random_window_dir/grant.json"
+bsgs_random_window_grant="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["assignments"][0]["grant"])' "$bsgs_random_window_dir/grant.json")"
+```
+
+<!-- bsgs-random-window-example: execute -->
+```bash
+: "${GPU_BACKEND:?choose hip or cuda}"
+"$KEYHUNT_BIN" bsgs --backend "$GPU_BACKEND" --device "${GPU_DEVICE:-0}" \
+  --range 1:65 --targets "$bsgs_random_window_dir/points.txt" --table "$bsgs_random_window_dir/babies.khb" \
+  --giant-batch 2 --tile-order random-window --tile-seed 2a --tile-window 4 > "$bsgs_random_window_dir/volatile.ndjson"
+"$KEYHUNT_BIN" checkpoint run --backend "$GPU_BACKEND" --device "${GPU_DEVICE:-0}" \
+  --grant "$bsgs_random_window_grant" --targets "$bsgs_random_window_dir/points.txt" \
+  --table "$bsgs_random_window_dir/babies.khb" --giant-batch 2 --tile-order random-window --tile-seed 2a --tile-window 4 \
+  > "$bsgs_random_window_dir/durable.ndjson"
+"$KEYHUNT_BIN" checkpoint run --backend "$GPU_BACKEND" --device "${GPU_DEVICE:-0}" \
+  --grant "$bsgs_random_window_grant" --targets "$bsgs_random_window_dir/points.txt" \
+  --table "$bsgs_random_window_dir/babies.khb" --tile-order forward > "$bsgs_random_window_dir/retry.ndjson"
+"$KEYHUNT_BIN" checkpoint results --project "$bsgs_random_window_project" --job "$bsgs_random_window_job" \
+  > "$bsgs_random_window_dir/results.json"
+"$KEYHUNT_BIN" state check > "$bsgs_random_window_dir/check.json"
+```
+
+`results.json` contains scalar 1 once. The final forward retry reports 100 resumed
+scalars and zero batches, using the same job and grant.
