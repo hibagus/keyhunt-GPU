@@ -241,3 +241,31 @@ foreach(order forward reverse)
             LABELS "${KEYHUNT_GPU_BACKEND};hardware;storage;glv;recovery" RESOURCE_LOCK gpu_device)
     endif()
 endforeach()
+
+add_executable(storage_orbit_checkpoint_test tests/storage/orbit_checkpoint.cpp)
+target_include_directories(storage_orbit_checkpoint_test PRIVATE src/storage)
+target_link_libraries(storage_orbit_checkpoint_test PRIVATE keyhunt_storage)
+keyhunt_configure_target(storage_orbit_checkpoint_test)
+add_test(NAME storage_orbit_checkpoint COMMAND storage_orbit_checkpoint_test)
+set_tests_properties(storage_orbit_checkpoint PROPERTIES TIMEOUT 180 LABELS "cpu;storage;orbit;recovery")
+
+foreach(order forward reverse)
+    add_test(NAME checkpoint_orbit_${order}_cli COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/stride_checkpoint_cli.py"
+        --binary $<TARGET_FILE:keyhunt> --oracle $<TARGET_FILE:secp256k1_oracle>
+        --orbit --order ${order} --report "${CMAKE_CURRENT_BINARY_DIR}/checkpoint-orbit-${order}-cli.json" ${checkpoint_cli_options})
+    set_tests_properties(checkpoint_orbit_${order}_cli PROPERTIES TIMEOUT 900 LABELS "cpu;storage;orbit;recovery")
+    if(KEYHUNT_ENABLE_GPU)
+        set_tests_properties(checkpoint_orbit_${order}_cli PROPERTIES LABELS "${KEYHUNT_GPU_BACKEND};hardware;storage;orbit;recovery" RESOURCE_LOCK gpu_device)
+    endif()
+endforeach()
+if(KEYHUNT_ENABLE_GPU)
+    add_test(NAME checkpoint_orbit_pause_${KEYHUNT_GPU_BACKEND} COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/checkpoint_pause_hip.py"
+        --binary $<TARGET_FILE:keyhunt> --oracle $<TARGET_FILE:secp256k1_oracle>
+        --backend ${KEYHUNT_GPU_BACKEND} --orbit --order reverse --stride 11 --kernel glv
+        --mode xpoint --mode hash160 --mode ethereum --mode vanity
+        --report "${CMAKE_CURRENT_BINARY_DIR}/checkpoint-orbit-pause-${KEYHUNT_GPU_BACKEND}.json")
+    set_tests_properties(checkpoint_orbit_pause_${KEYHUNT_GPU_BACKEND} PROPERTIES TIMEOUT 480
+        LABELS "${KEYHUNT_GPU_BACKEND};hardware;storage;orbit;recovery" RESOURCE_LOCK gpu_device)
+endif()

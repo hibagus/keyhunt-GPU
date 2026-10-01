@@ -205,6 +205,14 @@ Scope CheckpointRun::create_xpoint(Journal& journal,const std::string& project,S
     const auto scope=journal.create_job(project,{Mode::XPoint,root,width,input.target_digest,input.algorithm_digest});
     journal.bind_search(scope,input);return scope;
 }
+Scope CheckpointRun::create_orbit_xpoint(Journal& journal,const std::string& project,ScalarInterval root,UInt256 width,const core::XPointTargets& targets,UInt256 stride,bool reverse){
+    core::validate_scalar_stride(stride);auto input=detail::binding(targets);
+    {
+        const core::ScalarStride mapping(root,stride,reverse,true);input=detail::with_stride(std::move(input),mapping);root=mapping.indices();
+    }
+    const auto scope=journal.create_job(project,{Mode::XPoint,root,width,input.target_digest,input.algorithm_digest});
+    journal.bind_search(scope,input);return scope;
+}
 Scope CheckpointRun::create_hash160(Journal& journal,const std::string& project,ScalarInterval root,UInt256 width,const core::Hash160Targets& targets,UInt256 stride,bool reverse){
     core::validate_scalar_stride(stride);auto input=detail::binding(targets);
     if(stride!=UInt256(1) || reverse){
@@ -213,10 +221,26 @@ Scope CheckpointRun::create_hash160(Journal& journal,const std::string& project,
     const auto scope=journal.create_job(project,{Mode::Hash160,root,width,input.target_digest,input.algorithm_digest});
     journal.bind_search(scope,input);return scope;
 }
+Scope CheckpointRun::create_orbit_hash160(Journal& journal,const std::string& project,ScalarInterval root,UInt256 width,const core::Hash160Targets& targets,UInt256 stride,bool reverse){
+    core::validate_scalar_stride(stride);auto input=detail::binding(targets);
+    {
+        const core::ScalarStride mapping(root,stride,reverse,true);input=detail::with_stride(std::move(input),mapping);root=mapping.indices();
+    }
+    const auto scope=journal.create_job(project,{Mode::Hash160,root,width,input.target_digest,input.algorithm_digest});
+    journal.bind_search(scope,input);return scope;
+}
 Scope CheckpointRun::create_vanity(Journal& journal,const std::string& project,ScalarInterval root,UInt256 width,const core::VanityTargets& targets,UInt256 stride,bool reverse){
     core::validate_scalar_stride(stride);auto input=detail::binding(targets);
     if(stride!=UInt256(1) || reverse){
         const core::ScalarStride mapping(root,stride,reverse);input=detail::with_stride(std::move(input),mapping);root=mapping.indices();
+    }
+    const auto scope=journal.create_job(project,{Mode::Vanity,root,width,input.target_digest,input.algorithm_digest});
+    journal.bind_search(scope,input);return scope;
+}
+Scope CheckpointRun::create_orbit_vanity(Journal& journal,const std::string& project,ScalarInterval root,UInt256 width,const core::VanityTargets& targets,UInt256 stride,bool reverse){
+    core::validate_scalar_stride(stride);auto input=detail::binding(targets);
+    {
+        const core::ScalarStride mapping(root,stride,reverse,true);input=detail::with_stride(std::move(input),mapping);root=mapping.indices();
     }
     const auto scope=journal.create_job(project,{Mode::Vanity,root,width,input.target_digest,input.algorithm_digest});
     journal.bind_search(scope,input);return scope;
@@ -230,6 +254,14 @@ Scope CheckpointRun::create_ethereum(Journal& journal,const std::string& project
     core::validate_scalar_stride(stride);auto input=detail::binding(targets);
     if(stride!=UInt256(1) || reverse){
         const core::ScalarStride mapping(root,stride,reverse);input=detail::with_stride(std::move(input),mapping);root=mapping.indices();
+    }
+    const auto scope=journal.create_job(project,{Mode::Ethereum,root,width,input.target_digest,input.algorithm_digest});
+    journal.bind_search(scope,input);return scope;
+}
+Scope CheckpointRun::create_orbit_ethereum(Journal& journal,const std::string& project,ScalarInterval root,UInt256 width,const core::EthereumTargets& targets,UInt256 stride,bool reverse){
+    core::validate_scalar_stride(stride);auto input=detail::binding(targets);
+    {
+        const core::ScalarStride mapping(root,stride,reverse,true);input=detail::with_stride(std::move(input),mapping);root=mapping.indices();
     }
     const auto scope=journal.create_job(project,{Mode::Ethereum,root,width,input.target_digest,input.algorithm_digest});
     journal.bind_search(scope,input);return scope;
@@ -276,6 +308,8 @@ CheckpointSummary CheckpointRun::Impl::scalar(Journal& journal,const Grant& gran
     }
     if(o.reverse && (input.mode==Mode::Minikeys || *o.reverse!=(mapping && mapping->reverse())))
         throw std::invalid_argument("requested order differs from immutable job binding");
+    if(o.orbit && (input.mode==Mode::Minikeys || *o.orbit!=(mapping && mapping->orbit())))
+        throw std::invalid_argument("requested endomorphism differs from immutable job binding");
     if(mapping)input=detail::with_stride(std::move(input),*mapping);
     if(o.candidate_capacity<matches_per_scalar)throw std::invalid_argument("candidate capacity cannot fit one scalar");
     Impl state(journal,grant,std::move(input),verifier,o,std::move(observer),std::move(control));
@@ -293,7 +327,7 @@ CheckpointSummary CheckpointRun::Impl::scalar(Journal& journal,const Grant& gran
     default:throw std::invalid_argument("unsupported scalar checkpoint mode");
     }
     if(state.input.stride_mapping){
-        identity.algorithm=scheduler::strided_algorithm(identity.algorithm,state.input.stride_mapping->reverse());
+        identity.algorithm=scheduler::strided_algorithm(identity.algorithm,state.input.stride_mapping->reverse(),state.input.stride_mapping->orbit());
         identity.stride_mapping=state.input.stride_mapping;
     }
     identity.job_digest=grant.scope.job;identity.target_digest=manifest.targets;identity.algorithm_digest=manifest.algorithm;
@@ -338,7 +372,7 @@ CheckpointSummary CheckpointRun::Impl::scalar(Journal& journal,const Grant& gran
 }
 CheckpointSummary CheckpointRun::bsgs(Journal& journal,const Grant& grant,const core::BsgsPublicKeyTargets& targets,const bsgs::Table& table,
     const core::XPointVerifier& verifier,const BsgsRunner& run,CheckpointOptions o,CheckpointObserver observer,CheckpointCleanup cleanup,CheckpointControl control){
-    if(o.stride || o.reverse)throw std::invalid_argument("BSGS does not support stride or traversal order");
+    if(o.stride || o.reverse || o.orbit)throw std::invalid_argument("BSGS does not support stride or traversal order");
     validate_options(o,true);Impl state(journal,grant,detail::binding(targets,table),verifier,o,std::move(observer),std::move(control));
     Cleanup stopped_before_unlock{std::move(cleanup)};
     scheduler::AdaptiveWorkSize units(UInt256(table.memory().m).multiply(UInt256(o.giant_steps)),o.work_unit_seconds,table.memory().m);

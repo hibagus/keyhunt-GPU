@@ -14,6 +14,8 @@ import time
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "oracle"))
 from oracle_selftest import check_source, run as oracle_run
+from model import N
+L=int('5363ad4cc05c30e0a5261c028812645a122e22ea20816678df02967c1b23bd72',16)
 from hash160 import hash160,address
 from ethereum import address as eth_address
 from minikey import PUBLIC_KEYS,text as minikey_text,ordinal as minikey_ordinal,scalar as minikey_scalar
@@ -26,14 +28,15 @@ parser.add_argument("--backend",choices=("hip","cuda"),default="hip")
 parser.add_argument("--mode", choices=("xpoint","bsgs","hash160","ethereum","vanity","minikeys22","minikeys30"), action="append")
 parser.add_argument("--stride", type=lambda value:int(value,16), default=1)
 parser.add_argument("--order",choices=("forward","reverse"),default="forward")
+parser.add_argument("--orbit",action="store_true")
 parser.add_argument("--kernel", choices=("direct","stepped","glv"), help="first stage kernel; later stages switch to direct and stepped")
 args = parser.parse_args()
 if args.kernel and (not args.mode or any(mode not in ("xpoint","hash160","ethereum","vanity") for mode in args.mode)):
     parser.error("kernel switching requires explicit scalar modes")
-if (args.stride!=1 or args.order=="reverse") and (not args.mode or any(mode not in ("xpoint","hash160","ethereum","vanity") for mode in args.mode)):
+if (args.orbit or args.stride!=1 or args.order=="reverse") and (not args.mode or any(mode not in ("xpoint","hash160","ethereum","vanity") for mode in args.mode)):
     parser.error("strides require explicit scalar modes")
 binary = args.binary.resolve()
-report = {"oracle_commit": check_source(), "binary_sha256": hashlib.sha256(binary.read_bytes()).hexdigest(),
+report = {"orbit":args.orbit,"oracle_commit": check_source(), "binary_sha256": hashlib.sha256(binary.read_bytes()).hexdigest(),
           "cases": [], "kernels": [args.kernel,"direct","stepped"] if args.kernel else ["stepped"]*3, "pause_latency_scope": "local socket request through durably-paused status, including admitted batch and up to 20 ms idle polling"}
 def invoke(words, env=None, ok=True):
     result = subprocess.run([str(binary), *map(str, words)], capture_output=True, text=True, timeout=90, env=env)
@@ -55,8 +58,14 @@ with tempfile.TemporaryDirectory(prefix="kh-c14-hip-") as temporary:
     root = Path(temporary)
     table = root / "table.khb"
     invoke(["bsgs-table", "build", "--m", "17", "--output", table])
-    def scalar(index):return 1+((1048576-index) if args.order=="reverse" else index-1)*args.stride
-    seeds = [scalar(i) for i in (1,2,1048576)]+[1+((1<<80)-1)*args.stride]
+    candidate_count=1048576*(6 if args.orbit else 1)
+    def seed(index):
+        offset=(index-1)%1048576
+        return 1+((1048575-offset) if args.order=="reverse" else offset)*args.stride
+    def scalar(index):
+        variant=(index-1)//1048576 if args.orbit else 0
+        return seed(index)*pow(L,variant//2,N)*(-1 if variant%2 else 1)%N
+    seeds = [scalar(v*1048576+i) for v in range(6 if args.orbit else 1) for i in (1,2,1048576)]+[1+((1<<80)-1)*args.stride]
     public = dict(zip(seeds, oracle_run(args.oracle, [f"pub {n:064x}" for n in seeds])))
     for mode in (args.mode or ("xpoint", "bsgs")):
         state = root / mode
@@ -77,7 +86,7 @@ with tempfile.TemporaryDirectory(prefix="kh-c14-hip-") as temporary:
         if length:inputs += ["--length",length,"--input-format","hash160"]
         project = local("state", "project-create", "--name", "C14 HIP pause")[0]["project"]
         job = local("checkpoint", "create", "--project", project, "--mode", "minikeys" if length else mode, "--range", f"{begin:x}:{begin+1048576*args.stride:x}",
-                    "--block-width", "100000", *inputs, *(["--stride",f"{args.stride:x}"] if args.stride!=1 else []), *(["--order","reverse"] if args.order=="reverse" else []))[0]["job"]
+                    "--block-width", f"{candidate_count:x}", *inputs, *(["--endomorphism","orbit"] if args.orbit else []), *(["--stride",f"{args.stride:x}"] if args.stride!=1 else []), *(["--order","reverse"] if args.order=="reverse" else []))[0]["job"]
         scope = ["--project", project, "--job", job]
         grant = local("state", "claim", *scope, "--owner", "pause-test", "--request", "claim")[0]["assignments"][0]["grant"]
         run = ["checkpoint", "run", "--state-dir", state, "--backend", args.backend, "--grant", grant, *inputs]
@@ -178,18 +187,21 @@ with tempfile.TemporaryDirectory(prefix="kh-c14-hip-") as temporary:
             env["CUDA_VISIBLE_DEVICES" if args.backend=="cuda" else "HIP_VISIBLE_DEVICES"] = visibility
         completed = invoke(run + fast + ["--device", device] + (["--kernel","stepped"] if args.kernel else []), env=env)[-1]
         assert completed["complete"]
-        assert int(completed["resumed_candidates" if args.stride!=1 or args.order=="reverse" else "resumed_ordinals" if length else "resumed_scalars"], 16) + int(completed["computed_candidates" if args.stride!=1 or args.order=="reverse" else "computed_ordinals" if length else "computed_scalars"], 16) == 1048576
+        assert int(completed["resumed_candidates" if args.orbit or args.stride!=1 or args.order=="reverse" else "resumed_ordinals" if length else "resumed_scalars"], 16) + int(completed["computed_candidates" if args.orbit or args.stride!=1 or args.order=="reverse" else "computed_ordinals" if length else "computed_scalars"], 16) == candidate_count
         matches = local("checkpoint", "results", *scope)[0]["results"]
-        expected=({(n,f'{tag:02x}'+values[n,tag]) for n in seeds[:3] for tag in (1,2)} if mode=="hash160"
-                  else {(n,(bytes([tag,len(values[n,tag])])+values[n,tag].encode()+bytes(34-len(values[n,tag]))).hex()) for n in seeds[:3] for tag in (1,2)} if mode=="vanity"
-                  else set() if length else {(n,values[n]) for n in seeds[:3]})
+        expected=({(n,f'{tag:02x}'+values[n,tag]) for n in seeds[:-1] for tag in (1,2)} if mode=="hash160"
+                  else {(n,(bytes([tag,len(values[n,tag])])+values[n,tag].encode()+bytes(34-len(values[n,tag]))).hex()) for n in seeds[:-1] for tag in (1,2)} if mode=="vanity"
+                  else set() if length else {(n,values[n]) for n in seeds[:-1]})
         if length:
             expected={(begin,f"{length:02x}{tag:02x}"+values[begin,tag]) for tag in (1,2)}
             assert all(r["minikey"]==key and int(r["scalar"],16)==minikey_scalar(key) for r in matches)
         assert {(int(r["ordinal" if length else "scalar"],16),r["target_bytes"]) for r in matches}==expected
         assert len(matches)==len(expected)
-        if args.stride!=1 or args.order=="reverse":
-            assert all(r["coordinate_space"]==("scalar-reverse-index-v1" if args.order=="reverse" else "scalar-stride-index-v1") and int(r["scalar"],16)==scalar(int(r["candidate_index"],16)) for r in matches)
+        if args.orbit or args.stride!=1 or args.order=="reverse":
+            assert all(r["coordinate_space"]==("scalar-orbit-index-v1" if args.orbit else "scalar-reverse-index-v1" if args.order=="reverse" else "scalar-stride-index-v1") and int(r["scalar"],16)==scalar(int(r["candidate_index"],16)) for r in matches)
+        if args.orbit:
+            assert all(int(r['seed_scalar'],16)==seed(int(r['candidate_index'],16)) and
+                       r['orbit_variant']==(int(r['candidate_index'],16)-1)//1048576 for r in matches)
         assert local("state", "block", *scope, "--block", "0")[0]["state"] == "finished"
         local("state", "check")
         case["completion"] = {"device": device, "visible_devices": visible_count, "summary": completed}

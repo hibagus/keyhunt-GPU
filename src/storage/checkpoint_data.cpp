@@ -53,7 +53,9 @@ Binding with_stride(Binding input,const core::ScalarStride& mapping) {
     // The immutable configuration binds both the lattice origin and its exclusive
     // scalar end. Coverage receipts can therefore use compact candidate indices.
     // Version 3 means reverse; keeping version 2 unchanged preserves forward IDs.
-    input.configuration[8]=mapping.reverse()?3:2;
+    // Orbit expansion uses new semantic versions, never a new interpretation of
+    // old receipts. The original versions retain their exact configuration bytes.
+    input.configuration[8]=mapping.orbit()?(mapping.reverse()?5:4):(mapping.reverse()?3:2);
     wide(input.configuration,mapping.scalars().begin());wide(input.configuration,mapping.scalars().end());
     wide(input.configuration,mapping.stride());input.stride_mapping=mapping;
     input.algorithm_digest=fixed(detail::digest(input.configuration));return input;
@@ -61,7 +63,7 @@ Binding with_stride(Binding input,const core::ScalarStride& mapping) {
 Binding decode_binding(const Manifest& manifest,const Bytes& config,const Bytes& bytes) {
     if((config.size()!=50 && config.size()!=146) || bytes.empty())throw std::runtime_error("invalid search binding length");
     const uint8_t version=config.size()==146?config[8]:1;
-    if(config.size()==146 && version!=2 && version!=3)
+    if(config.size()==146 && (version<2 || version>5))
         throw std::runtime_error("unsupported indexed search semantics");
     Reader read{config};const auto tag=read.take(10);
     if(tag!=Bytes({'k','h','s','e','a','r','c','h',version,uint8_t(manifest.mode)}))
@@ -108,9 +110,9 @@ Binding decode_binding(const Manifest& manifest,const Bytes& config,const Bytes&
         result=make(Mode::Bsgs,encoded,canonical.digest(),m,checksum);
     }
     else throw std::runtime_error("unsupported checkpoint mode");
-    if(version==2 || version==3){
+    if(version>=2){
         const auto begin=read.wide(),end=read.wide(),stride=read.wide();
-        const core::ScalarStride mapping(ScalarInterval(begin,end),stride,version==3);
+        const core::ScalarStride mapping(ScalarInterval(begin,end),stride,version==3 || version==5,version>=4);
         if(mapping.indices().begin()!=manifest.root.begin() || mapping.indices().end()!=manifest.root.end())
             throw std::runtime_error("stride binding disagrees with candidate-index root");
         result=with_stride(std::move(result),mapping);
