@@ -38,6 +38,10 @@ Binding binding(const core::VanityTargets& targets) {
     Bytes bytes;for(const auto& t:targets.values())bytes.insert(bytes.end(),t.begin(),t.end());
     return make(Mode::Vanity,bytes,targets.digest(),0,{});
 }
+Binding binding(const core::MinikeyTargets& targets) {
+    Bytes bytes;for(const auto& t:targets.values())bytes.insert(bytes.end(),t.begin(),t.end());
+    return make(Mode::Minikeys,bytes,targets.digest(),0,{});
+}
 Binding binding(const core::BsgsPublicKeyTargets& targets,const bsgs::Table& table) {
     Bytes bytes;for(const auto& t:targets.values())bytes.insert(bytes.end(),t.begin(),t.end());
     return make(Mode::Bsgs,bytes,targets.digest(),table.memory().m,table.checksum());
@@ -73,6 +77,13 @@ Binding decode_binding(const Manifest& manifest,const Bytes& config,const Bytes&
         std::vector<core::VanityTarget> targets(bytes.size()/36);
         for(size_t i=0;i<targets.size();++i)std::copy_n(bytes.begin()+36*i,36,targets[i].begin());
         result=binding(core::VanityTargets(std::move(targets)));
+    }else if(manifest.mode==Mode::Minikeys){
+        if(m || checksum!=Digest{} || bytes.size()%22 || bytes.size()/22>1048576)
+            throw std::runtime_error("invalid Minikey binding");
+        std::vector<core::MinikeyTarget> targets(bytes.size()/22);
+        for(size_t i=0;i<targets.size();++i)std::copy_n(bytes.begin()+22*i,22,targets[i].begin());
+        const core::MinikeyTargets canonical(std::move(targets));
+        canonical.validate_interval(manifest.root);result=binding(canonical);
     }else if(manifest.mode==Mode::Bsgs){
         if(!m || bytes.size()%65 || bytes.size()/65>65536)throw std::runtime_error("invalid BSGS binding");
         std::vector<core::UncompressedPublicKey> targets(bytes.size()/65);
@@ -89,9 +100,20 @@ Binding decode_binding(const Manifest& manifest,const Bytes& config,const Bytes&
 }
 void Binding::verify(const core::XPointVerifier& verifier,const UInt256& scalar,uint32_t target)const{
     if(target>=count())throw std::runtime_error("checkpoint target out of range");
-    const auto pub=verifier.derive(scalar);const size_t width=target_width(mode);
-    const auto expected=targets.begin()+width*target;
-    if(mode==Mode::Hash160){
+    const size_t width=target_width(mode);const auto expected=targets.begin()+width*target;
+    // A mode-6 receipt stores the ordinal in the historical scalar field. Check
+    // admission and reconstruct the private scalar before deriving its public key.
+    auto private_scalar=scalar;
+    if(mode==Mode::Minikeys){
+        const auto derived=core::minikey_scalar(core::minikey_text(scalar,*expected));
+        if(!derived)throw std::runtime_error("checkpoint minikey failed validity check");
+        private_scalar=*derived;
+    }
+    const auto pub=verifier.derive(private_scalar);
+    if(mode==Mode::Minikeys){
+        const auto hash=core::hash160_target(pub,*(expected+1));
+        if(std::equal(hash.begin(),hash.end(),expected+1))return;
+    }else if(mode==Mode::Hash160){
         const auto hash=core::hash160_target(pub,*expected);
         if(std::equal(hash.begin(),hash.end(),expected))return;
     }else if(mode==Mode::Ethereum){

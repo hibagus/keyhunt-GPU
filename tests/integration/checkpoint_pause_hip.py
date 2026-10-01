@@ -16,13 +16,14 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "oracle"))
 from oracle_selftest import check_source, run as oracle_run
 from hash160 import hash160,address
 from ethereum import address as eth_address
+from minikey import PUBLIC_KEYS,text as minikey_text,ordinal as minikey_ordinal,scalar as minikey_scalar
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--binary", type=Path, required=True)
 parser.add_argument("--oracle", type=Path, required=True)
 parser.add_argument("--report", type=Path, required=True)
 parser.add_argument("--backend",choices=("hip","cuda"),default="hip")
-parser.add_argument("--mode", choices=("xpoint","bsgs","hash160","ethereum","vanity"), action="append")
+parser.add_argument("--mode", choices=("xpoint","bsgs","hash160","ethereum","vanity","minikeys22","minikeys30"), action="append")
 args = parser.parse_args()
 binary = args.binary.resolve()
 report = {"oracle_commit": check_source(), "binary_sha256": hashlib.sha256(binary.read_bytes()).hexdigest(),
@@ -57,10 +58,17 @@ with tempfile.TemporaryDirectory(prefix="kh-c14-hip-") as temporary:
         values = ({(n,tag):hash160(p,tag) for n,p in public.items() for tag in (1,2)} if mode=="hash160"
                   else {(n,tag):address(hash160(p,tag)) for n,p in public.items() for tag in (1,2)} if mode=="vanity"
                   else {n: p[2:66] if mode == "xpoint" else eth_address(p) if mode=="ethereum" else p for n, p in public.items()})
+        length=int(mode[-2:]) if mode.startswith("minikeys") else None
+        begin=1
+        if length:
+            key=PUBLIC_KEYS[0 if length==22 else 1];begin=minikey_ordinal(key)
+            point=oracle_run(args.oracle,[f"pub {minikey_scalar(key):064x}"])[0]
+            values={(begin,tag):hash160(point,tag) for tag in (1,2)}
         targets.write_text("\n".join(values.values()) + "\n")
         inputs = ["--targets", targets] + (["--table", table] if mode == "bsgs" else [])
+        if length:inputs += ["--length",length,"--input-format","hash160"]
         project = local("state", "project-create", "--name", "C14 HIP pause")[0]["project"]
-        job = local("checkpoint", "create", "--project", project, "--mode", mode, "--range", "1:100001",
+        job = local("checkpoint", "create", "--project", project, "--mode", "minikeys" if length else mode, "--range", f"{begin:x}:{begin+1048576:x}",
                     "--block-width", "100000", *inputs)[0]["job"]
         scope = ["--project", project, "--job", job]
         grant = local("state", "claim", *scope, "--owner", "pause-test", "--request", "claim")[0]["assignments"][0]["grant"]
@@ -112,7 +120,7 @@ with tempfile.TemporaryDirectory(prefix="kh-c14-hip-") as temporary:
                     until(lambda: any(r["type"] == "checkpoint" for r in rows(log)))
                 time.sleep(0.02)
                 for repeat in range(3 if stage == 0 else 1):
-                    begin = time.perf_counter_ns()
+                    pause_begin = time.perf_counter_ns()
                     if stage == 1:
                         process.send_signal(signal.SIGUSR1)
                     else:
@@ -120,7 +128,7 @@ with tempfile.TemporaryDirectory(prefix="kh-c14-hip-") as temporary:
                         assert ack["accepted"] and ack["state"] == "draining" and not ack["durably_paused"]
                     paused = activity("paused")
                     case["pause_samples"].append({"stage": stage, "repeat": repeat,
-                        "request_to_paused_ms": (time.perf_counter_ns()-begin)/1e6, "owner_observation_to_paused_ms": paused["pause_ms"]})
+                        "request_to_paused_ms": (time.perf_counter_ns()-pause_begin)/1e6, "owner_observation_to_paused_ms": paused["pause_ms"]})
                     saved = local("state", "block", *scope, "--block", "0")[0]
                     assert saved["state"] == "in_progress" and saved["started"]
                     assert saved["assignment"]["grant"] == grant
@@ -162,12 +170,15 @@ with tempfile.TemporaryDirectory(prefix="kh-c14-hip-") as temporary:
             env["CUDA_VISIBLE_DEVICES" if args.backend=="cuda" else "HIP_VISIBLE_DEVICES"] = visibility
         completed = invoke(run + fast + ["--device", device], env=env)[-1]
         assert completed["complete"]
-        assert int(completed["resumed_scalars"], 16) + int(completed["computed_scalars"], 16) == 1048576
+        assert int(completed["resumed_ordinals" if length else "resumed_scalars"], 16) + int(completed["computed_ordinals" if length else "computed_scalars"], 16) == 1048576
         matches = local("checkpoint", "results", *scope)[0]["results"]
         expected=({(n,f'{tag:02x}'+values[n,tag]) for n in seeds[:3] for tag in (1,2)} if mode=="hash160"
                   else {(n,(bytes([tag,len(values[n,tag])])+values[n,tag].encode()+bytes(34-len(values[n,tag]))).hex()) for n in seeds[:3] for tag in (1,2)} if mode=="vanity"
-                  else {(n,values[n]) for n in seeds[:3]})
-        assert {(int(r["scalar"],16),r["target_bytes"]) for r in matches}==expected
+                  else set() if length else {(n,values[n]) for n in seeds[:3]})
+        if length:
+            expected={(begin,f"{length:02x}{tag:02x}"+values[begin,tag]) for tag in (1,2)}
+            assert all(r["minikey"]==key and int(r["scalar"],16)==minikey_scalar(key) for r in matches)
+        assert {(int(r["ordinal" if length else "scalar"],16),r["target_bytes"]) for r in matches}==expected
         assert len(matches)==len(expected)
         assert local("state", "block", *scope, "--block", "0")[0]["state"] == "finished"
         local("state", "check")

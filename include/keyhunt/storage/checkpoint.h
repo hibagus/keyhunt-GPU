@@ -5,6 +5,7 @@
 #include "keyhunt/backend/gpu_hash160.h"
 #include "keyhunt/backend/gpu_ethereum.h"
 #include "keyhunt/backend/gpu_vanity.h"
+#include "keyhunt/backend/gpu_minikeys.h"
 #include "keyhunt/backend/gpu_bsgs.h"
 
 namespace keyhunt::storage {
@@ -66,6 +67,8 @@ public:
         const core::XPointTargets&);
     static Scope create_hash160(Journal&,const std::string& project,ScalarInterval root,UInt256 width,
         const core::Hash160Targets&);
+    static Scope create_minikeys(Journal&,const std::string& project,ScalarInterval root,UInt256 width,
+        const core::MinikeyTargets&);
     static Scope create_vanity(Journal&,const std::string& project,ScalarInterval root,UInt256 width,
         const core::VanityTargets&);
     static Scope create_ethereum(Journal&,const std::string& project,ScalarInterval root,UInt256 width,
@@ -75,6 +78,8 @@ public:
     static CheckpointSummary xpoint(Journal&,const Grant&,const core::XPointTargets&,
         const core::XPointVerifier&,const XPointRunner&,CheckpointOptions={},CheckpointObserver={},CheckpointCleanup={},CheckpointControl={});
     static CheckpointSummary hash160(Journal&,const Grant&,const core::Hash160Targets&,
+        const core::XPointVerifier&,const XPointRunner&,CheckpointOptions={},CheckpointObserver={},CheckpointCleanup={},CheckpointControl={});
+    static CheckpointSummary minikeys(Journal&,const Grant&,const core::MinikeyTargets&,
         const core::XPointVerifier&,const XPointRunner&,CheckpointOptions={},CheckpointObserver={},CheckpointCleanup={},CheckpointControl={});
     static CheckpointSummary vanity(Journal&,const Grant&,const core::VanityTargets&,
         const core::XPointVerifier&,const XPointRunner&,CheckpointOptions={},CheckpointObserver={},CheckpointCleanup={},CheckpointControl={});

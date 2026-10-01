@@ -31,9 +31,9 @@ bsgs::Table load_table(const Options& options,const core::BsgsPublicKeyTargets& 
 }
 int checkpoint_command(int argc,char** argv){
     static const std::map<std::string,std::set<std::string>> allowed{
-        {"create",{"project","mode","range","block-width","targets","table","host-memory","encoding"}},
+        {"create",{"project","mode","range","block-width","targets","table","host-memory","encoding","length","input-format"}},
         {"run",{"backend","grant","targets","table","device","batch-size","kernel","giant-batch",
-                "target-batch","candidate-capacity","group-size","host-memory","reserve-bytes","checkpoint-seconds","encoding","input-format"}},
+                "target-batch","candidate-capacity","group-size","host-memory","reserve-bytes","checkpoint-seconds","encoding","input-format","length"}},
         {"results",{"project","job","after","limit"}},
         {"pause",{"slot"}},{"resume",{"slot"}},{"stop",{"slot"}},{"status",{"slot"}}};
     if(argc<3)throw std::invalid_argument("usage: keyhunt checkpoint create|run|results|pause|resume|stop|status [--state-dir DIR] ...; see docs/CHECKPOINTS.md");
@@ -62,8 +62,10 @@ int checkpoint_command(int argc,char** argv){
         if(colon==std::string::npos || range.find(':',colon+1)!=std::string::npos)throw std::invalid_argument("range must be half-open HEX:HEX");
         const ScalarInterval root(UInt256::from_hex(range.substr(0,colon)),UInt256::from_hex(range.substr(colon+1)));
         const auto width=UInt256::from_hex(required(args,"block-width"));const auto mode=required(args,"mode");
-        if(mode!="hash160" && mode!="address" && mode!="vanity" && args.count("encoding"))
-            throw std::invalid_argument("--encoding applies only to HASH160/address/vanity jobs");
+        if(mode!="hash160" && mode!="address" && mode!="vanity" && mode!="minikeys" && args.count("encoding"))
+            throw std::invalid_argument("--encoding applies only to HASH160/address/vanity/minikeys jobs");
+        if(mode!="minikeys" && (args.count("length")||args.count("input-format")))
+            throw std::invalid_argument("create length/input-format applies only to minikeys");
         Scope id;
         if(mode=="xpoint"){
             if(args.count("table")||args.count("host-memory"))throw std::invalid_argument("xpoint has no BSGS table/memory option");
@@ -79,6 +81,14 @@ int checkpoint_command(int argc,char** argv){
             if(args.count("table")||args.count("host-memory"))throw std::invalid_argument("vanity has no BSGS table/memory option");
             const auto targets=core::VanityTargets::load(required(args,"targets"),core::hash160_encoding(optional(args,"encoding","both")));
             id=CheckpointRun::create_vanity(journal,required(args,"project"),root,width,targets);
+        }else if(mode=="minikeys"){
+            if(args.count("table")||args.count("host-memory"))throw std::invalid_argument("minikeys has no BSGS table/memory option");
+            const auto format=optional(args,"input-format","address");
+            if(format!="address"&&format!="hash160")throw std::invalid_argument("input-format must be address or hash160");
+            const auto targets=core::MinikeyTargets::load(required(args,"targets"),unsigned(decimal(required(args,"length"),30)),
+                format=="address"?core::Hash160Input::BitcoinAddress:core::Hash160Input::Hex,
+                core::hash160_encoding(optional(args,"encoding","both")));
+            id=CheckpointRun::create_minikeys(journal,required(args,"project"),root,width,targets);
         }else if(mode=="ethereum"){
             if(args.count("table")||args.count("host-memory"))throw std::invalid_argument("Ethereum has no BSGS table/memory option");
             const auto targets=core::EthereumTargets::load(required(args,"targets"));
@@ -86,7 +96,7 @@ int checkpoint_command(int argc,char** argv){
         }else if(mode=="bsgs"){
             const auto targets=core::BsgsPublicKeyTargets::load(required(args,"targets"));const auto table=load_table(args,targets);
             id=CheckpointRun::create_bsgs(journal,required(args,"project"),root,width,targets,table);
-        }else throw std::invalid_argument("checkpoint mode must be xpoint, bsgs, hash160, address, ethereum or vanity");
+        }else throw std::invalid_argument("checkpoint mode must be xpoint, bsgs, hash160, address, ethereum, vanity or minikeys");
         const auto manifest=journal.manifest(id);
         std::cout<<"{\"project\":"<<quote(id.project)<<",\"job\":"<<quote(hex(id.job.data(),32))
             <<",\"target_digest\":"<<quote(hex(manifest.targets.data(),32))
@@ -98,31 +108,41 @@ int checkpoint_command(int argc,char** argv){
         // This explicit inspection also detects missing result rows or corrupt
         // coverage receipts, not just invalid public-key relations in this page.
         journal.check();
-        const auto rows=journal.results(scope(args),int64_t(after),uint32_t(limit));
+        const auto id=scope(args);const auto result_mode=journal.manifest(id).mode;
+        const auto rows=journal.results(id,int64_t(after),uint32_t(limit));
         std::cout<<"{\"results\":[";
         for(size_t i=0;i<rows.size();++i){const auto& row=rows[i];
-            std::cout<<(i?",":"")<<"{\"id\":"<<quote(std::to_string(row.id))<<",\"block\":"<<quote(row.block.hex())
-                <<",\"scalar\":"<<quote(row.scalar.hex())<<",\"target\":"<<row.target
+            std::cout<<(i?",":"")<<"{\"id\":"<<quote(std::to_string(row.id))<<",\"block\":"<<quote(row.block.hex());
+            auto scalar=row.scalar;
+            // The saved result coordinate is an ordinal for this mode.
+            if(result_mode==Mode::Minikeys){
+                const auto text=core::minikey_text(row.scalar,row.target_bytes[0]);const auto derived=core::minikey_scalar(text);
+                if(!derived)throw std::runtime_error("stored minikey is invalid");scalar=*derived;
+                std::cout<<",\"coordinate_space\":\"minikey-ordinal-v1\",\"ordinal\":"<<quote(row.scalar.hex())<<",\"minikey\":"<<quote(text);
+            }
+            std::cout<<",\"scalar\":"<<quote(scalar.hex())<<",\"target\":"<<row.target
                 <<",\"target_bytes\":"<<quote(hex(row.target_bytes.data(),row.target_bytes.size()))<<'}';
         }
         std::cout<<"],\"next_after\":"<<quote(std::to_string(rows.empty()?after:uint64_t(rows.back().id)))<<"}";flush();return 0;
     }
     const auto grant=parse_grant(journal,required(args,"grant"));const auto mode=journal.manifest(grant.scope).mode;
-    if(mode!=Mode::Hash160 && args.count("input-format"))
-        throw std::invalid_argument("input-format applies only to HASH160 jobs");
-    if(mode!=Mode::Hash160 && mode!=Mode::Vanity && args.count("encoding"))
-        throw std::invalid_argument("encoding applies only to HASH160/vanity jobs");
-    const auto format=optional(args,"input-format","hash160");
+    if(mode!=Mode::Minikeys && args.count("length"))throw std::invalid_argument("length applies only to minikeys");
+    if(mode!=Mode::Hash160 && mode!=Mode::Minikeys && args.count("input-format"))
+        throw std::invalid_argument("input-format applies only to HASH160/minikeys jobs");
+    if(mode!=Mode::Hash160 && mode!=Mode::Vanity && mode!=Mode::Minikeys && args.count("encoding"))
+        throw std::invalid_argument("encoding applies only to HASH160/vanity/minikeys jobs");
+    const auto format=optional(args,"input-format",mode==Mode::Minikeys?"address":"hash160");
     if(format!="hash160" && format!="address")throw std::invalid_argument("input-format must be hash160 or address");
     const auto device=decimal(optional(args,"device","0"),std::numeric_limits<int>::max());
     CheckpointOptions options;
     options.candidate_capacity=uint32_t(number(optional(args,"candidate-capacity","1024"),mode==Mode::Bsgs?65536:1048576));
     options.checkpoint_seconds=uint32_t(decimal(optional(args,"checkpoint-seconds","10"),60));
-    if(mode==Mode::XPoint || mode==Mode::Hash160 || mode==Mode::Ethereum || mode==Mode::Vanity){
+    if(mode==Mode::XPoint || mode==Mode::Hash160 || mode==Mode::Ethereum || mode==Mode::Vanity || mode==Mode::Minikeys){
         for(const auto* key:{"table","giant-batch","target-batch","group-size","host-memory","reserve-bytes"})
-            if(args.count(key))throw std::invalid_argument(std::string("scalar search does not accept --")+key);
+            if(args.count(key))throw std::invalid_argument(std::string("this search mode does not accept --")+key);
         options.xpoint_steps=uint64_t(number(optional(args,"batch-size","1048576"),1048576));
-        const auto kernel=optional(args,"kernel","stepped");
+        const auto kernel=optional(args,"kernel",mode==Mode::Minikeys?"direct":"stepped");
+        if(mode==Mode::Minikeys&&kernel!="direct")throw std::invalid_argument("minikeys supports only the direct kernel");
         if(kernel!="stepped" && kernel!="direct")throw std::invalid_argument("kernel must be stepped or direct");
     }else{
         if(args.count("batch-size") || args.count("kernel"))throw std::invalid_argument("BSGS uses --giant-batch and --group-size");
@@ -141,7 +161,7 @@ int checkpoint_command(int argc,char** argv){
     double preparation_ms=0,executor_setup_ms=0,table_upload_ms=0;
     const auto notify=[&](const std::vector<ScalarInterval>& coverage,size_t matches,double ms){
         std::cout<<"{\"type\":\"checkpoint\",\"durability\":\"local\",\"durable_results\":true,\"durable_coverage\":"
-            <<(coverage.empty()?"false":"true")<<",\"intervals\":[";
+            <<(coverage.empty()?"false":"true")<<(mode==Mode::Minikeys?",\"coordinate_space\":\"minikey-ordinal-v1\"":"")<<",\"intervals\":[";
         for(size_t i=0;i<coverage.size();++i)std::cout<<(i?",":"")<<"{\"begin\":"<<quote(coverage[i].begin().hex())
             <<",\"end_exclusive\":"<<quote(coverage[i].end().hex())<<'}';
         std::cout<<"],\"match_observations\":"<<matches<<",\"transaction_ms\":"<<ms<<'}';flush();
@@ -190,6 +210,17 @@ int checkpoint_command(int argc,char** argv){
             }
             const auto ticket=executor->submit(batch);executor->drain();return executor->take(ticket);
         },options,notify,[&]{executor.reset();control.close();},control.callbacks());
+    }else if(mode==Mode::Minikeys){
+        const auto targets=core::MinikeyTargets::load(required(args,"targets"),unsigned(decimal(required(args,"length"),30)),
+            format=="address"?core::Hash160Input::BitcoinAddress:core::Hash160Input::Hex,
+            core::hash160_encoding(optional(args,"encoding","both")));
+        MinikeysOptions gpu;gpu.max_steps=options.xpoint_steps;gpu.candidate_capacity=options.candidate_capacity;
+        std::unique_ptr<GpuMinikeysExecutor> executor;
+        summary=CheckpointRun::minikeys(journal,grant,targets,verifier,[&](const auto& batch){
+            if(!executor){const auto start=elapsed();executor=std::make_unique<GpuMinikeysExecutor>(int(device),targets,verifier,gpu);
+                executor_setup_ms=elapsed()-start;preparation_ms=elapsed();}
+            const auto ticket=executor->submit(batch);executor->drain();return executor->take(ticket);
+        },options,notify,[&]{executor.reset();control.close();},control.callbacks());
     }else if(mode==Mode::Ethereum){
         const auto targets=core::EthereumTargets::load(required(args,"targets"));
         EthereumOptions gpu;gpu.max_steps=options.xpoint_steps;gpu.candidate_capacity=options.candidate_capacity;
@@ -222,7 +253,9 @@ int checkpoint_command(int argc,char** argv){
     }
     std::cout<<"{\"type\":\"summary\",\"complete\":"<<(summary.complete?"true":"false")
         <<",\"durability\":\"local\",\"durable_coverage\":true"
-        <<",\"resumed_scalars\":"<<quote(summary.resumed_scalars.hex())<<",\"computed_scalars\":"<<quote(summary.computed_scalars.hex())
+        <<(mode==Mode::Minikeys?",\"coordinate_space\":\"minikey-ordinal-v1\"":"")
+        <<','<<quote(mode==Mode::Minikeys?"resumed_ordinals":"resumed_scalars")<<':'<<quote(summary.resumed_scalars.hex())
+        <<','<<quote(mode==Mode::Minikeys?"computed_ordinals":"computed_scalars")<<':'<<quote(summary.computed_scalars.hex())
         <<",\"device_steps\":"<<quote(summary.device_steps.hex())<<",\"match_observations\":"<<summary.match_observations
         <<",\"batches\":"<<summary.batches<<",\"overflow_replays\":"<<summary.overflows<<",\"checkpoints\":"<<summary.checkpoints
         <<",\"checkpoint_ms\":"<<summary.checkpoint_ms

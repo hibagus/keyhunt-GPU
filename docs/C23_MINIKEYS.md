@@ -77,3 +77,16 @@ invalid checks, immutable encoding/length identity, duplicate relations, forced
 overflow, GPU ownership/faults, checkpoint death/restart, pause/visibility changes,
 authenticated/offline workers and executable examples on MI300X and H200. No
 throughput, calibration, multi-device scaling or partition/MIG claim is implied.
+
+## Implementation findings
+
+- Primitive and exhaustive native search gates passed on MI300X and H200. Each
+  maximum-size batch covers 1,048,576 ordinals; the independent oracle finds
+  4,193 admitted 22-character and 4,261 admitted 30-character candidates in the
+  public fixture intervals. Admission rates are observations, never skip rules.
+- Native MI300X recovery passes both lengths with capacity-two overflow replay,
+  process death after a durable acknowledgment, changed batch sizes, pause/stop,
+  backup/restore quarantine and changed visible-device layouts. The pause fixture
+  now keeps its latency timestamp separate from its expected starting ordinal.
+- The supervisor will omit an unspecified kernel option so the device owner can
+  select the mode default. An explicit stepped override is rejected for minikeys.
