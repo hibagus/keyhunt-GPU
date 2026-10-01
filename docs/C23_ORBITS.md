@@ -59,3 +59,10 @@ Durable gates cover malformed bindings, incompatible worker fences, repeated
 results at different indices, killed restarts, pause/visibility changes and
 exact local/server reconciliation over both transports. Document findings and
 source/binary-bound evidence under docs/; commit each logical change separately.
+
+## Host mapping finding
+
+The first host gate passed 7048 independent integer cases, exhaustive small
+block/work/batch partitions, candidate-domain bounds, and existing forward/
+reverse/work-unit regressions. Batches stop at each variant boundary even when
+a work unit spans more than one variant; the next call continues its exact tail.

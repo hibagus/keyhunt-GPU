@@ -12,29 +12,41 @@ bool is_strided(WorkAlgorithm algorithm) {
     return algorithm==WorkAlgorithm::StridedXPointV1 || algorithm==WorkAlgorithm::StridedHash160V1 ||
         algorithm==WorkAlgorithm::StridedEthereumV1 || algorithm==WorkAlgorithm::StridedVanityV1;
 }
+bool is_orbit(WorkAlgorithm algorithm) {
+    return algorithm>=WorkAlgorithm::OrbitXPointV1 && algorithm<=WorkAlgorithm::ReverseOrbitVanityV1;
+}
 bool is_reverse(WorkAlgorithm algorithm) {
     return algorithm==WorkAlgorithm::ReverseXPointV1 || algorithm==WorkAlgorithm::ReverseHash160V1 ||
-        algorithm==WorkAlgorithm::ReverseEthereumV1 || algorithm==WorkAlgorithm::ReverseVanityV1;
+        algorithm==WorkAlgorithm::ReverseEthereumV1 || algorithm==WorkAlgorithm::ReverseVanityV1 ||
+        (algorithm>=WorkAlgorithm::ReverseOrbitXPointV1 && algorithm<=WorkAlgorithm::ReverseOrbitVanityV1);
 }
 WorkAlgorithm scalar_family(WorkAlgorithm algorithm) {
     switch (algorithm) {
+    case WorkAlgorithm::OrbitXPointV1:
+    case WorkAlgorithm::ReverseOrbitXPointV1:
     case WorkAlgorithm::ReverseXPointV1:
     case WorkAlgorithm::StridedXPointV1:return WorkAlgorithm::DirectXPointV1;
+    case WorkAlgorithm::OrbitHash160V1:
+    case WorkAlgorithm::ReverseOrbitHash160V1:
     case WorkAlgorithm::ReverseHash160V1:
     case WorkAlgorithm::StridedHash160V1:return WorkAlgorithm::DirectHash160V1;
+    case WorkAlgorithm::OrbitEthereumV1:
+    case WorkAlgorithm::ReverseOrbitEthereumV1:
     case WorkAlgorithm::ReverseEthereumV1:
     case WorkAlgorithm::StridedEthereumV1:return WorkAlgorithm::DirectEthereumV1;
+    case WorkAlgorithm::OrbitVanityV1:
+    case WorkAlgorithm::ReverseOrbitVanityV1:
     case WorkAlgorithm::ReverseVanityV1:
     case WorkAlgorithm::StridedVanityV1:return WorkAlgorithm::DirectVanityV1;
     default:return algorithm;
     }
 }
-WorkAlgorithm strided_algorithm(WorkAlgorithm algorithm, bool reverse) {
+WorkAlgorithm strided_algorithm(WorkAlgorithm algorithm, bool reverse, bool orbit) {
     switch (algorithm) {
-    case WorkAlgorithm::DirectXPointV1:return reverse?WorkAlgorithm::ReverseXPointV1:WorkAlgorithm::StridedXPointV1;
-    case WorkAlgorithm::DirectHash160V1:return reverse?WorkAlgorithm::ReverseHash160V1:WorkAlgorithm::StridedHash160V1;
-    case WorkAlgorithm::DirectEthereumV1:return reverse?WorkAlgorithm::ReverseEthereumV1:WorkAlgorithm::StridedEthereumV1;
-    case WorkAlgorithm::DirectVanityV1:return reverse?WorkAlgorithm::ReverseVanityV1:WorkAlgorithm::StridedVanityV1;
+    case WorkAlgorithm::DirectXPointV1:return orbit?(reverse?WorkAlgorithm::ReverseOrbitXPointV1:WorkAlgorithm::OrbitXPointV1):reverse?WorkAlgorithm::ReverseXPointV1:WorkAlgorithm::StridedXPointV1;
+    case WorkAlgorithm::DirectHash160V1:return orbit?(reverse?WorkAlgorithm::ReverseOrbitHash160V1:WorkAlgorithm::OrbitHash160V1):reverse?WorkAlgorithm::ReverseHash160V1:WorkAlgorithm::StridedHash160V1;
+    case WorkAlgorithm::DirectEthereumV1:return orbit?(reverse?WorkAlgorithm::ReverseOrbitEthereumV1:WorkAlgorithm::OrbitEthereumV1):reverse?WorkAlgorithm::ReverseEthereumV1:WorkAlgorithm::StridedEthereumV1;
+    case WorkAlgorithm::DirectVanityV1:return orbit?(reverse?WorkAlgorithm::ReverseOrbitVanityV1:WorkAlgorithm::OrbitVanityV1):reverse?WorkAlgorithm::ReverseVanityV1:WorkAlgorithm::StridedVanityV1;
     default:throw std::invalid_argument("family does not support scalar strides");
     }
 }
@@ -51,8 +63,9 @@ std::optional<ScalarInterval> bounded_interval(const ScalarInterval& parent,
 }
 
 void validate(const ExecutionIdentity& identity) {
-    if ((is_strided(identity.algorithm)||is_reverse(identity.algorithm))!=identity.stride_mapping.has_value() ||
-        (identity.stride_mapping && identity.stride_mapping->reverse()!=is_reverse(identity.algorithm)))
+    if ((is_strided(identity.algorithm)||is_reverse(identity.algorithm)||is_orbit(identity.algorithm))!=identity.stride_mapping.has_value() ||
+        (identity.stride_mapping && (identity.stride_mapping->reverse()!=is_reverse(identity.algorithm) ||
+                                    identity.stride_mapping->orbit()!=is_orbit(identity.algorithm))))
         throw std::invalid_argument("stride mapping and algorithm disagree");
     const auto family=scalar_family(identity.algorithm);
     if (family != WorkAlgorithm::DirectXPointV1 && family != WorkAlgorithm::DirectHash160V1 &&
@@ -93,7 +106,12 @@ KernelBatch::KernelBatch(WorkUnit work, ScalarInterval interval) : work_(work), 
 
 std::optional<KernelBatch> KernelBatch::plan(const WorkUnit& work,
     const UInt256& cursor, uint64_t max_steps) {
-    const auto interval = bounded_interval(work.interval(), cursor, max_steps);
+    // Keep every device batch within one orbit variant. Arbitrary block/work
+    // boundaries can cut a variant; callers still receive its exact prefix.
+    auto interval = bounded_interval(work.interval(), cursor, max_steps);
+    const auto& mapping=work.identity().stride_mapping;
+    if(interval && mapping && mapping->orbit())
+        interval=ScalarInterval(cursor,std::min(interval->end(),mapping->variant_end(cursor)));
     if (!interval) return std::nullopt;
     return KernelBatch(work, *interval);
 }
@@ -116,6 +134,19 @@ UInt256 KernelBatch::scalar_stride() const {
 bool KernelBatch::scalar_reverse() const {
     const auto& mapping=work_.identity().stride_mapping;
     return mapping && mapping->reverse();
+}
+
+bool KernelBatch::scalar_orbit() const {
+    const auto& mapping=work_.identity().stride_mapping;
+    return mapping && mapping->orbit();
+}
+unsigned KernelBatch::orbit_variant() const {
+    const auto& mapping=work_.identity().stride_mapping;
+    return mapping?mapping->variant(interval_.begin()):0;
+}
+UInt256 KernelBatch::seed_scalar_at(uint64_t local_index) const {
+    const auto& mapping=work_.identity().stride_mapping;
+    return mapping?mapping->seed(coordinate_at(local_index)):scalar_at(local_index);
 }
 
 UInt256 KernelBatch::ordinal_at(uint64_t local_index) const {

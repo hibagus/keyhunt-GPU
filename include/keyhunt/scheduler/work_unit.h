@@ -13,11 +13,12 @@ using AssignmentId = std::array<uint8_t, 16>;
 
 // Direct scalar mappings use k = begin + local_index. Minikeys use that same
 // integer coordinate as an ordinal; hashing derives an unrelated private scalar.
-enum class WorkAlgorithm : uint8_t { DirectXPointV1 = 1, DirectHash160V1 = 2, DirectEthereumV1 = 3, DirectVanityV1 = 4, DirectMinikeysV1 = 5, StridedXPointV1 = 6, StridedHash160V1 = 7, StridedEthereumV1 = 8, StridedVanityV1 = 9, ReverseXPointV1 = 10, ReverseHash160V1 = 11, ReverseEthereumV1 = 12, ReverseVanityV1 = 13 };
+enum class WorkAlgorithm : uint8_t { DirectXPointV1 = 1, DirectHash160V1 = 2, DirectEthereumV1 = 3, DirectVanityV1 = 4, DirectMinikeysV1 = 5, StridedXPointV1 = 6, StridedHash160V1 = 7, StridedEthereumV1 = 8, StridedVanityV1 = 9, ReverseXPointV1 = 10, ReverseHash160V1 = 11, ReverseEthereumV1 = 12, ReverseVanityV1 = 13, OrbitXPointV1 = 14, OrbitHash160V1 = 15, OrbitEthereumV1 = 16, OrbitVanityV1 = 17, ReverseOrbitXPointV1 = 18, ReverseOrbitHash160V1 = 19, ReverseOrbitEthereumV1 = 20, ReverseOrbitVanityV1 = 21 };
 bool is_strided(WorkAlgorithm);
 bool is_reverse(WorkAlgorithm);
+bool is_orbit(WorkAlgorithm);
 WorkAlgorithm scalar_family(WorkAlgorithm);
-WorkAlgorithm strided_algorithm(WorkAlgorithm, bool reverse=false);
+WorkAlgorithm strided_algorithm(WorkAlgorithm, bool reverse=false, bool orbit=false);
 
 struct ExecutionIdentity {
     Digest job_digest{};
@@ -69,6 +70,9 @@ public:
     core::UInt256 scalar_at(uint64_t local_index) const;
     core::UInt256 scalar_stride() const;
     bool scalar_reverse() const;
+    bool scalar_orbit() const;
+    unsigned orbit_variant() const;
+    core::UInt256 seed_scalar_at(uint64_t local_index) const;
     core::UInt256 ordinal_at(uint64_t local_index) const;
 
 private:
