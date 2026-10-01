@@ -68,10 +68,11 @@ struct GpuEthereumExecutor::Impl {
             // Immutable canonical target bytes are prepared once per owner.
             gpu_check(gpuMemcpy(device_targets,targets.values().data(),target_bytes,gpuMemcpyHostToDevice),"gpuMemcpy(targets)");
             if (powers_bytes) {
+                // Reverse point steps use n-S; candidate arithmetic itself never wraps.
                 // Preserve each backend's measured cache representation.
                 gpu::EthereumPower powers[20];
                 for (unsigned bit=0;bit<20;++bit) {
-                    const auto point = seed(core::scalar_stride_power(options.stride,bit));
+                    const auto point = seed(core::scalar_stride_power(options.reverse?core::scalar_order().subtract(options.stride):options.stride,bit));
 #if defined(__CUDACC__)
                     powers[bit] = point;
 #else
@@ -131,7 +132,7 @@ Ticket GpuEthereumExecutor::submit(const scheduler::KernelBatch& batch) {
     if (scheduler::scalar_family(batch.work().identity().algorithm) != scheduler::WorkAlgorithm::DirectEthereumV1 ||
         batch.work().identity().target_digest != s.targets.digest())
         throw std::invalid_argument("ethereum target digest does not match the plan");
-    if(batch.scalar_stride()!=s.options.stride)throw std::invalid_argument("batch stride differs from prepared executor");
+    if(batch.scalar_stride()!=s.options.stride || batch.scalar_reverse()!=s.options.reverse)throw std::invalid_argument("batch stride or order differs from prepared executor");
     if (s.sequence == std::numeric_limits<uint64_t>::max()) throw std::overflow_error("GPU ticket sequence exhausted");
     s.batch = batch;
     ++s.sequence;
@@ -150,16 +151,20 @@ Ticket GpuEthereumExecutor::submit(const scheduler::KernelBatch& batch) {
         gpu_check(gpuEventRecord(s.start,s.stream),"gpuEventRecord(start)");
         (void)gpuGetLastError();
         if (s.options.kernel == XPointKernel::Direct) {
-            // Compile the old stride-one arithmetic separately; arbitrary
-            // strides use a checked multiply-add in the direct specialization.
-            if(s.options.stride==core::UInt256(1)){
-            gpuLaunchKernelGGL(gpu::ethereum_direct<false>,dim3((batch.step_count()+127)/128),dim3(128),0,s.stream,
-                begin,stride,batch.step_count(),s.device_targets,uint32_t(s.targets.values().size()),
-                s.device_output,s.capacity,s.device_count);
+            // Keep the original forward unit-step specialization. Indexed paths
+            // use checked multiply-add (forward) or multiply-subtract (reverse).
+            if(s.options.reverse){
+                gpuLaunchKernelGGL(gpu::ethereum_direct<2>,dim3((batch.step_count()+127)/128),dim3(128),0,s.stream,
+                    begin,stride,batch.step_count(),s.device_targets,uint32_t(s.targets.values().size()),
+                    s.device_output,s.capacity,s.device_count);
+            }else if(s.options.stride==core::UInt256(1)){
+                gpuLaunchKernelGGL(gpu::ethereum_direct<false>,dim3((batch.step_count()+127)/128),dim3(128),0,s.stream,
+                    begin,stride,batch.step_count(),s.device_targets,uint32_t(s.targets.values().size()),
+                    s.device_output,s.capacity,s.device_count);
             }else{
-            gpuLaunchKernelGGL(gpu::ethereum_direct<true>,dim3((batch.step_count()+127)/128),dim3(128),0,s.stream,
-                begin,stride,batch.step_count(),s.device_targets,uint32_t(s.targets.values().size()),
-                s.device_output,s.capacity,s.device_count);
+                gpuLaunchKernelGGL(gpu::ethereum_direct<true>,dim3((batch.step_count()+127)/128),dim3(128),0,s.stream,
+                    begin,stride,batch.step_count(),s.device_targets,uint32_t(s.targets.values().size()),
+                    s.device_output,s.capacity,s.device_count);
             }
         } else {
             const auto lanes = (batch.step_count()+gpu::ethereum_group-1)/gpu::ethereum_group;

@@ -16,14 +16,16 @@ KEYHUNT_HD Result evaluate(const Request& request) {
     if(request.length!=72)return result;
     const auto begin=scalar_from_bytes(request.bytes),stride=scalar_from_bytes(request.bytes+32);
     uint64_t offset=0;for(unsigned i=64;i<72;++i)offset=(offset<<8)|request.bytes[i];
-    Scalar scalar;if(!stride_scalar(begin,stride,offset,scalar))return result;
+    Scalar scalar;
+    const bool valid=request.operation==1?reverse_scalar(begin,stride,offset,scalar):stride_scalar(begin,stride,offset,scalar);
+    if(!valid)return result;
     result.valid=1;
     for(unsigned i=0;i<32;++i)result.scalar[i]=uint8_t(scalar.limb[(31-i)/4]>>(8*((31-i)%4)));
     return result;
 }
 Request parse(const std::string& line) {
-    if(line.size()<2||line[1]!=' '||line[0]<'0'||line[0]>'0'||(line.size()-2)%2||line.size()>290)
-        throw std::invalid_argument("expected operation 0 and at most 144 hex bytes");
+    if(line.size()<2||line[1]!=' '||line[0]<'0'||line[0]>'1'||(line.size()-2)%2||line.size()>290)
+        throw std::invalid_argument("expected operation 0 or 1 and at most 144 hex bytes");
     Request request;request.operation=unsigned(line[0]-'0');request.length=(line.size()-2)/2;
     auto digit=[](char c)->unsigned { const auto index=std::string("0123456789abcdef").find(c);
         if(index==std::string::npos)throw std::invalid_argument("invalid hex");

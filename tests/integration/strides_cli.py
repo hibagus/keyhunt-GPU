@@ -9,8 +9,9 @@ from stride import targets,relations
 p=argparse.ArgumentParser()
 for name in ('binary','oracle','report'):p.add_argument('--'+name,type=Path,required=True)
 p.add_argument('--hardware',action='store_true');p.add_argument('--backend',choices=('hip','cuda'),default='hip')
+p.add_argument('--order',choices=('forward','reverse'),default='forward')
 a=p.parse_args();binary=str(a.binary.resolve())
-report=dict(passed=False,cases=[],rejections=0,hardware=a.hardware,oracle_commit=check_source(),binary_sha256=hashlib.sha256(a.binary.read_bytes()).hexdigest())
+report=dict(order=a.order,passed=False,cases=[],rejections=0,hardware=a.hardware,oracle_commit=check_source(),binary_sha256=hashlib.sha256(a.binary.read_bytes()).hexdigest())
 def run(words,ok=True):
     r=subprocess.run([binary,*map(str,words)],capture_output=True,text=True,timeout=120)
     assert (r.returncode==0)==ok,(words,r.stdout,r.stderr)
@@ -26,10 +27,11 @@ with tempfile.TemporaryDirectory(prefix='kh-strides-cli-') as directory:
         ('order',N-257,N,17,False),('large-step',1,N,N-1,False),
         ('byte-step',257,257+3*256,256,False),('overflow',1,1+257*2,2,True),
         ('no-hit',3,3+17*2,2,False),('max-batch',1<<128,(1<<128)+1048576*11,11,False)]
+    if a.order=='reverse':cases.append(('unit',101,138,1,False))
     def exercise(mode,kernel,name,begin,end,step,overflow=False,device=0):
         count=1+(end-begin-1)//step
         indices=sorted({1,count,*[1+(1<<bit) for bit in range(20)]}) if count==1048576 else list(range(1,count+1))
-        scalars=[begin+(i-1)*step for i in indices]
+        scalars=[begin+((count-i) if a.order=='reverse' else (i-1))*step for i in indices]
         public=oracle_run(a.oracle,[f'pub {k:064x}' for k in scalars])
         # Add an off-lattice target to ensure a contiguous scalar search cannot
         # accidentally satisfy the test. The no-hit case contains only that target.
@@ -40,11 +42,12 @@ with tempfile.TemporaryDirectory(prefix='kh-strides-cli-') as directory:
         words=[mode,'--backend',a.backend,'--range',f'{begin:x}:{end:x}','--stride',f'{step:x}',
                '--targets',file,'--kernel',kernel,'--device',device,'--batch-size','1048576',
                '--candidate-capacity',bound if overflow else 4096]
+        if a.order=='reverse':words+=['--order','reverse']
         if not a.hardware:
             r=run(words,False);assert 'not built' in r.stderr
             return
         rows=run(words);start,summary=rows[0],rows[-1]
-        assert start['coordinate_space']==summary['coordinate_space']=='scalar-stride-index-v1'
+        assert start['coordinate_space']==summary['coordinate_space']==('scalar-reverse-index-v1' if a.order=='reverse' else 'scalar-stride-index-v1')
         assert int(start['begin'],16)==1 and int(start['end_exclusive'],16)==count+1
         assert int(start['scalar_begin'],16)==begin and int(start['scalar_end_exclusive'],16)==end and int(start['stride'],16)==step
         cursor=1;found=[];overflows=0
@@ -68,6 +71,8 @@ with tempfile.TemporaryDirectory(prefix='kh-strides-cli-') as directory:
         base=[mode,'--backend',a.backend,'--range','1:101','--targets',file]
         for step in ('0','-1',f'{N:x}',f'{1<<256:x}','junk',''):
             r=run(base+['--stride',step],False);assert not r.stdout;report['rejections']+=1
+        for order in ('backward','random',''):
+            r=run(base+['--order',order],False);assert not r.stdout;report['rejections']+=1
     if a.hardware:
         for device in range(len(inventory['devices'])):
             mode=('xpoint','hash160','ethereum','vanity')[device%4]

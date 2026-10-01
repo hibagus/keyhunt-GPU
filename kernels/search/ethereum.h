@@ -63,14 +63,17 @@ __device__ inline void ethereum_normalized_lookup(const Field& px,const Field& p
     Field zz,zzz,x,y;square(zz,zi);mul(zzz,zz,zi);mul(x,px,zz);mul(y,py,zzz);
     ethereum_lookup(x,y,offset,targets,target_count,output,capacity,counters);
 }
-template<bool Strided>
+// Mapping 0 preserves unit-forward arithmetic; 1 is forward stride, 2 reverse.
+template<unsigned Mapping>
 __global__ KEYHUNT_ETHEREUM_LAUNCH_BOUND void ethereum_direct(Scalar begin,Scalar stride,uint64_t count,
     const EthereumDeviceTarget* targets,uint32_t target_count,core::XPointCandidate* output,
     uint32_t capacity,EthereumCounters* counters) {
     const uint64_t index=uint64_t(blockIdx.x)*blockDim.x+threadIdx.x;
     if(index>=count)return;
     Scalar scalar;
-    if constexpr(Strided){
+    if constexpr(Mapping==2){
+        if(!reverse_scalar(begin,stride,index,scalar)){atomicExch(&counters->invalid,1U);return;}
+    }else if constexpr(Mapping==1){
         if(!stride_scalar(begin,stride,index,scalar)){atomicExch(&counters->invalid,1U);return;}
     }else scalar=ethereum_offset_scalar(begin,index);
     Point point;

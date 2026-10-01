@@ -55,3 +55,13 @@ order, overflow, kill/restart, pause, changed visibility and exact local/server
 relations. CPU/sanitizer and real HIP/CUDA validation are required before marking
 this slice complete. Findings, source phases, binary hashes and raw evidence
 will be recorded under docs/. This slice makes no throughput or scaling claim.
+
+## GPU implementation evidence
+
+The initial HIP gate passed 112 independent reverse CLI cases across both kernels
+and all eight MI300X ordinals, including unit strides, non-divisible tails, wide
+origins/steps, curve-order boundaries, no-hit and overlapping targets, overflow
+replay and maximum-size batches. Portable/native subtraction passed 2,509 integer
+oracle vectors. Executor checks reject direction/stride mismatches and accept a
+changed origin with a fresh seed. The 104-case forward-stride regression also
+passed. CUDA and durable/worker gates remain pending at this source phase.

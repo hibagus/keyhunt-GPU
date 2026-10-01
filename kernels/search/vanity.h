@@ -72,14 +72,17 @@ __device__ inline void vanity_normalized_lookup(const Field& px,const Field& py,
     Field zz,zzz,x,y;square(zz,zi);mul(zzz,zz,zi);mul(x,px,zz);mul(y,py,zzz);
     vanity_lookup(x,y,offset,compressed_lengths,uncompressed_lengths,targets,target_count,output,capacity,counters);
 }
-template<bool Strided>
+// Mapping 0 preserves unit-forward arithmetic; 1 is forward stride, 2 reverse.
+template<unsigned Mapping>
 __global__ KEYHUNT_vanity_LAUNCH_BOUND void vanity_direct(Scalar begin,Scalar stride,uint64_t count,uint64_t compressed_lengths,uint64_t uncompressed_lengths,
     const VanityDeviceTarget* targets,uint32_t target_count,core::XPointCandidate* output,
     uint32_t capacity,VanityCounters* counters) {
     const uint64_t index=uint64_t(blockIdx.x)*blockDim.x+threadIdx.x;
     if(index>=count)return;
     Scalar scalar;
-    if constexpr(Strided){
+    if constexpr(Mapping==2){
+        if(!reverse_scalar(begin,stride,index,scalar)){atomicExch(&counters->invalid,1U);return;}
+    }else if constexpr(Mapping==1){
         if(!stride_scalar(begin,stride,index,scalar)){atomicExch(&counters->invalid,1U);return;}
     }else scalar=vanity_offset_scalar(begin,index);
     Point point;

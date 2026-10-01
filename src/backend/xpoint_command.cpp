@@ -37,13 +37,13 @@ void flush_record() {
 #endif
 }
 int xpoint_command(int argc, char** argv) {
-    const char* usage = "usage: keyhunt xpoint --backend hip|cuda --range START:END --targets FILE [--device N] [--batch-size 1..1048576] [--candidate-capacity 1..1048576] [--kernel stepped|direct] [--stride HEX] (END is exclusive; NDJSON output)";
+    const char* usage = "usage: keyhunt xpoint --backend hip|cuda --range START:END --targets FILE [--device N] [--batch-size 1..1048576] [--candidate-capacity 1..1048576] [--kernel stepped|direct] [--stride HEX] [--order forward|reverse] (END is exclusive; NDJSON output)";
     std::map<std::string,std::string> args;
     for (int i=2;i<argc;i+=2) {
         if (i+1 == argc) throw std::invalid_argument(usage);
         const std::string key = argv[i];
         if (key != "--backend" && key != "--range" && key != "--targets" && key != "--device" &&
-            key != "--batch-size" && key != "--candidate-capacity" && key != "--kernel" && key != "--stride") throw std::invalid_argument(usage);
+            key != "--batch-size" && key != "--candidate-capacity" && key != "--kernel" && key != "--stride" && key != "--order") throw std::invalid_argument(usage);
         if (!args.emplace(key,argv[i+1]).second) throw std::invalid_argument("duplicate xpoint option: "+key);
     }
     if ((args["--backend"] != "hip" && args["--backend"] != "cuda") || args["--range"].empty() || args["--targets"].empty())
@@ -56,7 +56,10 @@ int xpoint_command(int argc, char** argv) {
     const core::ScalarInterval scalar_range(UInt256::from_hex(range.substr(0,colon)),UInt256::from_hex(range.substr(colon+1)));
     const auto stride=UInt256::from_hex(args.count("--stride")?args["--stride"]:"1");
     core::validate_scalar_stride(stride);
-    const auto mapping=stride==UInt256(1)?std::optional<core::ScalarStride>{}:std::make_optional(core::ScalarStride(scalar_range,stride));
+    const auto order=args.count("--order")?args["--order"]:"forward";
+    if(order!="forward" && order!="reverse")throw std::invalid_argument("order must be forward or reverse");
+    const bool reverse=order=="reverse";
+    const auto mapping=stride==UInt256(1) && !reverse?std::optional<core::ScalarStride>{}:std::make_optional(core::ScalarStride(scalar_range,stride,reverse));
     const auto interval=mapping?mapping->indices():scalar_range;
     const uint64_t device = args.count("--device") ? decimal(args["--device"]) : 0;
     const uint64_t batch_size = args.count("--batch-size") ? decimal(args["--batch-size"]) : 1048576;
@@ -74,7 +77,7 @@ int xpoint_command(int argc, char** argv) {
     const auto selected = select_gpu(int(device));
     core::XPointVerifier verifier;
     XPointOptions options;
-    options.stride = stride;
+    options.stride = stride;options.reverse=reverse;
     options.max_steps = batch_size; options.candidate_capacity = uint32_t(capacity);
     options.kernel = kernel == "direct" ? XPointKernel::Direct : XPointKernel::Stepped;
     GpuXPointExecutor executor(int(device),targets,verifier,options);
@@ -84,7 +87,7 @@ int xpoint_command(int argc, char** argv) {
     scheduler::BlockGrid grid(interval,interval.size());
     scheduler::ExecutionIdentity identity;
     identity.target_digest = targets.digest();
-    if(mapping){identity.algorithm=scheduler::strided_algorithm(identity.algorithm);identity.stride_mapping=mapping;}
+    if(mapping){identity.algorithm=scheduler::strided_algorithm(identity.algorithm,reverse);identity.stride_mapping=mapping;}
     identity.assignment_id[0] = 1;
     identity.assignment_generation = identity.executor_generation = 1;
     std::cout << std::setprecision(9) << "{\"type\":\"start\",\"backend\":\"" << gpu_backend_name() << "\",\"mode\":\"xpoint\",\"device\":" << device
@@ -92,7 +95,7 @@ int xpoint_command(int argc, char** argv) {
               << ",\"target_digest\":\"" << hex_bytes(targets.digest().data(),targets.digest().size())
               << "\",\"begin\":\"" << interval.begin().hex() << "\",\"end_exclusive\":\"" << interval.end().hex()
               << "\",\"kernel\":\"" << kernel << "\",\"durable_coverage\":false,\"preparation_ms\":" << preparation_ms;
-    if(mapping)std::cout<<",\"coordinate_space\":\"scalar-stride-index-v1\",\"scalar_begin\":\""<<scalar_range.begin().hex()
+    if(mapping)std::cout<<",\"coordinate_space\":\""<<mapping->coordinate_space()<<"\",\"scalar_begin\":\""<<scalar_range.begin().hex()
         <<"\",\"scalar_end_exclusive\":\""<<scalar_range.end().hex()<<"\",\"stride\":\""<<stride.hex()<<'"';
     std::cout<<'}';
     flush_record();
@@ -145,7 +148,7 @@ int xpoint_command(int argc, char** argv) {
               << "\",\"launch_count\":" << launches << ",\"overflow_replays\":" << overflows
               << ",\"kernel_ms\":" << kernel_ms << ",\"download_ms\":" << download_ms
               << ",\"verification_ms\":" << verification_ms << ",\"seed_ms\":" << seed_ms << ",\"wall_ms\":" << wall_ms ;
-    if(mapping)std::cout<<",\"coordinate_space\":\"scalar-stride-index-v1\"";
+    if(mapping)std::cout<<",\"coordinate_space\":\""<<mapping->coordinate_space()<<'"';
     std::cout<<'}';
     flush_record();
     return 0;
