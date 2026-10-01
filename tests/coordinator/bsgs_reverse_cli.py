@@ -6,6 +6,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'tools'))
 from coordinator_local import Environment, HOST, REPO
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'oracle'))
 from oracle_selftest import check_source, run as oracle_run
+from bsgs_random_window import RandomWindow
 
 p = argparse.ArgumentParser(description=__doc__)
 for name in ('coordinator', 'worker', 'keyhunt', 'oracle', 'report'):
@@ -13,7 +14,7 @@ for name in ('coordinator', 'worker', 'keyhunt', 'oracle', 'report'):
 p.add_argument('--apache-root', default='/')
 p.add_argument('--hardware', action='store_true')
 p.add_argument('--backend', choices=('hip', 'cuda'), default='hip')
-p.add_argument('--tile-order', choices=('reverse', 'both-ends', 'dance'), default='reverse')
+p.add_argument('--tile-order', choices=('reverse', 'both-ends', 'dance', 'random-window'), default='reverse')
 a = p.parse_args()
 worker, keyhunt = str(a.worker.resolve()), str(a.keyhunt.resolve())
 report = dict(tile_order=a.tile_order, passed=False, hardware=a.hardware, backend=a.backend, oracle_commit=check_source(), cases=[],
@@ -82,11 +83,12 @@ with tempfile.TemporaryDirectory(prefix='kh-bsgs-reverse-worker-', dir='/var/tmp
                 command([sys.executable, REPO / 'tools/coordinator_worker.py', '--state-dir', state,
                          '--worker', worker, '--keyhunt', keyhunt, '--backend', a.backend,
                          '--table', table, '--tile-order', a.tile_order, '--giant-batch', '1',
-                         '--target-batch', '2', '--group-size', group, '--once'])
+                         '--target-batch', '2', '--group-size', group, '--once', *(['--tile-seed','2a','--tile-window','4'] if a.tile_order=='random-window' else [])])
                 events = [json.loads(v) for v in (state / 'execution-0.log').read_text().splitlines()]
                 finished = [v for v in events if v.get('type') == 'grant-finish']
                 assert len(finished) == 2 and all(v['complete'] and v['tile_order'] == a.tile_order and
                     int(v['computed_scalars'], 16) == width and v['executor_setups'] == 1 for v in finished)
+                if a.tile_order=='random-window':assert all(int(v['tile_seed'],16)==42 and v['tile_window']==4 for v in finished)
                 assert finished[0]['cold'] and not finished[1]['cold']
                 # Adaptive work-unit widths may change after a timing sample;
                 # their exact descending union must still equal each grant.
@@ -94,11 +96,15 @@ with tempfile.TemporaryDirectory(prefix='kh-bsgs-reverse-worker-', dir='/var/tmp
                 for event in events:
                     if event.get('type') == 'grant-start':
                         cursor = upper = int(event['grant']['end_exclusive'], 16)
-                        lower = int(event['grant']['begin'], 16); units = []
+                        lower = int(event['grant']['begin'], 16); units = [];last_window=0
                     elif event.get('type') == 'work-unit':
                         span = event['interval']; lo, hi = int(span['begin'], 16), int(span['end_exclusive'], 16)
                         assert lower <= lo < hi <= upper
                         if a.tile_order=='reverse':assert hi == cursor
+                        if a.tile_order=='random-window':
+                            bucket=(lo-lower)//68
+                            assert bucket>=last_window and hi<=min(upper,lower+(bucket+1)*68)
+                            last_window=bucket
                         cursor = lo; units.append((lo, hi))
                     elif event.get('type') == 'grant-finish':
                         assert len(units) >= 2 and units[0][1] - units[0][0] == 17
@@ -106,6 +112,7 @@ with tempfile.TemporaryDirectory(prefix='kh-bsgs-reverse-worker-', dir='/var/tmp
                         assert ordered[0][0]==lower and ordered[-1][1]==upper
                         assert all(left[1]==right[0] for left,right in zip(ordered,ordered[1:]))
                         if a.tile_order in ('both-ends','dance'):assert units[0][0]==lower
+                        if a.tile_order=='random-window':assert units[0]==RandomWindow([(lower,upper)],17,1,42,4).next(17)[2:4]
                         if a.tile_order=='dance':assert all(not (lo<(lower+upper)//2<hi) for lo,hi in units)
                 if transport == 'file': assert not (state / 'sync.log').exists()
                 def check(rows):
@@ -128,4 +135,4 @@ with tempfile.TemporaryDirectory(prefix='kh-bsgs-reverse-worker-', dir='/var/tmp
         report['error'] = repr(error); raise
     finally:
         env.stop(); a.report.write_text(json.dumps(report, indent=2) + '\n')
-print('PASS reverse BSGS HTTPS and disconnected file transport')
+print('PASS',a.tile_order,'BSGS HTTPS and disconnected file transport')

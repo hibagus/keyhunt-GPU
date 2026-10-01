@@ -4,8 +4,12 @@
 #include <set>
 using namespace cfixture;
 using namespace keyhunt::storage::detail;
-int main(){try{
-    for(const auto order:{core::BsgsTileOrder::Forward,core::BsgsTileOrder::Reverse,core::BsgsTileOrder::BothEnds,core::BsgsTileOrder::Dance})for(unsigned seconds:{0U,180U}){
+int main(int argc,char** argv){try{
+    const bool random_only=argc==2&&std::string(argv[1])=="--random-window";
+    require(argc==1||random_only,"unexpected fixture option");
+    const auto orders=random_only?std::vector<core::BsgsTileOrder>{core::BsgsTileOrder::RandomWindow}:
+        std::vector<core::BsgsTileOrder>{core::BsgsTileOrder::Forward,core::BsgsTileOrder::Reverse,core::BsgsTileOrder::BothEnds,core::BsgsTileOrder::Dance};
+    for(const auto order:orders)for(unsigned seconds:{0U,180U}){
         const bool reverse=order==core::BsgsTileOrder::Reverse;
         Temporary server,local;int64_t now=1800000000;
         Repository repo(server.path.string(),[&]{return now;});
@@ -46,6 +50,7 @@ int main(){try{
         require(before.covered.size()==3&&before.remaining.size()==4,"fragmented recovery fixture lost islands");
         CheckpointOptions options;options.giant_steps=1;options.target_batch=2;options.checkpoint_seconds=0;
         options.bsgs_tile_order=order;options.work_unit_seconds=seconds;std::optional<ScalarInterval> previous;unsigned tiles=0;
+        if(order==core::BsgsTileOrder::RandomWindow)options.bsgs_random_window=core::BsgsRandomWindow{UInt256(42),4};
         std::set<UInt256> missing;
         for(const auto& gap:before.remaining)for(auto n=gap.begin();n<gap.end();n=n.add(UInt256(1)))missing.insert(n);
         const auto pivot=missing.begin()->add(missing.rbegin()->add(UInt256(1)).subtract(*missing.begin()).divmod(UInt256(2)).first);
@@ -57,7 +62,7 @@ int main(){try{
                 const bool high=reverse||(order==core::BsgsTileOrder::BothEnds && tiles%2) || (order==core::BsgsTileOrder::Dance && tiles%3==1);
                 auto low=missing.begin();
                 if(order==core::BsgsTileOrder::Dance && tiles%3==2){low=missing.lower_bound(pivot);if(low==missing.end())low=missing.begin();}
-                require(high?tile.end()==missing.rbegin()->add(UInt256(1)):tile.begin()==*low,"wrong global front");
+                if(order!=core::BsgsTileOrder::RandomWindow)require(high?tile.end()==missing.rbegin()->add(UInt256(1)):tile.begin()==*low,"wrong global front");
                 if(order==core::BsgsTileOrder::Dance)require(!(tile.begin()<pivot && pivot<tile.end()),"crossed fixed pivot");
                 for(auto n=tile.begin();n<tile.end();n=n.add(UInt256(1)))require(missing.erase(n),"tile repeated a scalar");
                 previous=tile;++tiles;

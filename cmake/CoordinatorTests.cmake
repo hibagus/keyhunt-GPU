@@ -359,3 +359,18 @@ endif()
 
 add_test(NAME coordinator_minikey_dance COMMAND coordinator_minikey_reverse_test --dance)
 set_tests_properties(coordinator_minikey_dance PROPERTIES TIMEOUT 180 LABELS "cpu;coordinator;minikeys;dance;recovery")
+
+if(KEYHUNT_TEST_APACHE_ROOT AND TARGET keyhunt-worker)
+    add_test(NAME coordinator_bsgs_random_window_cli COMMAND ${Python3_EXECUTABLE}
+        ${PROJECT_SOURCE_DIR}/tests/coordinator/bsgs_reverse_cli.py
+        --coordinator $<TARGET_FILE:keyhunt-coordinator> --worker $<TARGET_FILE:keyhunt-worker>
+        --keyhunt $<TARGET_FILE:keyhunt> --oracle $<TARGET_FILE:secp256k1_oracle> --tile-order random-window
+        --apache-root ${KEYHUNT_TEST_APACHE_ROOT} --report ${CMAKE_CURRENT_BINARY_DIR}/coordinator-bsgs-random-window-cli.json ${coordinator_worker_options})
+    set_tests_properties(coordinator_bsgs_random_window_cli PROPERTIES TIMEOUT 300 LABELS "cpu;coordinator;bsgs;random-window;integration;recovery")
+    if(KEYHUNT_ENABLE_GPU)
+        set_tests_properties(coordinator_bsgs_random_window_cli PROPERTIES LABELS "${KEYHUNT_GPU_BACKEND};hardware;coordinator;bsgs;random-window;integration;recovery" RESOURCE_LOCK gpu_device)
+    endif()
+endif()
+
+add_test(NAME coordinator_bsgs_random_window COMMAND coordinator_bsgs_reverse_test --random-window)
+set_tests_properties(coordinator_bsgs_random_window PROPERTIES TIMEOUT 180 LABELS "cpu;coordinator;bsgs;random-window;recovery")
