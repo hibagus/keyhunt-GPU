@@ -357,3 +357,22 @@ The selected tile retains its unaccepted suffix through overflow. New windows
 sample current batch/work sizing; restart resets the stream on saved gaps.
 See [the contract/example](C23_MINIKEYS_RANDOM_WINDOW.md) and
 [HIP/H200 acceptance](C23_MINIKEYS_RANDOM_WINDOW_VALIDATION.md).
+
+## Both-ends scalar batches
+
+Scalar searches accept `--batch-order forward|both-ends` (default forward).
+This applies to xpoint, Bitcoin address/HASH160, Ethereum and vanity in native
+searches, checkpoint runs, `keyhunt-worker run-device` and the Python supervisor.
+Both-ends alternates low/high missing batches after acceptance, starting low.
+Overflow retries the same end. Each batch preserves the immutable `--order`,
+stride and orbit mapping; high batches are clipped at orbit variant boundaries.
+At most two adaptive work owners are active within a grant.
+
+Restart can switch batch order and geometry over the exact saved complement.
+Existing identities, receipts and capability requirements remain valid; compatible
+older workers can continue in forward batch order. Creation, BSGS and minikeys
+reject explicit `--batch-order` overrides, including forward. Mixed-mode workers
+should omit this override. Execution summaries report `batch_order`.
+See [contracts and an executable public example](C23_SCALAR_BOTH_ENDS.md) and
+[HIP/H200 validation](C23_SCALAR_BOTH_ENDS_VALIDATION.md). Scalar dance and random
+windows remain pending; this change makes no performance claim.
