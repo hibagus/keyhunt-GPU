@@ -20,6 +20,8 @@ private:
     scheduler::Digest digest_{};
 };
 struct XPointCandidate { uint64_t offset = 0; uint32_t target = 0, reserved = 0; };
+// Historical field name: scalar is a candidate index for strided receipts.
+// The retained batch mapping supplies the actual private scalar.
 struct XPointMatch { UInt256 scalar; uint32_t target; };
 
 // CPU curve types and their x86 headers stay out of HIP translation units.

@@ -124,6 +124,7 @@ keyhunt_configure_target(keyhunt_cpu_crypto)
 
 # Exact scheduling arithmetic is independent of the legacy curve engine.
 add_library(keyhunt_ranges STATIC
+    src/core/scalar_stride.cpp
     src/core/exact_range.cpp
     src/scheduler/block_grid.cpp
     src/scheduler/work_unit.cpp)
@@ -275,6 +276,7 @@ if(BUILD_TESTING)
     include(cmake/EthereumTests.cmake)
     include(cmake/VanityTests.cmake)
     include(cmake/MinikeyTests.cmake)
+    include(cmake/StrideTests.cmake)
     include(cmake/BsgsTableTests.cmake)
     include(cmake/BsgsSearchTests.cmake)
     include(cmake/StorageTests.cmake)

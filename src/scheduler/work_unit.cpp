@@ -8,6 +8,29 @@ namespace keyhunt::scheduler {
 using core::UInt256;
 using core::ScalarInterval;
 
+bool is_strided(WorkAlgorithm algorithm) {
+    return algorithm==WorkAlgorithm::StridedXPointV1 || algorithm==WorkAlgorithm::StridedHash160V1 ||
+        algorithm==WorkAlgorithm::StridedEthereumV1 || algorithm==WorkAlgorithm::StridedVanityV1;
+}
+WorkAlgorithm scalar_family(WorkAlgorithm algorithm) {
+    switch (algorithm) {
+    case WorkAlgorithm::StridedXPointV1:return WorkAlgorithm::DirectXPointV1;
+    case WorkAlgorithm::StridedHash160V1:return WorkAlgorithm::DirectHash160V1;
+    case WorkAlgorithm::StridedEthereumV1:return WorkAlgorithm::DirectEthereumV1;
+    case WorkAlgorithm::StridedVanityV1:return WorkAlgorithm::DirectVanityV1;
+    default:return algorithm;
+    }
+}
+WorkAlgorithm strided_algorithm(WorkAlgorithm algorithm) {
+    switch (algorithm) {
+    case WorkAlgorithm::DirectXPointV1:return WorkAlgorithm::StridedXPointV1;
+    case WorkAlgorithm::DirectHash160V1:return WorkAlgorithm::StridedHash160V1;
+    case WorkAlgorithm::DirectEthereumV1:return WorkAlgorithm::StridedEthereumV1;
+    case WorkAlgorithm::DirectVanityV1:return WorkAlgorithm::StridedVanityV1;
+    default:throw std::invalid_argument("family does not support scalar strides");
+    }
+}
+
 namespace {
 std::optional<ScalarInterval> bounded_interval(const ScalarInterval& parent,
                                               const UInt256& cursor, uint64_t max_steps) {
@@ -20,8 +43,11 @@ std::optional<ScalarInterval> bounded_interval(const ScalarInterval& parent,
 }
 
 void validate(const ExecutionIdentity& identity) {
-    if (identity.algorithm != WorkAlgorithm::DirectXPointV1 && identity.algorithm != WorkAlgorithm::DirectHash160V1 &&
-        identity.algorithm != WorkAlgorithm::DirectEthereumV1 && identity.algorithm != WorkAlgorithm::DirectVanityV1 && identity.algorithm != WorkAlgorithm::DirectMinikeysV1)
+    if (is_strided(identity.algorithm)!=identity.stride_mapping.has_value())
+        throw std::invalid_argument("stride mapping and algorithm disagree");
+    const auto family=scalar_family(identity.algorithm);
+    if (family != WorkAlgorithm::DirectXPointV1 && family != WorkAlgorithm::DirectHash160V1 &&
+        family != WorkAlgorithm::DirectEthereumV1 && family != WorkAlgorithm::DirectVanityV1 && family != WorkAlgorithm::DirectMinikeysV1)
         throw std::invalid_argument("unsupported work algorithm mapping");
     if (!identity.assignment_generation || !identity.executor_generation)
         throw std::invalid_argument("execution generations must be positive");
@@ -35,7 +61,8 @@ bool ExecutionIdentity::operator==(const ExecutionIdentity& other) const {
     return job_digest == other.job_digest && target_digest == other.target_digest
         && algorithm_digest == other.algorithm_digest && assignment_id == other.assignment_id
         && assignment_generation == other.assignment_generation
-        && executor_generation == other.executor_generation && algorithm == other.algorithm;
+        && executor_generation == other.executor_generation && algorithm == other.algorithm
+        && stride_mapping == other.stride_mapping;
 }
 
 WorkUnit::WorkUnit(ExecutionIdentity identity, UInt256 block_id,
@@ -45,6 +72,8 @@ WorkUnit::WorkUnit(ExecutionIdentity identity, UInt256 block_id,
 std::optional<WorkUnit> WorkUnit::plan(const BlockGrid& grid, const UInt256& block_id,
     const UInt256& cursor, uint64_t max_steps, const ExecutionIdentity& identity) {
     validate(identity);
+    if (identity.stride_mapping && !identity.stride_mapping->indices().contains(grid.root()))
+        throw std::invalid_argument("grid exceeds strided candidate indices");
     const auto block = grid.block(block_id);
     const auto interval = bounded_interval(block, cursor, max_steps);
     if (!interval) return std::nullopt;
@@ -60,10 +89,19 @@ std::optional<KernelBatch> KernelBatch::plan(const WorkUnit& work,
     return KernelBatch(work, *interval);
 }
 
-UInt256 KernelBatch::scalar_at(uint64_t local_index) const {
-    if(work_.identity().algorithm==WorkAlgorithm::DirectMinikeysV1)throw std::logic_error("minikey work uses ordinal_at");
+UInt256 KernelBatch::coordinate_at(uint64_t local_index) const {
     if (local_index >= step_count()) throw std::out_of_range("local index outside batch");
     return interval_.begin().add(UInt256(local_index));
+}
+UInt256 KernelBatch::scalar_at(uint64_t local_index) const {
+    if(work_.identity().algorithm==WorkAlgorithm::DirectMinikeysV1)throw std::logic_error("minikey work uses ordinal_at");
+    const auto coordinate=coordinate_at(local_index);
+    const auto& mapping=work_.identity().stride_mapping;
+    return mapping ? mapping->scalar(coordinate) : coordinate;
+}
+UInt256 KernelBatch::scalar_stride() const {
+    const auto& mapping=work_.identity().stride_mapping;
+    return mapping ? mapping->stride() : UInt256(1);
 }
 
 UInt256 KernelBatch::ordinal_at(uint64_t local_index) const {

@@ -88,7 +88,7 @@ Hash160Targets Hash160Targets::load(const std::string& path,Hash160Input input,H
 }
 std::vector<XPointMatch> verify_hash160(const scheduler::KernelBatch& batch,
     const Hash160Targets& targets,std::vector<XPointCandidate> candidates,const XPointVerifier& verifier) {
-    if(batch.work().identity().algorithm!=scheduler::WorkAlgorithm::DirectHash160V1 ||
+    if(scheduler::scalar_family(batch.work().identity().algorithm)!=scheduler::WorkAlgorithm::DirectHash160V1 ||
        batch.work().identity().target_digest!=targets.digest())throw std::invalid_argument("HASH160 target digest does not match plan");
     std::sort(candidates.begin(),candidates.end(),[](const auto& a,const auto& b){return std::tie(a.offset,a.target)<std::tie(b.offset,b.target);});
     std::vector<XPointMatch> matches;matches.reserve(candidates.size());
@@ -102,7 +102,7 @@ std::vector<XPointMatch> verify_hash160(const scheduler::KernelBatch& batch,
         if(matches.empty()||previous!=candidate.offset)public_key=verifier.derive(scalar);
         const auto& expected=targets.values()[candidate.target];
         if(hash160_target(public_key,expected[0])!=expected)throw std::runtime_error("GPU HASH160 candidate failed CPU verification");
-        matches.push_back({scalar,candidate.target});previous=candidate.offset;target=candidate.target;
+        matches.push_back({batch.coordinate_at(candidate.offset),candidate.target});previous=candidate.offset;target=candidate.target;
     }
     return matches;
 }

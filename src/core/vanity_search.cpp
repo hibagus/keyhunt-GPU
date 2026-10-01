@@ -69,7 +69,7 @@ VanityTargets VanityTargets::load(const std::string& path,Hash160Encoding encodi
 }
 std::vector<XPointMatch> verify_vanity(const scheduler::KernelBatch& batch,const VanityTargets& targets,
     std::vector<XPointCandidate> candidates,const XPointVerifier& verifier) {
-    if(batch.work().identity().algorithm!=scheduler::WorkAlgorithm::DirectVanityV1 ||
+    if(scheduler::scalar_family(batch.work().identity().algorithm)!=scheduler::WorkAlgorithm::DirectVanityV1 ||
        batch.work().identity().target_digest!=targets.digest())throw std::invalid_argument("vanity identity does not match plan");
     std::sort(candidates.begin(),candidates.end(),[](const auto& a,const auto& b){return std::tie(a.offset,a.target)<std::tie(b.offset,b.target);});
     std::vector<XPointMatch> matches;matches.reserve(candidates.size());
@@ -85,7 +85,7 @@ std::vector<XPointMatch> verify_vanity(const scheduler::KernelBatch& batch,const
         if(fresh)public_key=verifier.derive(scalar);
         if(fresh || encoding!=expected[0])address=bitcoin_address(public_key,expected[0]);
         if(!vanity_matches(address,expected))throw std::runtime_error("GPU vanity candidate failed CPU verification");
-        matches.push_back({scalar,candidate.target});previous=candidate.offset;target=candidate.target;encoding=expected[0];
+        matches.push_back({batch.coordinate_at(candidate.offset),candidate.target});previous=candidate.offset;target=candidate.target;encoding=expected[0];
     }
     return matches;
 }

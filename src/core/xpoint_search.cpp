@@ -64,7 +64,7 @@ std::vector<XPointMatch> XPointVerifier::verify(const scheduler::KernelBatch& ba
     const XPointTargets& targets, std::vector<XPointCandidate> candidates) const {
     // The scalar planner now supports multiple search families. A matching
     // digest alone must not let an xpoint verifier accept another mode's label.
-    if (batch.work().identity().algorithm != scheduler::WorkAlgorithm::DirectXPointV1 ||
+    if (scheduler::scalar_family(batch.work().identity().algorithm) != scheduler::WorkAlgorithm::DirectXPointV1 ||
         batch.work().identity().target_digest != targets.digest())
         throw std::invalid_argument("xpoint target digest does not match the plan");
     std::sort(candidates.begin(), candidates.end(), [](const auto& a,const auto& b){return a.offset < b.offset;});
@@ -80,7 +80,7 @@ std::vector<XPointMatch> XPointVerifier::verify(const scheduler::KernelBatch& ba
         const auto scalar = batch.scalar_at(candidate.offset);
         if (!verifier.matches_xpoint(scalar.bytes(),targets.values()[candidate.target]))
             throw std::runtime_error("HIP xpoint candidate failed CPU verification");
-        matches.push_back({scalar,candidate.target});
+        matches.push_back({batch.coordinate_at(candidate.offset),candidate.target});
         previous = candidate.offset;
     }
     return matches;

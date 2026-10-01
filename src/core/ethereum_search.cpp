@@ -83,7 +83,7 @@ EthereumTargets EthereumTargets::load(const std::string& path) {
 }
 std::vector<XPointMatch> verify_ethereum(const scheduler::KernelBatch& batch,
     const EthereumTargets& targets,std::vector<XPointCandidate> candidates,const XPointVerifier& verifier) {
-    if(batch.work().identity().algorithm!=scheduler::WorkAlgorithm::DirectEthereumV1 ||
+    if(scheduler::scalar_family(batch.work().identity().algorithm)!=scheduler::WorkAlgorithm::DirectEthereumV1 ||
        batch.work().identity().target_digest!=targets.digest())
         throw std::invalid_argument("Ethereum target identity does not match plan");
     std::sort(candidates.begin(),candidates.end(),[](const auto& a,const auto& b){return a.offset<b.offset;});
@@ -98,7 +98,7 @@ std::vector<XPointMatch> verify_ethereum(const scheduler::KernelBatch& batch,
         const auto scalar=batch.scalar_at(candidate.offset);
         if(ethereum_target(verifier.derive(scalar))!=targets.values()[candidate.target])
             throw std::runtime_error("GPU Ethereum candidate failed CPU verification");
-        matches.push_back({scalar,candidate.target});
+        matches.push_back({batch.coordinate_at(candidate.offset),candidate.target});
         previous=candidate.offset;
     }
     return matches;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "keyhunt/scheduler/block_grid.h"
+#include "keyhunt/core/scalar_stride.h"
 
 #include <array>
 #include <optional>
@@ -12,7 +13,10 @@ using AssignmentId = std::array<uint8_t, 16>;
 
 // Direct scalar mappings use k = begin + local_index. Minikeys use that same
 // integer coordinate as an ordinal; hashing derives an unrelated private scalar.
-enum class WorkAlgorithm : uint8_t { DirectXPointV1 = 1, DirectHash160V1 = 2, DirectEthereumV1 = 3, DirectVanityV1 = 4, DirectMinikeysV1 = 5 };
+enum class WorkAlgorithm : uint8_t { DirectXPointV1 = 1, DirectHash160V1 = 2, DirectEthereumV1 = 3, DirectVanityV1 = 4, DirectMinikeysV1 = 5, StridedXPointV1 = 6, StridedHash160V1 = 7, StridedEthereumV1 = 8, StridedVanityV1 = 9 };
+bool is_strided(WorkAlgorithm);
+WorkAlgorithm scalar_family(WorkAlgorithm);
+WorkAlgorithm strided_algorithm(WorkAlgorithm);
 
 struct ExecutionIdentity {
     Digest job_digest{};
@@ -22,6 +26,8 @@ struct ExecutionIdentity {
     uint64_t assignment_generation = 0;
     uint64_t executor_generation = 0;
     WorkAlgorithm algorithm = WorkAlgorithm::DirectXPointV1;
+
+    std::optional<core::ScalarStride> stride_mapping; // present exactly for strided algorithms
 
     bool operator==(const ExecutionIdentity& other) const;
     bool operator!=(const ExecutionIdentity& other) const { return !(*this == other); }
@@ -56,7 +62,11 @@ public:
     const WorkUnit& work() const { return work_; }
     const core::ScalarInterval& interval() const { return interval_; }
     uint64_t step_count() const { return interval_.size().to_uint64(); }
+    // Receipt coordinates can be candidate indices; scalar_at always derives
+    // the actual private scalar for a scalar-search family.
+    core::UInt256 coordinate_at(uint64_t local_index) const;
     core::UInt256 scalar_at(uint64_t local_index) const;
+    core::UInt256 scalar_stride() const;
     core::UInt256 ordinal_at(uint64_t local_index) const;
 
 private:
