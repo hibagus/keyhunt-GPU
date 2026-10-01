@@ -9,9 +9,10 @@ from minikey import PUBLIC_KEYS,text,ordinal,scalar
 p=argparse.ArgumentParser()
 for name in ('binary','oracle','report'):p.add_argument('--'+name,type=Path,required=True)
 p.add_argument('--hardware',action='store_true');p.add_argument('--backend',choices=('hip','cuda'),default='hip')
+p.add_argument('--reverse',action='store_true')
 a=p.parse_args();binary=str(a.binary.resolve())
 report=dict(passed=False,oracle_commit=check_source(),binary_sha256=hashlib.sha256(a.binary.read_bytes()).hexdigest(),
-            hardware=a.hardware,backend=a.backend,cases=[],checks=0)
+            hardware=a.hardware,reverse=a.reverse,backend=a.backend,cases=[],checks=0)
 with tempfile.TemporaryDirectory(prefix='kh-minikey-checkpoint-') as directory:
     root=Path(directory);state=root/'state'
     def command(family,action,*words):return [binary,family,action,'--state-dir',str(state),*map(str,words)]
@@ -32,6 +33,7 @@ with tempfile.TemporaryDirectory(prefix='kh-minikey-checkpoint-') as directory:
         equiv=words.copy();equiv[equiv.index('--targets')+1]=address_file;equiv[equiv.index('--input-format')+1]='address'
         assert call('checkpoint','create',*equiv)[0]==created
         assert call('checkpoint','create',*words,'--encoding','compressed')[0]['job']!=created['job']
+        assert not call('checkpoint','create',*words,'--ordinal-order','reverse',ok=False).stdout
         scope=['--project',project,'--job',created['job']]
         grant=call('state','claim',*scope,'--owner','test','--request',label)[0]['assignments'][0]['grant']
         return scope,['--backend',a.backend,'--grant',grant,'--targets',file,'--length',length,'--input-format','hash160']
@@ -63,8 +65,9 @@ with tempfile.TemporaryDirectory(prefix='kh-minikey-checkpoint-') as directory:
             wrong_length=run.copy();wrong_length[wrong_length.index('--length')+1]=30 if length==22 else 22
             for words in (mismatch,wrong_length,run+['--encoding','compressed'],run+['--candidate-capacity','1'],run+['--kernel','stepped']):
                 assert not call('checkpoint','run',*words,ok=False).stdout
-            summary=call('checkpoint','run',*run,'--batch-size','8192','--candidate-capacity','2')[-1]
+            summary=call('checkpoint','run',*run,'--ordinal-order','reverse' if a.reverse else 'forward','--batch-size','8192','--candidate-capacity','2')[-1]
             assert summary['complete'] and int(summary['computed_ordinals'],16)==count and summary['durability']=='local'
+            assert summary['ordinal_order']==('reverse' if a.reverse else 'forward')
             assert summary['coordinate_space']=='minikey-ordinal-v1' and 'computed_scalars' not in summary
             if label=='overflow':assert summary['overflow_replays']>0
             expected={(o,f'{length:02x}{tag:02x}'+v) for (o,tag),v in values.items() if start<=o<start+count}
@@ -73,24 +76,26 @@ with tempfile.TemporaryDirectory(prefix='kh-minikey-checkpoint-') as directory:
             assert again['batches']==0 and int(again['resumed_ordinals'],16)==count
             report['cases'].append(dict(name=label,length=length,relations=len(expected),summary=summary))
         if not a.hardware:continue
-        # Kill only after an acknowledged durable prefix; all later work is
-        # reconstructed from its exact ordinal complement with new batch sizes.
-        scope,run=prepare(f'killed-{length}',length,begin,begin+1048576,[values[begin,tag] for tag in (1,2)])
-        process=subprocess.Popen(command('checkpoint','run',*run,'--batch-size','32'),stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
-        try:
-            assert select.select([process.stdout],[],[],30)[0],'no durable acknowledgment'
-            notice=json.loads(process.stdout.readline())
-            assert notice['type']=='checkpoint' and notice['durable_results'] and notice['coordinate_space']=='minikey-ordinal-v1'
-            assert 'already held' in call('checkpoint','run',*run,ok=False).stderr
-            process.kill();process.communicate(timeout=30)
-        finally:
-            if process.poll() is None:process.kill();process.communicate(timeout=30)
-        call('state','check');assert results(scope)
-        retained=call('state','block',*scope,'--block','0')[0]
-        covered=sum(int(v['end_exclusive'],16)-int(v['begin'],16) for v in retained['covered'])
-        summary=call('checkpoint','run',*run,'--batch-size','65536')[-1]
-        assert summary['complete'] and int(summary['resumed_ordinals'],16)==covered
-        assert covered+int(summary['computed_ordinals'],16)==1048576
-        verify(scope,{(begin,f'{length:02x}{tag:02x}'+values[begin,tag]) for tag in (1,2)},length)
-        report['cases'].append(dict(name='kill-and-restart',length=length,retained=retained,summary=summary))
+        for first,resume in ([('reverse','forward'),('forward','reverse'),('reverse','reverse')] if a.reverse else [('forward','forward')]):
+            # Kill only after an acknowledged durable prefix; all later work is
+            # reconstructed from its exact ordinal complement with new batch sizes.
+            start=begin-1048575 if first=='reverse' else begin
+            scope,run=prepare(f'killed-{length}-{first}-{resume}',length,start,start+1048576,[values[begin,tag] for tag in (1,2)])
+            process=subprocess.Popen(command('checkpoint','run',*run,'--ordinal-order',first,'--batch-size','32'),stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
+            try:
+                assert select.select([process.stdout],[],[],30)[0],'no durable acknowledgment'
+                notice=json.loads(process.stdout.readline())
+                assert notice['type']=='checkpoint' and notice['durable_results'] and notice['coordinate_space']=='minikey-ordinal-v1'
+                assert 'already held' in call('checkpoint','run',*run,ok=False).stderr
+                process.kill();process.communicate(timeout=30)
+            finally:
+                if process.poll() is None:process.kill();process.communicate(timeout=30)
+            call('state','check');assert results(scope)
+            retained=call('state','block',*scope,'--block','0')[0]
+            covered=sum(int(v['end_exclusive'],16)-int(v['begin'],16) for v in retained['covered'])
+            summary=call('checkpoint','run',*run,'--ordinal-order',resume,'--batch-size','65536')[-1]
+            assert summary['complete'] and int(summary['resumed_ordinals'],16)==covered
+            assert covered+int(summary['computed_ordinals'],16)==1048576
+            verify(scope,{(begin,f'{length:02x}{tag:02x}'+values[begin,tag]) for tag in (1,2)},length)
+            report['cases'].append(dict(name='kill-and-restart',length=length,first=first,resume=resume,retained=retained,summary=summary))
 report['passed']=True;a.report.write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report))

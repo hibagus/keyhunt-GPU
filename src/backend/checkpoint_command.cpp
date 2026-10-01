@@ -33,7 +33,7 @@ int checkpoint_command(int argc,char** argv){
     static const std::map<std::string,std::set<std::string>> allowed{
         {"create",{"project","mode","range","block-width","targets","table","host-memory","encoding","length","input-format","stride","order","endomorphism"}},
         {"run",{"backend","grant","targets","table","device","batch-size","kernel","giant-batch",
-                "target-batch","candidate-capacity","group-size","host-memory","reserve-bytes","checkpoint-seconds","encoding","input-format","length","stride","order","endomorphism","tile-order"}},
+                "target-batch","candidate-capacity","group-size","host-memory","reserve-bytes","checkpoint-seconds","encoding","input-format","length","stride","order","endomorphism","tile-order","ordinal-order"}},
         {"results",{"project","job","after","limit"}},
         {"pause",{"slot"}},{"resume",{"slot"}},{"stop",{"slot"}},{"status",{"slot"}}};
     if(argc<3)throw std::invalid_argument("usage: keyhunt checkpoint create|run|results|pause|resume|stop|status [--state-dir DIR] ...; see docs/CHECKPOINTS.md");
@@ -152,6 +152,10 @@ int checkpoint_command(int argc,char** argv){
     const auto device=decimal(optional(args,"device","0"),std::numeric_limits<int>::max());
     const auto mapping=journal.stride_mapping(grant.scope);
     CheckpointOptions options;
+    if(args.count("ordinal-order")){
+        if(mode!=Mode::Minikeys)throw std::invalid_argument("ordinal-order applies only to minikeys");
+        options.minikey_reverse=core::parse_minikey_order(required(args,"ordinal-order"));
+    }
     if(args.count("tile-order")){
         if(mode!=Mode::Bsgs)throw std::invalid_argument("tile-order applies only to BSGS");
         options.bsgs_tile_order=core::parse_bsgs_tile_order(required(args,"tile-order"));
@@ -321,6 +325,7 @@ int checkpoint_command(int argc,char** argv){
         comma=true;
     }
     std::cout<<']';
+    if(mode==Mode::Minikeys)std::cout<<",\"ordinal_order\":"<<quote(optional(args,"ordinal-order","forward"));
     if(mode==Mode::Bsgs)std::cout<<",\"tile_order\":"<<quote(optional(args,"tile-order","forward"));
     std::cout<<'}';flush();return 0;
 #endif

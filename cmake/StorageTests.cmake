@@ -341,3 +341,26 @@ target_link_libraries(storage_bsgs_dance_test PRIVATE keyhunt_storage)
 keyhunt_configure_target(storage_bsgs_dance_test)
 add_test(NAME storage_bsgs_dance COMMAND storage_bsgs_dance_test)
 set_tests_properties(storage_bsgs_dance PROPERTIES TIMEOUT 180 LABELS "cpu;bsgs;storage;dance;recovery")
+
+add_executable(storage_minikey_reverse_test tests/storage/minikey_reverse.cpp)
+target_include_directories(storage_minikey_reverse_test PRIVATE src/storage)
+target_link_libraries(storage_minikey_reverse_test PRIVATE keyhunt_storage)
+keyhunt_configure_target(storage_minikey_reverse_test)
+add_test(NAME storage_minikey_reverse COMMAND storage_minikey_reverse_test)
+set_tests_properties(storage_minikey_reverse PROPERTIES TIMEOUT 120 LABELS "cpu;storage;minikeys;recovery")
+
+add_test(NAME checkpoint_minikeys_reverse_cli COMMAND "${Python3_EXECUTABLE}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/minikey_checkpoint_cli.py"
+    --binary $<TARGET_FILE:keyhunt> --oracle $<TARGET_FILE:secp256k1_oracle>
+    --reverse --report "${CMAKE_CURRENT_BINARY_DIR}/checkpoint-minikeys-reverse-cli.json" ${checkpoint_cli_options})
+set_tests_properties(checkpoint_minikeys_reverse_cli PROPERTIES TIMEOUT 300 LABELS "cpu;storage;minikeys;recovery")
+if(KEYHUNT_ENABLE_GPU)
+    set_tests_properties(checkpoint_minikeys_reverse_cli PROPERTIES LABELS "${KEYHUNT_GPU_BACKEND};hardware;storage;minikeys;recovery" RESOURCE_LOCK gpu_device)
+    add_test(NAME checkpoint_minikeys_reverse_pause_${KEYHUNT_GPU_BACKEND} COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/checkpoint_pause_hip.py"
+        --binary $<TARGET_FILE:keyhunt> --oracle $<TARGET_FILE:secp256k1_oracle>
+        --backend ${KEYHUNT_GPU_BACKEND} --mode minikeys22 --mode minikeys30 --ordinal-order reverse
+        --report "${CMAKE_CURRENT_BINARY_DIR}/checkpoint-minikeys-reverse-pause-${KEYHUNT_GPU_BACKEND}.json")
+    set_tests_properties(checkpoint_minikeys_reverse_pause_${KEYHUNT_GPU_BACKEND} PROPERTIES TIMEOUT 180
+        LABELS "${KEYHUNT_GPU_BACKEND};hardware;storage;minikeys;recovery" RESOURCE_LOCK gpu_device)
+endif()

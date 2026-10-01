@@ -28,6 +28,7 @@ parser.add_argument("--backend",choices=("hip","cuda"),default="hip")
 parser.add_argument("--mode", choices=("xpoint","bsgs","hash160","ethereum","vanity","minikeys22","minikeys30"), action="append")
 parser.add_argument("--stride", type=lambda value:int(value,16), default=1)
 parser.add_argument("--order",choices=("forward","reverse"),default="forward")
+parser.add_argument("--ordinal-order",choices=("forward","reverse"))
 parser.add_argument("--tile-order",choices=("forward","reverse","both-ends","dance"))
 parser.add_argument("--orbit",action="store_true")
 parser.add_argument("--kernel", choices=("direct","stepped","glv"), help="first stage kernel; later stages switch to direct and stepped")
@@ -36,10 +37,12 @@ if args.kernel and (not args.mode or any(mode not in ("xpoint","hash160","ethere
     parser.error("kernel switching requires explicit scalar modes")
 if (args.orbit or args.stride!=1 or args.order=="reverse") and (not args.mode or any(mode not in ("xpoint","hash160","ethereum","vanity") for mode in args.mode)):
     parser.error("strides require explicit scalar modes")
+if args.ordinal_order and (not args.mode or any(v not in ("minikeys22","minikeys30") for v in args.mode)):
+    parser.error("ordinal-order requires explicit minikey modes")
 if args.tile_order and args.mode!=["bsgs"]:
     parser.error("tile-order requires explicit BSGS mode")
 binary = args.binary.resolve()
-report = {"tile_order":args.tile_order,"orbit":args.orbit,"oracle_commit": check_source(), "binary_sha256": hashlib.sha256(binary.read_bytes()).hexdigest(),
+report = {"ordinal_order":args.ordinal_order,"tile_order":args.tile_order,"orbit":args.orbit,"oracle_commit": check_source(), "binary_sha256": hashlib.sha256(binary.read_bytes()).hexdigest(),
           "cases": [], "kernels": [args.kernel,"direct","stepped"] if args.kernel else ["stepped"]*3, "pause_latency_scope": "local socket request through durably-paused status, including admitted batch and up to 20 ms idle polling"}
 def invoke(words, env=None, ok=True):
     result = subprocess.run([str(binary), *map(str, words)], capture_output=True, text=True, timeout=90, env=env)
@@ -81,9 +84,10 @@ with tempfile.TemporaryDirectory(prefix="kh-c14-hip-") as temporary:
         length=int(mode[-2:]) if mode.startswith("minikeys") else None
         begin=1
         if length:
-            key=PUBLIC_KEYS[0 if length==22 else 1];begin=minikey_ordinal(key)
+            key=PUBLIC_KEYS[0 if length==22 else 1];match_ordinal=minikey_ordinal(key)
+            begin=match_ordinal-1048575 if args.ordinal_order=="reverse" else match_ordinal
             point=oracle_run(args.oracle,[f"pub {minikey_scalar(key):064x}"])[0]
-            values={(begin,tag):hash160(point,tag) for tag in (1,2)}
+            values={(match_ordinal,tag):hash160(point,tag) for tag in (1,2)}
         targets.write_text("\n".join(values.values()) + "\n")
         inputs = ["--targets", targets] + (["--table", table] if mode == "bsgs" else [])
         if length:inputs += ["--length",length,"--input-format","hash160"]
@@ -128,7 +132,7 @@ with tempfile.TemporaryDirectory(prefix="kh-c14-hip-") as temporary:
                 env["CUDA_VISIBLE_DEVICES" if args.backend=="cuda" else "HIP_VISIBLE_DEVICES"] = visibility
             log, err = root / f"{mode}-{stage}.out", root / f"{mode}-{stage}.err"
             with log.open("w") as out, err.open("w") as error:
-                process = subprocess.Popen([str(binary), *map(str, run + slow + (["--tile-order",args.tile_order if stage==0 else ("forward" if args.tile_order=="reverse" else "reverse")] if args.tile_order else []) + ["--device", device] + (["--kernel",args.kernel if stage==0 else "direct"] if args.kernel else []))],
+                process = subprocess.Popen([str(binary), *map(str, run + slow + (["--ordinal-order",args.ordinal_order if stage==0 else ("forward" if args.ordinal_order=="reverse" else "reverse")] if args.ordinal_order else []) + (["--tile-order",args.tile_order if stage==0 else ("forward" if args.tile_order=="reverse" else "reverse")] if args.tile_order else []) + ["--device", device] + (["--kernel",args.kernel if stage==0 else "direct"] if args.kernel else []))],
                                            stdout=out, stderr=error, env=env)
             try:
                 live = activity("running")
@@ -188,8 +192,9 @@ with tempfile.TemporaryDirectory(prefix="kh-c14-hip-") as temporary:
         env = os.environ.copy()
         if visibility is not None:
             env["CUDA_VISIBLE_DEVICES" if args.backend=="cuda" else "HIP_VISIBLE_DEVICES"] = visibility
-        completed = invoke(run + fast + (["--tile-order",args.tile_order] if args.tile_order else []) + ["--device", device] + (["--kernel","stepped"] if args.kernel else []), env=env)[-1]
+        completed = invoke(run + fast + (["--ordinal-order",args.ordinal_order] if args.ordinal_order else []) + (["--tile-order",args.tile_order] if args.tile_order else []) + ["--device", device] + (["--kernel","stepped"] if args.kernel else []), env=env)[-1]
         assert completed["complete"]
+        if args.ordinal_order:assert completed["ordinal_order"]==args.ordinal_order
         if args.tile_order:assert completed["tile_order"]==args.tile_order
         assert int(completed["resumed_candidates" if args.orbit or args.stride!=1 or args.order=="reverse" else "resumed_ordinals" if length else "resumed_scalars"], 16) + int(completed["computed_candidates" if args.orbit or args.stride!=1 or args.order=="reverse" else "computed_ordinals" if length else "computed_scalars"], 16) == candidate_count
         matches = local("checkpoint", "results", *scope)[0]["results"]
@@ -197,7 +202,7 @@ with tempfile.TemporaryDirectory(prefix="kh-c14-hip-") as temporary:
                   else {(n,(bytes([tag,len(values[n,tag])])+values[n,tag].encode()+bytes(34-len(values[n,tag]))).hex()) for n in seeds[:-1] for tag in (1,2)} if mode=="vanity"
                   else set() if length else {(n,values[n]) for n in seeds[:-1]})
         if length:
-            expected={(begin,f"{length:02x}{tag:02x}"+values[begin,tag]) for tag in (1,2)}
+            expected={(match_ordinal,f"{length:02x}{tag:02x}"+values[match_ordinal,tag]) for tag in (1,2)}
             assert all(r["minikey"]==key and int(r["scalar"],16)==minikey_scalar(key) for r in matches)
         assert {(int(r["ordinal" if length else "scalar"],16),r["target_bytes"]) for r in matches}==expected
         assert len(matches)==len(expected)

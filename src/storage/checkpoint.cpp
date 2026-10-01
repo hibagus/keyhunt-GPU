@@ -55,6 +55,7 @@ struct Cleanup {
     ~Cleanup(){if(stop)stop();} // a throwing stop is a fatal ownership-contract violation
 };
 void validate_options(const CheckpointOptions& o,bool bsgs){
+    if(bsgs && o.minikey_reverse)throw std::invalid_argument("ordinal-order applies only to minikeys");
     if(!bsgs && o.bsgs_tile_order)throw std::invalid_argument("tile-order applies only to BSGS");
     if(o.work_unit_seconds>300 || (o.work_unit_seconds && o.work_unit_seconds<60) || o.checkpoint_seconds>60 || !o.candidate_capacity ||
        o.candidate_capacity>(bsgs?65536U:1048576U))throw std::invalid_argument("invalid checkpoint interval/candidate capacity");
@@ -303,6 +304,8 @@ CheckpointSummary CheckpointRun::ethereum(Journal& journal,const Grant& grant,co
 CheckpointSummary CheckpointRun::Impl::scalar(Journal& journal,const Grant& grant,detail::Binding input,unsigned matches_per_scalar,
     const core::XPointVerifier& verifier,const XPointRunner& run,CheckpointOptions o,CheckpointObserver observer,CheckpointCleanup cleanup,CheckpointControl control){
     validate_options(o,false);
+    if(o.minikey_reverse && input.mode!=Mode::Minikeys)throw std::invalid_argument("ordinal-order applies only to minikeys");
+    const bool ordinal_reverse=o.minikey_reverse.value_or(false);
     const auto mapping=journal.stride_mapping(grant.scope);
     if(o.stride){
         core::validate_scalar_stride(*o.stride);
@@ -326,7 +329,7 @@ CheckpointSummary CheckpointRun::Impl::scalar(Journal& journal,const Grant& gran
     case Mode::Hash160:identity.algorithm=scheduler::WorkAlgorithm::DirectHash160V1;break;
     case Mode::Ethereum:identity.algorithm=scheduler::WorkAlgorithm::DirectEthereumV1;break;
     case Mode::Vanity:identity.algorithm=scheduler::WorkAlgorithm::DirectVanityV1;break;
-    case Mode::Minikeys:identity.algorithm=scheduler::WorkAlgorithm::DirectMinikeysV1;break;
+    case Mode::Minikeys:identity.algorithm=ordinal_reverse?scheduler::WorkAlgorithm::ReverseMinikeysV1:scheduler::WorkAlgorithm::DirectMinikeysV1;break;
     default:throw std::invalid_argument("unsupported scalar checkpoint mode");
     }
     if(state.input.stride_mapping){
@@ -339,13 +342,16 @@ CheckpointSummary CheckpointRun::Impl::scalar(Journal& journal,const Grant& gran
     identity.assignment_generation=uint64_t(grant.generation);identity.executor_generation=uint64_t(state.executor);
     scheduler::XPointBatchSize sizing(o.xpoint_steps,o.candidate_capacity,matches_per_scalar);
     scheduler::AdaptiveWorkSize units(UInt256(o.xpoint_steps),o.work_unit_seconds);
+    // Direction changes only minikey execution. Saved gaps and receipt bounds
+    // stay ascending half-open ordinal intervals in either direction.
+    if(ordinal_reverse)std::reverse(state.remaining.begin(),state.remaining.end());
     for(const auto& gap:state.remaining){
-        auto cursor=gap.begin();std::optional<scheduler::WorkUnit> work;uint64_t active_ns=0;
-        while(cursor<gap.end()){
+        auto cursor=ordinal_reverse?gap.end():gap.begin();std::optional<scheduler::WorkUnit> work;uint64_t active_ns=0;
+        while(ordinal_reverse?cursor>gap.begin():cursor<gap.end()){
             if(!state.boundary())return state.summary;
-            if(!work || cursor==work->interval().end()){
+            if(!work || cursor==(ordinal_reverse?work->interval().begin():work->interval().end())){
                 if(work)units.observed(work->interval().size(),active_ns);
-                const auto span=std::min({units.span(),gap.end().subtract(cursor),UInt256(UINT64_MAX)}).to_uint64();
+                const auto span=std::min({units.span(),ordinal_reverse?cursor.subtract(gap.begin()):gap.end().subtract(cursor),UInt256(UINT64_MAX)}).to_uint64();
                 work=scheduler::WorkUnit::plan(grid,grant.block,cursor,span,identity);active_ns=0;
                 state.planned(work->interval());
             }
@@ -366,7 +372,7 @@ CheckpointSummary CheckpointRun::Impl::scalar(Journal& journal,const Grant& gran
             sizing.accepted(result.candidate_count);
             state.verified(batch.interval(),result.matches,false);
             state.summary.match_observations+=result.matches.size();state.cover(batch.interval());
-            state.flush(result.matches);cursor=batch.interval().end();
+            state.flush(result.matches);cursor=ordinal_reverse?batch.interval().begin():batch.interval().end();
             active_ns+=uint64_t(std::chrono::duration_cast<std::chrono::nanoseconds>(Clock::now()-started).count());
         }
     }
