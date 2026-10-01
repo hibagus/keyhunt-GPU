@@ -20,7 +20,12 @@ int main(){try{
             {"block_width",UInt256(17).hex()},{"configuration",wire::hex(input.configuration)},{"targets",wire::hex(input.targets)}};
         const auto job=repo.request(cert,"POST","/api/v1/projects/"+project+"/jobs",body);
         auto invalid=body;invalid["end_exclusive"]=UInt256(36).hex();
-        rejects([&]{repo.request(cert,"POST","/api/v1/projects/"+project+"/jobs",invalid);});
+        denied(400,[&]{repo.request(cert,"POST","/api/v1/projects/"+project+"/jobs",invalid);});
+        for(unsigned fault=0;fault<3;++fault){auto config=input.configuration;
+            if(fault==0)config[8]=1;if(fault==1)config.back()=1;if(fault==2)config.pop_back();
+            auto malformed=body;malformed["configuration"]=wire::hex(config);
+            denied(400,[&]{repo.request(cert,"POST","/api/v1/projects/"+project+"/jobs",malformed);});
+        }
         const auto path="/api/v1/projects/"+project+"/jobs/"+job["job"].get<std::string>();
         const Json jobs={{{"project",project},{"job",job["job"]},{"devices",{"gpu0"}},{"spares",1},{"policy","sequential"}}};
         Json old{{"protocol",1},{"capabilities",{"checkpoint-v1","offline-lease-v1","hash160-v1","ethereum-v1","vanity-v1","minikeys-v1"}},

@@ -320,7 +320,14 @@ struct Repository::Impl {
             for(size_t i=0;i<values.size();++i)std::copy_n(targets.begin()+65*i,65,values[i].begin());
             m.targets=core::BsgsPublicKeyTargets(std::move(values)).digest();
         }
-        const auto input=decode_binding(m,configuration,targets);
+        // At job creation these bytes come solely from the request. Malformed
+        // mappings are client errors; decoding persisted state elsewhere must
+        // still report corruption as unavailable coordinator state.
+        const auto input=[&]{
+            try{return decode_binding(m,configuration,targets);}
+            catch(const std::invalid_argument& error){throw Error(400,error.what());}
+            catch(const std::runtime_error& error){throw Error(400,error.what());}
+        }();
         const auto scope=journal.create_job(project,m);journal.bind_search(scope,input);return job(scope);
     }
 };

@@ -29,11 +29,11 @@ with tempfile.TemporaryDirectory(prefix='kh-stride-worker-',dir='/var/tmp') as t
         def private(name,value):
             path=root/name;path.write_text(json.dumps(value));path.chmod(0o600);return path
         courier=private('courier.json',credentials)
-        def api(method,path,body=None):
+        def api(method,path,body=None,status=200):
             with env.client('alice') as client:
                 client.request(method,path,None if body is None else json.dumps(body),{'Content-Type':'application/json'})
-                response=client.getresponse();payload=response.read();assert response.status==200,(response.status,payload)
-                return json.loads(payload)['value']
+                response=client.getresponse();payload=response.read();assert response.status==status,(response.status,payload)
+                return json.loads(payload)['value'] if status==200 else json.loads(payload)
         for transport in ('https','file'):
             for mode,tag in [('xpoint',1),('hash160',3),('ethereum',4),('vanity',5)]:
                 # A different project makes both transport paths execute their
@@ -44,8 +44,11 @@ with tempfile.TemporaryDirectory(prefix='kh-stride-worker-',dir='/var/tmp') as t
                 public=oracle_run(a.oracle,[f'pub {k:064x}' for k in scalars]);_,canonical=targets(mode,public)
                 expected={(i,k,canonical[t]) for i,k,pub in zip(indices,scalars,public) for t in relations(mode,pub,canonical)}
                 config=b'khsearch\x02'+bytes([tag])+bytes(40)+b''.join(v.to_bytes(32,'big') for v in (begin,end,step))
-                job=api('POST',f'/api/v1/projects/{project}/jobs',dict(mode=mode,begin=f'0x{1:064x}',end_exclusive=f'0x{count+1:064x}',
-                    block_width=f'0x{17:064x}',configuration=config.hex(),targets=''.join(canonical)))['job']
+                body=dict(mode=mode,begin=f'0x{1:064x}',end_exclusive=f'0x{count+1:064x}',
+                    block_width=f'0x{17:064x}',configuration=config.hex(),targets=''.join(canonical))
+                for malformed in (dict(body,end_exclusive=f'0x{count+2:064x}'),dict(body,configuration=(config[:-1]+b'\x01').hex())):
+                    assert not api('POST',f'/api/v1/projects/{project}/jobs',malformed,status=400)['ok']
+                job=api('POST',f'/api/v1/projects/{project}/jobs',body)['job']
                 path=f'/api/v1/projects/{project}/jobs/{job}';state=root/(transport+'-'+mode)
                 jobs=[dict(project=project,job=job,devices=['0'],spares=1,policy='sequential')]
                 settings=dict(credentials,jobs=jobs) if transport=='https' else dict(endpoint=credentials['endpoint'],transport='file',jobs=jobs)

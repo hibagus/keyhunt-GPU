@@ -130,3 +130,13 @@ server processes during computation and produced no synchronization log. The
 first new transport fixture omitted the API's required `0x` prefix; it was rejected
 before job creation. Corrected canonical input passed on CPU and HIP. No production
 parser relaxation was needed.
+
+## API boundary review
+
+A malformed configuration at job creation is now HTTP 400. The pure binding
+validation at this boundary consumes request bytes; treating a mismatched
+candidate root as unavailable server state was misleading. Persisted-binding
+validation retains its corruption behavior. Focused CPU, HIP localhost mTLS and
+ASan/UBSan checks reject altered roots, lengths, versions and unit-stride v2
+configurations before creating jobs. CUDA repeats these focused checks after its
+integrated recovery run.
