@@ -9,11 +9,14 @@ import re
 import signal
 import subprocess
 import tempfile
+import sys
 import time
 
 ROOT = Path(__file__).resolve().parents[2]
 DOCUMENT = ROOT / 'docs/GPU_QUICKSTART.md'
 BLOCKS = ('prepare', 'volatile', 'create', 'durable')
+sys.path.insert(0,str(ROOT/'tests/oracle'))
+from minikey import public_fixture
 
 
 def sha256(path):
@@ -32,22 +35,29 @@ def validate(artifacts, hardware, device):
 
     require(one('table-inspect')['m'] == 257, 'wrong baby-table size')
     require(one('preflight')['integrity'] == 'ok', 'preflight audit failed')
-    for mode, width in [('xpoint', 256), ('bsgs', 65536), ('hash160', 256), ('ethereum', 256), ('vanity', 256)]:
+    for mode, width in [('xpoint', 256), ('bsgs', 65536), ('hash160', 256), ('ethereum', 256), ('vanity', 256), ('minikeys22',256), ('minikeys30',256)]:
+        mini=public_fixture(int(mode[-2:])) if mode.startswith('minikeys') else None
+        first=mini['ordinal'] if mini else 1
+        private=mini['scalar'] if mini else 1
+        computed='computed_ordinals' if mini else 'computed_scalars'
+        resumed='resumed_ordinals' if mini else 'resumed_scalars'
+        if mini:
+            require(int(one(mode+'-inspect')['ordinal'],16)==first, 'wrong inspected ordinal')
         job = one(mode + '-job')
         assignments = one(mode + '-grant')['assignments']
         require(job['project'] == one('project')['project'], 'wrong project')
         require(len(assignments) == 1 and assignments[0]['grant'], 'missing single grant')
         grant = assignments[0]
         require(grant['job'] == job['job'] and grant['project'] == job['project'] and
-                int(grant['block'], 16) == 0 and int(grant['begin'], 16) == 1 and
-                int(grant['end_exclusive'], 16) == width + 1, 'wrong assignment bounds')
+                int(grant['block'], 16) == 0 and int(grant['begin'], 16) == first and
+                int(grant['end_exclusive'], 16) == width + first, 'wrong assignment bounds')
         if not hardware:
             continue
         summary = artifacts[mode + '.ndjson'][-1]
         require(summary['type'] == 'summary' and summary['complete'] and
                 not summary['durable_coverage'], 'wrong volatile completion')
         # Verify the complete receipt union as well as the known public fixture.
-        cursor, matches = 1, []
+        cursor, matches = first, []
         for record in artifacts[mode + '.ndjson'][1:-1]:
             if record.get('overflow'):
                 continue
@@ -61,24 +71,28 @@ def validate(artifacts, hardware, device):
                 end = int(record['end_exclusive'], 16)
                 require(begin == cursor and end > begin, 'noncontiguous volatile coverage')
                 cursor = end
-        require(cursor == 1 + width, 'wrong volatile endpoint')
-        expected_count = 3 if mode == 'vanity' else 2 if mode == 'hash160' else 1
-        require(len(matches) == expected_count and all(int(m['scalar'], 16) == 1 for m in matches),
+        require(cursor == first + width, 'wrong volatile endpoint')
+        expected_count = 3 if mode == 'vanity' else 2 if mini or mode == 'hash160' else 1
+        require(len(matches) == expected_count and all(int(m['scalar'], 16) == private for m in matches),
                 'wrong volatile match set')
         durable = artifacts[mode + '-durable.ndjson'][-1]
         require(durable['complete'] and durable['durability'] == 'local', 'incomplete durable run')
-        require(int(durable['computed_scalars'], 16) == width, 'wrong durable coverage')
+        require(int(durable[computed], 16) == width, 'wrong durable coverage')
         retry = artifacts[mode + '-retry.ndjson'][-1]
         require(retry['complete'] and retry['batches'] == 0 and
-                int(retry['resumed_scalars'], 16) == width and
-                int(retry['computed_scalars'], 16) == 0, 'completed grant recomputed work')
+                int(retry[resumed], 16) == width and
+                int(retry[computed], 16) == 0, 'completed grant recomputed work')
         results = one(mode + '-results')['results']
-        require(len(results) == expected_count and all(int(r['scalar'], 16) == 1 for r in results),
+        require(len(results) == expected_count and all(int(r['scalar'], 16) == private for r in results),
                 'wrong durable match set')
+        if mini:
+            require(all(int(r['ordinal'],16)==first and r['minikey']==mini['minikey'] and
+                r['coordinate_space']=='minikey-ordinal-v1' for r in matches+results), 'minikey coordinates confused')
+            require({r['target_bytes'] for r in results}=={mini['targets'][:44],mini['targets'][44:]}, 'wrong minikey targets')
         block = one(mode + '-block')
         require(block['state'] == 'finished' and not block['remaining'], 'block not finished')
         require([(int(row['begin'], 16), int(row['end_exclusive'], 16))
-                 for row in block['covered']] == [(1, 1 + width)], 'wrong durable interval union')
+                 for row in block['covered']] == [(first, first + width)], 'wrong durable interval union')
     if hardware:
         # Equivalent address/raw inputs must describe exactly the same relations.
         address = artifacts['address.ndjson']

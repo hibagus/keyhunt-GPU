@@ -1,7 +1,7 @@
 # Finite HIP and CUDA searches
 
-This example uses only the public secp256k1 generator (scalar 1). It exercises
-bounded xpoint/BSGS/Bitcoin HASH160/Ethereum/vanity searches, real-input job creation, sequential/random claims,
+This example uses the public secp256k1 generator (scalar 1) and two published minikeys. It exercises
+bounded xpoint/BSGS/Bitcoin HASH160/Ethereum/vanity/minikey searches, real-input job creation, sequential/random claims,
 local checkpoints and completed-grant replay. Follow [BUILD.md](BUILD.md) first.
 No coordinator is required. Run the blocks below in order in the **same Bash
 shell**, starting in the repository root. Use a new private example directory
@@ -61,6 +61,14 @@ printf '%s\n' 0x7E5F4552091A69125d5DfCb7b8C2659029395Bdf \
   > "$example_dir/ethereum.txt"
 printf '%s\n' 1BgGZ9tc 1BgGZ9tcN4rm9KBzDn7KprQz87SZ26SAMH \
   1EHNa6Q4Jz2uvNExL497mE43ikXhwF6kZm > "$example_dir/vanity.txt"
+printf '%s\n' 5ac36b4aff945da30c16bf6c25dbac434664da8c \
+  7ac00f979ff0df2fdcb65761dc8f9ef8b37142db > "$example_dir/minikeys22.txt"
+"$KEYHUNT_BIN" minikeys inspect --key SzavMBLoXU6kDrqtUVmffv \
+  > "$example_dir/minikeys22-inspect.json"
+printf '%s\n' f78c1591f3f34fd1fe339dc371069b7b492bf370 \
+  7f6ab65fa911f558ca2dde3e9d073acb02c0d5c6 > "$example_dir/minikeys30.txt"
+"$KEYHUNT_BIN" minikeys inspect --key S6c56bnXQiBjk9mqSYE7ykVQ7NzrRy \
+  > "$example_dir/minikeys30-inspect.json"
 "$KEYHUNT_BIN" bsgs-table build --m 257 --output "$example_dir/babies.khb" \
   > "$example_dir/table.json"
 "$KEYHUNT_BIN" bsgs-table inspect --input "$example_dir/babies.khb" \
@@ -100,6 +108,13 @@ not a general table-size recommendation ([table budgets](BSGS_TABLES.md)).
 "$KEYHUNT_BIN" vanity --backend "$GPU_BACKEND" --device "$GPU_DEVICE" \
   --range 1:101 --targets "$example_dir/vanity.txt" --encoding both --batch-size 256 \
   > "$example_dir/vanity.ndjson"
+for length in 22 30; do
+  bounds="$(python3 -c 'import json,sys; o=int(json.load(open(sys.argv[1]))["ordinal"],16); print(f"{o:x}:{o+256:x}")' "$example_dir/minikeys$length-inspect.json")"
+  "$KEYHUNT_BIN" minikeys --backend "$GPU_BACKEND" --device "$GPU_DEVICE" \
+    --length "$length" --input-format hash160 --range "$bounds" \
+    --targets "$example_dir/minikeys$length.txt" --batch-size 256 \
+    > "$example_dir/minikeys$length.ndjson"
+done
 ```
 
 All searches exit 0 and exhaust their exact ranges. Xpoint and BSGS find scalar 1
@@ -120,6 +135,11 @@ with `1`. It checks the full Base58Check address, including checksum characters,
 and retains every overlapping prefix relation. Encoding defaults to `both`.
 Candidate capacity must fit the sum of distinct prefix lengths per encoding
 (at most 68). See [vanity contracts](C23_VANITY.md).
+`minikeys` requires length 22 or 30. Its range covers candidate ordinals: the
+helper maps each public example to its exact ordinal. Both encoding relations
+match at the starting ordinal; checksum-rejected candidates still count toward
+coverage. Results show `ordinal`, `minikey` and the derived private `scalar`.
+See [minikey contracts](C23_MINIKEYS.md).
 
 These `.ndjson` files contain start, batch and summary records. They are volatile
 output, not restart checkpoints. `gpu-smoke` validates a diagnostic launch and
@@ -133,14 +153,15 @@ one block: this keeps the random claim reproducible while exercising the real
 selection option. Larger jobs may use `random-window` or manual block selection;
 see [claim policies](STORAGE.md#local-commands). The manifest's width and canonical
 inputs are immutable. Use [reference calibration](MULTI_GPU.md#work-units-and-reference-calibration)
-for xpoint/BSGS. HASH160, Ethereum and vanity currently use explicit block widths; this correctness
+for xpoint/BSGS. HASH160, Ethereum, vanity and minikeys currently use explicit block widths; this correctness
 slice makes no throughput or calibrated-width claim.
 
 <!-- example: create -->
 ```bash
 "$KEYHUNT_BIN" state project-create --name "GPU quickstart" > "$example_dir/project.json"
 PROJECT="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["project"])' "$example_dir/project.json")"
-for mode in xpoint bsgs hash160 ethereum vanity; do
+for mode in xpoint bsgs hash160 ethereum vanity minikeys22 minikeys30; do
+  job_mode="$mode"
   if [ "$mode" = xpoint ]; then
     targets="$example_dir/xpoint.txt"; bounds=1:101; width=100; policy=sequential
     table_options=()
@@ -153,11 +174,16 @@ for mode in xpoint bsgs hash160 ethereum vanity; do
   elif [ "$mode" = ethereum ]; then
     targets="$example_dir/ethereum.txt"; bounds=1:101; width=100; policy=sequential
     table_options=()
+  elif [[ "$mode" = minikeys* ]]; then
+    length="${mode#minikeys}"; job_mode=minikeys
+    targets="$example_dir/$mode.txt"; width=100; policy=sequential
+    bounds="$(python3 -c 'import json,sys; o=int(json.load(open(sys.argv[1]))["ordinal"],16); print(f"{o:x}:{o+256:x}")' "$example_dir/$mode-inspect.json")"
+    table_options=(--length "$length" --input-format hash160)
   else
     targets="$example_dir/public-key.txt"; bounds=1:10001; width=10000; policy=random
     table_options=(--table "$example_dir/babies.khb")
   fi
-  "$KEYHUNT_BIN" checkpoint create --project "$PROJECT" --mode "$mode" \
+  "$KEYHUNT_BIN" checkpoint create --project "$PROJECT" --mode "$job_mode" \
     --range "$bounds" --block-width "$width" --targets "$targets" \
     "${table_options[@]}" > "$example_dir/$mode-job.json"
   JOB="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["job"])' "$example_dir/$mode-job.json")"
@@ -177,7 +203,7 @@ do not allocate remote coordinator work.
 
 <!-- example: durable -->
 ```bash
-for mode in xpoint bsgs hash160 ethereum vanity; do
+for mode in xpoint bsgs hash160 ethereum vanity minikeys22 minikeys30; do
   JOB="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["job"])' "$example_dir/$mode-job.json")"
   GRANT="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["assignments"][0]["grant"])' "$example_dir/$mode-grant.json")"
   if [ "$mode" = xpoint ]; then
@@ -188,6 +214,9 @@ for mode in xpoint bsgs hash160 ethereum vanity; do
     run_options=(--targets "$example_dir/vanity.txt" --encoding both --batch-size 256)
   elif [ "$mode" = ethereum ]; then
     run_options=(--targets "$example_dir/ethereum.txt" --batch-size 256)
+  elif [[ "$mode" = minikeys* ]]; then
+    run_options=(--targets "$example_dir/$mode.txt" --length "${mode#minikeys}"
+                 --input-format hash160 --batch-size 256)
   else
     run_options=(--targets "$example_dir/public-key.txt" --table "$example_dir/babies.khb"
                  --giant-batch 256 --target-batch 1)
@@ -207,7 +236,7 @@ done
 
 Each final durable summary reports `complete:true` and `durability:"local"`.
 The xpoint/BSGS/Ethereum results files contain one scalar-1 match; HASH160 contains two
-encoding relations; vanity contains three prefix/encoding relations. Each block is `finished`, and each retry summary reports zero `batches` with the whole range in `resumed_scalars`.
+encoding relations; vanity contains three prefix/encoding relations. Each block is `finished`, and each retry summary reports zero `batches` with the whole range in `resumed_scalars`. Each minikey job finds two encoding relations and uses `resumed_ordinals`/`computed_ordinals` with `coordinate_space:"minikey-ordinal-v1"`.
 Completion means that assigned block; it does not mean every block of a larger job.
 Local durability does not mean that a coordinator has acknowledged the result.
 
@@ -235,7 +264,7 @@ public fixtures and temporary local state; remove that directory when finished.
 The harness reads the marked Bash blocks above directly; it does not keep another
 copy of the commands. CPU CI runs table preparation, canonical job creation and
 both claim policies. Hardware runs additionally check discovery, launches, all
-six volatile commands and all five durable searches/retries:
+eight volatile commands and all seven durable searches/retries:
 
 ```sh
 python3 tests/integration/gpu_examples.py --binary build/cpu-release/keyhunt \
