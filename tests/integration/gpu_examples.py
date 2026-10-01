@@ -86,8 +86,12 @@ def validate(artifacts, hardware, device):
         require(len(results) == expected_count and all(int(r['scalar'], 16) == private for r in results),
                 'wrong durable match set')
         if mini:
-            require(all(int(r['ordinal'],16)==first and r['minikey']==mini['minikey'] and
-                r['coordinate_space']=='minikey-ordinal-v1' for r in matches+results), 'minikey coordinates confused')
+            require(all(int(r['ordinal'],16)==first and r['minikey']==mini['minikey']
+                for r in matches+results), 'minikey coordinates confused')
+            # Volatile records inherit coordinates from start/summary metadata;
+            # standalone durable result rows carry their own coordinate label.
+            require(all(r['coordinate_space']=='minikey-ordinal-v1' for r in
+                [artifacts[mode+'.ndjson'][0],summary,durable,retry]+results), 'missing minikey coordinate label')
             require({r['target_bytes'] for r in results}=={mini['targets'][:44],mini['targets'][44:]}, 'wrong minikey targets')
         block = one(mode + '-block')
         require(block['state'] == 'finished' and not block['remaining'], 'block not finished')
