@@ -115,10 +115,10 @@ renewal remain outside this localhost gate.
 ## S04a: atomic machine synchronization
 
 `POST /api/v1/sync` accepts protocol 1. Current workers send the exact capability
-list `["checkpoint-v1", "offline-lease-v1", "hash160-v1", "ethereum-v1", "vanity-v1"]`.
+list `["checkpoint-v1", "offline-lease-v1", "hash160-v1", "ethereum-v1", "vanity-v1", "minikeys-v1"]`.
 Updated coordinators also accept the older two-element list for xpoint/BSGS and
 the three-element list for those modes plus HASH160, and the four-element list
-that also supports Ethereum. HASH160, Ethereum and vanity jobs
+that also supports Ethereum, and the five-element list adding vanity. HASH160, Ethereum, vanity and minikey jobs
 require their respective capability before reservation, renewal, update or receipt replay;
 incompatible requests receive HTTP 426. Deploy the updated coordinator before
 updated workers. Unknown capabilities and wire modes fail explicitly. A request
@@ -219,7 +219,7 @@ has no libcurl or GPU runtime dependency; the HTTPS worker is a separate target.
 
 `tools/coordinator_worker.py` (installed as `keyhunt-supervise`) owns a stable
 supervisor lock, one separate network child and a persistent native process per
-selected device. Each device process runs fresh xpoint/BSGS/HASH160/Ethereum/vanity self-tests before
+selected device. Each device process runs fresh xpoint/BSGS/HASH160/Ethereum/vanity/minikey self-tests before
 execution. Device selection queries only its ordinal, records the observed UUID,
 partition, CU count and runtime/driver versions, and never changes partition modes.
 
@@ -431,3 +431,20 @@ unnecessary curve initialization from no-match updates. Database/WAL sizes were
 excluding HTTPS, WAN latency and GPU computation. Rate-limit rejection and exact
 receipt retries were checked in the same fixture. See the final
 [validation record](COORDINATOR_VALIDATION.md) for scope and regression results.
+
+## C23 minikey ordinal jobs
+
+Wire mode `minikeys` uses configuration mode byte 6 and sorted 22-byte targets:
+length (22/30), encoding tag (1/2) and HASH160. The coordinator checks the
+ordinal domain before persisting a job. Workers must advertise `minikeys-v1`
+before allocation, renewal, update or cached receipt replay; deploy the updated
+coordinator first. Prior capability sets remain valid for their supported modes.
+
+Checkpoint receipt coordinates retain ordinals even in historical fields named
+`scalar`. Public GET results expose `ordinal`, `minikey`, derived `scalar` and
+`coordinate_space:"minikey-ordinal-v1"`. Device grant summaries report
+`computed_ordinals`. The owner defaults to the direct kernel for this family;
+an explicit stepped override fails. The supervisor forwards a kernel override
+only when supplied, preserving previous scalar-mode defaults. Targets and GPU
+allocations survive grant handoff; startup tests cover both lengths and encodings
+on the selected ordinal. See [acceptance](C23_MINIKEYS_VALIDATION.md).

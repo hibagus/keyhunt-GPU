@@ -11,6 +11,8 @@ import tempfile
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'tools'))
 from coordinator_local import Environment, HOST, REPO
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"oracle"))
+from minikey import public_fixture
 
 GX = '79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798'
 GY = '483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8'
@@ -82,13 +84,16 @@ def main():
 
             table = root / 'babies.khb'
             metadata = command([keyhunt, 'bsgs-table', 'build', '--m', '257', '--output', table])
-            for mode, width in [('xpoint', 512), ('bsgs', 32768), ('hash160', 512), ('ethereum', 512), ('vanity', 512)]:
-                configuration = b'khsearch\x01' + (b'\x01' + bytes(40) if mode == 'xpoint' else b'\x03' + bytes(40) if mode == 'hash160' else b'\x04' + bytes(40) if mode == 'ethereum' else b'\x05' + bytes(40) if mode == 'vanity' else
+            for mode, width in [('xpoint', 512), ('bsgs', 32768), ('hash160', 512), ('ethereum', 512), ('vanity', 512), ('minikeys22',512), ('minikeys30',512)]:
+                mini=public_fixture(int(mode[-2:])) if mode.startswith('minikeys') else None
+                begin=mini['ordinal'] if mini else 1
+                private_scalar=mini['scalar'] if mini else 1
+                configuration = b'khsearch\x01' + (b'\x06' + bytes(40) if mini else b'\x01' + bytes(40) if mode == 'xpoint' else b'\x03' + bytes(40) if mode == 'hash160' else b'\x04' + bytes(40) if mode == 'ethereum' else b'\x05' + bytes(40) if mode == 'vanity' else
                                 b'\x02' + (257).to_bytes(8, 'big') + bytes.fromhex(metadata['checksum']))
                 job = api('POST', f'/api/v1/projects/{project}/jobs', dict(
-                    mode=mode, begin=f'0x{1:064x}', end_exclusive=f'0x{1 + width * 2:064x}',
+                    mode='minikeys' if mini else mode, begin=f'0x{begin:064x}', end_exclusive=f'0x{begin + width * 2:064x}',
                     block_width=f'0x{width:064x}', configuration=configuration.hex(),
-                    targets=GX if mode == 'xpoint' else HASH_TARGETS if mode == 'hash160' else ETH_TARGET if mode == 'ethereum' else VANITY_TARGETS if mode == 'vanity' else '04' + GX + GY))['job']
+                    targets=mini['targets'] if mini else GX if mode == 'xpoint' else HASH_TARGETS if mode == 'hash160' else ETH_TARGET if mode == 'ethereum' else VANITY_TARGETS if mode == 'vanity' else '04' + GX + GY))['job']
                 path = f'/api/v1/projects/{project}/jobs/{job}'
                 state = root / mode
                 # No key/certificate/CA paths are copied to the disconnected
@@ -168,11 +173,16 @@ def main():
                                              '--project', project, '--job', job, '--block', str(block)])
                         assert inspected['state'] == 'finished' and not inspected['remaining']
                         assert [(int(row['begin'], 16), int(row['end_exclusive'], 16)) for row in inspected['covered']] == [
-                            (1 + width * block, 1 + width * (block + 1))]
+                            (begin + width * block, begin + width * (block + 1))]
                         blocks.append(inspected)
                     results = command([keyhunt, 'checkpoint', 'results', '--state-dir', state, '--project', project, '--job', job])
-                    assert len(results['results']) == (2 if mode in ('hash160','vanity') else 1)
-                    assert all(int(row['scalar'],16)==1 for row in results['results'])
+                    assert len(results['results']) == (2 if mini or mode in ('hash160','vanity') else 1)
+                    assert all(int(row['scalar'],16)==private_scalar for row in results['results'])
+                    if mini:
+                        for row in results['results']:
+                            assert int(row['ordinal'],16)==begin and row['minikey']==mini['minikey']
+                            assert row['coordinate_space']=='minikey-ordinal-v1'
+                        assert all(event['mode']=='minikeys' and int(event['computed_ordinals'],16)==width for event in finished)
                     if mode=='hash160':
                         assert {row['target_bytes'] for row in results['results']}=={HASH_TARGETS[:42],HASH_TARGETS[42:]}
                     if mode=='vanity':
@@ -189,8 +199,11 @@ def main():
                     assert all(row['activity'] == 'server-acknowledged' for row in final['worker']['queues'])
                     assert api('GET', path + '/status')['finished'] == f'0x{2:064x}'
                     remote_results = api('GET', path + '/results')
-                    assert len(remote_results) == (2 if mode in ('hash160','vanity') else 1)
-                    assert all(int(row['scalar'],16)==1 for row in remote_results)
+                    assert len(remote_results) == (2 if mini or mode in ('hash160','vanity') else 1)
+                    assert all(int(row['scalar'],16)==private_scalar for row in remote_results)
+                    if mini:
+                        assert {(row['ordinal'],row['scalar'],row['target_bytes']) for row in remote_results}=={
+                            (row['ordinal'],row['scalar'],row['target_bytes']) for row in results['results']}
                     assert invoke(state, 'file-import', '--input', acknowledgment, '--sha256', ack['sha256'])['duplicate']
                     case.update(local_status=local, final_status=final['worker'], blocks=blocks,
                                 local_results=results, server_results=remote_results, events=events)
@@ -205,7 +218,7 @@ def main():
             env.stop()
     args.report.write_text(json.dumps(report, indent=2) + '\n')
     print(('PASS' if report['passed'] else 'FAIL') + ' offline CLI / localhost mTLS' +
-          (f' / {args.backend} disconnected xpoint, BSGS, HASH160, Ethereum and vanity' if args.hardware else ' / CPU transport'))
+          (f' / {args.backend} disconnected xpoint, BSGS, HASH160, Ethereum, vanity and minikeys22/30' if args.hardware else ' / CPU transport'))
     return 0 if report['passed'] else 1
 
 

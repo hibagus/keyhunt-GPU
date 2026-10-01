@@ -89,7 +89,8 @@ struct Repository::Impl {
         fields(body, {"protocol", "capabilities", "instance", "request", "jobs", "updates", "returns"});
         // Preserve the previously shipped capability sets. Each new family
         // must be advertised before a worker can acquire or renew its grants.
-        const bool vanity_capable=body["capabilities"]==Json({"checkpoint-v1","offline-lease-v1","hash160-v1","ethereum-v1","vanity-v1"});
+        const bool minikeys_capable=body["capabilities"]==Json({"checkpoint-v1","offline-lease-v1","hash160-v1","ethereum-v1","vanity-v1","minikeys-v1"});
+        const bool vanity_capable=minikeys_capable || body["capabilities"]==Json({"checkpoint-v1","offline-lease-v1","hash160-v1","ethereum-v1","vanity-v1"});
         const bool ethereum_capable=vanity_capable || body["capabilities"]==Json({"checkpoint-v1","offline-lease-v1","hash160-v1","ethereum-v1"});
         const bool hash160_capable=ethereum_capable || body["capabilities"]==Json({"checkpoint-v1","offline-lease-v1","hash160-v1"});
         if (integer(body, "protocol") != 1 || (!hash160_capable &&
@@ -116,6 +117,8 @@ struct Repository::Impl {
                 throw Error(426,"HASH160 jobs require hash160-v1 worker capability");
             if(manifest.mode==Mode::Ethereum && !ethereum_capable)
                 throw Error(426,"Ethereum jobs require ethereum-v1 worker capability");
+            if(manifest.mode==Mode::Minikeys && !minikeys_capable)
+                throw Error(426,"minikey jobs require minikeys-v1 worker capability");
             if(manifest.mode==Mode::Vanity && !vanity_capable)
                 throw Error(426,"vanity jobs require vanity-v1 worker capability");
             if (!scopes.emplace(scope.project, scope.job).second) throw Error(400, "duplicate sync job");
@@ -288,6 +291,11 @@ struct Repository::Impl {
             std::vector<core::Hash160Target> values(targets.size()/21);
             for(size_t i=0;i<values.size();++i)std::copy_n(targets.begin()+21*i,21,values[i].begin());
             m.targets=core::Hash160Targets(std::move(values)).digest();
+        }else if(mode=="minikeys"){
+            if(targets.size()%22)throw Error(400,"invalid minikey target bytes");
+            std::vector<core::MinikeyTarget> values(targets.size()/22);
+            for(size_t i=0;i<values.size();++i)std::copy_n(targets.begin()+22*i,22,values[i].begin());
+            m.targets=core::MinikeyTargets(std::move(values)).digest();
         }else if(mode=="vanity"){
             if(targets.size()%36)throw Error(400,"invalid vanity target bytes");
             std::vector<core::VanityTarget> values(targets.size()/36);
@@ -449,7 +457,21 @@ Json Repository::request(const Certificate& cert,const std::string& method,const
                         return n;};
                     after=decimal(parts[7],INT64_MAX);limit=uint32_t(decimal(parts[8],1000));if(!limit)throw Error(400,"empty result page limit");
                 }
-                for(const auto& row:s.journal.results(scope,after,limit))out.push_back({{"id",row.id},{"block",row.block.hex()},{"scalar",row.scalar.hex()},{"target",row.target},{"target_bytes",hex(row.target_bytes)}});
+                const auto mode=s.journal.manifest(scope).mode;
+                for(const auto& row:s.journal.results(scope,after,limit)){
+                    Json result{{"id",row.id},{"block",row.block.hex()},{"scalar",row.scalar.hex()},
+                        {"target",row.target},{"target_bytes",hex(row.target_bytes)}};
+                    if(mode==Mode::Minikeys){
+                        // Receipts retain ordinal coordinates. Public result views
+                        // name that coordinate and display the derived key separately.
+                        const auto text=core::minikey_text(row.scalar,row.target_bytes[0]);
+                        const auto scalar=core::minikey_scalar(text);
+                        if(!scalar)throw std::runtime_error("stored minikey is invalid");
+                        result["ordinal"]=row.scalar.hex();result["minikey"]=text;
+                        result["coordinate_space"]="minikey-ordinal-v1";result["scalar"]=scalar->hex();
+                    }
+                    out.push_back(std::move(result));
+                }
             }else throw Error(404,"not found");
         }else throw Error(404,"not found");
         if(method!="GET")s.event(actor.client,actor.fingerprint,path,project,"authorized mutation");

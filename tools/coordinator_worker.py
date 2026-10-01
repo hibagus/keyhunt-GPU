@@ -141,7 +141,7 @@ def main():
     parser.add_argument("--rebind-device", action="append", default=[], metavar="QUEUE",
                         help="allow a stopped queue to move to a different UUID")
     parser.add_argument("--stall-seconds", type=int, default=300)
-    parser.add_argument("--kernel", choices=("direct", "stepped"), default="stepped")
+    parser.add_argument("--kernel", choices=("direct", "stepped"), help="override the mode default: direct for minikeys, stepped for scalar search")
     parser.add_argument("--group-size", choices=("auto", "1", "8"), default="auto")
     parser.add_argument("--batch-size", type=int, default=1048576)
     parser.add_argument("--giant-batch", type=int, default=16384)
@@ -272,9 +272,11 @@ def main():
         words = command("run-device", "--device", device.ordinal, "--queue", device.queue,
                         "--backend", args.backend, "--once", "yes" if args.once else "no",
                         "--rebind", "yes" if device.queue in args.rebind_device else "no",
-                        "--kernel", args.kernel, "--group-size", args.group_size,
+                        "--group-size", args.group_size,
                         "--batch-size", args.batch_size, "--giant-batch", args.giant_batch,
                         "--target-batch", args.target_batch, "--host-memory", per_device_memory)
+        if args.kernel:
+            words += ["--kernel", args.kernel]
         if args.table:
             words += ["--table", str(args.table.resolve())]
         device.log = private_log(root / ("execution-" + device.queue + ".log"))

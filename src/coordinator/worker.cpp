@@ -40,7 +40,7 @@ struct Worker::Impl {
             auto body=parse_json(pending.text(1));tx.commit();return body;
         }
         const auto request=uuid();
-        Json body{{"protocol",1},{"capabilities",{"checkpoint-v1","offline-lease-v1","hash160-v1","ethereum-v1","vanity-v1"}},
+        Json body{{"protocol",1},{"capabilities",{"checkpoint-v1","offline-lease-v1","hash160-v1","ethereum-v1","vanity-v1","minikeys-v1"}},
             {"instance",settings.text(0)},{"request",request},{"jobs",config["jobs"]},
             {"updates",Json::array()},{"returns",Json::array()}};
         std::map<std::string,size_t> entries;

@@ -312,3 +312,13 @@ execution, result upload and acknowledgment retries. Every overlapping relation
 is CPU-verified before local persistence. The [vanity acceptance](C23_VANITY_VALIDATION.md)
 records native HIP/CUDA file round trips and persistent two-grant owners; the
 original C22 evidence retains its historical scope.
+
+## C23 minikey family
+
+Update both coordinator and worker for `minikeys-v1`. Mode `minikeys` retains
+length/encoding/HASH160 targets and exact candidate-ordinal intervals through
+file export, courier relay, disconnected execution and later acknowledgment.
+Every result is checked from candidate text through its derived key before
+local persistence and again at coordinator acceptance. Public result views show
+both ordinal and derived scalar. Both 22- and 30-character jobs are covered by
+[minikey acceptance](C23_MINIKEYS_VALIDATION.md); prior C22 evidence is unchanged.

@@ -88,6 +88,25 @@ Json device_self_test(int ordinal){
         if(result.overflow||result.verified_steps!=33||found!=wanted||result.matches.size()!=wanted.size())
             throw std::runtime_error("GPU vanity runtime self-test failed");
     }
+    // Published minikeys exercise both lengths and encodings. Nearby rejected
+    // candidates still count toward exact ordinal coverage in this fresh process.
+    for(const char* text:{"SzavMBLoXU6kDrqtUVmffv","S6c56bnXQiBjk9mqSYE7ykVQ7NzrRy"}){
+        const auto begin=minikey_ordinal(text);const auto point=verifier.derive(*minikey_scalar(text));
+        const MinikeyTargets mt({minikey_target(unsigned(std::string(text).size()),hash160_target(point,1)),
+            minikey_target(unsigned(std::string(text).size()),hash160_target(point,2))});
+        const scheduler::BlockGrid mg(ScalarInterval(begin,begin.add(UInt256(257))),UInt256(257));
+        identity.algorithm=scheduler::WorkAlgorithm::DirectMinikeysV1;identity.target_digest=mt.digest();
+        const auto mw=*scheduler::WorkUnit::plan(mg,UInt256(),begin,257,identity);
+        const auto mb=*scheduler::KernelBatch::plan(mw,begin,257);
+        backend::MinikeysOptions options;options.max_steps=257;options.candidate_capacity=2;
+        backend::GpuMinikeysExecutor gpu(ordinal,mt,verifier,options);
+        const auto ticket=gpu.submit(mb);gpu.drain();const auto result=gpu.take(ticket);
+        std::set<std::pair<UInt256,uint32_t>> found;
+        for(const auto& match:result.matches)found.emplace(match.scalar,match.target);
+        if(result.overflow||result.verified_steps!=257||result.matches.size()!=2||
+            found!=std::set<std::pair<UInt256,uint32_t>>{{begin,0},{begin,1}})
+            throw std::runtime_error("GPU minikey runtime self-test failed");
+    }
     const auto table=bsgs::Table::build(16);const BsgsPublicKeyTargets btargets(points);
     const BsgsBatch bb(interval,16,0,4,btargets.digest(),table.checksum());
     for(unsigned group:{1U,8U}){

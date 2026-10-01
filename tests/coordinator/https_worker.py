@@ -10,6 +10,8 @@ import tempfile
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "tools"))
 from coordinator_local import Environment, HOST, REPO
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"oracle"))
+from minikey import public_fixture
 
 GX = "79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798"
 GY = "483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8"
@@ -207,6 +209,29 @@ def main():
                 assert api("bob","GET",vpath+"/status")["finished"]==f"0x{2:064x}"
                 results=api("bob","GET",vpath+"/results")
                 assert len(results)==2 and all(int(row["scalar"],16)==1 for row in results)
+                # Ordinal jobs must survive the same persistent authenticated
+                # queue while exposing derived scalars only in public results.
+                for length in (22,30):
+                    fixture=public_fixture(length);begin=fixture['ordinal']
+                    body.update(mode="minikeys",begin=f"0x{begin:064x}",end_exclusive=f"0x{begin+1024:064x}",
+                        block_width=f"0x{512:064x}",configuration=(b"khsearch\x01\x06"+bytes(40)).hex(),targets=fixture['targets'])
+                    mjob=api("bob","POST",f"/api/v1/projects/{projects[1]}/jobs",body)
+                    state=root/f"minikeys{length}-worker"
+                    configure(state,"bob",projects[1],mjob["job"],jobs=[dict(
+                        project=projects[1],job=mjob["job"],devices=["0"],spares=1,policy="sequential")])
+                    invoke(state,"sync");supervise(state)
+                    events=[json.loads(line) for line in (state/"execution-0.log").read_text().splitlines()]
+                    finished=[row for row in events if row.get("type")=="grant-finish"]
+                    assert len(finished)==2 and all(row["mode"]=="minikeys" and row["executor_setups"]==1 for row in finished)
+                    assert finished[0]["cold"] and not finished[1]["cold"]
+                    assert all(int(row['computed_ordinals'],16)==512 and row['coordinate_space']=='minikey-ordinal-v1' for row in finished)
+                    assert invoke(state,"status")["outbox_bytes"]>0 and not invoke(state,"scheduled-sync")["sent"]
+                    invoke(state,"sync")
+                    mpath=f"/api/v1/projects/{projects[1]}/jobs/{mjob['job']}"
+                    assert api("bob","GET",mpath+"/status")["finished"]==f"0x{2:064x}"
+                    results=api("bob","GET",mpath+"/results")
+                    assert len(results)==2 and all(int(row["scalar"],16)==fixture['scalar'] and int(row['ordinal'],16)==begin for row in results)
+                    assert all(row['minikey']==fixture['minikey'] and row['coordinate_space']=='minikey-ordinal-v1' for row in results)
             env.admin("check")
         except BaseException:
             for file in env.directory.glob("*.log"):
@@ -214,7 +239,7 @@ def main():
             raise
         finally:
             env.stop()
-    print("Two native HTTPS workers and project isolation passed" + ("; supervised GPU xpoint/BSGS/HASH160/Ethereum/vanity passed" if args.hardware else ""))
+    print("Two native HTTPS workers and project isolation passed" + ("; supervised GPU xpoint/BSGS/HASH160/Ethereum/vanity/minikeys22/30 passed" if args.hardware else ""))
 
 
 if __name__ == "__main__":

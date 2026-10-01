@@ -19,3 +19,11 @@ def scalar(candidate):
     return value if 0<value<N else None
 assert scalar(PUBLIC_KEYS[0])==0xe9873d79c6d87dc0fb6a5778633389f4453213303da61f20bd67fc233aa33262
 assert scalar(PUBLIC_KEYS[1])==0x4c7a9640c72dc2099f23715d0c8a0d8a35f8906e3cab61dd3f78b67bf887c9ab
+
+def public_fixture(length):
+    from model import multiply,encode
+    from hash160 import hash160
+    candidate=PUBLIC_KEYS[0 if length==22 else 1]
+    private=scalar(candidate);public=encode(multiply(private))
+    targets=''.join(f'{length:02x}{tag:02x}'+hash160(public,tag) for tag in (1,2))
+    return dict(length=length,minikey=candidate,ordinal=ordinal(candidate),scalar=private,targets=targets)
