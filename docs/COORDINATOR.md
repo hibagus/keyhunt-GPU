@@ -115,9 +115,10 @@ renewal remain outside this localhost gate.
 ## S04a: atomic machine synchronization
 
 `POST /api/v1/sync` accepts protocol 1. Current workers send the exact capability
-list `["checkpoint-v1", "offline-lease-v1", "hash160-v1", "ethereum-v1"]`.
+list `["checkpoint-v1", "offline-lease-v1", "hash160-v1", "ethereum-v1", "vanity-v1"]`.
 Updated coordinators also accept the older two-element list for xpoint/BSGS and
-the three-element list for those modes plus HASH160. HASH160 and Ethereum jobs
+the three-element list for those modes plus HASH160, and the four-element list
+that also supports Ethereum. HASH160, Ethereum and vanity jobs
 require their respective capability before reservation, renewal, update or receipt replay;
 incompatible requests receive HTTP 426. Deploy the updated coordinator before
 updated workers. Unknown capabilities and wire modes fail explicitly. A request
@@ -218,7 +219,7 @@ has no libcurl or GPU runtime dependency; the HTTPS worker is a separate target.
 
 `tools/coordinator_worker.py` (installed as `keyhunt-supervise`) owns a stable
 supervisor lock, one separate network child and a persistent native process per
-selected device. Each device process runs fresh xpoint/BSGS/HASH160/Ethereum self-tests before
+selected device. Each device process runs fresh xpoint/BSGS/HASH160/Ethereum/vanity self-tests before
 execution. Device selection queries only its ordinal, records the observed UUID,
 partition, CU count and runtime/driver versions, and never changes partition modes.
 
@@ -227,7 +228,7 @@ unstarted queued grants for the same job; active blocks remain owned until their
 process stops. Targets and GPU tables stay loaded across block handoffs. The
 standalone whole-journal guard is retained; supervised execution uses per-block
 guards plus per-device process locks. Default stepped xpoint and automatic BSGS
-group selection remain. HASH160 and Ethereum use the scalar batch/kernel options and retain
+group selection remain. HASH160, Ethereum and vanity use the scalar batch/kernel options and retain
 their immutable targets across grants. BSGS requires a matching local `--table`.
 
 The job API accepts mode `hash160`, configuration `khsearch`, version 1, mode 3,
@@ -242,6 +243,14 @@ zero `m` and checksum, and sorted unique **20-byte** binary addresses encoded as
 hex. ERC-55 is an input-file validation rule, not a wire capitalization rule.
 Updated device owners retain targets across grants and test both Ethereum kernel
 variants on their selected ordinal. [Ethereum contract](C23_ETHEREUM.md).
+
+Vanity wire jobs use mode `vanity`, configuration version 1 with mode byte 5,
+zero `m` and checksum, and sorted unique **36-byte** targets encoded as hex.
+Each target contains tag 1/2, prefix length, case-sensitive ASCII prefix and zero
+padding. No text-case normalization or prefix merging is allowed. All overlapping
+prefix/encoding relations survive local commits, upload and acknowledgment replay.
+Owners test both kernels before execution and retain the executor across grants.
+See [vanity contracts](C23_VANITY.md).
 
 `--devices 0,1` selects configured queues. `--device-map QUEUE=ORDINAL` handles
 visibility renumbering while retaining the UUID binding. A different physical or

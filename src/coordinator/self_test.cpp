@@ -66,6 +66,28 @@ Json device_self_test(int ordinal){
         if(result.overflow||result.verified_steps!=33||found!=expected||result.matches.size()!=expected.size())
             throw std::runtime_error("GPU Ethereum runtime self-test failed");
     }
+    std::vector<VanityTarget> prefixes{vanity_target("1",1),vanity_target("1",2)};
+    for(const auto& point:points)for(uint8_t tag:{1,2})
+        prefixes.push_back(vanity_target(bitcoin_address(point,tag).substr(0,8),tag));
+    const VanityTargets vtargets(std::move(prefixes));
+    identity.algorithm=scheduler::WorkAlgorithm::DirectVanityV1;identity.target_digest=vtargets.digest();
+    const auto vwork=*scheduler::WorkUnit::plan(grid,UInt256(),UInt256(1),33,identity);
+    const auto vbatch=*scheduler::KernelBatch::plan(vwork,UInt256(1),33);
+    // Broad and longer prefixes deliberately overlap; losing a relation must
+    // fail the fresh per-device startup gate just like losing a scalar would.
+    std::set<std::pair<UInt256,uint32_t>> wanted;
+    for(unsigned scalar=1;scalar<=33;++scalar)for(uint32_t t=0;t<vtargets.values().size();++t){
+        const auto& prefix=vtargets.values()[t];
+        if(vanity_matches(bitcoin_address(verifier.derive(UInt256(scalar)),prefix[0]),prefix))wanted.emplace(UInt256(scalar),t);
+    }
+    for(auto kernel:{backend::XPointKernel::Direct,backend::XPointKernel::Stepped}){
+        backend::VanityOptions options;options.max_steps=64;options.kernel=kernel;options.candidate_capacity=128;
+        backend::GpuVanityExecutor gpu(ordinal,vtargets,verifier,options);
+        const auto ticket=gpu.submit(vbatch);gpu.drain();const auto result=gpu.take(ticket);
+        std::set<std::pair<UInt256,uint32_t>> found;for(const auto& match:result.matches)found.emplace(match.scalar,match.target);
+        if(result.overflow||result.verified_steps!=33||found!=wanted||result.matches.size()!=wanted.size())
+            throw std::runtime_error("GPU vanity runtime self-test failed");
+    }
     const auto table=bsgs::Table::build(16);const BsgsPublicKeyTargets btargets(points);
     const BsgsBatch bb(interval,16,0,4,btargets.digest(),table.checksum());
     for(unsigned group:{1U,8U}){

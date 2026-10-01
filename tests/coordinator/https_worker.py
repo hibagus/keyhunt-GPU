@@ -187,6 +187,26 @@ def main():
                 assert api("bob","GET",epath+"/status")["finished"]==f"0x{2:064x}"
                 results=api("bob","GET",epath+"/results")
                 assert len(results)==1 and all(int(row["scalar"],16)==1 for row in results)
+                # Vanity must retain its full prefix identity and executor across grants.
+                body.update(mode="vanity",end_exclusive=f"0x{1025:064x}",block_width=f"0x{512:064x}",
+                    configuration=(b"khsearch\x01\x05"+bytes(40)).hex(),
+                    targets="".join((bytes([tag,len(prefix)])+prefix.encode()+bytes(34-len(prefix))).hex()
+                        for tag,prefix in ((1,"1BgGZ9tc"),(2,"1EHNa6Q4"))))
+                vjob=api("bob","POST",f"/api/v1/projects/{projects[1]}/jobs",body)
+                state=root/"vanity-worker"
+                configure(state,"bob",projects[1],vjob["job"],jobs=[dict(
+                    project=projects[1],job=vjob["job"],devices=["0"],spares=1,policy="sequential")])
+                invoke(state,"sync");supervise(state)
+                events=[json.loads(line) for line in (state/"execution-0.log").read_text().splitlines()]
+                finished=[row for row in events if row.get("type")=="grant-finish"]
+                assert len(finished)==2 and all(row["mode"]=="vanity" and row["executor_setups"]==1 for row in finished)
+                assert finished[0]["cold"] and not finished[1]["cold"]
+                assert invoke(state,"status")["outbox_bytes"]>0 and not invoke(state,"scheduled-sync")["sent"]
+                invoke(state,"sync")
+                vpath=f"/api/v1/projects/{projects[1]}/jobs/{vjob['job']}"
+                assert api("bob","GET",vpath+"/status")["finished"]==f"0x{2:064x}"
+                results=api("bob","GET",vpath+"/results")
+                assert len(results)==2 and all(int(row["scalar"],16)==1 for row in results)
             env.admin("check")
         except BaseException:
             for file in env.directory.glob("*.log"):
@@ -194,7 +214,7 @@ def main():
             raise
         finally:
             env.stop()
-    print("Two native HTTPS workers and project isolation passed" + ("; supervised GPU xpoint/BSGS/HASH160/Ethereum passed" if args.hardware else ""))
+    print("Two native HTTPS workers and project isolation passed" + ("; supervised GPU xpoint/BSGS/HASH160/Ethereum/vanity passed" if args.hardware else ""))
 
 
 if __name__ == "__main__":

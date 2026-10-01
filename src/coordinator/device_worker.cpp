@@ -46,11 +46,13 @@ struct Prepared {
     core::XPointVerifier verifier;
     std::unique_ptr<core::XPointTargets> x_targets;
     std::unique_ptr<core::Hash160Targets> h_targets;
+    std::unique_ptr<core::VanityTargets> v_targets;
     std::unique_ptr<core::EthereumTargets> e_targets;
     std::unique_ptr<core::BsgsPublicKeyTargets> b_targets;
     std::unique_ptr<bsgs::Table> table;
     std::unique_ptr<GpuXPointExecutor> x_executor;
     std::unique_ptr<GpuHash160Executor> h_executor;
+    std::unique_ptr<GpuVanityExecutor> v_executor;
     std::unique_ptr<GpuEthereumExecutor> e_executor;
     std::unique_ptr<GpuBsgsExecutor> b_executor;
     std::optional<Scope> scope;
@@ -75,6 +77,10 @@ struct Prepared {
             std::vector<core::Hash160Target> values(raw.size()/21);
             for(size_t i=0;i<values.size();++i)std::copy_n(raw.begin()+i*21,21,values[i].begin());
             h_targets=std::make_unique<core::Hash160Targets>(std::move(values));
+        }else if(mode==Mode::Vanity){
+            std::vector<core::VanityTarget> values(raw.size()/36);
+            for(size_t i=0;i<values.size();++i)std::copy_n(raw.begin()+i*36,36,values[i].begin());
+            v_targets=std::make_unique<core::VanityTargets>(std::move(values));
         }else if(mode==Mode::Ethereum){
             std::vector<core::EthereumTarget> values(raw.size()/20);
             for(size_t i=0;i<values.size();++i)std::copy_n(raw.begin()+i*20,20,values[i].begin());
@@ -92,7 +98,7 @@ struct Prepared {
         // A returned/taken batch leaves no GPU work referencing its grant. Keep
         // those allocations. On a submission exception, destroy and drain them
         // before CheckpointRun releases the block's OS lock.
-        if(in_flight){x_executor.reset();h_executor.reset();e_executor.reset();b_executor.reset();in_flight=false;}
+        if(in_flight){x_executor.reset();h_executor.reset();v_executor.reset();e_executor.reset();b_executor.reset();in_flight=false;}
     }
 };
 #endif
@@ -188,6 +194,16 @@ int run_device(const Options& args){
                     prepared.in_flight=true;const auto ticket=prepared.h_executor->submit(batch);
                     prepared.h_executor->drain();auto done=prepared.h_executor->take(ticket);batch_done(done);return done;
                 },limits,notify,cleanup,callbacks);
+            }else if(prepared.v_targets){
+                result=CheckpointRun::vanity(worker.journal(),*grant,*prepared.v_targets,prepared.verifier,[&](const auto& batch){
+                    if(!prepared.v_executor){
+                        VanityOptions gpu;gpu.max_steps=limits.xpoint_steps;
+                        gpu.kernel=kernel=="direct"?XPointKernel::Direct:XPointKernel::Stepped;
+                        prepared.v_executor=std::make_unique<GpuVanityExecutor>(ordinal,*prepared.v_targets,prepared.verifier,gpu);++prepared.setups;
+                    }
+                    prepared.in_flight=true;const auto ticket=prepared.v_executor->submit(batch);
+                    prepared.v_executor->drain();auto done=prepared.v_executor->take(ticket);batch_done(done);return done;
+                },limits,notify,cleanup,callbacks);
             }else if(prepared.e_targets){
                 result=CheckpointRun::ethereum(worker.journal(),*grant,*prepared.e_targets,prepared.verifier,[&](const auto& batch){
                     if(!prepared.e_executor){
@@ -215,8 +231,8 @@ int run_device(const Options& args){
                 {"kernel_ms",result.kernel_ms},{"executor_setups",prepared.setups},{"work_units",result.work_units},
                 {"cold",prepared.setups!=setups_before},
                 {"wall_ns",std::chrono::duration_cast<std::chrono::nanoseconds>(Clock::now()-started).count()},
-                {"mode",prepared.x_targets?"xpoint":prepared.h_targets?"hash160":prepared.e_targets?"ethereum":"bsgs"},
-                {"target_count",prepared.x_targets?prepared.x_targets->values().size():prepared.h_targets?prepared.h_targets->values().size():prepared.e_targets?prepared.e_targets->values().size():prepared.b_targets->values().size()},
+                {"mode",prepared.x_targets?"xpoint":prepared.h_targets?"hash160":prepared.e_targets?"ethereum":prepared.v_targets?"vanity":"bsgs"},
+                {"target_count",prepared.x_targets?prepared.x_targets->values().size():prepared.h_targets?prepared.h_targets->values().size():prepared.e_targets?prepared.e_targets->values().size():prepared.v_targets?prepared.v_targets->values().size():prepared.b_targets->values().size()},
                 {"m",prepared.table?prepared.table->memory().m:1},
                 {"table_upload_ms",prepared.b_executor?prepared.b_executor->table_upload_ms():0}});
             if(!result.complete)break;
