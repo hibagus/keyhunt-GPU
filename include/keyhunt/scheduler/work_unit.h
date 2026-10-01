@@ -13,10 +13,11 @@ using AssignmentId = std::array<uint8_t, 16>;
 
 // Direct scalar mappings use k = begin + local_index. Minikeys use that same
 // integer coordinate as an ordinal; hashing derives an unrelated private scalar.
-enum class WorkAlgorithm : uint8_t { DirectXPointV1 = 1, DirectHash160V1 = 2, DirectEthereumV1 = 3, DirectVanityV1 = 4, DirectMinikeysV1 = 5, StridedXPointV1 = 6, StridedHash160V1 = 7, StridedEthereumV1 = 8, StridedVanityV1 = 9 };
+enum class WorkAlgorithm : uint8_t { DirectXPointV1 = 1, DirectHash160V1 = 2, DirectEthereumV1 = 3, DirectVanityV1 = 4, DirectMinikeysV1 = 5, StridedXPointV1 = 6, StridedHash160V1 = 7, StridedEthereumV1 = 8, StridedVanityV1 = 9, ReverseXPointV1 = 10, ReverseHash160V1 = 11, ReverseEthereumV1 = 12, ReverseVanityV1 = 13 };
 bool is_strided(WorkAlgorithm);
+bool is_reverse(WorkAlgorithm);
 WorkAlgorithm scalar_family(WorkAlgorithm);
-WorkAlgorithm strided_algorithm(WorkAlgorithm);
+WorkAlgorithm strided_algorithm(WorkAlgorithm, bool reverse=false);
 
 struct ExecutionIdentity {
     Digest job_digest{};
@@ -27,7 +28,7 @@ struct ExecutionIdentity {
     uint64_t executor_generation = 0;
     WorkAlgorithm algorithm = WorkAlgorithm::DirectXPointV1;
 
-    std::optional<core::ScalarStride> stride_mapping; // present exactly for strided algorithms
+    std::optional<core::ScalarStride> stride_mapping; // present exactly for indexed scalar algorithms
 
     bool operator==(const ExecutionIdentity& other) const;
     bool operator!=(const ExecutionIdentity& other) const { return !(*this == other); }
@@ -67,6 +68,7 @@ public:
     core::UInt256 coordinate_at(uint64_t local_index) const;
     core::UInt256 scalar_at(uint64_t local_index) const;
     core::UInt256 scalar_stride() const;
+    bool scalar_reverse() const;
     core::UInt256 ordinal_at(uint64_t local_index) const;
 
 private:

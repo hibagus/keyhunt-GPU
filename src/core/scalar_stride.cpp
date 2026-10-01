@@ -7,29 +7,32 @@ void validate_scalar_stride(const UInt256& stride) {
         throw std::invalid_argument("scalar stride must be in [1,n)");
 }
 namespace {
-ScalarInterval candidate_indices(const ScalarInterval& scalars, const UInt256& stride) {
+ScalarInterval candidate_indices(const ScalarInterval& scalars, const UInt256& stride, bool reverse) {
     validate_scalar_stride(stride);
-    if (stride == UInt256(1))
+    if (stride == UInt256(1) && !reverse)
         throw std::invalid_argument("unit stride uses the original scalar mapping");
     // ceil(span/stride), without ever computing span+stride-1.
     const auto count = scalars.size().subtract(UInt256(1)).divmod(stride).first.add(UInt256(1));
     return {UInt256(1), count.add(UInt256(1))};
 }
 }
-ScalarStride::ScalarStride(ScalarInterval scalars, UInt256 stride)
-    : scalars_(scalars), stride_(stride), indices_(candidate_indices(scalars,stride)) {}
+ScalarStride::ScalarStride(ScalarInterval scalars, UInt256 stride, bool reverse)
+    : scalars_(scalars), stride_(stride), indices_(candidate_indices(scalars,stride,reverse)), reverse_(reverse) {}
 UInt256 ScalarStride::scalar(const UInt256& index) const {
     if (!indices_.contains(index)) throw std::out_of_range("candidate index outside strided range");
-    return scalars_.begin().add(index.subtract(UInt256(1)).multiply(stride_));
+    // Reverse the on-lattice progression, not the numeric scalar interval. This
+    // preserves the exact forward candidate set when the final gap is short.
+    const auto offset=reverse_?indices_.size().subtract(index):index.subtract(UInt256(1));
+    return scalars_.begin().add(offset.multiply(stride_));
 }
 UInt256 ScalarStride::index(const UInt256& scalar) const {
     if (!scalars_.contains(scalar)) throw std::out_of_range("scalar outside strided range");
     const auto offset = scalar.subtract(scalars_.begin()).divmod(stride_);
     if (!offset.second.is_zero()) throw std::invalid_argument("scalar is skipped by the stride");
-    return offset.first.add(UInt256(1));
+    return reverse_?indices_.size().subtract(offset.first):offset.first.add(UInt256(1));
 }
 bool ScalarStride::operator==(const ScalarStride& other) const {
-    return scalars_.begin()==other.scalars_.begin() && scalars_.end()==other.scalars_.end() && stride_==other.stride_;
+    return scalars_.begin()==other.scalars_.begin() && scalars_.end()==other.scalars_.end() && stride_==other.stride_ && reverse_==other.reverse_;
 }
 UInt256 scalar_stride_power(UInt256 stride, unsigned bit) {
     validate_scalar_stride(stride);

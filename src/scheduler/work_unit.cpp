@@ -12,21 +12,29 @@ bool is_strided(WorkAlgorithm algorithm) {
     return algorithm==WorkAlgorithm::StridedXPointV1 || algorithm==WorkAlgorithm::StridedHash160V1 ||
         algorithm==WorkAlgorithm::StridedEthereumV1 || algorithm==WorkAlgorithm::StridedVanityV1;
 }
+bool is_reverse(WorkAlgorithm algorithm) {
+    return algorithm==WorkAlgorithm::ReverseXPointV1 || algorithm==WorkAlgorithm::ReverseHash160V1 ||
+        algorithm==WorkAlgorithm::ReverseEthereumV1 || algorithm==WorkAlgorithm::ReverseVanityV1;
+}
 WorkAlgorithm scalar_family(WorkAlgorithm algorithm) {
     switch (algorithm) {
+    case WorkAlgorithm::ReverseXPointV1:
     case WorkAlgorithm::StridedXPointV1:return WorkAlgorithm::DirectXPointV1;
+    case WorkAlgorithm::ReverseHash160V1:
     case WorkAlgorithm::StridedHash160V1:return WorkAlgorithm::DirectHash160V1;
+    case WorkAlgorithm::ReverseEthereumV1:
     case WorkAlgorithm::StridedEthereumV1:return WorkAlgorithm::DirectEthereumV1;
+    case WorkAlgorithm::ReverseVanityV1:
     case WorkAlgorithm::StridedVanityV1:return WorkAlgorithm::DirectVanityV1;
     default:return algorithm;
     }
 }
-WorkAlgorithm strided_algorithm(WorkAlgorithm algorithm) {
+WorkAlgorithm strided_algorithm(WorkAlgorithm algorithm, bool reverse) {
     switch (algorithm) {
-    case WorkAlgorithm::DirectXPointV1:return WorkAlgorithm::StridedXPointV1;
-    case WorkAlgorithm::DirectHash160V1:return WorkAlgorithm::StridedHash160V1;
-    case WorkAlgorithm::DirectEthereumV1:return WorkAlgorithm::StridedEthereumV1;
-    case WorkAlgorithm::DirectVanityV1:return WorkAlgorithm::StridedVanityV1;
+    case WorkAlgorithm::DirectXPointV1:return reverse?WorkAlgorithm::ReverseXPointV1:WorkAlgorithm::StridedXPointV1;
+    case WorkAlgorithm::DirectHash160V1:return reverse?WorkAlgorithm::ReverseHash160V1:WorkAlgorithm::StridedHash160V1;
+    case WorkAlgorithm::DirectEthereumV1:return reverse?WorkAlgorithm::ReverseEthereumV1:WorkAlgorithm::StridedEthereumV1;
+    case WorkAlgorithm::DirectVanityV1:return reverse?WorkAlgorithm::ReverseVanityV1:WorkAlgorithm::StridedVanityV1;
     default:throw std::invalid_argument("family does not support scalar strides");
     }
 }
@@ -43,7 +51,8 @@ std::optional<ScalarInterval> bounded_interval(const ScalarInterval& parent,
 }
 
 void validate(const ExecutionIdentity& identity) {
-    if (is_strided(identity.algorithm)!=identity.stride_mapping.has_value())
+    if ((is_strided(identity.algorithm)||is_reverse(identity.algorithm))!=identity.stride_mapping.has_value() ||
+        (identity.stride_mapping && identity.stride_mapping->reverse()!=is_reverse(identity.algorithm)))
         throw std::invalid_argument("stride mapping and algorithm disagree");
     const auto family=scalar_family(identity.algorithm);
     if (family != WorkAlgorithm::DirectXPointV1 && family != WorkAlgorithm::DirectHash160V1 &&
@@ -102,6 +111,11 @@ UInt256 KernelBatch::scalar_at(uint64_t local_index) const {
 UInt256 KernelBatch::scalar_stride() const {
     const auto& mapping=work_.identity().stride_mapping;
     return mapping ? mapping->stride() : UInt256(1);
+}
+
+bool KernelBatch::scalar_reverse() const {
+    const auto& mapping=work_.identity().stride_mapping;
+    return mapping && mapping->reverse();
 }
 
 UInt256 KernelBatch::ordinal_at(uint64_t local_index) const {

@@ -4,9 +4,9 @@
 using namespace keyhunt::core;
 int main(){std::string line;while(std::getline(std::cin,line)){
     try{std::istringstream input(line);std::string op,a,b,s,i,extra;input>>op>>a;
-        if(op=="map"){
+        if(op=="map" || op=="reverse"){
             input>>b>>s>>i;if(!input||input>>extra)throw std::invalid_argument("fields");
-            const ScalarStride mapping({UInt256::from_hex(a),UInt256::from_hex(b)},UInt256::from_hex(s));
+            const ScalarStride mapping({UInt256::from_hex(a),UInt256::from_hex(b)},UInt256::from_hex(s),op=="reverse");
             const auto scalar=mapping.scalar(UInt256::from_hex(i));
             std::cout<<mapping.indices().size().hex()<<' '<<scalar.hex()<<' '<<mapping.index(scalar).hex()<<'\n';
         }else if(op=="power"){
