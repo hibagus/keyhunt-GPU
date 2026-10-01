@@ -364,3 +364,26 @@ if(KEYHUNT_ENABLE_GPU)
     set_tests_properties(checkpoint_minikeys_reverse_pause_${KEYHUNT_GPU_BACKEND} PROPERTIES TIMEOUT 180
         LABELS "${KEYHUNT_GPU_BACKEND};hardware;storage;minikeys;recovery" RESOURCE_LOCK gpu_device)
 endif()
+
+add_test(NAME checkpoint_minikeys_both_ends_cli COMMAND "${Python3_EXECUTABLE}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/minikey_checkpoint_cli.py"
+    --binary $<TARGET_FILE:keyhunt> --oracle $<TARGET_FILE:secp256k1_oracle>
+    --both-ends --report "${CMAKE_CURRENT_BINARY_DIR}/checkpoint-minikeys-both-ends-cli.json" ${checkpoint_cli_options})
+set_tests_properties(checkpoint_minikeys_both_ends_cli PROPERTIES TIMEOUT 600 LABELS "cpu;storage;minikeys;recovery")
+if(KEYHUNT_ENABLE_GPU)
+    set_tests_properties(checkpoint_minikeys_both_ends_cli PROPERTIES LABELS "${KEYHUNT_GPU_BACKEND};hardware;storage;minikeys;recovery" RESOURCE_LOCK gpu_device)
+    add_test(NAME checkpoint_minikeys_both_ends_pause_${KEYHUNT_GPU_BACKEND} COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/checkpoint_pause_hip.py"
+        --binary $<TARGET_FILE:keyhunt> --oracle $<TARGET_FILE:secp256k1_oracle>
+        --backend ${KEYHUNT_GPU_BACKEND} --mode minikeys22 --mode minikeys30 --ordinal-order both-ends
+        --report "${CMAKE_CURRENT_BINARY_DIR}/checkpoint-minikeys-both-ends-pause-${KEYHUNT_GPU_BACKEND}.json")
+    set_tests_properties(checkpoint_minikeys_both_ends_pause_${KEYHUNT_GPU_BACKEND} PROPERTIES TIMEOUT 180
+        LABELS "${KEYHUNT_GPU_BACKEND};hardware;storage;minikeys;recovery" RESOURCE_LOCK gpu_device)
+endif()
+
+add_executable(storage_minikey_both_ends_test tests/storage/minikey_both_ends.cpp)
+target_include_directories(storage_minikey_both_ends_test PRIVATE src/storage)
+target_link_libraries(storage_minikey_both_ends_test PRIVATE keyhunt_storage)
+keyhunt_configure_target(storage_minikey_both_ends_test)
+add_test(NAME storage_minikey_both_ends COMMAND storage_minikey_both_ends_test)
+set_tests_properties(storage_minikey_both_ends PROPERTIES TIMEOUT 180 LABELS "cpu;storage;minikeys;both-ends;recovery")

@@ -9,10 +9,10 @@ from minikey import PUBLIC_KEYS,text,ordinal,scalar
 p=argparse.ArgumentParser()
 for name in ('binary','oracle','report'):p.add_argument('--'+name,type=Path,required=True)
 p.add_argument('--hardware',action='store_true');p.add_argument('--backend',choices=('hip','cuda'),default='hip')
-p.add_argument('--reverse',action='store_true')
-a=p.parse_args();binary=str(a.binary.resolve())
+orders=p.add_mutually_exclusive_group();orders.add_argument('--reverse',action='store_true');orders.add_argument('--both-ends',action='store_true')
+a=p.parse_args();order='both-ends' if a.both_ends else 'reverse' if a.reverse else 'forward';binary=str(a.binary.resolve())
 report=dict(passed=False,oracle_commit=check_source(),binary_sha256=hashlib.sha256(a.binary.read_bytes()).hexdigest(),
-            hardware=a.hardware,reverse=a.reverse,backend=a.backend,cases=[],checks=0)
+            hardware=a.hardware,reverse=a.reverse,ordinal_order=order,backend=a.backend,cases=[],checks=0)
 with tempfile.TemporaryDirectory(prefix='kh-minikey-checkpoint-') as directory:
     root=Path(directory);state=root/'state'
     def command(family,action,*words):return [binary,family,action,'--state-dir',str(state),*map(str,words)]
@@ -65,9 +65,9 @@ with tempfile.TemporaryDirectory(prefix='kh-minikey-checkpoint-') as directory:
             wrong_length=run.copy();wrong_length[wrong_length.index('--length')+1]=30 if length==22 else 22
             for words in (mismatch,wrong_length,run+['--encoding','compressed'],run+['--candidate-capacity','1'],run+['--kernel','stepped']):
                 assert not call('checkpoint','run',*words,ok=False).stdout
-            summary=call('checkpoint','run',*run,'--ordinal-order','reverse' if a.reverse else 'forward','--batch-size','8192','--candidate-capacity','2')[-1]
+            summary=call('checkpoint','run',*run,'--ordinal-order',order,'--batch-size','8192','--candidate-capacity','2')[-1]
             assert summary['complete'] and int(summary['computed_ordinals'],16)==count and summary['durability']=='local'
-            assert summary['ordinal_order']==('reverse' if a.reverse else 'forward')
+            assert summary['ordinal_order']==(order)
             assert summary['coordinate_space']=='minikey-ordinal-v1' and 'computed_scalars' not in summary
             if label=='overflow':assert summary['overflow_replays']>0
             expected={(o,f'{length:02x}{tag:02x}'+v) for (o,tag),v in values.items() if start<=o<start+count}
@@ -76,15 +76,18 @@ with tempfile.TemporaryDirectory(prefix='kh-minikey-checkpoint-') as directory:
             assert again['batches']==0 and int(again['resumed_ordinals'],16)==count
             report['cases'].append(dict(name=label,length=length,relations=len(expected),summary=summary))
         if not a.hardware:continue
-        for first,resume in ([('reverse','forward'),('forward','reverse'),('reverse','reverse')] if a.reverse else [('forward','forward')]):
+        for first,resume in ([('both-ends','forward'),('forward','both-ends'),('both-ends','reverse'),('reverse','both-ends'),('both-ends','both-ends')] if a.both_ends else [('reverse','forward'),('forward','reverse'),('reverse','reverse')] if a.reverse else [('forward','forward')]):
             # Kill only after an acknowledged durable prefix; all later work is
             # reconstructed from its exact ordinal complement with new batch sizes.
             start=begin-1048575 if first=='reverse' else begin
             scope,run=prepare(f'killed-{length}-{first}-{resume}',length,start,start+1048576,[values[begin,tag] for tag in (1,2)])
-            process=subprocess.Popen(command('checkpoint','run',*run,'--ordinal-order',first,'--batch-size','32'),stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
+            process=subprocess.Popen(command('checkpoint','run',*run,'--ordinal-order',first,'--batch-size','32',*(['--checkpoint-seconds','0'] if first=='both-ends' else [])),stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
             try:
                 assert select.select([process.stdout],[],[],30)[0],'no durable acknowledgment'
                 notice=json.loads(process.stdout.readline())
+                if first=='both-ends':
+                    # Persist both endpoint batches before killing this owner.
+                    notice=json.loads(process.stdout.readline())
                 assert notice['type']=='checkpoint' and notice['durable_results'] and notice['coordinate_space']=='minikey-ordinal-v1'
                 assert 'already held' in call('checkpoint','run',*run,ok=False).stderr
                 process.kill();process.communicate(timeout=30)
@@ -93,6 +96,7 @@ with tempfile.TemporaryDirectory(prefix='kh-minikey-checkpoint-') as directory:
             call('state','check');assert results(scope)
             retained=call('state','block',*scope,'--block','0')[0]
             covered=sum(int(v['end_exclusive'],16)-int(v['begin'],16) for v in retained['covered'])
+            if first=='both-ends':assert int(retained['covered'][0]['begin'],16)==start and int(retained['covered'][-1]['end_exclusive'],16)==start+1048576
             summary=call('checkpoint','run',*run,'--ordinal-order',resume,'--batch-size','65536')[-1]
             assert summary['complete'] and int(summary['resumed_ordinals'],16)==covered
             assert covered+int(summary['computed_ordinals'],16)==1048576
