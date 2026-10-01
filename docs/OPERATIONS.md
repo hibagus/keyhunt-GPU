@@ -2,7 +2,7 @@
 
 Use the [build matrix](BUILD.md#validated-gpu-builds) and
 [finite quickstart](GPU_QUICKSTART.md) to verify the chosen native backend first.
-The [mode matrix](MODES.md) covers exact xpoint, BSGS and Bitcoin P2PKH/HASH160.
+The [mode matrix](MODES.md) covers exact xpoint, BSGS, Bitcoin P2PKH/HASH160 and Ethereum.
 Standalone execution needs only `keyhunt`; authenticated workers additionally
 need the optional coordinator/HTTPS build. HTTPS workers hold enrolled client
 credentials; [file-only workers](OFFLINE_ASSIGNMENTS.md) keep those credentials

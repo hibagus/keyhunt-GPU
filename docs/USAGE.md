@@ -2,7 +2,7 @@
 
 Run these commands from the repository root after following [BUILD.md](BUILD.md).
 The legacy `-m` search commands use the preserved CPU engine. Native HIP and CUDA
-provide exact bounded xpoint/BSGS/Bitcoin HASH160 searches, versioned tables, local checkpoints,
+provide exact bounded xpoint/BSGS/Bitcoin HASH160/Ethereum searches, versioned tables, local checkpoints,
 pause/resume and concurrent supervised workers. Start with the complete
 [GPU quickstart](GPU_QUICKSTART.md) for supported modes, fixtures, durable results and
 completed-grant replay. The [mode matrix](MODES.md) distinguishes GPU support from

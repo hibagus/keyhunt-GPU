@@ -7,15 +7,17 @@
 | Exact `xpoint --backend …` | Explicitly rejected | Validated | Validated |
 | Exact `bsgs --backend …` | Explicitly rejected | Validated | Validated |
 | Exact `hash160` / Bitcoin P2PKH `address --backend …` | Explicitly rejected | Validated | Validated |
+| Exact `ethereum --backend …` | Explicitly rejected | Validated | Validated |
 | `bsgs-table build` / `inspect`, state, job creation and result inspection | Supported | CPU operations | CPU operations |
-| `checkpoint run --backend …` | Explicitly rejected | Validated durable xpoint/BSGS/HASH160 | Validated durable xpoint/BSGS/HASH160 |
-| Optional supervised workers | Configuration/sync/file exchange; no CPU search executor | Validated xpoint/BSGS/HASH160 owners | Validated xpoint/BSGS/HASH160 owners |
+| `checkpoint run --backend …` | Explicitly rejected | Validated durable xpoint/BSGS/HASH160/Ethereum | Validated durable xpoint/BSGS/HASH160/Ethereum |
+| Optional supervised workers | Configuration/sync/file exchange; no CPU search executor | Validated xpoint/BSGS/HASH160/Ethereum owners | Validated xpoint/BSGS/HASH160/Ethereum owners |
 
 The [GPU quickstart](GPU_QUICKSTART.md) includes exact ranges and public fixtures.
 The [build matrix](BUILD.md#validated-gpu-builds) identifies tested stacks and
 partition limits. [C23's first family](C23_HASH160.md) adds exact raw HASH160 and
-Bitcoin mainnet P2PKH inputs with explicit public-key encoding identity. Ethereum,
-vanity, minikeys and other C23 families remain pending. C22 adds
+Bitcoin mainnet P2PKH inputs with explicit public-key encoding identity.
+[The next family](C23_ETHEREUM_VALIDATION.md) adds Ethereum Keccak addresses.
+Vanity, minikeys and other C23 families remain pending. C22 adds
 [manual offline assignment files](OFFLINE_ASSIGNMENTS.md) for disconnected workers
 and connected couriers. HTTPS workers also retain valid leases and a durable
 outbox between scheduled contacts.
@@ -57,6 +59,18 @@ encoding. `address` compares address-derived targets; `rmd160` takes the raw
 20-byte hash in hexadecimal. The [usage quickstart](USAGE.md#a-finite-address-search)
 uses existing solved-puzzle addresses. Ethereum is selected with `-c eth` in
 address mode and uses its own hash/encoding path.
+
+## Ethereum addresses
+
+Native `ethereum --backend hip|cuda` accepts full 20-byte addresses as 40 hex
+digits, optionally prefixed with `0x`. Lowercase/uppercase raw input and valid
+mixed-case ERC-55 input identify the same binary targets. The GPU derives and
+hashes both affine coordinates with Keccak-256; CPU verification uses a separate
+implementation. There is no compression flag. Exact intervals, bounded overflow
+replay, durable checkpoints and authenticated/offline workers are supported.
+See [contracts](C23_ETHEREUM.md), [acceptance](C23_ETHEREUM_VALIDATION.md) and
+[executable examples](GPU_QUICKSTART.md). Legacy `-m address -c eth` retains its
+characterized CPU behavior.
 
 ## Xpoint
 

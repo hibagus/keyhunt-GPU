@@ -1,6 +1,7 @@
 # C23: Ethereum address family
 
-Status: implementation in progress. Bitcoin P2PKH/HASH160 acceptance remains in
+Status: complete on native MI300X HIP and H200 CUDA; see
+[C23_ETHEREUM_VALIDATION.md](C23_ETHEREUM_VALIDATION.md). Bitcoin P2PKH/HASH160 acceptance remains in
 [C23_VALIDATION.md](C23_VALIDATION.md). This pass implements the next family in
 [the delivery order](GPU_REDESIGN_PLAN.md): Ethereum externally owned account
 address derivation. Vanity, minikeys and other families remain pending.
@@ -61,7 +62,8 @@ The first MI300X run passed all 412 native Keccak vectors, both executor variant
 31 injected failure boundaries and both independent CLI corpora (48 searches and
 25 rejection cases per kernel across eight visible devices). The maximum batch
 case exercises all 20 cached offset bits. These are correctness measurements;
-CUDA and durable acceptance are still required.
+CUDA and durable acceptance subsequently passed; the final report above records
+the separate source phases and binary hashes.
 
 The initial implementation keeps Ethereum kernel/executor translation units
 separate from Bitcoin HASH160. This preserves the accepted Bitcoin register and

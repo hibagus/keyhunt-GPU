@@ -1,8 +1,9 @@
 # C23 first family: Bitcoin P2PKH and HASH160 acceptance
 
 The user-selected Bitcoin mainnet P2PKH / raw HASH160 family is complete on
-MI300X HIP and H200 CUDA. **C23 remains partial:** Ethereum, vanity, minikeys and
-other GPU mode families remain explicitly pending. See the
+MI300X HIP and H200 CUDA. This is the frozen first-family acceptance record.
+The subsequent [Ethereum family](C23_ETHEREUM_VALIDATION.md) is also complete.
+**C23 remains partial:** vanity, minikeys and other GPU mode families remain pending. See the
 [contracts and decisions](C23_HASH160.md) and [runnable quickstart](GPU_QUICKSTART.md).
 
 ## Implementation and findings
