@@ -15,6 +15,7 @@ struct CheckpointOptions {
     bool concurrent_blocks=false;
     // Omission recovers the persisted stride; an explicit value must match it.
     std::optional<UInt256> stride;
+    std::optional<bool> reverse; // Omitted on restart: recover immutable traversal order.
     unsigned work_unit_seconds=0; // 0 preserves fixed batches; supervised default is 180.
     uint64_t xpoint_steps=1048576,giant_steps=16384;
     uint32_t target_batch=64,candidate_capacity=1024,checkpoint_seconds=10;
@@ -66,15 +67,15 @@ using BsgsRunner=std::function<backend::BsgsSearchResult(const core::BsgsBatch&)
 class CheckpointRun {
 public:
     static Scope create_xpoint(Journal&,const std::string& project,ScalarInterval root,UInt256 width,
-        const core::XPointTargets&,UInt256 stride=UInt256(1));
+        const core::XPointTargets&,UInt256 stride=UInt256(1),bool reverse=false);
     static Scope create_hash160(Journal&,const std::string& project,ScalarInterval root,UInt256 width,
-        const core::Hash160Targets&,UInt256 stride=UInt256(1));
+        const core::Hash160Targets&,UInt256 stride=UInt256(1),bool reverse=false);
     static Scope create_minikeys(Journal&,const std::string& project,ScalarInterval root,UInt256 width,
         const core::MinikeyTargets&);
     static Scope create_vanity(Journal&,const std::string& project,ScalarInterval root,UInt256 width,
-        const core::VanityTargets&,UInt256 stride=UInt256(1));
+        const core::VanityTargets&,UInt256 stride=UInt256(1),bool reverse=false);
     static Scope create_ethereum(Journal&,const std::string& project,ScalarInterval root,UInt256 width,
-        const core::EthereumTargets&,UInt256 stride=UInt256(1));
+        const core::EthereumTargets&,UInt256 stride=UInt256(1),bool reverse=false);
     static Scope create_bsgs(Journal&,const std::string& project,ScalarInterval root,UInt256 width,
         const core::BsgsPublicKeyTargets&,const bsgs::Table&);
     static CheckpointSummary xpoint(Journal&,const Grant&,const core::XPointTargets&,

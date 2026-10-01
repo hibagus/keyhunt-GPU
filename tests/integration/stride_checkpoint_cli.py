@@ -9,8 +9,9 @@ from model import N
 p=argparse.ArgumentParser()
 for name in ('binary','oracle','report'):p.add_argument('--'+name,type=Path,required=True)
 p.add_argument('--hardware',action='store_true');p.add_argument('--backend',choices=('hip','cuda'),default='hip')
+p.add_argument('--order',choices=('forward','reverse'),default='forward')
 a=p.parse_args();binary=str(a.binary.resolve())
-report=dict(passed=False,hardware=a.hardware,oracle_commit=check_source(),binary_sha256=hashlib.sha256(a.binary.read_bytes()).hexdigest(),cases=[])
+report=dict(order=a.order,passed=False,hardware=a.hardware,oracle_commit=check_source(),binary_sha256=hashlib.sha256(a.binary.read_bytes()).hexdigest(),cases=[])
 with tempfile.TemporaryDirectory(prefix='kh-stride-checkpoint-') as directory:
     root=Path(directory);state=root/'state'
     def command(family,action,*words):return [binary,family,action,'--state-dir',str(state),*map(str,words)]
@@ -20,13 +21,15 @@ with tempfile.TemporaryDirectory(prefix='kh-stride-checkpoint-') as directory:
         return [json.loads(line) for line in r.stdout.splitlines()] if ok else r
     def prepare(mode,label,begin,end,step,indices):
         project=call('state','project-create','--name',mode+'-'+label)[0]['project']
-        scalars=[begin+(i-1)*step for i in indices]
+        count=1+(end-begin-1)//step
+        scalars=[begin+((count-i) if a.order=='reverse' else (i-1))*step for i in indices]
         public=oracle_run(a.oracle,[f'pub {k:064x}' for k in scalars])
         lines,canonical=targets(mode,public,overlap=label.startswith('overlap') and mode=='vanity')
         file=root/'targets.txt';file.write_text('\n'.join(lines))
         count=1+(end-begin-1)//step
         words=['--project',project,'--mode',mode,'--range',f'{begin:x}:{end:x}','--stride',f'{step:x}',
                '--block-width',f'{count:x}','--targets',file]
+        if a.order=='reverse':words+=['--order','reverse']
         created=call('checkpoint','create',*words)[0]
         file.write_text('\n'.join(reversed(lines))+ '\n'+lines[0])
         assert call('checkpoint','create',*words)[0]==created
@@ -37,23 +40,24 @@ with tempfile.TemporaryDirectory(prefix='kh-stride-checkpoint-') as directory:
         return scope,['--backend',a.backend,'--grant',grant,'--targets',file],expected,bound
     def verify(scope,expected):
         rows=call('checkpoint','results',*scope,'--limit','1000')[0]['results']
-        assert all(row['coordinate_space']=='scalar-stride-index-v1' for row in rows)
+        assert all(row['coordinate_space']==('scalar-reverse-index-v1' if a.order=='reverse' else 'scalar-stride-index-v1') for row in rows)
         assert len(rows)==len(expected) and {(int(r['candidate_index'],16),int(r['scalar'],16),r['target_bytes']) for r in rows}==expected
         assert call('state','block',*scope,'--block','0')[0]['state']=='finished'
         call('state','check')
     for mode in ('xpoint','hash160','ethereum','vanity'):
         for kernel in ('direct','stepped'):
-            for label,begin,end,step in [('overlap',101,101+33*7-3,7),('wide',1<<128,(1<<128)+17*((1<<192)+1),(1<<192)+1),('order',N-129,N,7)]:
+            for label,begin,end,step in [('overlap',101,101+33*7-3,7),('wide',1<<128,(1<<128)+17*((1<<192)+1),(1<<192)+1),('order',N-129,N,7)]+([('unit',101,134,1)] if a.order=='reverse' else []):
                 count=1+(end-begin-1)//step
                 scope,run,expected,bound=prepare(mode,label+'-'+kernel,begin,end,step,list(range(1,count+1)))
                 # Restarts infer the immutable stride. An explicit mismatch must
                 # fail before coverage or a result can be accepted.
-                rejected=call('checkpoint','run',*run,'--stride','1',ok=False);assert not rejected.stdout
+                rejected=call('checkpoint','run',*run,'--stride','2' if step==1 else '1',ok=False);assert not rejected.stdout
+                rejected=call('checkpoint','run',*run,'--order','forward' if a.order=='reverse' else 'reverse',ok=False);assert not rejected.stdout
                 if not a.hardware:
                     assert 'not built' in call('checkpoint','run',*run,ok=False).stderr;continue
                 summary=call('checkpoint','run',*run,'--batch-size','64','--candidate-capacity',bound,'--kernel',kernel)[-1]
                 assert summary['complete'] and int(summary['computed_candidates'],16)==count and summary['overflow_replays']>0
-                assert summary['coordinate_space']=='scalar-stride-index-v1'
+                assert summary['coordinate_space']==('scalar-reverse-index-v1' if a.order=='reverse' else 'scalar-stride-index-v1')
                 verify(scope,expected)
                 done=call('checkpoint','run',*run,'--stride',f'{step:x}')[-1]
                 assert done['batches']==0 and int(done['resumed_candidates'],16)==count
@@ -64,7 +68,7 @@ with tempfile.TemporaryDirectory(prefix='kh-stride-checkpoint-') as directory:
             child=subprocess.Popen(command('checkpoint','run',*run,'--batch-size','32'),stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
             try:
                 assert select.select([child.stdout],[],[],30)[0],'no durable acknowledgment'
-                notice=json.loads(child.stdout.readline());assert notice['coordinate_space']=='scalar-stride-index-v1'
+                notice=json.loads(child.stdout.readline());assert notice['coordinate_space']==('scalar-reverse-index-v1' if a.order=='reverse' else 'scalar-stride-index-v1')
                 assert 'already held' in call('checkpoint','run',*run,ok=False).stderr
                 child.kill();child.communicate(timeout=30)
             finally:

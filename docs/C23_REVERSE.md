@@ -65,3 +65,13 @@ replay and maximum-size batches. Portable/native subtraction passed 2,509 intege
 oracle vectors. Executor checks reject direction/stride mismatches and accept a
 changed origin with a fresh seed. The 104-case forward-stride regression also
 passed. CUDA and durable/worker gates remain pending at this source phase.
+
+## Durable implementation evidence
+
+Version 3 now binds reverse order for both unit and nonunit strides. Creation
+persists the original scalar bounds; runs infer order and stride, or reject an
+explicit mismatch before execution. Results and summaries label reverse indices
+and report actual scalars separately. BSGS/minikey jobs reject scalar order flags.
+The 12-test CPU storage gate passed, covering malformed bindings, changed order,
+lost acknowledgements, dense overflow/replay, pause, backup and completed retries.
+Real HIP checkpoint and changed-visibility pause checks are running at this phase.

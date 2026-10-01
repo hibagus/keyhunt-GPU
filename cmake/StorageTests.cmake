@@ -194,3 +194,26 @@ if(KEYHUNT_ENABLE_GPU)
     set_tests_properties(checkpoint_strides_pause_${KEYHUNT_GPU_BACKEND} PROPERTIES TIMEOUT 240
         LABELS "${KEYHUNT_GPU_BACKEND};hardware;storage;stride;recovery" RESOURCE_LOCK gpu_device)
 endif()
+
+add_executable(storage_reverse_checkpoint_test tests/storage/reverse_checkpoint.cpp)
+target_include_directories(storage_reverse_checkpoint_test PRIVATE src/storage)
+target_link_libraries(storage_reverse_checkpoint_test PRIVATE keyhunt_storage)
+keyhunt_configure_target(storage_reverse_checkpoint_test)
+add_test(NAME storage_reverse_checkpoint COMMAND storage_reverse_checkpoint_test)
+set_tests_properties(storage_reverse_checkpoint PROPERTIES TIMEOUT 180 LABELS "cpu;storage;reverse;recovery")
+
+add_test(NAME checkpoint_reverse_cli COMMAND "${Python3_EXECUTABLE}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/stride_checkpoint_cli.py"
+    --binary $<TARGET_FILE:keyhunt> --oracle $<TARGET_FILE:secp256k1_oracle>
+    --order reverse --report "${CMAKE_CURRENT_BINARY_DIR}/checkpoint-reverse-cli.json" ${checkpoint_cli_options})
+set_tests_properties(checkpoint_reverse_cli PROPERTIES TIMEOUT 480 LABELS "cpu;storage;reverse;recovery")
+if(KEYHUNT_ENABLE_GPU)
+    set_tests_properties(checkpoint_reverse_cli PROPERTIES LABELS "${KEYHUNT_GPU_BACKEND};hardware;storage;reverse;recovery" RESOURCE_LOCK gpu_device)
+    add_test(NAME checkpoint_reverse_pause_${KEYHUNT_GPU_BACKEND} COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/checkpoint_pause_hip.py"
+        --binary $<TARGET_FILE:keyhunt> --oracle $<TARGET_FILE:secp256k1_oracle>
+        --backend ${KEYHUNT_GPU_BACKEND} --order reverse --stride 11 --mode xpoint --mode hash160 --mode ethereum --mode vanity
+        --report "${CMAKE_CURRENT_BINARY_DIR}/checkpoint-reverse-pause-${KEYHUNT_GPU_BACKEND}.json")
+    set_tests_properties(checkpoint_reverse_pause_${KEYHUNT_GPU_BACKEND} PROPERTIES TIMEOUT 240
+        LABELS "${KEYHUNT_GPU_BACKEND};hardware;storage;reverse;recovery" RESOURCE_LOCK gpu_device)
+endif()

@@ -31,9 +31,9 @@ bsgs::Table load_table(const Options& options,const core::BsgsPublicKeyTargets& 
 }
 int checkpoint_command(int argc,char** argv){
     static const std::map<std::string,std::set<std::string>> allowed{
-        {"create",{"project","mode","range","block-width","targets","table","host-memory","encoding","length","input-format","stride"}},
+        {"create",{"project","mode","range","block-width","targets","table","host-memory","encoding","length","input-format","stride","order"}},
         {"run",{"backend","grant","targets","table","device","batch-size","kernel","giant-batch",
-                "target-batch","candidate-capacity","group-size","host-memory","reserve-bytes","checkpoint-seconds","encoding","input-format","length","stride"}},
+                "target-batch","candidate-capacity","group-size","host-memory","reserve-bytes","checkpoint-seconds","encoding","input-format","length","stride","order"}},
         {"results",{"project","job","after","limit"}},
         {"pause",{"slot"}},{"resume",{"slot"}},{"stop",{"slot"}},{"status",{"slot"}}};
     if(argc<3)throw std::invalid_argument("usage: keyhunt checkpoint create|run|results|pause|resume|stop|status [--state-dir DIR] ...; see docs/CHECKPOINTS.md");
@@ -69,21 +69,26 @@ int checkpoint_command(int argc,char** argv){
         const auto stride=UInt256::from_hex(optional(args,"stride","1"));core::validate_scalar_stride(stride);
         if(args.count("stride") && (mode=="bsgs" || mode=="minikeys"))
             throw std::invalid_argument("stride applies only to scalar search families");
+        const auto order=optional(args,"order","forward");
+        if(order!="forward" && order!="reverse")throw std::invalid_argument("order must be forward or reverse");
+        if(args.count("order") && (mode=="bsgs" || mode=="minikeys"))
+            throw std::invalid_argument("order applies only to scalar search families");
+        const bool reverse=order=="reverse";
         Scope id;
         if(mode=="xpoint"){
             if(args.count("table")||args.count("host-memory"))throw std::invalid_argument("xpoint has no BSGS table/memory option");
             const auto targets=core::XPointTargets::load(required(args,"targets"));
-            id=CheckpointRun::create_xpoint(journal,required(args,"project"),root,width,targets,stride);
+            id=CheckpointRun::create_xpoint(journal,required(args,"project"),root,width,targets,stride,reverse);
         }else if(mode=="hash160" || mode=="address"){
             if(args.count("table")||args.count("host-memory"))throw std::invalid_argument("HASH160 has no BSGS table/memory option");
             const auto targets=core::Hash160Targets::load(required(args,"targets"),
                 mode=="address"?core::Hash160Input::BitcoinAddress:core::Hash160Input::Hex,
                 core::hash160_encoding(optional(args,"encoding","both")));
-            id=CheckpointRun::create_hash160(journal,required(args,"project"),root,width,targets,stride);
+            id=CheckpointRun::create_hash160(journal,required(args,"project"),root,width,targets,stride,reverse);
         }else if(mode=="vanity"){
             if(args.count("table")||args.count("host-memory"))throw std::invalid_argument("vanity has no BSGS table/memory option");
             const auto targets=core::VanityTargets::load(required(args,"targets"),core::hash160_encoding(optional(args,"encoding","both")));
-            id=CheckpointRun::create_vanity(journal,required(args,"project"),root,width,targets,stride);
+            id=CheckpointRun::create_vanity(journal,required(args,"project"),root,width,targets,stride,reverse);
         }else if(mode=="minikeys"){
             if(args.count("table")||args.count("host-memory"))throw std::invalid_argument("minikeys has no BSGS table/memory option");
             const auto format=optional(args,"input-format","address");
@@ -95,7 +100,7 @@ int checkpoint_command(int argc,char** argv){
         }else if(mode=="ethereum"){
             if(args.count("table")||args.count("host-memory"))throw std::invalid_argument("Ethereum has no BSGS table/memory option");
             const auto targets=core::EthereumTargets::load(required(args,"targets"));
-            id=CheckpointRun::create_ethereum(journal,required(args,"project"),root,width,targets,stride);
+            id=CheckpointRun::create_ethereum(journal,required(args,"project"),root,width,targets,stride,reverse);
         }else if(mode=="bsgs"){
             const auto targets=core::BsgsPublicKeyTargets::load(required(args,"targets"));const auto table=load_table(args,targets);
             id=CheckpointRun::create_bsgs(journal,required(args,"project"),root,width,targets,table);
@@ -117,7 +122,7 @@ int checkpoint_command(int argc,char** argv){
         for(size_t i=0;i<rows.size();++i){const auto& row=rows[i];
             std::cout<<(i?",":"")<<"{\"id\":"<<quote(std::to_string(row.id))<<",\"block\":"<<quote(row.block.hex());
             auto scalar=mapping?mapping->scalar(row.scalar):row.scalar;
-            if(mapping)std::cout<<",\"coordinate_space\":\"scalar-stride-index-v1\",\"candidate_index\":"<<quote(row.scalar.hex());
+            if(mapping)std::cout<<",\"coordinate_space\":"<<quote(mapping->coordinate_space())<<",\"candidate_index\":"<<quote(row.scalar.hex());
             // The saved result coordinate is an ordinal for this mode.
             if(result_mode==Mode::Minikeys){
                 const auto text=core::minikey_text(row.scalar,row.target_bytes[0]);const auto derived=core::minikey_scalar(text);
@@ -140,6 +145,13 @@ int checkpoint_command(int argc,char** argv){
     const auto device=decimal(optional(args,"device","0"),std::numeric_limits<int>::max());
     const auto mapping=journal.stride_mapping(grant.scope);
     CheckpointOptions options;
+    if(args.count("order")){
+        const auto order=required(args,"order");
+        if(order!="forward" && order!="reverse")throw std::invalid_argument("order must be forward or reverse");
+        options.reverse=order=="reverse";
+        if(mode==Mode::Bsgs || mode==Mode::Minikeys || *options.reverse!=(mapping && mapping->reverse()))
+            throw std::invalid_argument("requested order differs from immutable job binding");
+    }
     if(args.count("stride")){
         options.stride=UInt256::from_hex(required(args,"stride"));core::validate_scalar_stride(*options.stride);
         if(mode==Mode::Bsgs || mode==Mode::Minikeys || *options.stride!=(mapping?mapping->stride():UInt256(1)))
@@ -171,7 +183,7 @@ int checkpoint_command(int argc,char** argv){
     double preparation_ms=0,executor_setup_ms=0,table_upload_ms=0;
     const auto notify=[&](const std::vector<ScalarInterval>& coverage,size_t matches,double ms){
         std::cout<<"{\"type\":\"checkpoint\",\"durability\":\"local\",\"durable_results\":true,\"durable_coverage\":"
-            <<(coverage.empty()?"false":"true")<<(mapping?",\"coordinate_space\":\"scalar-stride-index-v1\"":mode==Mode::Minikeys?",\"coordinate_space\":\"minikey-ordinal-v1\"":"")<<",\"intervals\":[";
+            <<(coverage.empty()?"false":"true")<<(mapping?",\"coordinate_space\":"+quote(mapping->coordinate_space()):mode==Mode::Minikeys?",\"coordinate_space\":\"minikey-ordinal-v1\"":"")<<",\"intervals\":[";
         for(size_t i=0;i<coverage.size();++i)std::cout<<(i?",":"")<<"{\"begin\":"<<quote(coverage[i].begin().hex())
             <<",\"end_exclusive\":"<<quote(coverage[i].end().hex())<<'}';
         std::cout<<"],\"match_observations\":"<<matches<<",\"transaction_ms\":"<<ms<<'}';flush();
@@ -181,7 +193,7 @@ int checkpoint_command(int argc,char** argv){
     // checks, the exclusive owner guard and durable executor-generation allocation.
     if(mode==Mode::XPoint){
         const auto targets=core::XPointTargets::load(required(args,"targets"));
-        XPointOptions gpu;gpu.stride=mapping?mapping->stride():UInt256(1);gpu.max_steps=options.xpoint_steps;gpu.candidate_capacity=options.candidate_capacity;
+        XPointOptions gpu;gpu.stride=mapping?mapping->stride():UInt256(1);gpu.reverse=mapping && mapping->reverse();gpu.max_steps=options.xpoint_steps;gpu.candidate_capacity=options.candidate_capacity;
         gpu.kernel=optional(args,"kernel","stepped")=="direct"?XPointKernel::Direct:XPointKernel::Stepped;
         std::unique_ptr<GpuXPointExecutor> executor;
         summary=CheckpointRun::xpoint(journal,grant,targets,verifier,[&](const auto& batch){
@@ -196,7 +208,7 @@ int checkpoint_command(int argc,char** argv){
         const auto targets=core::Hash160Targets::load(required(args,"targets"),
             format=="address"?core::Hash160Input::BitcoinAddress:core::Hash160Input::Hex,
             core::hash160_encoding(optional(args,"encoding","both")));
-        Hash160Options gpu;gpu.stride=mapping?mapping->stride():UInt256(1);gpu.max_steps=options.xpoint_steps;gpu.candidate_capacity=options.candidate_capacity;
+        Hash160Options gpu;gpu.stride=mapping?mapping->stride():UInt256(1);gpu.reverse=mapping && mapping->reverse();gpu.max_steps=options.xpoint_steps;gpu.candidate_capacity=options.candidate_capacity;
         gpu.kernel=optional(args,"kernel","stepped")=="direct"?XPointKernel::Direct:XPointKernel::Stepped;
         std::unique_ptr<GpuHash160Executor> executor;
         summary=CheckpointRun::hash160(journal,grant,targets,verifier,[&](const auto& batch){
@@ -209,7 +221,7 @@ int checkpoint_command(int argc,char** argv){
         },options,notify,[&]{executor.reset();control.close();},control.callbacks());
     }else if(mode==Mode::Vanity){
         const auto targets=core::VanityTargets::load(required(args,"targets"),core::hash160_encoding(optional(args,"encoding","both")));
-        VanityOptions gpu;gpu.stride=mapping?mapping->stride():UInt256(1);gpu.max_steps=options.xpoint_steps;gpu.candidate_capacity=options.candidate_capacity;
+        VanityOptions gpu;gpu.stride=mapping?mapping->stride():UInt256(1);gpu.reverse=mapping && mapping->reverse();gpu.max_steps=options.xpoint_steps;gpu.candidate_capacity=options.candidate_capacity;
         gpu.kernel=optional(args,"kernel","stepped")=="direct"?XPointKernel::Direct:XPointKernel::Stepped;
         std::unique_ptr<GpuVanityExecutor> executor;
         summary=CheckpointRun::vanity(journal,grant,targets,verifier,[&](const auto& batch){
@@ -233,7 +245,7 @@ int checkpoint_command(int argc,char** argv){
         },options,notify,[&]{executor.reset();control.close();},control.callbacks());
     }else if(mode==Mode::Ethereum){
         const auto targets=core::EthereumTargets::load(required(args,"targets"));
-        EthereumOptions gpu;gpu.stride=mapping?mapping->stride():UInt256(1);gpu.max_steps=options.xpoint_steps;gpu.candidate_capacity=options.candidate_capacity;
+        EthereumOptions gpu;gpu.stride=mapping?mapping->stride():UInt256(1);gpu.reverse=mapping && mapping->reverse();gpu.max_steps=options.xpoint_steps;gpu.candidate_capacity=options.candidate_capacity;
         gpu.kernel=optional(args,"kernel","stepped")=="direct"?XPointKernel::Direct:XPointKernel::Stepped;
         std::unique_ptr<GpuEthereumExecutor> executor;
         summary=CheckpointRun::ethereum(journal,grant,targets,verifier,[&](const auto& batch){
@@ -263,7 +275,7 @@ int checkpoint_command(int argc,char** argv){
     }
     std::cout<<"{\"type\":\"summary\",\"complete\":"<<(summary.complete?"true":"false")
         <<",\"durability\":\"local\",\"durable_coverage\":true"
-        <<(mapping?",\"coordinate_space\":\"scalar-stride-index-v1\"":mode==Mode::Minikeys?",\"coordinate_space\":\"minikey-ordinal-v1\"":"")
+        <<(mapping?",\"coordinate_space\":"+quote(mapping->coordinate_space()):mode==Mode::Minikeys?",\"coordinate_space\":\"minikey-ordinal-v1\"":"")
         <<','<<quote(mapping?"resumed_candidates":mode==Mode::Minikeys?"resumed_ordinals":"resumed_scalars")<<':'<<quote(summary.resumed_scalars.hex())
         <<','<<quote(mapping?"computed_candidates":mode==Mode::Minikeys?"computed_ordinals":"computed_scalars")<<':'<<quote(summary.computed_scalars.hex())
         <<",\"device_steps\":"<<quote(summary.device_steps.hex())<<",\"match_observations\":"<<summary.match_observations
