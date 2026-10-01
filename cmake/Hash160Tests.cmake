@@ -25,3 +25,34 @@ foreach(backend IN LISTS hash160_backends)
         set_tests_properties(${backend}_hash160_oracle PROPERTIES LABELS "${backend};hardware;hash160;oracle" RESOURCE_LOCK gpu_device)
     endif()
 endforeach()
+
+if(KEYHUNT_ENABLE_GPU)
+    add_executable(${KEYHUNT_GPU_BACKEND}_hash160_executor_test tests/gpu/hash160_executor.cpp)
+    target_link_libraries(${KEYHUNT_GPU_BACKEND}_hash160_executor_test PRIVATE keyhunt_gpu_options keyhunt_backend)
+    set_target_properties(${KEYHUNT_GPU_BACKEND}_hash160_executor_test PROPERTIES LINKER_LANGUAGE CXX)
+    add_executable(${KEYHUNT_GPU_BACKEND}_hash160_failure_test tests/gpu/hash160_failures.hip src/backend/gpu/hash160.cpp)
+    target_link_libraries(${KEYHUNT_GPU_BACKEND}_hash160_failure_test PRIVATE keyhunt_gpu_options keyhunt_core)
+    target_include_directories(${KEYHUNT_GPU_BACKEND}_hash160_failure_test PRIVATE kernels kernels/search src/backend/gpu)
+    target_compile_definitions(${KEYHUNT_GPU_BACKEND}_hash160_failure_test PRIVATE KEYHUNT_TEST_GPU_FAILURES=1)
+    set_target_properties(${KEYHUNT_GPU_BACKEND}_hash160_failure_test PROPERTIES INTERPROCEDURAL_OPTIMIZATION OFF LINKER_LANGUAGE CXX)
+    add_test(NAME ${KEYHUNT_GPU_BACKEND}_hash160_executor COMMAND ${KEYHUNT_GPU_BACKEND}_hash160_executor_test)
+    add_test(NAME ${KEYHUNT_GPU_BACKEND}_hash160_failures COMMAND ${KEYHUNT_GPU_BACKEND}_hash160_failure_test)
+    set_tests_properties(${KEYHUNT_GPU_BACKEND}_hash160_executor ${KEYHUNT_GPU_BACKEND}_hash160_failures
+        PROPERTIES TIMEOUT 180 LABELS "${KEYHUNT_GPU_BACKEND};hardware;hash160" RESOURCE_LOCK gpu_device)
+endif()
+
+set(hash160_cli_args)
+if(KEYHUNT_ENABLE_GPU)
+    list(APPEND hash160_cli_args --hardware --backend ${KEYHUNT_GPU_BACKEND})
+endif()
+add_test(NAME hash160_cli COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/hash160_cli.py"
+    --binary $<TARGET_FILE:keyhunt> --oracle $<TARGET_FILE:secp256k1_oracle>
+    --report "${CMAKE_CURRENT_BINARY_DIR}/hash160-cli-results.json" ${hash160_cli_args})
+set_tests_properties(hash160_cli PROPERTIES TIMEOUT 300 LABELS "cpu;hash160")
+if(KEYHUNT_ENABLE_GPU)
+    set_tests_properties(hash160_cli PROPERTIES LABELS "${KEYHUNT_GPU_BACKEND};hardware;hash160;oracle" RESOURCE_LOCK gpu_device)
+    add_test(NAME hash160_cli_direct COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/hash160_cli.py"
+        --binary $<TARGET_FILE:keyhunt> --oracle $<TARGET_FILE:secp256k1_oracle>
+        --report "${CMAKE_CURRENT_BINARY_DIR}/hash160-cli-direct-results.json" ${hash160_cli_args} --kernel direct)
+    set_tests_properties(hash160_cli_direct PROPERTIES TIMEOUT 300 LABELS "${KEYHUNT_GPU_BACKEND};hardware;hash160;oracle" RESOURCE_LOCK gpu_device)
+endif()
