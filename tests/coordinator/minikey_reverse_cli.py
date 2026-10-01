@@ -7,6 +7,7 @@ from coordinator_local import Environment, HOST, REPO
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'oracle'))
 from oracle_selftest import check_source, run as oracle_run
 from minikey import PUBLIC_KEYS,ordinal,text,scalar
+from minikey_random_window import RandomWindow
 from hash160 import hash160
 
 p = argparse.ArgumentParser(description=__doc__)
@@ -15,7 +16,7 @@ for name in ('coordinator', 'worker', 'keyhunt', 'oracle', 'report'):
 p.add_argument('--apache-root', default='/')
 p.add_argument('--hardware', action='store_true')
 p.add_argument('--backend', choices=('hip', 'cuda'), default='hip')
-p.add_argument('--ordinal-order',choices=('reverse','both-ends','dance'),default='reverse')
+p.add_argument('--ordinal-order',choices=('reverse','both-ends','dance','random-window'),default='reverse')
 a = p.parse_args()
 worker, keyhunt = str(a.worker.resolve()), str(a.keyhunt.resolve())
 report = dict(ordinal_order=a.ordinal_order, passed=False, hardware=a.hardware, backend=a.backend, oracle_commit=check_source(), cases=[],
@@ -84,11 +85,13 @@ with tempfile.TemporaryDirectory(prefix='kh-minikey-reverse-worker-', dir='/var/
                 if transport == 'file': env.stop()
                 command([sys.executable, REPO / 'tools/coordinator_worker.py', '--state-dir', state,
                          '--worker', worker, '--keyhunt', keyhunt, '--backend', a.backend,
-                         '--ordinal-order', a.ordinal_order, '--batch-size', '129', '--once'])
+                         '--ordinal-order', a.ordinal_order, '--batch-size', '129', '--once',
+                         *(['--ordinal-seed','2a','--ordinal-window','4'] if a.ordinal_order=='random-window' else [])])
                 events = [json.loads(v) for v in (state / 'execution-0.log').read_text().splitlines()]
                 finished = [v for v in events if v.get('type') == 'grant-finish']
                 assert len(finished) == 2 and all(v['complete'] and v['ordinal_order'] == a.ordinal_order and
                     int(v['computed_ordinals'], 16) == width and v['executor_setups'] == 1 for v in finished)
+                if a.ordinal_order=='random-window':assert all(int(v['ordinal_seed'],16)==42 and v['ordinal_window']==4 for v in finished)
                 assert finished[0]['cold'] and not finished[1]['cold']
                 # Adaptive work-unit widths may change after a timing sample;
                 # reservations must be disjoint and have exactly the grant union.
@@ -98,12 +101,16 @@ with tempfile.TemporaryDirectory(prefix='kh-minikey-reverse-worker-', dir='/var/
                         cursor = upper = int(event['grant']['end_exclusive'], 16)
                         lower = int(event['grant']['begin'], 16); units = [];free_low,free_high=lower,upper
                         pivot=lower+(upper-lower)//2
-                        unreserved=set(range(lower,upper))
+                        unreserved=set(range(lower,upper));last_window=-1
                     elif event.get('type') == 'work-unit':
                         span = event['interval']; lo, hi = int(span['begin'], 16), int(span['end_exclusive'], 16)
                         assert lower <= lo < hi <= upper
                         if a.ordinal_order=='reverse':
                             assert hi==cursor;cursor=lo
+                        elif a.ordinal_order=='random-window':
+                            window=(lo-lower)//(4*129)
+                            assert (hi-1-lower)//(4*129)==window and window>=last_window
+                            last_window=window
                         elif a.ordinal_order=='dance':
                             assert not lo<pivot<hi
                             # Work events announce ownership, not every batch.
@@ -122,7 +129,10 @@ with tempfile.TemporaryDirectory(prefix='kh-minikey-reverse-worker-', dir='/var/
                         units.append((lo, hi))
                     elif event.get('type') == 'grant-finish':
                         assert len(units) >= 2 and units[0][1] - units[0][0] == 129
-                        assert units[0][1]==upper if a.ordinal_order=='reverse' else units[0][0]==lower
+                        if a.ordinal_order=='random-window':
+                            first=RandomWindow([(lower,upper)],42,4).plan(129,129)
+                            assert units[0]==first[2:4]
+                        else:assert units[0][1]==upper if a.ordinal_order=='reverse' else units[0][0]==lower
                         if a.ordinal_order=='dance':assert not unreserved
                         ordered=sorted(units)
                         assert ordered[0][0]==lower and ordered[-1][1]==upper
