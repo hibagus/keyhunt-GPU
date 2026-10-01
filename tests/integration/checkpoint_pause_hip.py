@@ -28,6 +28,7 @@ parser.add_argument("--backend",choices=("hip","cuda"),default="hip")
 parser.add_argument("--mode", choices=("xpoint","bsgs","hash160","ethereum","vanity","minikeys22","minikeys30"), action="append")
 parser.add_argument("--stride", type=lambda value:int(value,16), default=1)
 parser.add_argument("--order",choices=("forward","reverse"),default="forward")
+parser.add_argument("--tile-order",choices=("forward","reverse"))
 parser.add_argument("--orbit",action="store_true")
 parser.add_argument("--kernel", choices=("direct","stepped","glv"), help="first stage kernel; later stages switch to direct and stepped")
 args = parser.parse_args()
@@ -35,8 +36,10 @@ if args.kernel and (not args.mode or any(mode not in ("xpoint","hash160","ethere
     parser.error("kernel switching requires explicit scalar modes")
 if (args.orbit or args.stride!=1 or args.order=="reverse") and (not args.mode or any(mode not in ("xpoint","hash160","ethereum","vanity") for mode in args.mode)):
     parser.error("strides require explicit scalar modes")
+if args.tile_order and args.mode!=["bsgs"]:
+    parser.error("tile-order requires explicit BSGS mode")
 binary = args.binary.resolve()
-report = {"orbit":args.orbit,"oracle_commit": check_source(), "binary_sha256": hashlib.sha256(binary.read_bytes()).hexdigest(),
+report = {"tile_order":args.tile_order,"orbit":args.orbit,"oracle_commit": check_source(), "binary_sha256": hashlib.sha256(binary.read_bytes()).hexdigest(),
           "cases": [], "kernels": [args.kernel,"direct","stepped"] if args.kernel else ["stepped"]*3, "pause_latency_scope": "local socket request through durably-paused status, including admitted batch and up to 20 ms idle polling"}
 def invoke(words, env=None, ok=True):
     result = subprocess.run([str(binary), *map(str, words)], capture_output=True, text=True, timeout=90, env=env)
@@ -125,7 +128,7 @@ with tempfile.TemporaryDirectory(prefix="kh-c14-hip-") as temporary:
                 env["CUDA_VISIBLE_DEVICES" if args.backend=="cuda" else "HIP_VISIBLE_DEVICES"] = visibility
             log, err = root / f"{mode}-{stage}.out", root / f"{mode}-{stage}.err"
             with log.open("w") as out, err.open("w") as error:
-                process = subprocess.Popen([str(binary), *map(str, run + slow + ["--device", device] + (["--kernel",args.kernel if stage==0 else "direct"] if args.kernel else []))],
+                process = subprocess.Popen([str(binary), *map(str, run + slow + (["--tile-order",args.tile_order if stage==0 else ("forward" if args.tile_order=="reverse" else "reverse")] if args.tile_order else []) + ["--device", device] + (["--kernel",args.kernel if stage==0 else "direct"] if args.kernel else []))],
                                            stdout=out, stderr=error, env=env)
             try:
                 live = activity("running")
@@ -185,8 +188,9 @@ with tempfile.TemporaryDirectory(prefix="kh-c14-hip-") as temporary:
         env = os.environ.copy()
         if visibility is not None:
             env["CUDA_VISIBLE_DEVICES" if args.backend=="cuda" else "HIP_VISIBLE_DEVICES"] = visibility
-        completed = invoke(run + fast + ["--device", device] + (["--kernel","stepped"] if args.kernel else []), env=env)[-1]
+        completed = invoke(run + fast + (["--tile-order",args.tile_order] if args.tile_order else []) + ["--device", device] + (["--kernel","stepped"] if args.kernel else []), env=env)[-1]
         assert completed["complete"]
+        if args.tile_order:assert completed["tile_order"]==args.tile_order
         assert int(completed["resumed_candidates" if args.orbit or args.stride!=1 or args.order=="reverse" else "resumed_ordinals" if length else "resumed_scalars"], 16) + int(completed["computed_candidates" if args.orbit or args.stride!=1 or args.order=="reverse" else "computed_ordinals" if length else "computed_scalars"], 16) == candidate_count
         matches = local("checkpoint", "results", *scope)[0]["results"]
         expected=({(n,f'{tag:02x}'+values[n,tag]) for n in seeds[:-1] for tag in (1,2)} if mode=="hash160"

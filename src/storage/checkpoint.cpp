@@ -54,6 +54,7 @@ struct Cleanup {
     ~Cleanup(){if(stop)stop();} // a throwing stop is a fatal ownership-contract violation
 };
 void validate_options(const CheckpointOptions& o,bool bsgs){
+    if(!bsgs && o.bsgs_reverse_tiles)throw std::invalid_argument("tile-order applies only to BSGS");
     if(o.work_unit_seconds>300 || (o.work_unit_seconds && o.work_unit_seconds<60) || o.checkpoint_seconds>60 || !o.candidate_capacity ||
        o.candidate_capacity>(bsgs?65536U:1048576U))throw std::invalid_argument("invalid checkpoint interval/candidate capacity");
     if(bsgs){
@@ -376,15 +377,22 @@ CheckpointSummary CheckpointRun::bsgs(Journal& journal,const Grant& grant,const 
     validate_options(o,true);Impl state(journal,grant,detail::binding(targets,table),verifier,o,std::move(observer),std::move(control));
     Cleanup stopped_before_unlock{std::move(cleanup)};
     scheduler::AdaptiveWorkSize units(UInt256(table.memory().m).multiply(UInt256(o.giant_steps)),o.work_unit_seconds,table.memory().m);
+    const bool reverse_tiles=o.bsgs_reverse_tiles.value_or(false);
+    // Saved coverage may leave several disjoint gaps. Visit those gaps in the
+    // chosen direction while keeping journal receipts in actual scalar space.
+    if(reverse_tiles)std::reverse(state.remaining.begin(),state.remaining.end());
     for(const auto& gap:state.remaining){
-        auto cursor=gap.begin();std::optional<ScalarInterval> work;uint64_t active_ns=0;
-        while(cursor<gap.end()){
-            if(!work || cursor==work->end()){
+        auto cursor=reverse_tiles?gap.end():gap.begin();std::optional<ScalarInterval> work;uint64_t active_ns=0;
+        while(reverse_tiles?cursor>gap.begin():cursor<gap.end()){
+            if(!work || cursor==(reverse_tiles?work->begin():work->end())){
                 if(work)units.observed(work->size(),active_ns);
-                work=ScalarInterval(cursor,cursor.add(std::min(units.span(),gap.end().subtract(cursor))));
+                const auto available=reverse_tiles?cursor.subtract(gap.begin()):gap.end().subtract(cursor);
+                const auto span=std::min(units.span(),available);
+                work=reverse_tiles?ScalarInterval(cursor.subtract(span),cursor):ScalarInterval(cursor,cursor.add(span));
                 active_ns=0;state.planned(*work);
             }
-            const auto tile=core::bsgs_tile(ScalarInterval(cursor,work->end()),table.memory().m,o.giant_steps);
+            const auto remaining=reverse_tiles?ScalarInterval(work->begin(),cursor):ScalarInterval(cursor,work->end());
+            const auto tile=core::bsgs_tile(remaining,table.memory().m,o.giant_steps,reverse_tiles);
             uint32_t first=0,limit=o.target_batch;
             while(first<targets.values().size()){
                 if(!state.boundary())return state.summary;
@@ -425,7 +433,7 @@ CheckpointSummary CheckpointRun::bsgs(Journal& journal,const Grant& grant,const 
                 state.flush(matches);
                 active_ns+=uint64_t(std::chrono::duration_cast<std::chrono::nanoseconds>(Clock::now()-started).count());
             }
-            cursor=tile.end();
+            cursor=reverse_tiles?tile.begin():tile.end();
         }
     }
     if(!state.boundary())return state.summary;
