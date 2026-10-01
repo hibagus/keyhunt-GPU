@@ -75,10 +75,14 @@ int checkpoint_command(int argc,char** argv){
                 mode=="address"?core::Hash160Input::BitcoinAddress:core::Hash160Input::Hex,
                 core::hash160_encoding(optional(args,"encoding","both")));
             id=CheckpointRun::create_hash160(journal,required(args,"project"),root,width,targets);
+        }else if(mode=="ethereum"){
+            if(args.count("table")||args.count("host-memory"))throw std::invalid_argument("Ethereum has no BSGS table/memory option");
+            const auto targets=core::EthereumTargets::load(required(args,"targets"));
+            id=CheckpointRun::create_ethereum(journal,required(args,"project"),root,width,targets);
         }else if(mode=="bsgs"){
             const auto targets=core::BsgsPublicKeyTargets::load(required(args,"targets"));const auto table=load_table(args,targets);
             id=CheckpointRun::create_bsgs(journal,required(args,"project"),root,width,targets,table);
-        }else throw std::invalid_argument("checkpoint mode must be xpoint, bsgs, hash160 or address");
+        }else throw std::invalid_argument("checkpoint mode must be xpoint, bsgs, hash160, address or ethereum");
         const auto manifest=journal.manifest(id);
         std::cout<<"{\"project\":"<<quote(id.project)<<",\"job\":"<<quote(hex(id.job.data(),32))
             <<",\"target_digest\":"<<quote(hex(manifest.targets.data(),32))
@@ -108,9 +112,9 @@ int checkpoint_command(int argc,char** argv){
     CheckpointOptions options;
     options.candidate_capacity=uint32_t(number(optional(args,"candidate-capacity","1024"),mode==Mode::Bsgs?65536:1048576));
     options.checkpoint_seconds=uint32_t(decimal(optional(args,"checkpoint-seconds","10"),60));
-    if(mode==Mode::XPoint || mode==Mode::Hash160){
+    if(mode==Mode::XPoint || mode==Mode::Hash160 || mode==Mode::Ethereum){
         for(const auto* key:{"table","giant-batch","target-batch","group-size","host-memory","reserve-bytes"})
-            if(args.count(key))throw std::invalid_argument(std::string("xpoint does not accept --")+key);
+            if(args.count(key))throw std::invalid_argument(std::string("scalar search does not accept --")+key);
         options.xpoint_steps=uint64_t(number(optional(args,"batch-size","1048576"),1048576));
         const auto kernel=optional(args,"kernel","stepped");
         if(kernel!="stepped" && kernel!="direct")throw std::invalid_argument("kernel must be stepped or direct");
@@ -163,6 +167,19 @@ int checkpoint_command(int argc,char** argv){
             if(!executor){
                 const auto setup_start=elapsed();
                 executor=std::make_unique<GpuHash160Executor>(int(device),targets,verifier,gpu);
+                executor_setup_ms=elapsed()-setup_start;preparation_ms=elapsed();
+            }
+            const auto ticket=executor->submit(batch);executor->drain();return executor->take(ticket);
+        },options,notify,[&]{executor.reset();control.close();},control.callbacks());
+    }else if(mode==Mode::Ethereum){
+        const auto targets=core::EthereumTargets::load(required(args,"targets"));
+        EthereumOptions gpu;gpu.max_steps=options.xpoint_steps;gpu.candidate_capacity=options.candidate_capacity;
+        gpu.kernel=optional(args,"kernel","stepped")=="direct"?XPointKernel::Direct:XPointKernel::Stepped;
+        std::unique_ptr<GpuEthereumExecutor> executor;
+        summary=CheckpointRun::ethereum(journal,grant,targets,verifier,[&](const auto& batch){
+            if(!executor){
+                const auto setup_start=elapsed();
+                executor=std::make_unique<GpuEthereumExecutor>(int(device),targets,verifier,gpu);
                 executor_setup_ms=elapsed()-setup_start;preparation_ms=elapsed();
             }
             const auto ticket=executor->submit(batch);executor->drain();return executor->take(ticket);

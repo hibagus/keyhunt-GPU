@@ -206,6 +206,11 @@ Scope CheckpointRun::create_hash160(Journal& journal,const std::string& project,
     const auto scope=journal.create_job(project,{Mode::Hash160,root,width,input.target_digest,input.algorithm_digest});
     journal.bind_search(scope,input);return scope;
 }
+Scope CheckpointRun::create_ethereum(Journal& journal,const std::string& project,ScalarInterval root,UInt256 width,const core::EthereumTargets& targets){
+    const auto input=detail::binding(targets);
+    const auto scope=journal.create_job(project,{Mode::Ethereum,root,width,input.target_digest,input.algorithm_digest});
+    journal.bind_search(scope,input);return scope;
+}
 Scope CheckpointRun::create_bsgs(Journal& journal,const std::string& project,ScalarInterval root,UInt256 width,const core::BsgsPublicKeyTargets& targets,const bsgs::Table& table){
     const auto input=detail::binding(targets,table);
     const auto scope=journal.create_job(project,{Mode::Bsgs,root,width,input.target_digest,input.algorithm_digest});
@@ -220,7 +225,12 @@ CheckpointSummary CheckpointRun::hash160(Journal& journal,const Grant& grant,con
     return Impl::scalar(journal,grant,detail::binding(targets),targets.max_matches_per_scalar(),verifier,run,o,
                         std::move(observer),std::move(cleanup),std::move(control));
 }
-// Both exact scalar searches share ownership, pause/fence, adaptive work and
+CheckpointSummary CheckpointRun::ethereum(Journal& journal,const Grant& grant,const core::EthereumTargets& targets,
+    const core::XPointVerifier& verifier,const XPointRunner& run,CheckpointOptions o,CheckpointObserver observer,CheckpointCleanup cleanup,CheckpointControl control){
+    return Impl::scalar(journal,grant,detail::binding(targets),1,verifier,run,o,
+                        std::move(observer),std::move(cleanup),std::move(control));
+}
+// All exact scalar searches share ownership, pause/fence, adaptive work and
 // commit boundaries. Only target binding and the per-scalar candidate bound vary.
 CheckpointSummary CheckpointRun::Impl::scalar(Journal& journal,const Grant& grant,detail::Binding input,unsigned matches_per_scalar,
     const core::XPointVerifier& verifier,const XPointRunner& run,CheckpointOptions o,CheckpointObserver observer,CheckpointCleanup cleanup,CheckpointControl control){
@@ -231,7 +241,13 @@ CheckpointSummary CheckpointRun::Impl::scalar(Journal& journal,const Grant& gran
     const auto manifest=journal.manifest(grant.scope);
     scheduler::BlockGrid grid(manifest.root,manifest.block_width);
     scheduler::ExecutionIdentity identity;
-    identity.algorithm=state.input.mode==Mode::Hash160?scheduler::WorkAlgorithm::DirectHash160V1:scheduler::WorkAlgorithm::DirectXPointV1;
+    // Explicit dispatch prevents a future/unknown mode inheriting xpoint semantics.
+    switch(state.input.mode){
+    case Mode::XPoint:identity.algorithm=scheduler::WorkAlgorithm::DirectXPointV1;break;
+    case Mode::Hash160:identity.algorithm=scheduler::WorkAlgorithm::DirectHash160V1;break;
+    case Mode::Ethereum:identity.algorithm=scheduler::WorkAlgorithm::DirectEthereumV1;break;
+    default:throw std::invalid_argument("unsupported scalar checkpoint mode");
+    }
     identity.job_digest=grant.scope.job;identity.target_digest=manifest.targets;identity.algorithm_digest=manifest.algorithm;
     if(grant.epoch.size()!=16)throw std::invalid_argument("invalid journal epoch");
     std::copy(grant.epoch.begin(),grant.epoch.end(),identity.assignment_id.begin());

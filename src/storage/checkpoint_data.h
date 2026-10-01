@@ -3,6 +3,7 @@
 #include "keyhunt/storage/journal.h"
 #include "keyhunt/core/bsgs_search.h"
 #include "keyhunt/core/hash160_search.h"
+#include "keyhunt/core/ethereum_search.h"
 
 namespace keyhunt::storage::detail {
 // Versioned encodings are independent of native struct layout and endianness.
@@ -16,6 +17,7 @@ struct Binding {
 };
 Binding binding(const core::XPointTargets& targets);
 Binding binding(const core::Hash160Targets& targets);
+Binding binding(const core::EthereumTargets& targets);
 Binding binding(const core::BsgsPublicKeyTargets& targets,const bsgs::Table& table);
 Binding decode_binding(const Manifest& manifest,const Bytes& configuration,const Bytes& targets);
 struct CheckpointData {

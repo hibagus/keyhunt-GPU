@@ -15,13 +15,14 @@ import time
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "oracle"))
 from oracle_selftest import check_source, run as oracle_run
 from hash160 import hash160
+from ethereum import address as eth_address
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--binary", type=Path, required=True)
 parser.add_argument("--oracle", type=Path, required=True)
 parser.add_argument("--report", type=Path, required=True)
 parser.add_argument("--backend",choices=("hip","cuda"),default="hip")
-parser.add_argument("--mode", choices=("xpoint","bsgs","hash160"), action="append")
+parser.add_argument("--mode", choices=("xpoint","bsgs","hash160","ethereum"), action="append")
 args = parser.parse_args()
 binary = args.binary.resolve()
 report = {"oracle_commit": check_source(), "binary_sha256": hashlib.sha256(binary.read_bytes()).hexdigest(),
@@ -54,7 +55,7 @@ with tempfile.TemporaryDirectory(prefix="kh-c14-hip-") as temporary:
             return invoke([family, action, "--state-dir", directory or state, *words], env=env, ok=ok)
         targets = root / (mode + ".txt")
         values = ({(n,tag):hash160(p,tag) for n,p in public.items() for tag in (1,2)} if mode=="hash160"
-                  else {n: p[2:66] if mode == "xpoint" else p for n, p in public.items()})
+                  else {n: p[2:66] if mode == "xpoint" else eth_address(p) if mode=="ethereum" else p for n, p in public.items()})
         targets.write_text("\n".join(values.values()) + "\n")
         inputs = ["--targets", targets] + (["--table", table] if mode == "bsgs" else [])
         project = local("state", "project-create", "--name", "C14 HIP pause")[0]["project"]

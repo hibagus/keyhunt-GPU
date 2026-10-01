@@ -13,6 +13,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "oracle"))
 from oracle_selftest import check_source, run as oracle_run
 from model import N
 from hash160 import hash160, address
+from ethereum import address as eth_address
 
 parser=argparse.ArgumentParser()
 parser.add_argument("--binary",type=Path,required=True)
@@ -46,7 +47,7 @@ with tempfile.TemporaryDirectory(prefix="keyhunt-c13-cli-") as temporary:
         public=dict(zip(seeds,oracle_run(args.oracle,[f"pub {k:064x}" for k in seeds])))
         hashed=mode in ("hash160","address")
         values=({(k,tag):hash160(p,tag) for k,p in public.items() for tag in (1,2)} if hashed
-                else {k:(p[2:66] if mode=="xpoint" else p) for k,p in public.items()})
+                else {k:(p[2:66] if mode=="xpoint" else eth_address(p) if mode=="ethereum" else p) for k,p in public.items()})
         lines=[address(v) if mode=="address" else v for v in values.values()]
         targets=root/(label+".txt");targets.write_text("\n".join(lines)+"\n")
         common=["--project",project,"--mode",mode,"--range",f"{begin:x}:{end:x}",
@@ -80,6 +81,9 @@ with tempfile.TemporaryDirectory(prefix="keyhunt-c13-cli-") as temporary:
         ("hash160",(1<<128)-3,(1<<128)+16,[(1<<128)-3,(1<<128)+4,(1<<128)+15],"wide-hash160"),
         ("address",N-21,N,[N-21,N-20,N-1,1000],"order-address"),
         ("hash160",100,133,[1000],"no-match-hash160"),
+        ("ethereum",(1<<128)-3,(1<<128)+16,[(1<<128)-3,(1<<128)+4,(1<<128)+15],"wide-ethereum"),
+        ("ethereum",N-21,N,[N-21,N-20,N-1,1000],"order-ethereum"),
+        ("ethereum",100,133,[1000],"no-match-ethereum"),
     ]
     def results(scope):
         return call("checkpoint","results",*scope,"--limit","1000")[0]["results"]
@@ -98,7 +102,7 @@ with tempfile.TemporaryDirectory(prefix="keyhunt-c13-cli-") as temporary:
 
     for mode,begin,end,seeds,label in cases:
         scope,run,expected,targets=prepare(mode,begin,end,seeds,label)
-        bad_target=root/"mismatch.txt";bad_target.write_text(("00"*32 if mode=="xpoint" else "00"*20 if mode=="hash160" else address("00"*20) if mode=="address" else oracle_run(args.oracle,["pub "+"2".zfill(64)])[0])+"\n")
+        bad_target=root/"mismatch.txt";bad_target.write_text(("00"*32 if mode=="xpoint" else "00"*20 if mode in ("hash160","ethereum") else address("00"*20) if mode=="address" else oracle_run(args.oracle,["pub "+"2".zfill(64)])[0])+"\n")
         if not args.hardware:
             error=call("checkpoint","run",*run,ok=False)
             assert "not built" in error.stderr
@@ -111,7 +115,7 @@ with tempfile.TemporaryDirectory(prefix="keyhunt-c13-cli-") as temporary:
                 wrong=run.copy();wrong[wrong.index("--table")+1]=invalid_table
                 assert not call("checkpoint","run",*wrong,ok=False).stdout
             tuned=["--giant-batch","2","--target-batch","4","--candidate-capacity","1"]
-        else:tuned=["--batch-size","32","--candidate-capacity","1" if mode=="xpoint" else "2"]
+        else:tuned=["--batch-size","32","--candidate-capacity","1" if mode in ("xpoint","ethereum") else "2"]
         output=call("checkpoint","run",*run,*tuned)
         summary=output[-1]
         assert summary["complete"] and summary["durability"]=="local"
@@ -152,7 +156,7 @@ with tempfile.TemporaryDirectory(prefix="keyhunt-c13-cli-") as temporary:
             assert sum(int(g["verified_device_steps"],16) for g in groups)==int(mixed["verified_device_steps"],16)
             verify(scope,expected)
             report["cases"].append({"case":label,"summary":mixed})
-        for mode in ("xpoint","bsgs","hash160"):
+        for mode in ("xpoint","bsgs","hash160","ethereum"):
             # The first acknowledgment is durable; kill with many batches still
             # pending, then change launch geometry and replay the exact complement.
             begin,end=1,1048577

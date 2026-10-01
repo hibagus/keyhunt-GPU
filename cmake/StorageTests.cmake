@@ -105,3 +105,20 @@ if(KEYHUNT_ENABLE_GPU)
     set_tests_properties(checkpoint_hash160_pause_${KEYHUNT_GPU_BACKEND} PROPERTIES TIMEOUT 180
         LABELS "${KEYHUNT_GPU_BACKEND};hardware;storage;hash160;recovery" RESOURCE_LOCK gpu_device)
 endif()
+
+add_executable(storage_ethereum_checkpoint_test tests/storage/ethereum_checkpoint.cpp)
+target_include_directories(storage_ethereum_checkpoint_test PRIVATE src/storage)
+target_link_libraries(storage_ethereum_checkpoint_test PRIVATE keyhunt_storage)
+keyhunt_configure_target(storage_ethereum_checkpoint_test)
+add_test(NAME storage_ethereum_checkpoint COMMAND storage_ethereum_checkpoint_test)
+set_tests_properties(storage_ethereum_checkpoint PROPERTIES TIMEOUT 120 LABELS "cpu;storage;ethereum;recovery")
+
+if(KEYHUNT_ENABLE_GPU)
+    add_test(NAME checkpoint_ethereum_pause_${KEYHUNT_GPU_BACKEND} COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/checkpoint_pause_hip.py"
+        --binary $<TARGET_FILE:keyhunt> --oracle $<TARGET_FILE:secp256k1_oracle>
+        --backend ${KEYHUNT_GPU_BACKEND} --mode ethereum
+        --report "${CMAKE_CURRENT_BINARY_DIR}/checkpoint-ethereum-pause-${KEYHUNT_GPU_BACKEND}.json")
+    set_tests_properties(checkpoint_ethereum_pause_${KEYHUNT_GPU_BACKEND} PROPERTIES TIMEOUT 180
+        LABELS "${KEYHUNT_GPU_BACKEND};hardware;storage;ethereum;recovery" RESOURCE_LOCK gpu_device)
+endif()

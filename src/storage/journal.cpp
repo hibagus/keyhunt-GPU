@@ -11,11 +11,11 @@
 
 namespace keyhunt::storage {
 const char* mode_name(Mode mode) {
-    switch(mode){case Mode::XPoint:return "xpoint";case Mode::Bsgs:return "bsgs";case Mode::Hash160:return "hash160";}
+    switch(mode){case Mode::XPoint:return "xpoint";case Mode::Bsgs:return "bsgs";case Mode::Hash160:return "hash160";case Mode::Ethereum:return "ethereum";}
     throw std::invalid_argument("unsupported journal search semantics");
 }
 size_t target_width(Mode mode) {
-    switch(mode){case Mode::XPoint:return 32;case Mode::Bsgs:return 65;case Mode::Hash160:return 21;}
+    switch(mode){case Mode::XPoint:return 32;case Mode::Bsgs:return 65;case Mode::Hash160:return 21;case Mode::Ethereum:return 20;}
     throw std::invalid_argument("unsupported journal target format");
 }
 
@@ -31,7 +31,7 @@ void text(Bytes& to,const std::string& s){number(to,s.size());to.insert(to.end()
 void token(const std::string& s){if(s.empty() || s.size()>128)throw std::invalid_argument("identity/request must have 1..128 ASCII token characters");for(unsigned char c:s)if(!((c>='a'&&c<='z')||(c>='A'&&c<='Z')||(c>='0'&&c<='9')||c=='-'||c=='_'||c=='.'||c=='@'))throw std::invalid_argument("invalid identity/request token");}
 void project_id(const std::string& p){if(p.size()!=36)throw std::invalid_argument("project must be a canonical UUID");for(size_t i=0;i<p.size();++i){if(i==8||i==13||i==18||i==23){if(p[i]!='-')throw std::invalid_argument("invalid project UUID");}else if(!((p[i]>='0'&&p[i]<='9')||(p[i]>='a'&&p[i]<='f')))throw std::invalid_argument("invalid project UUID");}}
 Bytes encode(const Manifest& m){
-    if(m.mode!=Mode::XPoint && m.mode!=Mode::Bsgs && m.mode!=Mode::Hash160)throw std::invalid_argument("unsupported journal search semantics");
+    if(m.mode!=Mode::XPoint && m.mode!=Mode::Bsgs && m.mode!=Mode::Hash160 && m.mode!=Mode::Ethereum)throw std::invalid_argument("unsupported journal search semantics");
     scheduler::BlockGrid grid(m.root,m.block_width);
     Bytes b{'k','h','j','o','b',1,uint8_t(m.mode)};
     append(b,m.root.begin());append(b,m.root.end());append(b,m.block_width);append(b,bytes(m.targets));append(b,bytes(m.algorithm));return b;
