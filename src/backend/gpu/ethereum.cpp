@@ -38,7 +38,7 @@ struct GpuEthereumExecutor::Impl {
             throw std::invalid_argument("ethereum max_steps must be in [1, 1048576]");
         if (!options.candidate_capacity || options.candidate_capacity > 1048576)
             throw std::invalid_argument("ethereum candidate capacity must be in [1, 1048576]");
-        if (options.kernel != XPointKernel::Direct && options.kernel != XPointKernel::Stepped)
+        if (options.kernel != XPointKernel::Direct && options.kernel != XPointKernel::Stepped && options.kernel != XPointKernel::Glv)
             throw std::invalid_argument("unsupported GPU ethereum kernel");
         powers_bytes = options.kernel == XPointKernel::Stepped ? 20*sizeof(gpu::EthereumPower) : 0;
         // One address per scalar; a target can have arbitrarily many preimages.
@@ -150,7 +150,23 @@ Ticket GpuEthereumExecutor::submit(const scheduler::KernelBatch& batch) {
         gpu_check(gpuMemsetAsync(s.device_count,0,sizeof(*s.device_count),s.stream),"gpuMemsetAsync(count)");
         gpu_check(gpuEventRecord(s.start,s.stream),"gpuEventRecord(start)");
         (void)gpuGetLastError();
-        if (s.options.kernel == XPointKernel::Direct) {
+        if (s.options.kernel == XPointKernel::Glv) {
+            // GLV changes only the kG arithmetic. Offset checks, target lookup,
+            // candidate bounds and exact completion counters remain shared.
+            if(s.options.reverse){
+                gpuLaunchKernelGGL(gpu::ethereum_direct<5>,dim3((batch.step_count()+127)/128),dim3(128),0,s.stream,
+                    begin,stride,batch.step_count(),s.device_targets,uint32_t(s.targets.values().size()),
+                    s.device_output,s.capacity,s.device_count);
+            }else if(s.options.stride==core::UInt256(1)){
+                gpuLaunchKernelGGL(gpu::ethereum_direct<3>,dim3((batch.step_count()+127)/128),dim3(128),0,s.stream,
+                    begin,stride,batch.step_count(),s.device_targets,uint32_t(s.targets.values().size()),
+                    s.device_output,s.capacity,s.device_count);
+            }else{
+                gpuLaunchKernelGGL(gpu::ethereum_direct<4>,dim3((batch.step_count()+127)/128),dim3(128),0,s.stream,
+                    begin,stride,batch.step_count(),s.device_targets,uint32_t(s.targets.values().size()),
+                    s.device_output,s.capacity,s.device_count);
+            }
+        } else if (s.options.kernel == XPointKernel::Direct) {
             // Keep the original forward unit-step specialization. Indexed paths
             // use checked multiply-add (forward) or multiply-subtract (reverse).
             if(s.options.reverse){

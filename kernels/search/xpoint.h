@@ -1,5 +1,6 @@
 #pragma once
 #include "common/scalar_stride.h"
+#include "common/glv.h"
 #include "device_runtime.h"
 #include "common/point.h"
 #include "keyhunt/core/xpoint_search.h"
@@ -54,7 +55,8 @@ __device__ inline Scalar offset_scalar(Scalar begin, uint64_t offset) {
 }
 // Every host launch uses 128 threads. HIP retains the C17 register-allocation
 // bound; CUDA retains the independently measured C18 launch declaration.
-// Mapping 0 preserves unit-forward arithmetic; 1 is forward stride, 2 reverse.
+// Mapping modulo 3 selects unit-forward, strided-forward or reverse.
+// Adding 3 selects GLV point multiplication without changing candidate mapping.
 template<unsigned Mapping>
 __global__ KEYHUNT_XPOINT_LAUNCH_BOUND void xpoint_direct(Scalar begin,Scalar stride, uint64_t count, const Field* targets,
     uint32_t target_count, core::XPointCandidate* output, uint32_t capacity,
@@ -62,13 +64,16 @@ __global__ KEYHUNT_XPOINT_LAUNCH_BOUND void xpoint_direct(Scalar begin,Scalar st
     const uint64_t index = uint64_t(blockIdx.x)*blockDim.x+threadIdx.x;
     if (index >= count) return;
     Scalar scalar;
-    if constexpr(Mapping==2){
+    if constexpr(Mapping%3==2){
         if(!reverse_scalar(begin,stride,index,scalar)){atomicExch(&counters->invalid,1U);return;}
-    }else if constexpr(Mapping==1){
+    }else if constexpr(Mapping%3==1){
         if(!stride_scalar(begin,stride,index,scalar)){atomicExch(&counters->invalid,1U);return;}
     }else scalar=offset_scalar(begin,index);
-    Point point;
-    if (!public_key(point,scalar) || is_infinity(point)) {
+    static_assert(Mapping<6,"unsupported direct kernel specialization");
+    Point point;bool valid;
+    if constexpr(Mapping>=3)valid=public_key_glv(point,scalar);
+    else valid=public_key(point,scalar);
+    if (!valid || is_infinity(point)) {
         atomicExch(&counters->invalid,1U);
         return;
     }

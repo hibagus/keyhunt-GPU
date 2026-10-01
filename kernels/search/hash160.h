@@ -1,5 +1,6 @@
 #pragma once
 #include "common/scalar_stride.h"
+#include "common/glv.h"
 #include "device_runtime.h"
 #include "common/point.h"
 #include "common/hash160.h"
@@ -62,7 +63,8 @@ __device__ inline void hash160_normalized_lookup(const Field& px,const Field& py
     Field zz,zzz,x,y;square(zz,zi);mul(zzz,zz,zi);mul(x,px,zz);mul(y,py,zzz);
     hash160_lookup(x,y,offset,encodings,targets,target_count,output,capacity,counters);
 }
-// Mapping 0 preserves unit-forward arithmetic; 1 is forward stride, 2 reverse.
+// Mapping modulo 3 selects unit-forward, strided-forward or reverse.
+// Adding 3 selects GLV point multiplication without changing candidate mapping.
 template<unsigned Mapping>
 __global__ KEYHUNT_HASH160_LAUNCH_BOUND void hash160_direct(Scalar begin,Scalar stride,uint64_t count,uint8_t encodings,
     const Hash160DeviceTarget* targets,uint32_t target_count,core::XPointCandidate* output,
@@ -70,13 +72,16 @@ __global__ KEYHUNT_HASH160_LAUNCH_BOUND void hash160_direct(Scalar begin,Scalar 
     const uint64_t index=uint64_t(blockIdx.x)*blockDim.x+threadIdx.x;
     if(index>=count)return;
     Scalar scalar;
-    if constexpr(Mapping==2){
+    if constexpr(Mapping%3==2){
         if(!reverse_scalar(begin,stride,index,scalar)){atomicExch(&counters->invalid,1U);return;}
-    }else if constexpr(Mapping==1){
+    }else if constexpr(Mapping%3==1){
         if(!stride_scalar(begin,stride,index,scalar)){atomicExch(&counters->invalid,1U);return;}
     }else scalar=hash160_offset_scalar(begin,index);
-    Point point;
-    if(!public_key(point,scalar)||is_infinity(point)){
+    static_assert(Mapping<6,"unsupported direct kernel specialization");
+    Point point;bool valid;
+    if constexpr(Mapping>=3)valid=public_key_glv(point,scalar);
+    else valid=public_key(point,scalar);
+    if(!valid||is_infinity(point)){
         atomicExch(&counters->invalid,1U);return;}
     Field zi;
 #if defined(__CUDACC__)

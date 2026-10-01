@@ -19,7 +19,7 @@ void exercise(const Targets& targets,scheduler::WorkAlgorithm algorithm,const co
         return *scheduler::KernelBatch::plan(work,cursor,count);
     };
     backend::XPointOptions options;options.stride=UInt256(7);options.reverse=true;options.max_steps=33;options.candidate_capacity=1024;
-    for(auto kernel:{backend::XPointKernel::Direct,backend::XPointKernel::Stepped}){
+    for(auto kernel:{backend::XPointKernel::Direct,backend::XPointKernel::Stepped,backend::XPointKernel::Glv}){
         options.kernel=kernel;Executor executor(0,targets,verifier,options);
         // A prepared -SG cache must never execute work from another progression.
         auto wrong=id;wrong.stride_mapping=core::ScalarStride({UInt256(101),UInt256(677)},UInt256(8),true);

@@ -30,27 +30,30 @@ int main() {
             expect_error([&] { backend::GpuXPointExecutor e(0,targets,verifier); },operation);
             ++tested;
         }
-        for (const char* operation : {"gpuMemsetAsync(output)","gpuMemsetAsync(count)","gpuEventRecord(start)",
-            "xpoint launch","gpuEventRecord(kernel_done)","gpuMemcpyAsync(output)","gpuMemcpyAsync(count)",
-            "gpuEventRecord(done)","gpuEventQuery","gpuEventElapsedTime(kernel)","gpuEventElapsedTime(download)",
-            "gpuStreamSynchronize"}) {
-            backend::GpuXPointExecutor e(0,targets,verifier);
-            backend::injected_failure=operation;
-            expect_error([&] { const auto t=e.submit(batch); e.drain(); (void)e.take(t); },operation);
-            expect_error([&] { e.submit(batch); },"executor failed");
-            expect_error([&] { e.drain(); },"executor failed");
-            ++tested;
-        }
-        // Corrupt only downloaded test data, never running hardware or the device.
-        // Each failure must poison the owner and cannot produce a coverage receipt.
-        for (const auto& fault : {std::pair{"steps","counters"},{"count","counters"},{"overflow","counters"},
-            {"guard","guard"},{"offset","record"},{"target","record"},{"false_match","CPU verification"}}) {
-            backend::GpuXPointExecutor e(0,targets,verifier);
-            auto ticket=e.submit(batch); e.drain();
-            backend::xpoint_test_corruption=fault.first;
-            expect_error([&] { (void)e.take(ticket); },fault.second);
-            expect_error([&] { e.submit(batch); },"executor failed");
-            ++tested;
+        for (auto kernel : {backend::XPointKernel::Direct,backend::XPointKernel::Glv,backend::XPointKernel::Stepped}) {
+            backend::XPointOptions options;options.kernel=kernel;
+            for (const char* operation : {"gpuMemsetAsync(output)","gpuMemsetAsync(count)","gpuEventRecord(start)",
+                "xpoint launch","gpuEventRecord(kernel_done)","gpuMemcpyAsync(output)","gpuMemcpyAsync(count)",
+                "gpuEventRecord(done)","gpuEventQuery","gpuEventElapsedTime(kernel)","gpuEventElapsedTime(download)",
+                "gpuStreamSynchronize"}) {
+                backend::GpuXPointExecutor e(0,targets,verifier,options);
+                backend::injected_failure=operation;
+                expect_error([&] { const auto t=e.submit(batch); e.drain(); (void)e.take(t); },operation);
+                expect_error([&] { e.submit(batch); },"executor failed");
+                expect_error([&] { e.drain(); },"executor failed");
+                ++tested;
+            }
+            // Corrupt only downloaded test data, never running hardware or the device.
+            // Each failure must poison the owner and cannot produce a coverage receipt.
+            for (const auto& fault : {std::pair{"steps","counters"},{"count","counters"},{"overflow","counters"},
+                {"guard","guard"},{"offset","record"},{"target","record"},{"false_match","CPU verification"}}) {
+                backend::GpuXPointExecutor e(0,targets,verifier,options);
+                auto ticket=e.submit(batch); e.drain();
+                backend::xpoint_test_corruption=fault.first;
+                expect_error([&] { (void)e.take(ticket); },fault.second);
+                expect_error([&] { e.submit(batch); },"executor failed");
+                ++tested;
+            }
         }
         backend::GpuXPointExecutor recovered(0,targets,verifier);
         auto ticket=recovered.submit(batch); recovered.drain();

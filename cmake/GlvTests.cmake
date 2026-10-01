@@ -18,3 +18,20 @@ foreach(backend IN LISTS glv_backends)
         set_tests_properties(${backend}_glv_oracle PROPERTIES LABELS "${backend};hardware;glv;oracle" RESOURCE_LOCK gpu_device)
     endif()
 endforeach()
+
+# GLV is an execution choice: reuse the independent coordinate/match matrix for
+# unit, positive-stride and reverse ranges without creating new job algorithms.
+foreach(order forward reverse)
+    add_test(NAME glv_${order}_cli COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/strides_cli.py"
+        --binary $<TARGET_FILE:keyhunt> --oracle $<TARGET_FILE:secp256k1_oracle>
+        --kernel glv --order ${order} --report "${CMAKE_CURRENT_BINARY_DIR}/glv-${order}-cli.json" ${stride_cli_args})
+    set_tests_properties(glv_${order}_cli PROPERTIES TIMEOUT 900 LABELS "cpu;glv;oracle")
+    if(KEYHUNT_ENABLE_GPU)
+        set_tests_properties(glv_${order}_cli PROPERTIES LABELS "${KEYHUNT_GPU_BACKEND};hardware;glv;oracle" RESOURCE_LOCK gpu_device)
+    endif()
+endforeach()
+if(KEYHUNT_ENABLE_GPU)
+    add_test(NAME ${KEYHUNT_GPU_BACKEND}_glv_xpoint_executor COMMAND ${KEYHUNT_GPU_BACKEND}_xpoint_executor_test --glv)
+    set_tests_properties(${KEYHUNT_GPU_BACKEND}_glv_xpoint_executor PROPERTIES TIMEOUT 120 LABELS "${KEYHUNT_GPU_BACKEND};hardware;glv" RESOURCE_LOCK gpu_device)
+endif()

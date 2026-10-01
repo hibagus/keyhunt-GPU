@@ -27,7 +27,7 @@ int main(){try{
     for(auto capacity:{0U,1U,1048577U})rejects([&]{auto bad=options;bad.candidate_capacity=capacity;backend::GpuVanityExecutor e(0,targets,verifier,bad);});
     for(auto steps:{0U,1048577U})rejects([&]{auto bad=options;bad.max_steps=steps;backend::GpuVanityExecutor e(0,targets,verifier,bad);});
     rejects([&]{auto bad=options;bad.memory_reserve_bytes=std::numeric_limits<uint64_t>::max();backend::GpuVanityExecutor e(0,targets,verifier,bad);});
-    for(auto kernel:{backend::XPointKernel::Direct,backend::XPointKernel::Stepped}){
+    for(auto kernel:{backend::XPointKernel::Direct,backend::XPointKernel::Stepped,backend::XPointKernel::Glv}){
         options.kernel=kernel;
         backend::GpuVanityExecutor e(0,targets,verifier,options),other(0,targets,verifier,options);
         auto first=plan(begin,257,targets);auto ticket=e.submit(first);
@@ -65,7 +65,7 @@ int main(){try{
             overlapping.push_back(core::vanity_target(address.substr(0,length),tag));
     }
     core::VanityTargets all(overlapping);options.max_steps=2;options.candidate_capacity=all.max_matches_per_scalar();
-    for(auto kernel:{backend::XPointKernel::Direct,backend::XPointKernel::Stepped}){
+    for(auto kernel:{backend::XPointKernel::Direct,backend::XPointKernel::Stepped,backend::XPointKernel::Glv}){
         options.kernel=kernel;backend::GpuVanityExecutor e(0,all,verifier,options);
         auto ticket=e.submit(plan(UInt256(1),2,all));e.drain();auto result=e.take(ticket);
         require(result.overflow&&result.matches.empty()&&!result.verified_steps,"overlap overflow credited prefix");

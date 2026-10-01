@@ -37,7 +37,7 @@ void flush_record() {
 #endif
 }
 int xpoint_command(int argc, char** argv) {
-    const char* usage = "usage: keyhunt xpoint --backend hip|cuda --range START:END --targets FILE [--device N] [--batch-size 1..1048576] [--candidate-capacity 1..1048576] [--kernel stepped|direct] [--stride HEX] [--order forward|reverse] (END is exclusive; NDJSON output)";
+    const char* usage = "usage: keyhunt xpoint --backend hip|cuda --range START:END --targets FILE [--device N] [--batch-size 1..1048576] [--candidate-capacity 1..1048576] [--kernel stepped|direct|glv] [--stride HEX] [--order forward|reverse] (END is exclusive; NDJSON output)";
     std::map<std::string,std::string> args;
     for (int i=2;i<argc;i+=2) {
         if (i+1 == argc) throw std::invalid_argument(usage);
@@ -67,7 +67,7 @@ int xpoint_command(int argc, char** argv) {
     if (device > std::numeric_limits<int>::max() || !batch_size || batch_size > 1048576 || !capacity || capacity > 1048576)
         throw std::invalid_argument(usage);
     const std::string kernel = args.count("--kernel") ? args["--kernel"] : "stepped";
-    if (kernel != "direct" && kernel != "stepped") throw std::invalid_argument(usage);
+    if (kernel != "direct" && kernel != "stepped" && kernel != "glv") throw std::invalid_argument(usage);
 #ifndef KEYHUNT_HAS_GPU
     discover_gpu(); // explicit error; a GPU request never falls back to CPU
     return 2;
@@ -79,7 +79,7 @@ int xpoint_command(int argc, char** argv) {
     XPointOptions options;
     options.stride = stride;options.reverse=reverse;
     options.max_steps = batch_size; options.candidate_capacity = uint32_t(capacity);
-    options.kernel = kernel == "direct" ? XPointKernel::Direct : XPointKernel::Stepped;
+    options.kernel = scalar_search_kernel(kernel);
     GpuXPointExecutor executor(int(device),targets,verifier,options);
     const double preparation_ms = std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-wall_start).count();
     // This standalone owner uses one lazy block, preserving C05 exact arithmetic.

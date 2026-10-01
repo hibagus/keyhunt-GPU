@@ -16,7 +16,7 @@ scheduler::KernelBatch plan(UInt256 begin, uint64_t count, const core::XPointTar
     auto work=*scheduler::WorkUnit::plan(grid,UInt256(1),begin,count,identity);
     return *scheduler::KernelBatch::plan(work,begin,count);
 }
-int main() {
+int main(int argc,char** argv) {
     try {
         require(!backend::discover_gpu().devices.empty(),"hardware required");
         core::XPointVerifier verifier;
@@ -28,6 +28,8 @@ int main() {
         }
         core::XPointTargets targets(values);
         backend::XPointOptions options; options.max_steps=1025; options.candidate_capacity=1025;
+        if(argc==2 && std::string(argv[1])=="--glv") options.kernel=backend::XPointKernel::Glv;
+        else if(argc!=1) throw std::invalid_argument("expected --glv or no arguments");
         rejects([&] { backend::GpuXPointExecutor e(-1,targets,verifier,options); });
         rejects([&] { auto bad=options; bad.max_steps=0; backend::GpuXPointExecutor e(0,targets,verifier,bad); });
         rejects([&] { auto bad=options; bad.max_steps=1048577; backend::GpuXPointExecutor e(0,targets,verifier,bad); });
@@ -60,7 +62,7 @@ int main() {
         const core::XPointTargets paired({half_x});
         backend::XPointOptions compact_options;compact_options.max_steps=3;
         compact_options.candidate_capacity=1048576;
-        for(auto kernel:{backend::XPointKernel::Direct,backend::XPointKernel::Stepped}){
+        for(auto kernel:{backend::XPointKernel::Direct,backend::XPointKernel::Stepped,backend::XPointKernel::Glv}){
             compact_options.kernel=kernel;
             backend::GpuXPointExecutor compact(0,paired,verifier,compact_options);
             auto t=compact.submit(plan(half,3,paired));compact.drain();auto result=compact.take(t);

@@ -27,7 +27,7 @@ int main(){try{
     for(auto capacity:{0U,1048577U})rejects([&]{auto bad=options;bad.candidate_capacity=capacity;backend::GpuEthereumExecutor e(0,targets,verifier,bad);});
     for(auto steps:{0U,1048577U})rejects([&]{auto bad=options;bad.max_steps=steps;backend::GpuEthereumExecutor e(0,targets,verifier,bad);});
     rejects([&]{auto bad=options;bad.memory_reserve_bytes=std::numeric_limits<uint64_t>::max();backend::GpuEthereumExecutor e(0,targets,verifier,bad);});
-    for(auto kernel:{backend::XPointKernel::Direct,backend::XPointKernel::Stepped}){
+    for(auto kernel:{backend::XPointKernel::Direct,backend::XPointKernel::Stepped,backend::XPointKernel::Glv}){
         options.kernel=kernel;
         backend::GpuEthereumExecutor e(0,targets,verifier,options),other(0,targets,verifier,options);
         auto first=plan(begin,257,targets);auto ticket=e.submit(first);

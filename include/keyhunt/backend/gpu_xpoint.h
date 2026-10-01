@@ -1,9 +1,18 @@
 #pragma once
 #include "keyhunt/backend/gpu_executor.h"
 #include "keyhunt/core/xpoint_search.h"
+#include <stdexcept>
+#include <string_view>
 
 namespace keyhunt::backend {
-enum class XPointKernel { Direct, Stepped };
+enum class XPointKernel { Direct, Stepped, Glv };
+// All scalar families share these arithmetic choices; none changes job coverage.
+inline XPointKernel scalar_search_kernel(std::string_view name) {
+    if(name=="direct")return XPointKernel::Direct;
+    if(name=="stepped")return XPointKernel::Stepped;
+    if(name=="glv")return XPointKernel::Glv;
+    throw std::invalid_argument("kernel must be direct, stepped or glv");
+}
 struct XPointOptions {
     uint64_t max_steps = 1048576;
     core::UInt256 stride{1}; // immutable point-cache step; batch identity must agree

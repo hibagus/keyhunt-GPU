@@ -58,3 +58,13 @@ around reciprocal rounding boundaries. Production computes signed lattice
 residuals using low 256-bit two's-complement words and rejects magnitudes outside
 the proven 128-bit bound. Independent point verification confirms the scalar
 relation, rather than accepting a decomposition solely because it is small.
+
+## Search integration finding
+
+Native HIP passed 144 independent four-family search cases across forward and
+reverse order, including unit strides, near-order values, 1,048,576-candidate
+batches, overflow replay and all eight visible ordinals. Executor tests retain
+every-index tails, ownership checks and runtime/download corruption gates for
+all three kernels. The new sparse unit-reverse fixture initially included an
+in-range negative target; moving it outside the interval corrected the expected
+set. Both complete CLI matrices passed after that fixture correction.

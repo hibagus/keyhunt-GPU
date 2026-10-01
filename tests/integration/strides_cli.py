@@ -10,8 +10,9 @@ p=argparse.ArgumentParser()
 for name in ('binary','oracle','report'):p.add_argument('--'+name,type=Path,required=True)
 p.add_argument('--hardware',action='store_true');p.add_argument('--backend',choices=('hip','cuda'),default='hip')
 p.add_argument('--order',choices=('forward','reverse'),default='forward')
+p.add_argument('--kernel',choices=('direct','stepped','glv'))
 a=p.parse_args();binary=str(a.binary.resolve())
-report=dict(order=a.order,passed=False,cases=[],rejections=0,hardware=a.hardware,oracle_commit=check_source(),binary_sha256=hashlib.sha256(a.binary.read_bytes()).hexdigest())
+report=dict(order=a.order,selected_kernel=a.kernel,passed=False,cases=[],rejections=0,hardware=a.hardware,oracle_commit=check_source(),binary_sha256=hashlib.sha256(a.binary.read_bytes()).hexdigest())
 def run(words,ok=True):
     r=subprocess.run([binary,*map(str,words)],capture_output=True,text=True,timeout=120)
     assert (r.returncode==0)==ok,(words,r.stdout,r.stderr)
@@ -28,6 +29,11 @@ with tempfile.TemporaryDirectory(prefix='kh-strides-cli-') as directory:
         ('byte-step',257,257+3*256,256,False),('overflow',1,1+257*2,2,True),
         ('no-hit',3,3+17*2,2,False),('max-batch',1<<128,(1<<128)+1048576*11,11,False)]
     if a.order=='reverse':cases.append(('unit',101,138,1,False))
+    if a.kernel=='glv':
+        if a.order=='forward':cases.append(('unit',101,138,1,False))
+        cases.extend([('unit-wide',1<<192,(1<<192)+37,1,False),
+                      ('unit-order',N-33,N,1,False),
+                      ('unit-max',1<<128,(1<<128)+1048576,1,False)])
     def exercise(mode,kernel,name,begin,end,step,overflow=False,device=0):
         count=1+(end-begin-1)//step
         indices=sorted({1,count,*[1+(1<<bit) for bit in range(20)]}) if count==1048576 else list(range(1,count+1))
@@ -35,7 +41,10 @@ with tempfile.TemporaryDirectory(prefix='kh-strides-cli-') as directory:
         public=oracle_run(a.oracle,[f'pub {k:064x}' for k in scalars])
         # Add an off-lattice target to ensure a contiguous scalar search cannot
         # accidentally satisfy the test. The no-hit case contains only that target.
-        skipped=oracle_run(a.oracle,[f'pub {begin+1:064x}'])[0] if begin+1<N else public[0]
+        # A unit progression has no gaps; its negative target must be outside
+        # the interval, including in sparse maximum-batch expectation sets.
+        skipped_scalar=begin+1 if step!=1 else end if end<N else begin-1
+        skipped=oracle_run(a.oracle,[f'pub {skipped_scalar:064x}'])[0]
         lines,canonical=targets(mode,[skipped] if name=='no-hit' else public+[skipped],overlap=overflow and mode=='vanity')
         file=root/f'{mode}.txt';file.write_text('\n'.join(lines)+'\n')
         bound=2*len({len(line) for line in lines}) if mode=='vanity' else 2 if mode=='hash160' else 1
@@ -47,10 +56,15 @@ with tempfile.TemporaryDirectory(prefix='kh-strides-cli-') as directory:
             r=run(words,False);assert 'not built' in r.stderr
             return
         rows=run(words);start,summary=rows[0],rows[-1]
-        assert start['coordinate_space']==summary['coordinate_space']==('scalar-reverse-index-v1' if a.order=='reverse' else 'scalar-stride-index-v1')
-        assert int(start['begin'],16)==1 and int(start['end_exclusive'],16)==count+1
-        assert int(start['scalar_begin'],16)==begin and int(start['scalar_end_exclusive'],16)==end and int(start['stride'],16)==step
-        cursor=1;found=[];overflows=0
+        mapped=step!=1 or a.order=='reverse'
+        assert start['kernel']==kernel
+        if mapped:
+            assert start['coordinate_space']==summary['coordinate_space']==('scalar-reverse-index-v1' if a.order=='reverse' else 'scalar-stride-index-v1')
+            assert int(start['scalar_begin'],16)==begin and int(start['scalar_end_exclusive'],16)==end and int(start['stride'],16)==step
+        else:assert 'coordinate_space' not in start and 'coordinate_space' not in summary
+        first,last=(1,count+1) if mapped else (begin,end)
+        assert int(start['begin'],16)==first and int(start['end_exclusive'],16)==last
+        cursor=first;found=[];overflows=0
         for row in rows[1:-1]:
             assert row['type']=='batch'
             if row['overflow']:
@@ -58,14 +72,14 @@ with tempfile.TemporaryDirectory(prefix='kh-strides-cli-') as directory:
             assert int(row['begin'],16)==cursor
             cursor=int(row['end_exclusive'],16)
             assert row['verified_steps']==row['device_steps']==cursor-int(row['begin'],16)
-            found.extend((int(m['candidate_index'],16),int(m['scalar'],16),m['target']) for m in row['matches'])
+            found.extend((int(m['candidate_index'],16) if mapped else int(m['scalar'],16)-begin+1,int(m['scalar'],16),m['target']) for m in row['matches'])
         wanted={(i,k,t) for i,k,pub in zip(indices,scalars,public) for t in relations(mode,pub,canonical)}
         assert len(found)==len(wanted) and set(found)==wanted,(mode,kernel,name,len(found),len(wanted))
-        assert cursor==count+1 and summary['complete'] and int(summary['verified_steps'],16)==count
+        assert cursor==last and summary['complete'] and int(summary['verified_steps'],16)==count
         if overflow:assert overflows>0
         report['cases'].append(dict(mode=mode,kernel=kernel,name=name,device=device,count=count,relations=len(wanted),summary=summary))
     for mode in ('xpoint','hash160','ethereum','vanity'):
-        for kernel in ('direct','stepped'):
+        for kernel in ([a.kernel] if a.kernel else ('direct','stepped')):
             for case in cases:exercise(mode,kernel,*case)
         file=root/f'{mode}.txt'
         base=[mode,'--backend',a.backend,'--range','1:101','--targets',file]
@@ -76,12 +90,12 @@ with tempfile.TemporaryDirectory(prefix='kh-strides-cli-') as directory:
     if a.hardware:
         for device in range(len(inventory['devices'])):
             mode=('xpoint','hash160','ethereum','vanity')[device%4]
-            exercise(mode,'stepped','visible-device',101,101+33*7,7,False,device)
+            exercise(mode,a.kernel or 'stepped','visible-device',101,101+33*7,7,False,device)
         # Explicit unit stride must retain the original coordinates and relations.
         for mode in ('xpoint','hash160','ethereum','vanity'):
             file=root/f'{mode}.txt';pub=oracle_run(a.oracle,['pub '+f'{1:064x}'])[0]
             lines,_=targets(mode,[pub]);file.write_text('\n'.join(lines))
-            base=[mode,'--backend',a.backend,'--range','1:4','--targets',file]
+            base=[mode,'--backend',a.backend,'--range','1:4','--targets',file]+(['--kernel',a.kernel] if a.kernel else [])
             old=run(base);unit=run(base+['--stride','1'])
             assert 'coordinate_space' not in unit[0] and old[0]['target_digest']==unit[0]['target_digest']
             assert old[1]['matches']==unit[1]['matches'] and old[-1]['verified_steps']==unit[-1]['verified_steps']
