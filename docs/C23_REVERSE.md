@@ -75,3 +75,14 @@ and report actual scalars separately. BSGS/minikey jobs reject scalar order flag
 The 12-test CPU storage gate passed, covering malformed bindings, changed order,
 lost acknowledgements, dense overflow/replay, pause, backup and completed retries.
 Real HIP checkpoint and changed-visibility pause checks are running at this phase.
+
+## Coordinator implementation evidence
+
+The coordinator now fences reverse jobs with `scalar-reverse-v1` before cached
+replies or durable mutations. The seventh-capability forward worker remains
+supported. Persistent GPU owners bind stride and direction from validated work,
+and fresh per-device self-tests exercise both orders and both kernels.
+Seven CPU coordinator gates passed, including four-family reverse import,
+capability downgrades, exact public results and lost-upload acknowledgement replay.
+The live transport fixture covers unit-stride reverse over HTTPS and wide-stride
+reverse with the server stopped during courier-file execution.

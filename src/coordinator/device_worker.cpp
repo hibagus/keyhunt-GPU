@@ -187,7 +187,7 @@ int run_device(const Options& args){
             if(prepared.x_targets){
                 result=CheckpointRun::xpoint(worker.journal(),*grant,*prepared.x_targets,prepared.verifier,[&](const auto& batch){
                     if(!prepared.x_executor){
-                        XPointOptions gpu;gpu.stride=batch.scalar_stride();gpu.max_steps=limits.xpoint_steps;
+                        XPointOptions gpu;gpu.stride=batch.scalar_stride();gpu.reverse=batch.scalar_reverse();gpu.max_steps=limits.xpoint_steps;
                         gpu.kernel=kernel=="direct"?XPointKernel::Direct:XPointKernel::Stepped;
                         prepared.x_executor=std::make_unique<GpuXPointExecutor>(ordinal,*prepared.x_targets,prepared.verifier,gpu);++prepared.setups;
                     }
@@ -197,7 +197,7 @@ int run_device(const Options& args){
             }else if(prepared.h_targets){
                 result=CheckpointRun::hash160(worker.journal(),*grant,*prepared.h_targets,prepared.verifier,[&](const auto& batch){
                     if(!prepared.h_executor){
-                        Hash160Options gpu;gpu.stride=batch.scalar_stride();gpu.max_steps=limits.xpoint_steps;
+                        Hash160Options gpu;gpu.stride=batch.scalar_stride();gpu.reverse=batch.scalar_reverse();gpu.max_steps=limits.xpoint_steps;
                         gpu.kernel=kernel=="direct"?XPointKernel::Direct:XPointKernel::Stepped;
                         prepared.h_executor=std::make_unique<GpuHash160Executor>(ordinal,*prepared.h_targets,prepared.verifier,gpu);++prepared.setups;
                     }
@@ -216,7 +216,7 @@ int run_device(const Options& args){
             }else if(prepared.v_targets){
                 result=CheckpointRun::vanity(worker.journal(),*grant,*prepared.v_targets,prepared.verifier,[&](const auto& batch){
                     if(!prepared.v_executor){
-                        VanityOptions gpu;gpu.stride=batch.scalar_stride();gpu.max_steps=limits.xpoint_steps;
+                        VanityOptions gpu;gpu.stride=batch.scalar_stride();gpu.reverse=batch.scalar_reverse();gpu.max_steps=limits.xpoint_steps;
                         gpu.kernel=kernel=="direct"?XPointKernel::Direct:XPointKernel::Stepped;
                         prepared.v_executor=std::make_unique<GpuVanityExecutor>(ordinal,*prepared.v_targets,prepared.verifier,gpu);++prepared.setups;
                     }
@@ -226,7 +226,7 @@ int run_device(const Options& args){
             }else if(prepared.e_targets){
                 result=CheckpointRun::ethereum(worker.journal(),*grant,*prepared.e_targets,prepared.verifier,[&](const auto& batch){
                     if(!prepared.e_executor){
-                        EthereumOptions gpu;gpu.stride=batch.scalar_stride();gpu.max_steps=limits.xpoint_steps;
+                        EthereumOptions gpu;gpu.stride=batch.scalar_stride();gpu.reverse=batch.scalar_reverse();gpu.max_steps=limits.xpoint_steps;
                         gpu.kernel=kernel=="direct"?XPointKernel::Direct:XPointKernel::Stepped;
                         prepared.e_executor=std::make_unique<GpuEthereumExecutor>(ordinal,*prepared.e_targets,prepared.verifier,gpu);++prepared.setups;
                     }
@@ -254,7 +254,7 @@ int run_device(const Options& args){
                 {"target_count",prepared.x_targets?prepared.x_targets->values().size():prepared.h_targets?prepared.h_targets->values().size():prepared.e_targets?prepared.e_targets->values().size():prepared.v_targets?prepared.v_targets->values().size():prepared.m_targets?prepared.m_targets->values().size():prepared.b_targets->values().size()},
                 {"m",prepared.table?prepared.table->memory().m:1},
                 {"table_upload_ms",prepared.b_executor?prepared.b_executor->table_upload_ms():0}};
-            if(prepared.stride_mapping)finished["coordinate_space"]="scalar-stride-index-v1";
+            if(prepared.stride_mapping)finished["coordinate_space"]=prepared.stride_mapping->coordinate_space();
             if(prepared.m_targets)finished["coordinate_space"]="minikey-ordinal-v1";
             emit(std::move(finished));
             if(!result.complete)break;

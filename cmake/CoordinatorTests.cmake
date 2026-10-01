@@ -211,3 +211,22 @@ if(KEYHUNT_TEST_APACHE_ROOT AND TARGET keyhunt-worker)
         set_tests_properties(coordinator_strides_cli PROPERTIES LABELS "${KEYHUNT_GPU_BACKEND};hardware;coordinator;stride;integration;recovery" RESOURCE_LOCK gpu_device)
     endif()
 endif()
+
+add_executable(coordinator_reverse_test tests/coordinator/reverse.cpp)
+target_include_directories(coordinator_reverse_test PRIVATE src/storage src/coordinator)
+target_link_libraries(coordinator_reverse_test PRIVATE keyhunt_coordination)
+keyhunt_configure_target(coordinator_reverse_test)
+add_test(NAME coordinator_reverse COMMAND coordinator_reverse_test)
+set_tests_properties(coordinator_reverse PROPERTIES TIMEOUT 180 LABELS "cpu;coordinator;reverse;recovery")
+
+if(KEYHUNT_TEST_APACHE_ROOT AND TARGET keyhunt-worker)
+    add_test(NAME coordinator_reverse_cli COMMAND ${Python3_EXECUTABLE}
+        ${PROJECT_SOURCE_DIR}/tests/coordinator/strides_cli.py
+        --coordinator $<TARGET_FILE:keyhunt-coordinator> --worker $<TARGET_FILE:keyhunt-worker>
+        --keyhunt $<TARGET_FILE:keyhunt> --oracle $<TARGET_FILE:secp256k1_oracle>
+        --apache-root ${KEYHUNT_TEST_APACHE_ROOT} --order reverse --report ${CMAKE_CURRENT_BINARY_DIR}/coordinator-reverse-cli.json ${coordinator_worker_options})
+    set_tests_properties(coordinator_reverse_cli PROPERTIES TIMEOUT 480 LABELS "cpu;coordinator;reverse;integration;recovery")
+    if(KEYHUNT_ENABLE_GPU)
+        set_tests_properties(coordinator_reverse_cli PROPERTIES LABELS "${KEYHUNT_GPU_BACKEND};hardware;coordinator;reverse;integration;recovery" RESOURCE_LOCK gpu_device)
+    endif()
+endif()
