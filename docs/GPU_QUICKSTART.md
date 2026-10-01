@@ -1,7 +1,7 @@
 # Finite HIP and CUDA searches
 
 This example uses the public secp256k1 generator (scalar 1) and two published minikeys. It exercises
-bounded xpoint/BSGS/Bitcoin HASH160/Ethereum/vanity/minikey searches and positive scalar strides, real-input job creation, sequential/random claims,
+bounded xpoint/BSGS/Bitcoin HASH160/Ethereum/vanity/minikey searches with positive scalar strides and reverse traversal, real-input job creation, sequential/random claims,
 local checkpoints and completed-grant replay. Follow [BUILD.md](BUILD.md) first.
 No coordinator is required. Run the blocks below in order in the **same Bash
 shell**, starting in the repository root. Use a new private example directory
@@ -114,6 +114,12 @@ for mode in xpoint hash160 address ethereum vanity; do
     --range 1:301 --stride 3 --targets "$example_dir/$mode.txt" --batch-size 256 \
     > "$example_dir/stride-$mode.ndjson"
 done
+# Reverse visits the same lattice, ending at scalar 1 (candidate index 256).
+for mode in xpoint hash160 address ethereum vanity; do
+  "$KEYHUNT_BIN" "$mode" --backend "$GPU_BACKEND" --device "$GPU_DEVICE" \
+    --range 1:301 --stride 3 --order reverse --targets "$example_dir/$mode.txt" --batch-size 256 \
+    > "$example_dir/reverse-$mode.ndjson"
+done
 for length in 22 30; do
   bounds="$(python3 -c 'import json,sys; o=int(json.load(open(sys.argv[1]))["ordinal"],16); print(f"{o:x}:{o+256:x}")' "$example_dir/minikeys$length-inspect.json")"
   "$KEYHUNT_BIN" minikeys --backend "$GPU_BACKEND" --device "$GPU_DEVICE" \
@@ -153,6 +159,12 @@ Their coverage intervals use candidate indices `[1,257)`, with
 separately from `scalar`. Stride, range endpoints and block width are hexadecimal;
 block width counts candidates for these jobs. See [stride contracts](C23_STRIDES.md).
 
+The `reverse-*` examples visit that same set from `0x2fe` down to `1`.
+They use `coordinate_space:"scalar-reverse-index-v1"`; scalar 1 is candidate
+index 256. Unit-stride reverse jobs also use candidate indices. Checkpoint runs
+recover both stride and order automatically; an explicit conflicting `--order`
+is rejected. See [reverse contracts](C23_REVERSE.md).
+
 These `.ndjson` files contain start, batch and summary records. They are volatile
 output, not restart checkpoints. `gpu-smoke` validates a diagnostic launch and
 explicitly reports no search coverage. Use the next steps for durable work.
@@ -172,9 +184,13 @@ slice makes no throughput or calibrated-width claim.
 ```bash
 "$KEYHUNT_BIN" state project-create --name "GPU quickstart" > "$example_dir/project.json"
 PROJECT="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["project"])' "$example_dir/project.json")"
-for mode in xpoint bsgs hash160 ethereum vanity minikeys22 minikeys30 stride-xpoint stride-hash160 stride-ethereum stride-vanity; do
+for mode in xpoint bsgs hash160 ethereum vanity minikeys22 minikeys30 stride-xpoint stride-hash160 stride-ethereum stride-vanity reverse-xpoint reverse-hash160 reverse-ethereum reverse-vanity; do
   job_mode="$mode"
-  if [[ "$mode" = stride-* ]]; then
+  if [[ "$mode" = reverse-* ]]; then
+    job_mode="${mode#reverse-}"
+    targets="$example_dir/$job_mode.txt"; bounds=1:301; width=100; policy=sequential
+    table_options=(--stride 3 --order reverse)
+  elif [[ "$mode" = stride-* ]]; then
     job_mode="${mode#stride-}"
     targets="$example_dir/$job_mode.txt"; bounds=1:301; width=100; policy=sequential
     table_options=(--stride 3)
@@ -219,10 +235,13 @@ do not allocate remote coordinator work.
 
 <!-- example: durable -->
 ```bash
-for mode in xpoint bsgs hash160 ethereum vanity minikeys22 minikeys30 stride-xpoint stride-hash160 stride-ethereum stride-vanity; do
+for mode in xpoint bsgs hash160 ethereum vanity minikeys22 minikeys30 stride-xpoint stride-hash160 stride-ethereum stride-vanity reverse-xpoint reverse-hash160 reverse-ethereum reverse-vanity; do
   JOB="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["job"])' "$example_dir/$mode-job.json")"
   GRANT="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["assignments"][0]["grant"])' "$example_dir/$mode-grant.json")"
-  if [[ "$mode" = stride-* ]]; then
+  if [[ "$mode" = reverse-* ]]; then
+    # Recover both stride and direction from the immutable job binding.
+    run_options=(--targets "$example_dir/${mode#reverse-}.txt" --batch-size 256)
+  elif [[ "$mode" = stride-* ]]; then
     # Recover the step from the immutable job; no stride flag is required here.
     run_options=(--targets "$example_dir/${mode#stride-}.txt" --batch-size 256)
   elif [ "$mode" = xpoint ]; then
@@ -256,7 +275,7 @@ done
 Each final durable summary reports `complete:true` and `durability:"local"`.
 The xpoint/BSGS/Ethereum results files contain one scalar-1 match; HASH160 contains two
 encoding relations; vanity contains three prefix/encoding relations. Each block is `finished`, and each retry summary reports zero `batches` with the whole range in `resumed_scalars`. Each minikey job finds two encoding relations and uses `resumed_ordinals`/`computed_ordinals` with `coordinate_space:"minikey-ordinal-v1"`.
-Strided retries use `resumed_candidates`/`computed_candidates` and retain the original scalar range and stride.
+Strided and reverse retries use `resumed_candidates`/`computed_candidates` and retain the original scalar range and stride.
 Completion means that assigned block; it does not mean every block of a larger job.
 Local durability does not mean that a coordinator has acknowledged the result.
 
@@ -284,7 +303,7 @@ public fixtures and temporary local state; remove that directory when finished.
 The harness reads the marked Bash blocks above directly; it does not keep another
 copy of the commands. CPU CI runs table preparation, canonical job creation and
 both claim policies. Hardware runs additionally check discovery, launches, all
-thirteen volatile commands and all eleven durable searches/retries:
+eighteen volatile commands and all fifteen durable searches/retries:
 
 ```sh
 python3 tests/integration/gpu_examples.py --binary build/cpu-release/keyhunt \

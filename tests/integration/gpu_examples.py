@@ -35,8 +35,9 @@ def validate(artifacts, hardware, device):
 
     require(one('table-inspect')['m'] == 257, 'wrong baby-table size')
     require(one('preflight')['integrity'] == 'ok', 'preflight audit failed')
-    for mode, width in [('xpoint', 256), ('bsgs', 65536), ('hash160', 256), ('ethereum', 256), ('vanity', 256), ('minikeys22',256), ('minikeys30',256),('stride-xpoint',256),('stride-hash160',256),('stride-ethereum',256),('stride-vanity',256)]:
-        strided=mode.startswith('stride-');family=mode.removeprefix('stride-')
+    for mode, width in [('xpoint', 256), ('bsgs', 65536), ('hash160', 256), ('ethereum', 256), ('vanity', 256), ('minikeys22',256), ('minikeys30',256),('stride-xpoint',256),('stride-hash160',256),('stride-ethereum',256),('stride-vanity',256),('reverse-xpoint',256),('reverse-hash160',256),('reverse-ethereum',256),('reverse-vanity',256)]:
+        reverse=mode.startswith('reverse-');strided=mode.startswith('stride-') or reverse
+        family=mode.removeprefix('stride-').removeprefix('reverse-')
         mini=public_fixture(int(mode[-2:])) if mode.startswith('minikeys') else None
         first=mini['ordinal'] if mini else 1
         private=mini['scalar'] if mini else 1
@@ -87,8 +88,8 @@ def validate(artifacts, hardware, device):
         require(len(results) == expected_count and all(int(r['scalar'], 16) == private for r in results),
                 'wrong durable match set')
         if strided:
-            require(all(int(r['candidate_index'],16)==1 for r in matches+results), 'wrong stride index')
-            require(all(r['coordinate_space']=='scalar-stride-index-v1' for r in
+            require(all(int(r['candidate_index'],16)==(width if reverse else 1) for r in matches+results), 'wrong stride index')
+            require(all(r['coordinate_space']==('scalar-reverse-index-v1' if reverse else 'scalar-stride-index-v1') for r in
                 [artifacts[mode+'.ndjson'][0],summary,durable,retry]+results), 'missing stride coordinate label')
             require({r['target_bytes'] for r in results}=={r['target_bytes'] for r in one(family+'-results')['results']}, 'stride target relation mismatch')
         if mini:
@@ -112,11 +113,12 @@ def validate(artifacts, hardware, device):
                 [m for r in hashed[1:-1] for m in r.get('matches', [])], 'address/hash matches differ')
         require(address[-1]['complete'] and int(address[-1]['verified_steps'], 16) == 256,
                 'address search incomplete')
-        strided_address=artifacts['stride-address.ndjson'];strided_hash=artifacts['stride-hash160.ndjson']
-        require(strided_address[0]['target_digest']==strided_hash[0]['target_digest'], 'strided address/hash identity differs')
-        require([m for r in strided_address[1:-1] for m in r.get('matches',[])]==
-                [m for r in strided_hash[1:-1] for m in r.get('matches',[])], 'strided address/hash relations differ')
-        require(strided_address[-1]['complete'] and int(strided_address[-1]['verified_steps'],16)==256, 'strided address incomplete')
+        for order in ('stride','reverse'):
+            mapped_address=artifacts[order+'-address.ndjson'];mapped_hash=artifacts[order+'-hash160.ndjson']
+            require(mapped_address[0]['target_digest']==mapped_hash[0]['target_digest'], 'strided address/hash identity differs')
+            require([m for r in mapped_address[1:-1] for m in r.get('matches',[])]==
+                    [m for r in mapped_hash[1:-1] for m in r.get('matches',[])], 'strided address/hash relations differ')
+            require(mapped_address[-1]['complete'] and int(mapped_address[-1]['verified_steps'],16)==256, 'strided address incomplete')
         expected = {'01751e76e8199196d454941c45d1b3a323f1433bd6', '0291b24bf9f5288532960ac687abb035127b1d28a5'}
         require({r['target_bytes'] for r in one('hash160-results')['results']} == expected,
                 'durable encoding relation differs from public fixture')
@@ -173,12 +175,12 @@ def main():
                                    text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                    start_new_session=True)
         try:
-            stdout, stderr = process.communicate(timeout=180)
+            stdout, stderr = process.communicate(timeout=300)
         except subprocess.TimeoutExpired:
             # Include native children in timeout cleanup, not just their shell.
             os.killpg(process.pid, signal.SIGKILL)
             stdout, stderr = process.communicate()
-            report['error'] = 'documented commands exceeded 180 seconds'
+            report['error'] = 'documented commands exceeded 300 seconds'
         report.update(exit_code=process.returncode, stdout=stdout, stderr=stderr,
                       wall_seconds=time.monotonic() - started)
         try:
