@@ -37,7 +37,7 @@ int main(){try{
     auto transport=[&](const Json& sent){require(sent["capabilities"].size()==9,"ordinal order changed capabilities");return Json{{"ok",true},{"server_time",now},{"value",repo.request(cert,"POST","/api/v1/sync",sent)}};};
     worker.synchronize(transport);const auto grant=*worker.next("gpu");std::set<UInt256> missing;
     for(const auto& gap:worker.journal().block(grant.scope,grant.block).remaining)for(auto at=gap.begin();at<gap.end();at=at.add(UInt256(1)))missing.insert(at);
-    CheckpointOptions options;options.minikey_reverse=reverse;options.xpoint_steps=17;options.work_unit_seconds=seconds;options.checkpoint_seconds=0;
+    CheckpointOptions options;options.minikey_order=reverse?core::MinikeyOrder::Reverse:core::MinikeyOrder::Forward;options.xpoint_steps=17;options.work_unit_seconds=seconds;options.checkpoint_seconds=0;
     const auto summary=CheckpointRun::minikeys(worker.journal(),grant,targets,verifier,[&](const auto& batch){
         require(batch.ordinal_reverse()==reverse,"recovery direction lost");
         backend::MinikeysResult result{batch,{}};result.device_steps=result.verified_steps=batch.step_count();

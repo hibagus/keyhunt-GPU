@@ -9,10 +9,76 @@ namespace {
 const std::string alphabet="123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
 void check_length(unsigned length){if(length!=22&&length!=30)throw std::invalid_argument("minikey length must be 22 or 30");}
 }
-bool parse_minikey_order(const std::string& value){
-    if(value=="forward")return false;
-    if(value=="reverse")return true;
-    throw std::invalid_argument("ordinal-order must be forward or reverse");
+MinikeyOrder parse_minikey_order(const std::string& value){
+    if(value=="forward")return MinikeyOrder::Forward;
+    if(value=="reverse")return MinikeyOrder::Reverse;
+    if(value=="both-ends")return MinikeyOrder::BothEnds;
+    throw std::invalid_argument("ordinal-order must be forward, reverse or both-ends");
+}
+const char* minikey_order_name(MinikeyOrder order){
+    switch(order){
+    case MinikeyOrder::Forward:return "forward";
+    case MinikeyOrder::Reverse:return "reverse";
+    case MinikeyOrder::BothEnds:return "both-ends";
+    }
+    throw std::invalid_argument("invalid minikey ordinal order");
+}
+MinikeyBatchPlanner::MinikeyBatchPlanner(scheduler::BlockGrid grid,UInt256 block,
+    const std::vector<ScalarInterval>& gaps,scheduler::ExecutionIdentity identity,MinikeyOrder order)
+    :grid_(std::move(grid)),block_(block),identity_(std::move(identity)),order_(order){
+    (void)minikey_order_name(order);
+    if(!scheduler::is_minikeys(identity_.algorithm) || identity_.stride_mapping)
+        throw std::invalid_argument("ordinal planner requires unmapped minikey work");
+    const auto parent=grid_.block(block_);
+    for(size_t i=0;i<gaps.size();++i){
+        if(!parent.contains(gaps[i]) || (i && gaps[i-1].end()>gaps[i].begin()))
+            throw std::invalid_argument("minikey gaps must be sorted, disjoint and inside the block");
+        remaining_.emplace(gaps[i].begin(),Remaining{gaps[i],std::nullopt});
+    }
+}
+std::optional<MinikeyPlannedBatch> MinikeyBatchPlanner::plan(const UInt256& work_span,uint64_t max_steps){
+    if(work_span.is_zero() || !max_steps)throw std::invalid_argument("zero minikey work or batch bound");
+    if(remaining_.empty())return std::nullopt;
+    const bool reverse=order_==MinikeyOrder::Reverse || (order_==MinikeyOrder::BothEnds && high_);
+    auto chosen=reverse?std::prev(remaining_.end()):remaining_.begin();
+    const bool starts_work=!chosen->second.work;
+    if(starts_work){
+        const auto gap=chosen->second.interval;
+        const auto span=std::min({work_span,gap.size(),UInt256(UINT64_MAX)});
+        const ScalarInterval work=reverse?ScalarInterval(gap.end().subtract(span),gap.end()):
+            ScalarInterval(gap.begin(),gap.begin().add(span));
+        remaining_.erase(chosen);
+        if(work.size()!=gap.size()){
+            const ScalarInterval free=reverse?ScalarInterval(gap.begin(),work.begin()):ScalarInterval(work.end(),gap.end());
+            remaining_.emplace(free.begin(),Remaining{free,std::nullopt});
+        }
+        chosen=remaining_.emplace(work.begin(),Remaining{work,work}).first;
+    }
+    // The two fronts may meet in one reservation. Keep its original bounds for
+    // accounting, but clip this batch to the still-unconsumed middle interval.
+    const auto active=chosen->second.interval, reserved=*chosen->second.work;
+    auto identity=identity_;
+    identity.algorithm=reverse?scheduler::WorkAlgorithm::ReverseMinikeysV1:scheduler::WorkAlgorithm::DirectMinikeysV1;
+    const auto work=*scheduler::WorkUnit::plan(grid_,block_,reverse?reserved.end():reserved.begin(),reserved.size().to_uint64(),identity);
+    const auto steps=std::min(UInt256(max_steps),active.size()).to_uint64();
+    const auto batch=*scheduler::KernelBatch::plan(work,reverse?active.end():active.begin(),steps);
+    selected_=chosen->first;
+    pending_=MinikeyPlannedBatch{batch,starts_work,batch.interval().size()==active.size()};
+    return pending_;
+}
+void MinikeyBatchPlanner::accept(){
+    if(!pending_)throw std::logic_error("no minikey batch to accept");
+    const auto chosen=remaining_.find(selected_);
+    const auto entry=chosen->second;
+    const auto& batch=pending_->batch;
+    remaining_.erase(chosen);
+    if(!pending_->finishes_work){
+        const ScalarInterval rest=batch.ordinal_reverse()?ScalarInterval(entry.interval.begin(),batch.interval().begin()):
+            ScalarInterval(batch.interval().end(),entry.interval.end());
+        remaining_.emplace(rest.begin(),Remaining{rest,entry.work});
+    }
+    if(order_==MinikeyOrder::BothEnds)high_=!high_;
+    pending_.reset();
 }
 UInt256 minikey_space_end(unsigned length){
     check_length(length);UInt256 size(1);

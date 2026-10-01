@@ -1,11 +1,39 @@
 #pragma once
 #include "keyhunt/core/hash160_search.h"
+#include <map>
 
 namespace keyhunt::core {
 // Length is repeated in each canonical target so the existing immutable target
 // binding also defines the ordinal space. Mixed lengths within a job are invalid.
 using MinikeyTarget=std::array<uint8_t,22>;
-bool parse_minikey_order(const std::string& value); // true means reverse execution, not a scalar mapping
+enum class MinikeyOrder { Forward, Reverse, BothEnds };
+MinikeyOrder parse_minikey_order(const std::string& value);
+const char* minikey_order_name(MinikeyOrder order);
+
+struct MinikeyPlannedBatch {
+    scheduler::KernelBatch batch;
+    bool starts_work,finishes_work;
+};
+// Select batches over canonical missing ordinal intervals. Planning reserves
+// work but does not consume coverage. Overflow may re-plan with a smaller bound;
+// only accept() consumes the last plan and advances the alternating phase.
+class MinikeyBatchPlanner {
+public:
+    MinikeyBatchPlanner(scheduler::BlockGrid grid,UInt256 block,
+        const std::vector<ScalarInterval>& gaps,scheduler::ExecutionIdentity identity,MinikeyOrder order);
+    std::optional<MinikeyPlannedBatch> plan(const UInt256& work_span,uint64_t max_steps);
+    void accept();
+private:
+    struct Remaining { ScalarInterval interval; std::optional<ScalarInterval> work; };
+    scheduler::BlockGrid grid_;
+    UInt256 block_;
+    scheduler::ExecutionIdentity identity_;
+    MinikeyOrder order_;
+    bool high_=false;
+    std::map<UInt256,Remaining> remaining_;
+    std::optional<MinikeyPlannedBatch> pending_;
+    UInt256 selected_;
+};
 UInt256 minikey_space_end(unsigned length);
 std::string minikey_text(const UInt256& ordinal,unsigned length);
 UInt256 minikey_ordinal(const std::string& text);

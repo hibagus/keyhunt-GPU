@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Independent integer/candidate sequence oracle for both ordinal directions."""
+"""Independent integer/candidate sequence oracle for all ordinal orders."""
 import argparse,hashlib,json,random,subprocess
 from pathlib import Path
 from minikey import text
@@ -8,8 +8,31 @@ for name in ('binary','report'):p.add_argument('--'+name,type=Path,required=True
 a=p.parse_args();cases=[];rng=random.Random(0xC23A)
 def add(length,lo,hi,work,batch,order,limit=1024):
     row=f'{length} {lo:x} {hi:x} {work} {batch} {order} {limit}';expected='invalid'
-    if length in (22,30) and 1<=lo<hi<=58**(length-1)+1 and work>0 and batch>0 and order in ('forward','reverse'):
+    if length in (22,30) and 1<=lo<hi<=58**(length-1)+1 and work>0 and batch>0 and order in ('forward','reverse','both-ends'):
         reverse=order=='reverse';cursor=hi if reverse else lo;work_left=0;items=[]
+        # Independent ownership model: keep immutable reservations and global
+        # uncovered endpoints. It does not use the C++ planner's mutable map.
+        if order=='both-ends':
+            low,high=lo,hi;owners=[]
+            for index in range(limit):
+                if low==high:break
+                reverse=index%2==1;at=high-1 if reverse else low
+                owner=next((v for v in owners if v[0]<=at<v[1]),None)
+                if owner is None:
+                    if reverse:
+                        floor=max([low]+[right for left,right in owners if low<right<=at])
+                        owner=(max(floor,high-work),high)
+                    else:
+                        ceiling=min([high]+[left for left,right in owners if at<left<high])
+                        owner=(low,min(ceiling,low+work))
+                    owners.append(owner)
+                left,right=(max(low,owner[0],high-batch),high) if reverse else (low,min(high,owner[1],low+batch))
+                first,last=(right-1,left) if reverse else (left,right-1)
+                items.append(':'.join([*(f'0x{n:064x}' for n in (left,right,first,last)),text(first,length),text(last,length)]))
+                if reverse:high=left
+                else:low=right
+            expected='ok'+(' '+' '.join(items) if items else '')
+            cases.append((row,expected));return
         for _ in range(limit):
             remaining=cursor-lo if reverse else hi-cursor
             if not remaining:break
@@ -21,7 +44,7 @@ def add(length,lo,hi,work,batch,order,limit=1024):
         expected='ok'+(' '+' '.join(items) if items else '')
     cases.append((row,expected))
 for length in (22,30):
- for order in ('forward','reverse'):
+ for order in ('forward','reverse','both-ends'):
     end=58**(length-1)+1
     for size in range(1,25):
       for work in (1,7,100):

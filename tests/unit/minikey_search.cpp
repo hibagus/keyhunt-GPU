@@ -2,10 +2,69 @@
 #include "keyhunt/core/vanity_search.h"
 #include <iostream>
 #include <stdexcept>
+#include <set>
+#include <map>
 using namespace keyhunt;using core::UInt256;
 void require(bool value,const char* text){if(!value)throw std::runtime_error(text);}
 template<class F>void rejects(F fn){try{fn();}catch(const std::exception&){return;}throw std::runtime_error("missing rejection");}
+// Enumerate small fragmented domains independently. Reservations may grow or
+// shrink between plans, but their union must remain exact and at most two live.
+void check_planner(){
+    using core::MinikeyOrder;using core::ScalarInterval;
+    scheduler::ExecutionIdentity id;id.algorithm=scheduler::WorkAlgorithm::DirectMinikeysV1;
+    id.assignment_id[0]=1;id.assignment_generation=id.executor_generation=1;
+    scheduler::BlockGrid grid({UInt256(1),UInt256(80)},UInt256(79));
+    for(auto order:{MinikeyOrder::Forward,MinikeyOrder::Reverse,MinikeyOrder::BothEnds})
+    for(unsigned geometry=0;geometry<12;++geometry){
+        const std::vector<ScalarInterval> gaps{{UInt256(1),UInt256(14)},{UInt256(19),UInt256(35)},{UInt256(40),UInt256(80)}};
+        core::MinikeyBatchPlanner planner(grid,UInt256(),gaps,id,order);
+        std::set<UInt256> missing,reserved;
+        for(const auto& gap:gaps)for(auto at=gap.begin();at<gap.end();at=at.add(UInt256(1)))missing.insert(at);
+        std::map<UInt256,std::set<UInt256>> active;
+        bool high=order==MinikeyOrder::Reverse;unsigned count=0;
+        rejects([&]{planner.accept();});
+        while(!missing.empty()){
+            const unsigned width=1+(geometry+count*7)%97,bound=1+(geometry*3+count)%11;
+            auto selected=*planner.plan(UInt256(width),bound);const auto work=selected.batch.work().interval();
+            require(selected.batch.ordinal_reverse()==high,"planner changed the expected end");
+            if(selected.starts_work){
+                auto& owned=active[work.begin()];require(owned.empty(),"reservation announced twice");
+                for(auto at=work.begin();at<work.end();at=at.add(UInt256(1))){
+                    require(missing.count(at)&&reserved.insert(at).second,"reservation overlaps saved/owned coverage");owned.insert(at);
+                }
+            }
+            require(active.size()<=2,"unbounded active reservations");
+            // Planning smaller replays must preserve the endpoint and owner,
+            // without announcing the same work twice or changing the phase.
+            if(count%3==0){
+                const auto first=selected.batch.ordinal_at(0);
+                selected=*planner.plan(UInt256(999),1);
+                require(!selected.starts_work&&selected.batch.ordinal_at(0)==first&&selected.batch.ordinal_reverse()==high,"overflow advanced the front");
+                require(selected.batch.work().interval().begin()==work.begin()&&selected.batch.work().interval().end()==work.end(),"replay resized the reservation");
+            }
+            const auto& batch=selected.batch;auto& owned=active.at(work.begin());
+            for(uint64_t i=0;i<batch.step_count();++i){const auto at=batch.ordinal_at(i);
+                require(at==(high?*missing.rbegin():*missing.begin()),"batch skipped/repeated a global endpoint");
+                require(owned.erase(at)==1,"batch escaped its reservation");missing.erase(at);
+            }
+            require(selected.finishes_work==owned.empty(),"work completion differs from its exact union");
+            if(owned.empty())active.erase(work.begin());
+            planner.accept();rejects([&]{planner.accept();});
+            if(order==MinikeyOrder::BothEnds)high=!high;
+            ++count;
+        }
+        require(!planner.plan(UInt256(1),1)&&active.empty(),"planner did not exhaust exact gaps");
+    }
+    rejects([&]{core::MinikeyBatchPlanner p(grid,UInt256(),{{UInt256(20),UInt256(30)},{UInt256(10),UInt256(25)}},id,MinikeyOrder::BothEnds);});
+    rejects([&]{core::MinikeyBatchPlanner p(grid,UInt256(),{{UInt256(79),UInt256(81)}},id,MinikeyOrder::BothEnds);});
+    rejects([&]{core::MinikeyBatchPlanner p(grid,UInt256(),{},id,static_cast<MinikeyOrder>(99));});
+    core::MinikeyBatchPlanner p(grid,UInt256(),{},id,MinikeyOrder::BothEnds);
+    rejects([&]{p.plan(UInt256(),1);});rejects([&]{p.plan(UInt256(1),0);});
+    for(auto name:{"forward","reverse","both-ends"})require(std::string(core::minikey_order_name(core::parse_minikey_order(name)))==name,"order name does not roundtrip");
+    rejects([&]{core::parse_minikey_order("random");});
+}
 int main(){try{
+    check_planner();
     core::XPointVerifier verifier;
     const std::string keys[]={"SzavMBLoXU6kDrqtUVmffv","S6c56bnXQiBjk9mqSYE7ykVQ7NzrRy"};
     const char* scalars[]={"e9873d79c6d87dc0fb6a5778633389f4453213303da61f20bd67fc233aa33262","4c7a9640c72dc2099f23715d0c8a0d8a35f8906e3cab61dd3f78b67bf887c9ab"};

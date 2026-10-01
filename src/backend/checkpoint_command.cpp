@@ -154,7 +154,7 @@ int checkpoint_command(int argc,char** argv){
     CheckpointOptions options;
     if(args.count("ordinal-order")){
         if(mode!=Mode::Minikeys)throw std::invalid_argument("ordinal-order applies only to minikeys");
-        options.minikey_reverse=core::parse_minikey_order(required(args,"ordinal-order"));
+        options.minikey_order=core::parse_minikey_order(required(args,"ordinal-order"));
     }
     if(args.count("tile-order")){
         if(mode!=Mode::Bsgs)throw std::invalid_argument("tile-order applies only to BSGS");

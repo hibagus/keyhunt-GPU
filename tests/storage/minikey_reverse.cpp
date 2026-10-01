@@ -18,7 +18,7 @@ int main(){try{
         const core::MinikeyTargets targets(values);const auto end=ordinals.back().add(UInt256(1));const auto width=end.subtract(begin);
         const auto scope=CheckpointRun::create_minikeys(journal,project,{begin,end},width,targets);
         const auto grant=journal.claim(scope,"worker","claim-"+std::to_string(length)).at(0);
-        CheckpointOptions options;options.xpoint_steps=width.to_uint64();options.candidate_capacity=2;options.checkpoint_seconds=0;options.minikey_reverse=true;
+        CheckpointOptions options;options.xpoint_steps=width.to_uint64();options.candidate_capacity=2;options.checkpoint_seconds=0;options.minikey_order=core::MinikeyOrder::Reverse;
         auto runner=[&](const scheduler::KernelBatch& batch){
             backend::MinikeysResult result{batch,{}};result.device_steps=batch.step_count();
             for(uint64_t i=0;i<batch.step_count();++i){const auto at=batch.ordinal_at(i);
@@ -36,7 +36,7 @@ int main(){try{
         require(interrupted&&cleaned&&journal.results(scope).size()==2,"ordinal result acknowledgment lost");
         const auto retained=journal.block(scope,UInt256()).covered;
         require(retained.size()==1&&retained[0].end()==end&&retained[0].size()==UInt256(1),"overflow credited rejected prefix");
-        options.minikey_reverse=resume_reverse;options.work_unit_seconds=seconds;
+        options.minikey_order=resume_reverse?core::MinikeyOrder::Reverse:core::MinikeyOrder::Forward;options.work_unit_seconds=seconds;
         auto cursor=resume_reverse?end.subtract(UInt256(1)):begin;
         const auto complete=CheckpointRun::minikeys(journal,grant,targets,verifier,[&](const auto& batch){
             require(batch.ordinal_reverse()==resume_reverse,"resume direction not in batch");
@@ -54,7 +54,7 @@ int main(){try{
         const auto input=binding(targets);auto bytes=input.targets;bytes[0]=26;
         rejects([&]{decode_binding(journal.manifest(scope),input.configuration,bytes);});
         auto config=input.configuration;config[17]=1;rejects([&]{decode_binding(journal.manifest(scope),config,input.targets);});
-        options.minikey_reverse=false;
+        options.minikey_order=core::MinikeyOrder::Forward;
         const auto bad_scope=CheckpointRun::create_minikeys(journal,project,{begin,begin.add(UInt256(2))},UInt256(2),targets);
         const auto bad=journal.claim(bad_scope,"worker","bad-"+std::to_string(length)).at(0);options.xpoint_steps=1;options.candidate_capacity=64;
         for(unsigned fault=0;fault<5;++fault){
@@ -87,7 +87,7 @@ int main(){try{
     const auto xt=x_targets(verifier,{1});
     const auto scope=CheckpointRun::create_xpoint(journal,scalar_project,{UInt256(1),UInt256(3)},UInt256(2),xt);
     const auto grant=journal.claim(scope,"worker","wrong-mode").at(0);
-    CheckpointOptions wrong;wrong.minikey_reverse=false;bool executed=false;
+    CheckpointOptions wrong;wrong.minikey_order=core::MinikeyOrder::Forward;bool executed=false;
     rejects([&]{CheckpointRun::xpoint(journal,grant,xt,verifier,[&](const auto& batch){executed=true;return execute(batch,xt,verifier,1024);},wrong);});
     require(!executed&&journal.block(scope,UInt256()).covered.empty(),"ordinal option reached scalar runner");
     std::cout<<"Reverse minikey overflow, lost acknowledgment, both-direction adaptive restart and false-receipt rejection passed\n";
