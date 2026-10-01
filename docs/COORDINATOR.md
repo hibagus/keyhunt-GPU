@@ -532,7 +532,7 @@ explicit tile-order override when it reaches those jobs.
 
 Tile order is execution policy: configuration version 1, protocol, schema 7 and
 the capability list are unchanged. Older BSGS workers can still process the same
-jobs forward. Recovered coverage can contain disjoint intervals; either order
+jobs forward. Recovered coverage can contain disjoint intervals; every tile order
 uses their exact complement. Results stay in actual scalar coordinates. Prepared
 targets and baby tables survive grant handoff; `grant-finish` reports `tile_order`.
 HTTPS and disconnected file transports use the same runner. See

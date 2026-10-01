@@ -188,7 +188,7 @@ only for candidates, not every scalar in a no-match GPU range.
 `checkpoint run --tile-order forward|reverse|both-ends` selects the order of BSGS tiles
 inside a grant; the default is forward. Reverse walks saved uncovered gaps from
 highest to lowest. Both-ends starts low and alternates low/high per completed tile,
-even when active work units interleave. A restart begins low again on the exact
+even when active work units interleave. A both-ends restart begins low again on the exact
 remaining coverage; see [both-ends contracts](C23_BSGS_BOTH_ENDS.md).
 This execution choice can change on restart, including after
 partial-target matches were saved. Job identity, table identity and actual scalar

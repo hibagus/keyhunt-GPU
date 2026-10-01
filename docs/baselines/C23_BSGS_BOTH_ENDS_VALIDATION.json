@@ -1,0 +1,234 @@
+{
+  "passed": true,
+  "recorded_utc": "2026-10-01T16:25:26.286428+00:00",
+  "base_commit": "c155b28a7c4c4570c9444eef92ed40050fe34924",
+  "scope": "Exact low/high alternating BSGS tiles with adaptive work units, scalar checkpoint recovery and HTTPS/disconnected-file workers",
+  "source_phases": {
+    "contract": "117384247d87a9d558cc59b5d2de656ff62ecce5",
+    "native": "41cd059a0fe9c4b3c05b8738ae9caa3a7d748a3e",
+    "checkpoints": "be4c693b012db5ad8d1fb61c03356c689e6e6f0f",
+    "workers": "b1d5daa6d49b1a1d2de59b7a3d0bcb27c4846fa5",
+    "example": "6287e1f3540f26ba8ca97de4274d2fefc776052a"
+  },
+  "metadata": {
+    "hip": {
+      "source_commit": "6287e1f3540f26ba8ca97de4274d2fefc776052a",
+      "platform": "Linux-5.15.0-191-generic-x86_64-with-glibc2.35",
+      "binaries": {
+        "build/hip-release": {
+          "keyhunt": "fd9ce93adeebf9d0b24abb712a7e0ae1b1938a91ecc4485761a7d15cb0c5aa04",
+          "keyhunt-worker": "701dddf0c94e72fa3628775dc63625148df9af2f1d0714e12677ff095b81013b",
+          "keyhunt-coordinator": "c8433f9db355183c124d1ddfdec244677e3b602afad4c8dedbf9356167454cef",
+          "bsgs_tile_probe": "e686d7925633dab7c8327a2e9c8c900712198c148662f8ce297b881a1eac3726",
+          "bsgs_plan_probe": "46ce204a1fdffe911fad463108f948638d789c53962cf48a7347bbffc3c91b6b",
+          "secp256k1_oracle": "8dc92137c49502e3de62cb20a750d1c7f0bd84294ae77c5ccc9c9dffd20763c6",
+          "storage_bsgs_reverse_test": "cad18eb47c87d3032f349141ad5bbc0413302def20f90940296b81254dce4119",
+          "storage_bsgs_both_ends_test": "0fa1bd457e3ee1f935d038fb1f3dafb72aa354b107a9ec1546179dc73ff06cbe",
+          "coordinator_bsgs_reverse_test": "ad43e21dc80b0c9e3f365dd33efba2b8d8fc5844d419a62e25cc2886c890d143"
+        }
+      },
+      "build_configuration": {
+        "build/hip-release": {
+          "CMAKE_BUILD_TYPE": "Release",
+          "CMAKE_CXX_COMPILER": "/usr/bin/c++",
+          "CMAKE_HIP_ARCHITECTURES": "gfx942",
+          "CMAKE_HIP_COMPILER": "/opt/rocm/core-10.0/lib/llvm/bin/clang++",
+          "KEYHUNT_ENABLE_COORDINATOR": "ON",
+          "KEYHUNT_ENABLE_CUDA": "OFF",
+          "KEYHUNT_ENABLE_HIP": "ON",
+          "KEYHUNT_ENABLE_HTTPS_WORKER": "ON",
+          "KEYHUNT_ENABLE_LTO": "ON",
+          "KEYHUNT_ENABLE_SANITIZERS": "OFF",
+          "KEYHUNT_GFX942_CARRY": "ON"
+        }
+      },
+      "compilers": {
+        "/opt/rocm/core-10.0/lib/llvm/bin/clang++": "AMD clang version 23.0.0git (https://github.com/ROCm/llvm-project.git 8f497e0992fb7513f7f78a6f6b6f1056c375e961)\nTarget: x86_64-unknown-linux-gnu\nThread model: posix\nInstalledDir: /opt/rocm/core-10.0/lib/llvm/bin",
+        "/usr/bin/c++": "c++ (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0\nCopyright (C) 2021 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
+      }
+    },
+    "cuda": {
+      "source_commit": "6287e1f3540f26ba8ca97de4274d2fefc776052a",
+      "platform": "Linux-5.15.0-194-generic-x86_64-with-glibc2.35",
+      "binaries": {
+        "build/cuda-h200": {
+          "keyhunt": "696115565d9b92a94a19fcaca9f6277daffcf1f345ec4b1b8baeaf35f1275358",
+          "keyhunt-worker": "7baab1bee295451348c67122bb9c9b581ee37eecf7c795f7ff02a57f1a949b2c",
+          "keyhunt-coordinator": "335dfcce9fa06f9a6bda06e0d36c50a5456ff422650598ee94a6f2aa77ac5473",
+          "bsgs_tile_probe": "6850cf9bac936b4734b2f091e2796fd380bb9312d08eb8ac20fd688cb412ff4c",
+          "bsgs_plan_probe": "0811badaa91cd4b80a1e932dde3b5702c25d693be865372fe32ec1a8c5b0f839",
+          "secp256k1_oracle": "039bdb67a9ec9ca522b193385033bb578e133ecd300ba32da8a550299c07e5e0",
+          "storage_bsgs_reverse_test": "c0915ebd52ebb74c929c64b490bf18149a729037a95982cae5796a0023768e48",
+          "storage_bsgs_both_ends_test": "26604a29dd75208c75ccc1d1958db4ebf546028d2e5ed104f919bd0d2b055f58",
+          "coordinator_bsgs_reverse_test": "d59595497146443f0bab198ae58b2ce7e955c72c06d6b0a601f663e93a6007b5"
+        }
+      },
+      "build_configuration": {
+        "build/cuda-h200": {
+          "CMAKE_BUILD_TYPE": "Release",
+          "CMAKE_CUDA_ARCHITECTURES": "90",
+          "CMAKE_CUDA_COMPILER": "/usr/local/cuda/bin/nvcc",
+          "CMAKE_CXX_COMPILER": "/usr/bin/c++",
+          "KEYHUNT_ENABLE_COORDINATOR": "ON",
+          "KEYHUNT_ENABLE_CUDA": "ON",
+          "KEYHUNT_ENABLE_HIP": "OFF",
+          "KEYHUNT_ENABLE_HTTPS_WORKER": "ON",
+          "KEYHUNT_ENABLE_LTO": "ON",
+          "KEYHUNT_ENABLE_SANITIZERS": "OFF",
+          "KEYHUNT_GFX942_CARRY": "OFF"
+        }
+      },
+      "compilers": {
+        "/usr/bin/c++": "c++ (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0\nCopyright (C) 2021 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.",
+        "/usr/local/cuda/bin/nvcc": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2026 NVIDIA Corporation\nBuilt on Tue_Jun_09_02:43:40_PM_PDT_2026\nCuda compilation tools, release 13.3, V13.3.73\nBuild cuda_13.3.r13.3/compiler.38244171_0"
+      }
+    }
+  },
+  "host_metadata": {
+    "source_commit": "6287e1f3540f26ba8ca97de4274d2fefc776052a",
+    "platform": "Linux-5.15.0-191-generic-x86_64-with-glibc2.35",
+    "binaries": {
+      "build/coordinator-release": {
+        "keyhunt": "921580170a346e4d600390ea6c409d38f6fca880fce7848e67f16927000122ed",
+        "keyhunt-worker": "c1d78c917ed4be8fa2b5be8d03b4bf7dc5d363a1f0d5d06c75353572e806c549",
+        "keyhunt-coordinator": "c8433f9db355183c124d1ddfdec244677e3b602afad4c8dedbf9356167454cef",
+        "bsgs_tile_probe": "e686d7925633dab7c8327a2e9c8c900712198c148662f8ce297b881a1eac3726",
+        "bsgs_plan_probe": "46ce204a1fdffe911fad463108f948638d789c53962cf48a7347bbffc3c91b6b",
+        "secp256k1_oracle": "8dc92137c49502e3de62cb20a750d1c7f0bd84294ae77c5ccc9c9dffd20763c6",
+        "storage_bsgs_reverse_test": "cad18eb47c87d3032f349141ad5bbc0413302def20f90940296b81254dce4119",
+        "storage_bsgs_both_ends_test": "0fa1bd457e3ee1f935d038fb1f3dafb72aa354b107a9ec1546179dc73ff06cbe",
+        "coordinator_bsgs_reverse_test": "ad43e21dc80b0c9e3f365dd33efba2b8d8fc5844d419a62e25cc2886c890d143"
+      },
+      "build/coordinator-sanitizers": {
+        "bsgs_tile_probe": "b0c5a383388dee67cee9362e12ec7c115837f52fd6751ee2caf428c9cd090fec",
+        "bsgs_plan_probe": "82b1e36e7434661abf6c5873edd7ebf341276ccbf47125dadd055422c1da73ed",
+        "secp256k1_oracle": "fc52fc04fe92fc395fb5a4b71b1afde220e9a4f391fd93348535291b09c3aca2",
+        "storage_bsgs_reverse_test": "cc675fd46214d9f430c2e707d44d83fd8b27424cc3a79087a252994a70e84302",
+        "storage_bsgs_both_ends_test": "56c0981f0c953b4d36547aafb7bf73e94ef002361f3812accb324bce5b2b0510",
+        "coordinator_bsgs_reverse_test": "8eaef684f3d5a0501fad2a64f59423e6a331346f1c97777446283e9271262683"
+      }
+    },
+    "build_configuration": {
+      "build/coordinator-release": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_CXX_COMPILER": "/usr/bin/c++",
+        "KEYHUNT_ENABLE_COORDINATOR": "ON",
+        "KEYHUNT_ENABLE_CUDA": "OFF",
+        "KEYHUNT_ENABLE_HIP": "OFF",
+        "KEYHUNT_ENABLE_HTTPS_WORKER": "ON",
+        "KEYHUNT_ENABLE_LTO": "ON",
+        "KEYHUNT_ENABLE_SANITIZERS": "OFF",
+        "KEYHUNT_GFX942_CARRY": "OFF"
+      },
+      "build/coordinator-sanitizers": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_CXX_COMPILER": "/usr/bin/c++",
+        "KEYHUNT_ENABLE_COORDINATOR": "ON",
+        "KEYHUNT_ENABLE_CUDA": "OFF",
+        "KEYHUNT_ENABLE_HIP": "OFF",
+        "KEYHUNT_ENABLE_HTTPS_WORKER": "ON",
+        "KEYHUNT_ENABLE_LTO": "OFF",
+        "KEYHUNT_ENABLE_SANITIZERS": "ON",
+        "KEYHUNT_GFX942_CARRY": "OFF"
+      }
+    },
+    "compilers": {
+      "/usr/bin/c++": "c++ (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0\nCopyright (C) 2021 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
+    }
+  },
+  "checks": {
+    "cpu_release": {
+      "passed": 120,
+      "failed": 0,
+      "log": "local/full-tests.log"
+    },
+    "sanitizers": {
+      "passed": 5,
+      "failed": 0,
+      "log": "local/sanitizers-tests.log"
+    },
+    "hip": {
+      "passed": 16,
+      "failed": 0,
+      "log": "hip/tests.log"
+    },
+    "cuda": {
+      "passed": 16,
+      "failed": 0,
+      "log": "cuda/tests.log"
+    },
+    "local_example": {
+      "passed": 1,
+      "failed": 0,
+      "log": "local/example-tests.log"
+    },
+    "hip_example": {
+      "passed": 1,
+      "failed": 0,
+      "log": "hip/example-tests.log"
+    },
+    "cuda_example": {
+      "passed": 1,
+      "failed": 0,
+      "log": "cuda/example-tests.log"
+    },
+    "hip_shared_example_regression": {
+      "passed": 1,
+      "failed": 0,
+      "log": "hip/reverse-example-final.log"
+    },
+    "initial_sequence_reference": {
+      "passed": 11,
+      "failed": 1,
+      "log": "local/core-tests-initial.log",
+      "resolution": "The independent Python ownership model initially omitted opposite-work reservations and clipping to the remaining middle span. Correcting these reference bounds produces 3164 matching sequences; production already returned the exact clipped tiles."
+    }
+  },
+  "results": {
+    "sequence_oracle_cases": 3164,
+    "bounds_oracle_cases": 5535,
+    "cpu_distinct_passing_gates": 121,
+    "focused_sanitizer_gates": 5,
+    "both_ends_search_cases_per_backend": 22,
+    "both_ends_checkpoint_cases_per_backend": 7,
+    "both_ends_killed_restarts_per_backend": 5,
+    "both_ends_pause_visibility_cases_per_backend": 1,
+    "both_ends_worker_cases_per_backend": 2,
+    "worker_grants_per_case": 2,
+    "forward_reverse_search_regression_cases_per_backend": 34,
+    "forward_reverse_checkpoint_regression_cases_per_backend": 8,
+    "documented_examples_per_backend": 1
+  },
+  "limits": [
+    "Both-ends starts low on each invocation/grant and alternates after full-target tile completion. Overflow does not advance the tile.",
+    "Up to two contiguous adaptive work units may interleave; both ends can finish one unit. Sizing uses each unit's own active time, excluding opposite-end execution and pause.",
+    "A restart resets the phase to low on the exact saved complement; submission sequence need not match an uninterrupted run.",
+    "Job/configuration/table identity, schema 7, protocol, receipts and capabilities are unchanged; scalar --order and coordinator block claims stay separate.",
+    "Both kernels tested on HIP/CUDA; group-8 spot checks cover all eight visible ordinals. No exhaustive kernel-by-ordinal product, fleet scaling or new partition claim.",
+    "Five focused host sanitizer gates; no claim of complete application or device-code sanitizer coverage.",
+    "No new GPU arithmetic or throughput claim. Dance, additional random traversal semantics and alternative minikey orders remain pending.",
+    "Public fixtures only; no enrollment credentials or journal databases archived."
+  ],
+  "artifacts": {
+    "C23_BSGS_BOTH_ENDS_ALGORITHMS.json": {
+      "sha256": "7a9a68cafddf8717fd3e45c3280f78a159f755e85212cba17b3c290f81bb5df6",
+      "bytes": 138874
+    },
+    "C23_BSGS_BOTH_ENDS_RECOVERY.json": {
+      "sha256": "ac561c7b837664004f927fe443d6dc1255249e6a73ec9e0edf60d0595210fdce",
+      "bytes": 181290
+    },
+    "C23_BSGS_BOTH_ENDS_WORKERS.json": {
+      "sha256": "097484a0808b12ea4ed079480b4c76b51a6cbb5d3ba0e3553810ebbc85b7dbd8",
+      "bytes": 120867
+    },
+    "C23_BSGS_BOTH_ENDS_EXAMPLES.json": {
+      "sha256": "4e3d1f3446b3633fec94333d5cadd8744c86cfde765bead7c9a64169763e2e2f",
+      "bytes": 28247
+    },
+    "C23_BSGS_BOTH_ENDS_LOGS.tar.gz": {
+      "sha256": "c4fb04ada134f318741d9cd6efb1dba57c0a252ce1091c1615054b8285a990e4",
+      "bytes": 68229
+    }
+  }
+}
