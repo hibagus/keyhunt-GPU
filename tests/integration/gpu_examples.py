@@ -32,7 +32,7 @@ def validate(artifacts, hardware, device):
 
     require(one('table-inspect')['m'] == 257, 'wrong baby-table size')
     require(one('preflight')['integrity'] == 'ok', 'preflight audit failed')
-    for mode, width in [('xpoint', 256), ('bsgs', 65536), ('hash160', 256)]:
+    for mode, width in [('xpoint', 256), ('bsgs', 65536), ('hash160', 256), ('ethereum', 256)]:
         job = one(mode + '-job')
         assignments = one(mode + '-grant')['assignments']
         require(job['project'] == one('project')['project'], 'wrong project')
@@ -91,6 +91,8 @@ def validate(artifacts, hardware, device):
         expected = {'01751e76e8199196d454941c45d1b3a323f1433bd6', '0291b24bf9f5288532960ac687abb035127b1d28a5'}
         require({r['target_bytes'] for r in one('hash160-results')['results']} == expected,
                 'durable encoding relation differs from public fixture')
+        require(one('ethereum-results')['results'][0]['target_bytes'] == '7e5f4552091a69125d5dfcb7b8c2659029395bdf',
+                'durable Ethereum address differs from public fixture')
         require(one('check')['integrity'] == 'ok', 'final journal audit failed')
         require(one('table-validate')['m'] == 257 and
                 one('table-validate')['checksum'] == one('table-inspect')['checksum'],
