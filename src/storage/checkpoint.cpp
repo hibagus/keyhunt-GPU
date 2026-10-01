@@ -365,7 +365,7 @@ CheckpointSummary CheckpointRun::Impl::scalar(Journal& journal,const Grant& gran
     };
     if(state.input.mode==Mode::Minikeys){
         core::MinikeyBatchPlanner planner(grid,grant.block,state.remaining,identity,o.minikey_order.value_or(core::MinikeyOrder::Forward));
-        // Only the low and high reservations can be active. Charge each one's
+        // At most three reservations (low/high/middle) can be active. Charge each one's
         // execution/replay time separately, even when both fronts share it.
         std::map<UInt256,uint64_t> active_work;
         for(;;){

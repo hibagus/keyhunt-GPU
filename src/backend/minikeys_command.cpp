@@ -37,7 +37,7 @@ void flush_record() {
 #endif
 }
 int minikeys_command(int argc, char** argv) {
-    const char* usage = "usage: keyhunt minikeys --length 22|30 --backend hip|cuda --range START:END --targets FILE [--encoding compressed|uncompressed|both] [--device N] [--batch-size 1..1048576] [--candidate-capacity 1..1048576] [--input-format address|hash160] [--kernel direct] [--ordinal-order forward|reverse|both-ends] (END is exclusive; NDJSON output)";
+    const char* usage = "usage: keyhunt minikeys --length 22|30 --backend hip|cuda --range START:END --targets FILE [--encoding compressed|uncompressed|both] [--device N] [--batch-size 1..1048576] [--candidate-capacity 1..1048576] [--input-format address|hash160] [--kernel direct] [--ordinal-order forward|reverse|both-ends|dance] (END is exclusive; NDJSON output)";
     // Inspection is CPU-only and accepts a public candidate even when its check
     // byte fails: operators can obtain an exact range start without searching.
     if(argc>=3 && std::string(argv[2])=="inspect"){

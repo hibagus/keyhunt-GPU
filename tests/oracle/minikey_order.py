@@ -8,10 +8,36 @@ for name in ('binary','report'):p.add_argument('--'+name,type=Path,required=True
 a=p.parse_args();cases=[];rng=random.Random(0xC23A)
 def add(length,lo,hi,work,batch,order,limit=1024):
     row=f'{length} {lo:x} {hi:x} {work} {batch} {order} {limit}';expected='invalid'
-    if length in (22,30) and 1<=lo<hi<=58**(length-1)+1 and work>0 and batch>0 and order in ('forward','reverse','both-ends'):
+    if length in (22,30) and 1<=lo<hi<=58**(length-1)+1 and work>0 and batch>0 and order in ('forward','reverse','both-ends','dance'):
         reverse=order=='reverse';cursor=hi if reverse else lo;work_left=0;items=[]
         # Independent ownership model: keep immutable reservations and global
         # uncovered endpoints. It does not use the C++ planner's mutable map.
+        if order=='dance':
+            pivot=lo+(hi-lo)//2
+            runs=[(lo,pivot),(pivot,hi)] if lo<pivot else [(lo,hi)]
+            owners=[]
+            for index in range(limit):
+                if not runs:break
+                reverse=index%3==1
+                chosen=len(runs)-1 if reverse else 0
+                if index%3==2:chosen=next((i for i,v in enumerate(runs) if v[0]>=pivot),0)
+                low,high=runs[chosen];at=high-1 if reverse else low
+                owner=next((v for v in owners if v[0]<=at<v[1]),None)
+                if owner is None:
+                    if reverse:
+                        floor=max([low]+[right for left,right in owners if low<right<=at])
+                        owner=(max(floor,high-work),high)
+                    else:
+                        ceiling=min([high]+[left for left,right in owners if at<left<high])
+                        owner=(low,min(ceiling,low+work))
+                    owners.append(owner)
+                left,right=(max(low,owner[0],high-batch),high) if reverse else (low,min(high,owner[1],low+batch))
+                first,last=(right-1,left) if reverse else (left,right-1)
+                items.append(':'.join([*(f'0x{n:064x}' for n in (left,right,first,last)),text(first,length),text(last,length)]))
+                rest=(low,left) if reverse else (right,high)
+                runs[chosen:chosen+1]=[rest] if rest[0]<rest[1] else []
+            expected='ok'+(' '+' '.join(items) if items else '')
+            cases.append((row,expected));return
         if order=='both-ends':
             low,high=lo,hi;owners=[]
             for index in range(limit):
@@ -44,7 +70,7 @@ def add(length,lo,hi,work,batch,order,limit=1024):
         expected='ok'+(' '+' '.join(items) if items else '')
     cases.append((row,expected))
 for length in (22,30):
- for order in ('forward','reverse','both-ends'):
+ for order in ('forward','reverse','both-ends','dance'):
     end=58**(length-1)+1
     for size in range(1,25):
       for work in (1,7,100):

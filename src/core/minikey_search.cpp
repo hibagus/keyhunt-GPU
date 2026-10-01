@@ -13,13 +13,15 @@ MinikeyOrder parse_minikey_order(const std::string& value){
     if(value=="forward")return MinikeyOrder::Forward;
     if(value=="reverse")return MinikeyOrder::Reverse;
     if(value=="both-ends")return MinikeyOrder::BothEnds;
-    throw std::invalid_argument("ordinal-order must be forward, reverse or both-ends");
+    if(value=="dance")return MinikeyOrder::Dance;
+    throw std::invalid_argument("ordinal-order must be forward, reverse, both-ends or dance");
 }
 const char* minikey_order_name(MinikeyOrder order){
     switch(order){
     case MinikeyOrder::Forward:return "forward";
     case MinikeyOrder::Reverse:return "reverse";
     case MinikeyOrder::BothEnds:return "both-ends";
+    case MinikeyOrder::Dance:return "dance";
     }
     throw std::invalid_argument("invalid minikey ordinal order");
 }
@@ -33,14 +35,31 @@ MinikeyBatchPlanner::MinikeyBatchPlanner(scheduler::BlockGrid grid,UInt256 block
     for(size_t i=0;i<gaps.size();++i){
         if(!parent.contains(gaps[i]) || (i && gaps[i-1].end()>gaps[i].begin()))
             throw std::invalid_argument("minikey gaps must be sorted, disjoint and inside the block");
-        remaining_.emplace(gaps[i].begin(),Remaining{gaps[i],std::nullopt});
+    }
+    if(order_==MinikeyOrder::Dance && !gaps.empty()){
+        // Subtract before adding to avoid endpoint overflow. Fixing the pivot
+        // once adds only one gap, even across an enormous ordinal domain.
+        const auto low=gaps.front().begin();
+        pivot_=low.add(gaps.back().end().subtract(low).divmod(UInt256(2)).first);
+    }
+    for(const auto& gap:gaps){
+        if(pivot_ && gap.begin()<*pivot_ && *pivot_<gap.end()){
+            remaining_.emplace(gap.begin(),Remaining{{gap.begin(),*pivot_},std::nullopt});
+            remaining_.emplace(*pivot_,Remaining{{*pivot_,gap.end()},std::nullopt});
+        }else remaining_.emplace(gap.begin(),Remaining{gap,std::nullopt});
     }
 }
 std::optional<MinikeyPlannedBatch> MinikeyBatchPlanner::plan(const UInt256& work_span,uint64_t max_steps){
     if(work_span.is_zero() || !max_steps)throw std::invalid_argument("zero minikey work or batch bound");
     if(remaining_.empty())return std::nullopt;
-    const bool reverse=order_==MinikeyOrder::Reverse || (order_==MinikeyOrder::BothEnds && high_);
+    const bool reverse=order_==MinikeyOrder::Reverse ||
+        ((order_==MinikeyOrder::BothEnds || order_==MinikeyOrder::Dance) && phase_==1);
     auto chosen=reverse?std::prev(remaining_.end()):remaining_.begin();
+    if(order_==MinikeyOrder::Dance && phase_==2){
+        // The pivot split ensures a middle lookup always selects an endpoint.
+        chosen=remaining_.lower_bound(*pivot_);
+        if(chosen==remaining_.end())chosen=remaining_.begin();
+    }
     const bool starts_work=!chosen->second.work;
     if(starts_work){
         const auto gap=chosen->second.interval;
@@ -54,7 +73,7 @@ std::optional<MinikeyPlannedBatch> MinikeyBatchPlanner::plan(const UInt256& work
         }
         chosen=remaining_.emplace(work.begin(),Remaining{work,work}).first;
     }
-    // The two fronts may meet in one reservation. Keep its original bounds for
+    // Different fronts may meet in one reservation. Keep its original bounds for
     // accounting, but clip this batch to the still-unconsumed middle interval.
     const auto active=chosen->second.interval, reserved=*chosen->second.work;
     auto identity=identity_;
@@ -77,7 +96,8 @@ void MinikeyBatchPlanner::accept(){
             ScalarInterval(batch.interval().end(),entry.interval.end());
         remaining_.emplace(rest.begin(),Remaining{rest,entry.work});
     }
-    if(order_==MinikeyOrder::BothEnds)high_=!high_;
+    if(order_==MinikeyOrder::BothEnds)phase_=(phase_+1)%2;
+    else if(order_==MinikeyOrder::Dance)phase_=(phase_+1)%3;
     pending_.reset();
 }
 UInt256 minikey_space_end(unsigned length){

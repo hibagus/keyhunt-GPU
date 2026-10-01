@@ -6,7 +6,7 @@ namespace keyhunt::core {
 // Length is repeated in each canonical target so the existing immutable target
 // binding also defines the ordinal space. Mixed lengths within a job are invalid.
 using MinikeyTarget=std::array<uint8_t,22>;
-enum class MinikeyOrder { Forward, Reverse, BothEnds };
+enum class MinikeyOrder { Forward, Reverse, BothEnds, Dance };
 MinikeyOrder parse_minikey_order(const std::string& value);
 const char* minikey_order_name(MinikeyOrder order);
 
@@ -29,7 +29,8 @@ private:
     UInt256 block_;
     scheduler::ExecutionIdentity identity_;
     MinikeyOrder order_;
-    bool high_=false;
+    unsigned phase_=0;
+    std::optional<UInt256> pivot_;
     std::map<UInt256,Remaining> remaining_;
     std::optional<MinikeyPlannedBatch> pending_;
     UInt256 selected_;

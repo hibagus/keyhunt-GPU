@@ -8,22 +8,35 @@ using namespace keyhunt;using core::UInt256;
 void require(bool value,const char* text){if(!value)throw std::runtime_error(text);}
 template<class F>void rejects(F fn){try{fn();}catch(const std::exception&){return;}throw std::runtime_error("missing rejection");}
 // Enumerate small fragmented domains independently. Reservations may grow or
-// shrink between plans, but their union must remain exact and at most two live.
+// shrink between plans, but their union must remain exact and at most three live.
 void check_planner(){
     using core::MinikeyOrder;using core::ScalarInterval;
     scheduler::ExecutionIdentity id;id.algorithm=scheduler::WorkAlgorithm::DirectMinikeysV1;
     id.assignment_id[0]=1;id.assignment_generation=id.executor_generation=1;
     scheduler::BlockGrid grid({UInt256(1),UInt256(80)},UInt256(79));
-    for(auto order:{MinikeyOrder::Forward,MinikeyOrder::Reverse,MinikeyOrder::BothEnds})
-    for(unsigned geometry=0;geometry<12;++geometry){
-        const std::vector<ScalarInterval> gaps{{UInt256(1),UInt256(14)},{UInt256(19),UInt256(35)},{UInt256(40),UInt256(80)}};
+    for(auto order:{MinikeyOrder::Forward,MinikeyOrder::Reverse,MinikeyOrder::BothEnds,MinikeyOrder::Dance})
+    for(unsigned geometry=0;geometry<12;++geometry)
+    for(unsigned layout=0;layout<3;++layout){
+        const std::vector<ScalarInterval> gaps=layout==0?
+            std::vector<ScalarInterval>{{UInt256(1),UInt256(14)},{UInt256(19),UInt256(35)},{UInt256(40),UInt256(80)}}:
+            layout==1?std::vector<ScalarInterval>{{UInt256(1),UInt256(3)},{UInt256(60),UInt256(80)}}:
+            std::vector<ScalarInterval>{{UInt256(1),UInt256(2)}};
+        const auto pivot=gaps.front().begin().add(gaps.back().end().subtract(gaps.front().begin()).divmod(UInt256(2)).first);
         core::MinikeyBatchPlanner planner(grid,UInt256(),gaps,id,order);
         std::set<UInt256> missing,reserved;
         for(const auto& gap:gaps)for(auto at=gap.begin();at<gap.end();at=at.add(UInt256(1)))missing.insert(at);
         std::map<UInt256,std::set<UInt256>> active;
-        bool high=order==MinikeyOrder::Reverse;unsigned count=0;
+        unsigned count=0;
+        auto endpoint=[&](bool high){
+            if(order==MinikeyOrder::Dance && count%3==2){
+                const auto found=missing.lower_bound(pivot);if(found!=missing.end())return *found;
+            }
+            return high?*missing.rbegin():*missing.begin();
+        };
         rejects([&]{planner.accept();});
         while(!missing.empty()){
+            const bool high=order==MinikeyOrder::Reverse ||
+                (order==MinikeyOrder::BothEnds && count%2==1) || (order==MinikeyOrder::Dance && count%3==1);
             const unsigned width=1+(geometry+count*7)%97,bound=1+(geometry*3+count)%11;
             auto selected=*planner.plan(UInt256(width),bound);const auto work=selected.batch.work().interval();
             require(selected.batch.ordinal_reverse()==high,"planner changed the expected end");
@@ -33,7 +46,8 @@ void check_planner(){
                     require(missing.count(at)&&reserved.insert(at).second,"reservation overlaps saved/owned coverage");owned.insert(at);
                 }
             }
-            require(active.size()<=2,"unbounded active reservations");
+            require(active.size()<=(order==MinikeyOrder::Dance?3U:2U),"unbounded active reservations");
+            require(order!=MinikeyOrder::Dance || !(work.begin()<pivot && pivot<work.end()),"work crossed fixed pivot");
             // Planning smaller replays must preserve the endpoint and owner,
             // without announcing the same work twice or changing the phase.
             if(count%3==0){
@@ -44,13 +58,12 @@ void check_planner(){
             }
             const auto& batch=selected.batch;auto& owned=active.at(work.begin());
             for(uint64_t i=0;i<batch.step_count();++i){const auto at=batch.ordinal_at(i);
-                require(at==(high?*missing.rbegin():*missing.begin()),"batch skipped/repeated a global endpoint");
+                require(at==endpoint(high),"batch skipped/repeated a global endpoint");
                 require(owned.erase(at)==1,"batch escaped its reservation");missing.erase(at);
             }
             require(selected.finishes_work==owned.empty(),"work completion differs from its exact union");
             if(owned.empty())active.erase(work.begin());
             planner.accept();rejects([&]{planner.accept();});
-            if(order==MinikeyOrder::BothEnds)high=!high;
             ++count;
         }
         require(!planner.plan(UInt256(1),1)&&active.empty(),"planner did not exhaust exact gaps");
@@ -60,7 +73,7 @@ void check_planner(){
     rejects([&]{core::MinikeyBatchPlanner p(grid,UInt256(),{},id,static_cast<MinikeyOrder>(99));});
     core::MinikeyBatchPlanner p(grid,UInt256(),{},id,MinikeyOrder::BothEnds);
     rejects([&]{p.plan(UInt256(),1);});rejects([&]{p.plan(UInt256(1),0);});
-    for(auto name:{"forward","reverse","both-ends"})require(std::string(core::minikey_order_name(core::parse_minikey_order(name)))==name,"order name does not roundtrip");
+    for(auto name:{"forward","reverse","both-ends","dance"})require(std::string(core::minikey_order_name(core::parse_minikey_order(name)))==name,"order name does not roundtrip");
     rejects([&]{core::parse_minikey_order("random");});
 }
 int main(){try{
