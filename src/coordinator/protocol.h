@@ -59,8 +59,14 @@ inline Grant grant(const Json& j){
     return {scope(j),wide(str(j,"block",66)),ScalarInterval(wide(str(j,"begin",66)),wide(str(j,"end_exclusive",66))),
         owner,integer(j,"generation",1),integer(j,"expires",1),epoch};
 }
+inline Mode mode(const std::string& name){
+    if(name=="xpoint")return Mode::XPoint;
+    if(name=="bsgs")return Mode::Bsgs;
+    if(name=="hash160")return Mode::Hash160;
+    throw Error(400,"unknown search mode");
+}
 inline Json manifest(const Scope& s,const Manifest& m){
-    return {{"project",s.project},{"job",hex(bytes(s.job))},{"mode",m.mode==Mode::XPoint?"xpoint":"bsgs"},
+    return {{"project",s.project},{"job",hex(bytes(s.job))},{"mode",mode_name(m.mode)},
         {"begin",m.root.begin().hex()},{"end_exclusive",m.root.end().hex()},{"block_width",m.block_width.hex()},
         {"target_digest",hex(bytes(m.targets))},{"algorithm_digest",hex(bytes(m.algorithm))}};
 }

@@ -40,7 +40,7 @@ struct Worker::Impl {
             auto body=parse_json(pending.text(1));tx.commit();return body;
         }
         const auto request=uuid();
-        Json body{{"protocol",1},{"capabilities",{"checkpoint-v1","offline-lease-v1"}},
+        Json body{{"protocol",1},{"capabilities",{"checkpoint-v1","offline-lease-v1","hash160-v1"}},
             {"instance",settings.text(0)},{"request",request},{"jobs",config["jobs"]},
             {"updates",Json::array()},{"returns",Json::array()}};
         std::map<std::string,size_t> entries;
@@ -113,8 +113,7 @@ struct Worker::Impl {
             const auto found=jobs.find({g.scope.project,g.scope.job});
             if(found==jobs.end()||g.owner!=client+"."+str(body,"instance",36)||g.epoch!=epoch)throw std::runtime_error("grant identity mismatch");
             const auto& info=found->second;const auto mode=str(info,"mode",8);
-            if(mode!="xpoint"&&mode!="bsgs")throw std::runtime_error("unsupported remote mode");
-            Manifest manifest{mode=="xpoint"?Mode::XPoint:Mode::Bsgs,
+            Manifest manifest{wire::mode(mode),
                 ScalarInterval(wide(str(info,"begin",66)),wide(str(info,"end_exclusive",66))),wide(str(info,"block_width",66)),
                 wire::digest(str(info,"target_digest",64)),wire::digest(str(info,"algorithm_digest",64))};
             const auto binding=decode_binding(manifest,unhex(str(info,"configuration",100),50),unhex(str(info,"targets",4*1024*1024)));
@@ -365,7 +364,7 @@ Json Worker::execution(const Grant& g)const{
     const auto manifest=s.journal.manifest(g.scope);
     const auto token="v1:"+g.scope.project+":"+hex(bytes(g.scope.job))+":"+g.owner+":"+hex(g.epoch)+":"+
         std::to_string(g.generation)+":"+std::to_string(g.expires)+":"+g.block.hex();
-    return {{"grant",wire::grant(g)},{"token",token},{"mode",manifest.mode==Mode::XPoint?"xpoint":"bsgs"},
+    return {{"grant",wire::grant(g)},{"token",token},{"mode",mode_name(manifest.mode)},
         {"configuration",hex(inputs.blob(0))},{"targets",hex(inputs.blob(1))}};
 }
 Json Worker::status()const{

@@ -33,6 +33,24 @@ Json device_self_test(int ordinal){
         if(result.overflow||result.verified_steps!=33||found!=expected||result.matches.size()!=expected.size())
             throw std::runtime_error("GPU xpoint runtime self-test failed");
     }
+    std::vector<Hash160Target> hashes;
+    for(const auto& point:points)for(uint8_t tag:{1,2})hashes.push_back(hash160_target(point,tag));
+    const Hash160Targets htargets(std::move(hashes));
+    identity.algorithm=scheduler::WorkAlgorithm::DirectHash160V1;identity.target_digest=htargets.digest();
+    const auto hwork=*scheduler::WorkUnit::plan(grid,UInt256(),UInt256(1),33,identity);
+    const auto hbatch=*scheduler::KernelBatch::plan(hwork,UInt256(1),33);
+    // Exercise both serializations and kernel variants in the new process. A
+    // persisted self-test result cannot bypass a changed runtime or binary.
+    for(auto kernel:{backend::XPointKernel::Direct,backend::XPointKernel::Stepped}){
+        backend::Hash160Options options;options.max_steps=64;options.kernel=kernel;options.candidate_capacity=16;
+        backend::GpuHash160Executor gpu(ordinal,htargets,verifier,options);
+        const auto ticket=gpu.submit(hbatch);gpu.drain();const auto result=gpu.take(ticket);
+        std::set<std::pair<UInt256,uint8_t>> found,wanted;
+        for(const auto& scalar:expected)for(uint8_t tag:{1,2})wanted.emplace(scalar,tag);
+        for(const auto& match:result.matches)found.emplace(match.scalar,htargets.values()[match.target][0]);
+        if(result.overflow||result.verified_steps!=33||found!=wanted||result.matches.size()!=wanted.size())
+            throw std::runtime_error("GPU HASH160 runtime self-test failed");
+    }
     const auto table=bsgs::Table::build(16);const BsgsPublicKeyTargets btargets(points);
     const BsgsBatch bb(interval,16,0,4,btargets.digest(),table.checksum());
     for(unsigned group:{1U,8U}){

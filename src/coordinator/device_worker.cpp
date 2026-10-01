@@ -45,9 +45,11 @@ const char* blocked_reason(ExecutionBlocked::Reason reason){
 struct Prepared {
     core::XPointVerifier verifier;
     std::unique_ptr<core::XPointTargets> x_targets;
+    std::unique_ptr<core::Hash160Targets> h_targets;
     std::unique_ptr<core::BsgsPublicKeyTargets> b_targets;
     std::unique_ptr<bsgs::Table> table;
     std::unique_ptr<GpuXPointExecutor> x_executor;
+    std::unique_ptr<GpuHash160Executor> h_executor;
     std::unique_ptr<GpuBsgsExecutor> b_executor;
     std::optional<Scope> scope;
     bool in_flight=false;
@@ -61,10 +63,16 @@ struct Prepared {
         const auto inputs=worker.execution(grant);
         const auto raw=wire::unhex(inputs["targets"].get<std::string>());
         if(raw.size()>host_memory/4)throw std::runtime_error("target preparation exceeds host memory budget");
-        if(inputs["mode"]=="xpoint"){
+        const auto mode=wire::mode(inputs["mode"].get<std::string>());
+        if(raw.empty()||raw.size()%target_width(mode))throw std::runtime_error("invalid device target width");
+        if(mode==Mode::XPoint){
             std::vector<core::XPointBytes> values(raw.size()/32);
             for(size_t i=0;i<values.size();++i)std::copy_n(raw.begin()+i*32,32,values[i].begin());
             x_targets=std::make_unique<core::XPointTargets>(std::move(values));
+        }else if(mode==Mode::Hash160){
+            std::vector<core::Hash160Target> values(raw.size()/21);
+            for(size_t i=0;i<values.size();++i)std::copy_n(raw.begin()+i*21,21,values[i].begin());
+            h_targets=std::make_unique<core::Hash160Targets>(std::move(values));
         }else{
             std::vector<core::UncompressedPublicKey> values(raw.size()/65);
             for(size_t i=0;i<values.size();++i)std::copy_n(raw.begin()+i*65,65,values[i].begin());
@@ -78,7 +86,7 @@ struct Prepared {
         // A returned/taken batch leaves no GPU work referencing its grant. Keep
         // those allocations. On a submission exception, destroy and drain them
         // before CheckpointRun releases the block's OS lock.
-        if(in_flight){x_executor.reset();b_executor.reset();in_flight=false;}
+        if(in_flight){x_executor.reset();h_executor.reset();b_executor.reset();in_flight=false;}
     }
 };
 #endif
@@ -164,6 +172,16 @@ int run_device(const Options& args){
                     prepared.in_flight=true;const auto ticket=prepared.x_executor->submit(batch);
                     prepared.x_executor->drain();auto done=prepared.x_executor->take(ticket);batch_done(done);return done;
                 },limits,notify,cleanup,callbacks);
+            }else if(prepared.h_targets){
+                result=CheckpointRun::hash160(worker.journal(),*grant,*prepared.h_targets,prepared.verifier,[&](const auto& batch){
+                    if(!prepared.h_executor){
+                        Hash160Options gpu;gpu.max_steps=limits.xpoint_steps;
+                        gpu.kernel=kernel=="direct"?XPointKernel::Direct:XPointKernel::Stepped;
+                        prepared.h_executor=std::make_unique<GpuHash160Executor>(ordinal,*prepared.h_targets,prepared.verifier,gpu);++prepared.setups;
+                    }
+                    prepared.in_flight=true;const auto ticket=prepared.h_executor->submit(batch);
+                    prepared.h_executor->drain();auto done=prepared.h_executor->take(ticket);batch_done(done);return done;
+                },limits,notify,cleanup,callbacks);
             }else{
                 result=CheckpointRun::bsgs(worker.journal(),*grant,*prepared.b_targets,*prepared.table,prepared.verifier,[&](const auto& batch){
                     if(!prepared.b_executor){
@@ -181,8 +199,8 @@ int run_device(const Options& args){
                 {"kernel_ms",result.kernel_ms},{"executor_setups",prepared.setups},{"work_units",result.work_units},
                 {"cold",prepared.setups!=setups_before},
                 {"wall_ns",std::chrono::duration_cast<std::chrono::nanoseconds>(Clock::now()-started).count()},
-                {"mode",prepared.x_targets?"xpoint":"bsgs"},
-                {"target_count",prepared.x_targets?prepared.x_targets->values().size():prepared.b_targets->values().size()},
+                {"mode",prepared.x_targets?"xpoint":prepared.h_targets?"hash160":"bsgs"},
+                {"target_count",prepared.x_targets?prepared.x_targets->values().size():prepared.h_targets?prepared.h_targets->values().size():prepared.b_targets->values().size()},
                 {"m",prepared.table?prepared.table->memory().m:1},
                 {"table_upload_ms",prepared.b_executor?prepared.b_executor->table_upload_ms():0}});
             if(!result.complete)break;

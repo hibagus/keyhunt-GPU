@@ -147,6 +147,27 @@ def main():
                 ppath = f"/api/v1/projects/{projects[1]}/jobs/{persistent_job['job']}"
                 assert api("bob", "GET", ppath + "/status")["finished"] == f"0x{2:064x}"
                 assert len(api("bob", "GET", ppath + "/results")) == 1
+                # HASH160 uses the same authenticated queue and persistent owner.
+                # Two serialization relations at scalar 1 must survive both the
+                # local journal and a later server acknowledgment without merging.
+                body.update(mode="hash160",end_exclusive=f"0x{1025:064x}",block_width=f"0x{512:064x}",
+                    configuration=(b"khsearch\x01\x03"+bytes(40)).hex(),
+                    targets="01751e76e8199196d454941c45d1b3a323f1433bd6"+"0291b24bf9f5288532960ac687abb035127b1d28a5")
+                hjob=api("bob","POST",f"/api/v1/projects/{projects[1]}/jobs",body)
+                state=root/"hash160-worker"
+                configure(state,"bob",projects[1],hjob["job"],jobs=[dict(
+                    project=projects[1],job=hjob["job"],devices=["0"],spares=1,policy="sequential")])
+                invoke(state,"sync");supervise(state)
+                events=[json.loads(line) for line in (state/"execution-0.log").read_text().splitlines()]
+                finished=[row for row in events if row.get("type")=="grant-finish"]
+                assert len(finished)==2 and all(row["mode"]=="hash160" and row["executor_setups"]==1 for row in finished)
+                assert finished[0]["cold"] and not finished[1]["cold"]
+                assert invoke(state,"status")["outbox_bytes"]>0 and not invoke(state,"scheduled-sync")["sent"]
+                invoke(state,"sync")
+                hpath=f"/api/v1/projects/{projects[1]}/jobs/{hjob['job']}"
+                assert api("bob","GET",hpath+"/status")["finished"]==f"0x{2:064x}"
+                results=api("bob","GET",hpath+"/results")
+                assert len(results)==2 and all(int(row["scalar"],16)==1 for row in results)
             env.admin("check")
         except BaseException:
             for file in env.directory.glob("*.log"):
@@ -154,7 +175,7 @@ def main():
             raise
         finally:
             env.stop()
-    print("Two native HTTPS workers and project isolation passed" + ("; supervised GPU xpoint/BSGS passed" if args.hardware else ""))
+    print("Two native HTTPS workers and project isolation passed" + ("; supervised GPU xpoint/BSGS/HASH160 passed" if args.hardware else ""))
 
 
 if __name__ == "__main__":

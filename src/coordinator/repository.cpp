@@ -87,8 +87,10 @@ struct Repository::Impl {
     }
     Json sync(const Actor& actor, const Json& body) {
         fields(body, {"protocol", "capabilities", "instance", "request", "jobs", "updates", "returns"});
-        if (integer(body, "protocol") != 1 || body["capabilities"] != Json({"checkpoint-v1", "offline-lease-v1"}))
-            throw Error(426, "protocol 1 and checkpoint-v1/offline-lease-v1 capabilities required");
+        const bool hash160_capable=body["capabilities"]==Json({"checkpoint-v1","offline-lease-v1","hash160-v1"});
+        if (integer(body, "protocol") != 1 || (!hash160_capable &&
+            body["capabilities"] != Json({"checkpoint-v1", "offline-lease-v1"})))
+            throw Error(426, "protocol 1 and supported checkpoint/offline capabilities required");
         const auto instance = str(body, "instance", 36), request = str(body, "request", 64);
         token(instance); token(request);
         const auto owner = actor.client + "." + instance;
@@ -103,7 +105,11 @@ struct Repository::Impl {
             const auto scope = wire::scope(row);
             authorize(actor, scope.project, 2);
             rate(actor.client+"/"+scope.project,120);
-            journal.manifest(scope);
+            const auto manifest=journal.manifest(scope);
+            // Reject incompatible jobs before cached receipts or any reservation,
+            // checkpoint mutation or lease renewal can change durable state.
+            if(manifest.mode==Mode::Hash160 && !hash160_capable)
+                throw Error(426,"HASH160 jobs require hash160-v1 worker capability");
             if (!scopes.emplace(scope.project, scope.job).second) throw Error(400, "duplicate sync job");
             integer(row, "spares", 0, 1);
             const auto policy = str(row, "policy", 16);
@@ -258,8 +264,8 @@ struct Repository::Impl {
     Json create_job(const std::string& project,const Json& body){
         fields(body,{"mode","begin","end_exclusive","block_width","configuration","targets"});
         const auto configuration=unhex(str(body,"configuration",100),50),targets=unhex(str(body,"targets",4*1024*1024));
-        const auto mode=str(body,"mode",8);if(mode!="xpoint"&&mode!="bsgs")throw Error(400,"unknown search mode");
-        Manifest m{mode=="xpoint"?Mode::XPoint:Mode::Bsgs,
+        const auto mode=str(body,"mode",8);
+        Manifest m{wire::mode(mode),
             ScalarInterval(wide(str(body,"begin",66)),wide(str(body,"end_exclusive",66))),wide(str(body,"block_width",66)),{},{}};
         // Bind canonical targets without loading a resident GPU BSGS table. The
         // immutable configuration contains its semantic version, m and checksum.
@@ -269,6 +275,11 @@ struct Repository::Impl {
             std::vector<core::XPointBytes> values(targets.size()/32);
             for(size_t i=0;i<values.size();++i)std::copy_n(targets.begin()+32*i,32,values[i].begin());
             m.targets=core::XPointTargets(std::move(values)).digest();
+        }else if(mode=="hash160"){
+            if(targets.size()%21)throw Error(400,"invalid HASH160 target bytes");
+            std::vector<core::Hash160Target> values(targets.size()/21);
+            for(size_t i=0;i<values.size();++i)std::copy_n(targets.begin()+21*i,21,values[i].begin());
+            m.targets=core::Hash160Targets(std::move(values)).digest();
         }else{
             if(targets.size()%65)throw Error(400,"invalid BSGS target bytes");
             std::vector<core::UncompressedPublicKey> values(targets.size()/65);
