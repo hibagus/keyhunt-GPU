@@ -39,7 +39,7 @@ int main(){try{
                       {"key","/private/key"},{"jobs",jobs}});
     Json request;
     auto transport=[&](const Json& sent){
-        require(sent["capabilities"]==Json({"checkpoint-v1","offline-lease-v1","hash160-v1","ethereum-v1","vanity-v1","minikeys-v1"}),"worker omitted vanity capability");
+        require(sent["capabilities"]==Json({"checkpoint-v1","offline-lease-v1","hash160-v1","ethereum-v1","vanity-v1","minikeys-v1","scalar-stride-v1"}),"worker omitted vanity capability");
         request=sent;const auto response=repo.request(cert,"POST","/api/v1/sync",sent);
         return Json{{"ok",true},{"server_time",now},{"value",response},{"controls",repo.control_snapshot(cert,sent)}};
     };

@@ -89,7 +89,8 @@ struct Repository::Impl {
         fields(body, {"protocol", "capabilities", "instance", "request", "jobs", "updates", "returns"});
         // Preserve the previously shipped capability sets. Each new family
         // must be advertised before a worker can acquire or renew its grants.
-        const bool minikeys_capable=body["capabilities"]==Json({"checkpoint-v1","offline-lease-v1","hash160-v1","ethereum-v1","vanity-v1","minikeys-v1"});
+        const bool stride_capable=body["capabilities"]==Json({"checkpoint-v1","offline-lease-v1","hash160-v1","ethereum-v1","vanity-v1","minikeys-v1","scalar-stride-v1"});
+        const bool minikeys_capable=stride_capable || body["capabilities"]==Json({"checkpoint-v1","offline-lease-v1","hash160-v1","ethereum-v1","vanity-v1","minikeys-v1"});
         const bool vanity_capable=minikeys_capable || body["capabilities"]==Json({"checkpoint-v1","offline-lease-v1","hash160-v1","ethereum-v1","vanity-v1"});
         const bool ethereum_capable=vanity_capable || body["capabilities"]==Json({"checkpoint-v1","offline-lease-v1","hash160-v1","ethereum-v1"});
         const bool hash160_capable=ethereum_capable || body["capabilities"]==Json({"checkpoint-v1","offline-lease-v1","hash160-v1"});
@@ -113,6 +114,8 @@ struct Repository::Impl {
             const auto manifest=journal.manifest(scope);
             // Reject incompatible jobs before cached receipts or any reservation,
             // checkpoint mutation or lease renewal can change durable state.
+            if(journal.stride_mapping(scope) && !stride_capable)
+                throw Error(426,"strided jobs require scalar-stride-v1 worker capability");
             if(manifest.mode==Mode::Hash160 && !hash160_capable)
                 throw Error(426,"HASH160 jobs require hash160-v1 worker capability");
             if(manifest.mode==Mode::Ethereum && !ethereum_capable)
@@ -274,7 +277,7 @@ struct Repository::Impl {
     }
     Json create_job(const std::string& project,const Json& body){
         fields(body,{"mode","begin","end_exclusive","block_width","configuration","targets"});
-        const auto configuration=unhex(str(body,"configuration",100),50),targets=unhex(str(body,"targets",4*1024*1024));
+        const auto configuration=unhex(str(body,"configuration",292)),targets=unhex(str(body,"targets",4*1024*1024));
         const auto mode=str(body,"mode",8);
         Manifest m{wire::mode(mode),
             ScalarInterval(wide(str(body,"begin",66)),wide(str(body,"end_exclusive",66))),wide(str(body,"block_width",66)),{},{}};
@@ -462,10 +465,14 @@ Json Repository::request(const Certificate& cert,const std::string& method,const
                         return n;};
                     after=decimal(parts[7],INT64_MAX);limit=uint32_t(decimal(parts[8],1000));if(!limit)throw Error(400,"empty result page limit");
                 }
-                const auto mode=s.journal.manifest(scope).mode;
+                const auto mode=s.journal.manifest(scope).mode;const auto mapping=s.journal.stride_mapping(scope);
                 for(const auto& row:s.journal.results(scope,after,limit)){
                     Json result{{"id",row.id},{"block",row.block.hex()},{"scalar",row.scalar.hex()},
                         {"target",row.target},{"target_bytes",hex(row.target_bytes)}};
+                    if(mapping){
+                        result["candidate_index"]=row.scalar.hex();result["scalar"]=mapping->scalar(row.scalar).hex();
+                        result["coordinate_space"]="scalar-stride-index-v1";
+                    }
                     if(mode==Mode::Minikeys){
                         // Receipts retain ordinal coordinates. Public result views
                         // name that coordinate and display the derived key separately.

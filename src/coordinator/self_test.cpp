@@ -3,6 +3,35 @@
 #include "keyhunt/storage/checkpoint.h"
 #include <set>
 namespace keyhunt::coordination {
+#ifdef KEYHUNT_HAS_GPU
+namespace {
+template<class Executor,class Targets,class Relation>
+void stride_self_test(int ordinal,const Targets& targets,scheduler::WorkAlgorithm family,
+                      const core::XPointVerifier& verifier,Relation relation){
+    using core::UInt256;
+    const core::ScalarStride mapping({UInt256(1),UInt256(34)},UInt256(8));
+    scheduler::ExecutionIdentity identity;identity.algorithm=scheduler::strided_algorithm(family);
+    identity.stride_mapping=mapping;identity.target_digest=targets.digest();identity.assignment_id[0]=1;
+    identity.assignment_generation=identity.executor_generation=1;
+    const scheduler::BlockGrid grid(mapping.indices(),UInt256(5));
+    const auto work=*scheduler::WorkUnit::plan(grid,UInt256(),UInt256(1),5,identity);
+    const auto batch=*scheduler::KernelBatch::plan(work,UInt256(1),5);
+    std::set<std::pair<UInt256,uint32_t>> expected;
+    for(unsigned i=0;i<5;++i){const auto pub=verifier.derive(UInt256(1+8*i));
+        for(uint32_t t=0;t<targets.values().size();++t)if(relation(pub,targets.values()[t]))expected.emplace(UInt256(i+1),t);
+    }
+    // Fresh direct and stepped execution checks index mapping and SG cache
+    // preparation on the one ordinal owned by this worker process.
+    for(auto kernel:{backend::XPointKernel::Direct,backend::XPointKernel::Stepped}){
+        backend::XPointOptions options;options.stride=UInt256(8);options.max_steps=5;options.candidate_capacity=128;options.kernel=kernel;
+        Executor gpu(ordinal,targets,verifier,options);const auto ticket=gpu.submit(batch);gpu.drain();const auto result=gpu.take(ticket);
+        std::set<std::pair<UInt256,uint32_t>> found;for(const auto& match:result.matches)found.emplace(match.scalar,match.target);
+        if(result.overflow||result.verified_steps!=5||found!=expected||result.matches.size()!=expected.size())
+            throw std::runtime_error("GPU scalar stride runtime self-test failed");
+    }
+}
+}
+#endif
 Json device_self_test(int ordinal){
 #ifndef KEYHUNT_HAS_GPU
     (void)ordinal;throw std::runtime_error("worker self-test requires a GPU build; there is no CPU execution fallback");
@@ -88,6 +117,14 @@ Json device_self_test(int ordinal){
         if(result.overflow||result.verified_steps!=33||found!=wanted||result.matches.size()!=wanted.size())
             throw std::runtime_error("GPU vanity runtime self-test failed");
     }
+    stride_self_test<backend::GpuXPointExecutor>(ordinal,targets,scheduler::WorkAlgorithm::DirectXPointV1,verifier,
+        [](const auto& pub,const auto& target){return std::equal(target.begin(),target.end(),pub.begin()+1);});
+    stride_self_test<backend::GpuHash160Executor>(ordinal,htargets,scheduler::WorkAlgorithm::DirectHash160V1,verifier,
+        [](const auto& pub,const auto& target){return hash160_target(pub,target[0])==target;});
+    stride_self_test<backend::GpuEthereumExecutor>(ordinal,etargets,scheduler::WorkAlgorithm::DirectEthereumV1,verifier,
+        [](const auto& pub,const auto& target){return ethereum_target(pub)==target;});
+    stride_self_test<backend::GpuVanityExecutor>(ordinal,vtargets,scheduler::WorkAlgorithm::DirectVanityV1,verifier,
+        [](const auto& pub,const auto& target){return vanity_matches(bitcoin_address(pub,target[0]),target);});
     // Published minikeys exercise both lengths and encodings. Nearby rejected
     // candidates still count toward exact ordinal coverage in this fresh process.
     for(const char* text:{"SzavMBLoXU6kDrqtUVmffv","S6c56bnXQiBjk9mqSYE7ykVQ7NzrRy"}){

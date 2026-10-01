@@ -40,7 +40,7 @@ struct Worker::Impl {
             auto body=parse_json(pending.text(1));tx.commit();return body;
         }
         const auto request=uuid();
-        Json body{{"protocol",1},{"capabilities",{"checkpoint-v1","offline-lease-v1","hash160-v1","ethereum-v1","vanity-v1","minikeys-v1"}},
+        Json body{{"protocol",1},{"capabilities",{"checkpoint-v1","offline-lease-v1","hash160-v1","ethereum-v1","vanity-v1","minikeys-v1","scalar-stride-v1"}},
             {"instance",settings.text(0)},{"request",request},{"jobs",config["jobs"]},
             {"updates",Json::array()},{"returns",Json::array()}};
         std::map<std::string,size_t> entries;
@@ -116,7 +116,7 @@ struct Worker::Impl {
             Manifest manifest{wire::mode(mode),
                 ScalarInterval(wide(str(info,"begin",66)),wide(str(info,"end_exclusive",66))),wide(str(info,"block_width",66)),
                 wire::digest(str(info,"target_digest",64)),wire::digest(str(info,"algorithm_digest",64))};
-            const auto binding=decode_binding(manifest,unhex(str(info,"configuration",100),50),unhex(str(info,"targets",4*1024*1024)));
+            const auto binding=decode_binding(manifest,unhex(str(info,"configuration",292)),unhex(str(info,"targets",4*1024*1024)));
             // Fresh envelope time prevents an old cached receipt from extending
             // offline execution. Subtract 60 seconds for bounded drain/transport.
             const auto remaining=std::max(int64_t(0),std::min(int64_t(2592000),g.expires-server_time)-60);

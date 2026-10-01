@@ -192,3 +192,22 @@ target_link_libraries(coordinator_minikeys_test PRIVATE keyhunt_coordination)
 keyhunt_configure_target(coordinator_minikeys_test)
 add_test(NAME coordinator_minikeys COMMAND coordinator_minikeys_test)
 set_tests_properties(coordinator_minikeys PROPERTIES TIMEOUT 120 LABELS "cpu;coordinator;minikeys;recovery")
+
+add_executable(coordinator_strides_test tests/coordinator/strides.cpp)
+target_include_directories(coordinator_strides_test PRIVATE src/storage src/coordinator)
+target_link_libraries(coordinator_strides_test PRIVATE keyhunt_coordination)
+keyhunt_configure_target(coordinator_strides_test)
+add_test(NAME coordinator_strides COMMAND coordinator_strides_test)
+set_tests_properties(coordinator_strides PROPERTIES TIMEOUT 180 LABELS "cpu;coordinator;stride;recovery")
+
+if(KEYHUNT_TEST_APACHE_ROOT AND TARGET keyhunt-worker)
+    add_test(NAME coordinator_strides_cli COMMAND ${Python3_EXECUTABLE}
+        ${PROJECT_SOURCE_DIR}/tests/coordinator/strides_cli.py
+        --coordinator $<TARGET_FILE:keyhunt-coordinator> --worker $<TARGET_FILE:keyhunt-worker>
+        --keyhunt $<TARGET_FILE:keyhunt> --oracle $<TARGET_FILE:secp256k1_oracle>
+        --apache-root ${KEYHUNT_TEST_APACHE_ROOT} --report ${CMAKE_CURRENT_BINARY_DIR}/coordinator-strides-cli.json ${coordinator_worker_options})
+    set_tests_properties(coordinator_strides_cli PROPERTIES TIMEOUT 480 LABELS "cpu;coordinator;stride;integration;recovery")
+    if(KEYHUNT_ENABLE_GPU)
+        set_tests_properties(coordinator_strides_cli PROPERTIES LABELS "${KEYHUNT_GPU_BACKEND};hardware;coordinator;stride;integration;recovery" RESOURCE_LOCK gpu_device)
+    endif()
+endif()

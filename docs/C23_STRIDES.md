@@ -108,3 +108,25 @@ CPU tests cover all four families, malformed configurations with recalculated
 digests, mismatch rejection, dense overflow, lost commit acknowledgements, pause,
 backup and completed retry. HIP integration verifies 24 direct/stepped durable
 cases plus four killed-process restarts against independent target relations.
+
+## Coordinator compatibility and worker startup
+
+Workers advertise the seventh capability `scalar-stride-v1`. The coordinator
+checks it before cached responses, allocation, renewal and uploaded checkpoints
+for every included strided job. Existing two-through-six-capability lists remain
+accepted for their supported version-1 jobs. Configuration transport accepts up
+to 146 bytes and delegates exact version/length/canonical validation to the shared
+binding decoder. Schema and protocol numbers remain unchanged.
+
+Persistent owners derive the GPU step from validated work identity and retain
+allocations across grants. Fresh runtime self-tests exercise direct and stepped
+strides for all four families on the selected device. The public results endpoint
+maps stored candidate indices to scalars and labels both coordinates explicitly.
+
+CPU capability/import/lost-reply tests and eight live HIP HTTPS/file cases passed.
+Each hardware case completed two candidate-index blocks with one executor setup,
+then reconciled the exact independent result set. File execution stopped both
+server processes during computation and produced no synchronization log. The
+first new transport fixture omitted the API's required `0x` prefix; it was rejected
+before job creation. Corrected canonical input passed on CPU and HIP. No production
+parser relaxation was needed.
