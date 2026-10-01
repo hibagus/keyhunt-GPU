@@ -542,15 +542,17 @@ HTTPS and disconnected file transports use the same runner. See
 [contract, recovery limits and example](C23_BSGS_REVERSE.md).
 
 
-## Reverse minikey workers
+## Minikey traversal policies
 
-Pass `--ordinal-order reverse` to `tools/coordinator_worker.py` or `keyhunt-worker
-run-device` for minikey queues. Work proceeds downward within each grant, with
-exact ordinal receipts. Block claims remain independent. Targets and GPU
-allocations are reused across grants; `grant-finish` reports `ordinal_order`.
+Pass `--ordinal-order reverse` or `--ordinal-order both-ends` to
+`tools/coordinator_worker.py` or `keyhunt-worker run-device` for minikey queues.
+Reverse works downward; both-ends alternates low/high batches within each grant.
+Receipts retain exact canonical ordinals. Block claims remain independent.
+Targets and GPU allocations are reused across grants; `grant-finish` reports `ordinal_order`.
 
 The existing `minikeys-v1` capability remains sufficient because job identity and
 receipt coordinates are unchanged. Old minikey-capable workers can recover the
 same job forward. Both HTTPS and disconnected file workers support the option;
 non-minikey jobs reject an explicit ordinal-order override. See
-[coverage and recovery contracts](C23_MINIKEYS_REVERSE.md).
+[reverse coverage](C23_MINIKEYS_REVERSE.md) and
+[both-ends recovery contracts](C23_MINIKEYS_BOTH_ENDS.md).

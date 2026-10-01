@@ -165,6 +165,8 @@ separately. The legacy `-m minikeys` path remains unchanged. See the
 `--ordinal-order reverse` selects descending minikey execution for native searches,
 checkpoint runs and workers. It preserves actual ordinal receipts and can change
 on restart; see [the reverse contract and example](C23_MINIKEYS_REVERSE.md).
+`--ordinal-order both-ends` alternates low/high batches, starting low after each
+restart. Overflow retains the current end; see [the both-ends contract](C23_MINIKEYS_BOTH_ENDS.md).
 
 
 ## Exact-range GLV scalar multiplication

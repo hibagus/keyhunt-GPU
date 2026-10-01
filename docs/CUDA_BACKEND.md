@@ -329,11 +329,15 @@ recreating the job. See the
 [contract and executable HIP/CUDA example](C23_BSGS_REVERSE.md).
 
 
-## Reverse minikey ordinals
+## Minikey ordinal orders
 
 Native minikey search, checkpoint runs and workers accept `--ordinal-order
-forward|reverse` for both lengths and all supported encodings. Reverse changes
+forward|reverse|both-ends` for both lengths and all supported encodings. Reverse changes
 batch selection and lane-to-ordinal mapping, preserving canonical ordinal
-receipts. Direction is read from each submission and can change after recovery.
+receipts. Both-ends alternates successful batches between low and high endpoints,
+including inside adaptive work reservations. Direction is read from each
+submission and can change after recovery.
 See [the contract/example](C23_MINIKEYS_REVERSE.md) and
-[HIP/H200 acceptance](C23_MINIKEYS_REVERSE_VALIDATION.md).
+[reverse acceptance](C23_MINIKEYS_REVERSE_VALIDATION.md), plus
+[both-ends contracts](C23_MINIKEYS_BOTH_ENDS.md) and
+[HIP/H200 acceptance](C23_MINIKEYS_BOTH_ENDS_VALIDATION.md).

@@ -138,7 +138,10 @@ See [dance contracts](C23_BSGS_DANCE.md).
 Minikey workers accept `--ordinal-order reverse`, selecting contiguous work units
 and batches from the highest uncovered ordinal downward. Each device retains
 its target allocation across grants. Restart may switch direction without
-changing job identity or exact receipts. See [reverse minikey contracts](C23_MINIKEYS_REVERSE.md).
+changing job identity or exact receipts. `--ordinal-order both-ends` alternates
+successful batches at the two endpoints of each device grant, even inside
+large adaptive work units. Overflow replays at the same end. See
+[reverse](C23_MINIKEYS_REVERSE.md) and [both-ends minikey contracts](C23_MINIKEYS_BOTH_ENDS.md).
 
 For a new job, recommend a fixed width from at least five warmed, complete,
 validated single-device measurements of the exact inputs:
