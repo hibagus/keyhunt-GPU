@@ -14,12 +14,14 @@ import time
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "oracle"))
 from oracle_selftest import check_source, run as oracle_run
+from hash160 import hash160
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--binary", type=Path, required=True)
 parser.add_argument("--oracle", type=Path, required=True)
 parser.add_argument("--report", type=Path, required=True)
 parser.add_argument("--backend",choices=("hip","cuda"),default="hip")
+parser.add_argument("--mode", choices=("xpoint","bsgs","hash160"), action="append")
 args = parser.parse_args()
 binary = args.binary.resolve()
 report = {"oracle_commit": check_source(), "binary_sha256": hashlib.sha256(binary.read_bytes()).hexdigest(),
@@ -46,12 +48,13 @@ with tempfile.TemporaryDirectory(prefix="kh-c14-hip-") as temporary:
     invoke(["bsgs-table", "build", "--m", "17", "--output", table])
     seeds = [1, 2, 1048576, 1 << 80]
     public = dict(zip(seeds, oracle_run(args.oracle, [f"pub {n:064x}" for n in seeds])))
-    for mode in ("xpoint", "bsgs"):
+    for mode in (args.mode or ("xpoint", "bsgs")):
         state = root / mode
         def local(family, action, *words, directory=None, ok=True, env=None):
             return invoke([family, action, "--state-dir", directory or state, *words], env=env, ok=ok)
         targets = root / (mode + ".txt")
-        values = {n: p[2:66] if mode == "xpoint" else p for n, p in public.items()}
+        values = ({(n,tag):hash160(p,tag) for n,p in public.items() for tag in (1,2)} if mode=="hash160"
+                  else {n: p[2:66] if mode == "xpoint" else p for n, p in public.items()})
         targets.write_text("\n".join(values.values()) + "\n")
         inputs = ["--targets", targets] + (["--table", table] if mode == "bsgs" else [])
         project = local("state", "project-create", "--name", "C14 HIP pause")[0]["project"]
@@ -60,8 +63,8 @@ with tempfile.TemporaryDirectory(prefix="kh-c14-hip-") as temporary:
         scope = ["--project", project, "--job", job]
         grant = local("state", "claim", *scope, "--owner", "pause-test", "--request", "claim")[0]["assignments"][0]["grant"]
         run = ["checkpoint", "run", "--state-dir", state, "--backend", args.backend, "--grant", grant, *inputs]
-        slow = ["--batch-size", "128"] if mode == "xpoint" else ["--giant-batch", "1", "--target-batch", "1"]
-        fast = ["--batch-size", "65536"] if mode == "xpoint" else ["--giant-batch", "16384", "--target-batch", "4", "--group-size", "8"]
+        slow = ["--batch-size", "128"] if mode != "bsgs" else ["--giant-batch", "1", "--target-batch", "1"]
+        fast = ["--batch-size", "65536"] if mode != "bsgs" else ["--giant-batch", "16384", "--target-batch", "4", "--group-size", "8"]
         case = {"mode": mode, "layouts": [], "pause_samples": []}
         def wire(code):
             with socket.socket(socket.AF_UNIX, socket.SOCK_SEQPACKET) as client:
@@ -159,8 +162,10 @@ with tempfile.TemporaryDirectory(prefix="kh-c14-hip-") as temporary:
         assert completed["complete"]
         assert int(completed["resumed_scalars"], 16) + int(completed["computed_scalars"], 16) == 1048576
         matches = local("checkpoint", "results", *scope)[0]["results"]
-        assert {(int(r["scalar"], 16), r["target_bytes"]) for r in matches} == {(n, values[n]) for n in seeds[:3]}
-        assert len(matches) == 3
+        expected=({(n,f'{tag:02x}'+values[n,tag]) for n in seeds[:3] for tag in (1,2)} if mode=="hash160"
+                  else {(n,values[n]) for n in seeds[:3]})
+        assert {(int(r["scalar"],16),r["target_bytes"]) for r in matches}==expected
+        assert len(matches)==len(expected)
         assert local("state", "block", *scope, "--block", "0")[0]["state"] == "finished"
         local("state", "check")
         case["completion"] = {"device": device, "visible_devices": visible_count, "summary": completed}

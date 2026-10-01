@@ -12,6 +12,7 @@ import tempfile
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "oracle"))
 from oracle_selftest import check_source, run as oracle_run
 from model import N
+from hash160 import hash160, address
 
 parser=argparse.ArgumentParser()
 parser.add_argument("--binary",type=Path,required=True)
@@ -43,20 +44,31 @@ with tempfile.TemporaryDirectory(prefix="keyhunt-c13-cli-") as temporary:
 
     def prepare(mode,begin,end,seeds,label):
         public=dict(zip(seeds,oracle_run(args.oracle,[f"pub {k:064x}" for k in seeds])))
-        values={k:(p[2:66] if mode=="xpoint" else p) for k,p in public.items()}
-        targets=root/(label+".txt");targets.write_text("\n".join(values.values())+"\n")
+        hashed=mode in ("hash160","address")
+        values=({(k,tag):hash160(p,tag) for k,p in public.items() for tag in (1,2)} if hashed
+                else {k:(p[2:66] if mode=="xpoint" else p) for k,p in public.items()})
+        lines=[address(v) if mode=="address" else v for v in values.values()]
+        targets=root/(label+".txt");targets.write_text("\n".join(lines)+"\n")
         common=["--project",project,"--mode",mode,"--range",f"{begin:x}:{end:x}",
                 "--block-width",hex(end-begin),"--targets",targets]
         if mode=="bsgs":common+=["--table",table]
         created=call("checkpoint","create",*common)[0]
         # Different line order/duplicates are the same immutable target set.
-        targets.write_text("\n".join(list(reversed(list(values.values())))+[next(iter(values.values()))])+"\n")
+        targets.write_text("\n".join(list(reversed(lines))+[lines[0]])+"\n")
         assert call("checkpoint","create",*common)[0]==created
         scope=["--project",project,"--job",created["job"]]
         grant=call("state","claim",*scope,"--owner","test-worker","--request",label)[0]["assignments"][0]["grant"]
         run=["--backend",args.backend,"--grant",grant,"--targets",targets]
         if mode=="bsgs":run+=["--table",table]
-        expected={(k,value) for k,value in values.items() if begin<=k<end}
+        if mode=="address":run+=["--input-format","address"]
+        expected=({(k,f'{tag:02x}'+value) for (k,tag),value in values.items() if begin<=k<end} if hashed
+                  else {(k,value) for k,value in values.items() if begin<=k<end})
+        if hashed:
+            # Address and raw input must recreate precisely the same durable job.
+            alternate=common.copy();alternate[alternate.index("--mode")+1]="hash160"
+            raw=root/(label+"-raw.txt");raw.write_text("\n".join(values.values()))
+            alternate[alternate.index("--targets")+1]=raw
+            assert call("checkpoint","create",*alternate)[0]==created
         if mode=="xpoint":
             expected|={(N-k,value) for k,value in values.items() if begin<=N-k<end}
         return scope,run,expected,targets
@@ -65,6 +77,9 @@ with tempfile.TemporaryDirectory(prefix="keyhunt-c13-cli-") as temporary:
         ("xpoint",(1<<128)-3,(1<<128)+16,[(1<<128)-3,(1<<128)+4,(1<<128)+15,(1<<128)+16],"wide-xpoint"),
         ("bsgs",N-21,N,[N-21,N-20,N-1,1000],"order-bsgs"),
         ("xpoint",1,33,[1000],"no-match"),
+        ("hash160",(1<<128)-3,(1<<128)+16,[(1<<128)-3,(1<<128)+4,(1<<128)+15],"wide-hash160"),
+        ("address",N-21,N,[N-21,N-20,N-1,1000],"order-address"),
+        ("hash160",100,133,[1000],"no-match-hash160"),
     ]
     def results(scope):
         return call("checkpoint","results",*scope,"--limit","1000")[0]["results"]
@@ -83,7 +98,7 @@ with tempfile.TemporaryDirectory(prefix="keyhunt-c13-cli-") as temporary:
 
     for mode,begin,end,seeds,label in cases:
         scope,run,expected,targets=prepare(mode,begin,end,seeds,label)
-        bad_target=root/"mismatch.txt";bad_target.write_text(("00"*32 if mode=="xpoint" else oracle_run(args.oracle,["pub "+"2".zfill(64)])[0])+"\n")
+        bad_target=root/"mismatch.txt";bad_target.write_text(("00"*32 if mode=="xpoint" else "00"*20 if mode=="hash160" else address("00"*20) if mode=="address" else oracle_run(args.oracle,["pub "+"2".zfill(64)])[0])+"\n")
         if not args.hardware:
             error=call("checkpoint","run",*run,ok=False)
             assert "not built" in error.stderr
@@ -96,12 +111,12 @@ with tempfile.TemporaryDirectory(prefix="keyhunt-c13-cli-") as temporary:
                 wrong=run.copy();wrong[wrong.index("--table")+1]=invalid_table
                 assert not call("checkpoint","run",*wrong,ok=False).stdout
             tuned=["--giant-batch","2","--target-batch","4","--candidate-capacity","1"]
-        else:tuned=["--batch-size","32","--candidate-capacity","1"]
+        else:tuned=["--batch-size","32","--candidate-capacity","1" if mode=="xpoint" else "2"]
         output=call("checkpoint","run",*run,*tuned)
         summary=output[-1]
         assert summary["complete"] and summary["durability"]=="local"
         assert int(summary["computed_scalars"],16)==end-begin
-        if label=="no-match":assert summary["checkpoints"]==1 and summary["match_observations"]==0
+        if label.startswith("no-match"):assert summary["checkpoints"]==1 and summary["match_observations"]==0
         else:assert summary["overflow_replays"]>0
         verify(scope,expected)
         again=call("checkpoint","run",*run)[-1]
@@ -137,12 +152,12 @@ with tempfile.TemporaryDirectory(prefix="keyhunt-c13-cli-") as temporary:
             assert sum(int(g["verified_device_steps"],16) for g in groups)==int(mixed["verified_device_steps"],16)
             verify(scope,expected)
             report["cases"].append({"case":label,"summary":mixed})
-        for mode in ("xpoint","bsgs"):
+        for mode in ("xpoint","bsgs","hash160"):
             # The first acknowledgment is durable; kill with many batches still
             # pending, then change launch geometry and replay the exact complement.
             begin,end=1,1048577
             scope,run,expected,_=prepare(mode,begin,end,[1,2,end-1],"killed-"+mode)
-            slow=["--batch-size","32"] if mode=="xpoint" else ["--giant-batch","1","--target-batch","1"]
+            slow=["--batch-size","32"] if mode!="bsgs" else ["--giant-batch","1","--target-batch","1"]
             process=subprocess.Popen(command("checkpoint","run",*run,*slow),stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
             try:
                 assert select.select([process.stdout],[],[],30)[0],"no checkpoint acknowledgment"
@@ -160,7 +175,7 @@ with tempfile.TemporaryDirectory(prefix="keyhunt-c13-cli-") as temporary:
             assert results(scope),"acknowledged match disappeared after kill"
             prior=call("state","block",*scope,"--block","0")[0]
             assert prior["state"]=="in_progress"
-            fast=["--batch-size","65536"] if mode=="xpoint" else ["--giant-batch","65536","--target-batch","3","--group-size","8"]
+            fast=["--batch-size","65536"] if mode!="bsgs" else ["--giant-batch","65536","--target-batch","3","--group-size","8"]
             resumed=call("checkpoint","run",*run,*fast)[-1]
             assert int(resumed["resumed_scalars"],16)+int(resumed["computed_scalars"],16)==end-begin
             verify(scope,expected)

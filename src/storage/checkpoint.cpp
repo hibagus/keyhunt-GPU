@@ -53,7 +53,7 @@ struct Cleanup {
     CheckpointCleanup stop;
     ~Cleanup(){if(stop)stop();} // a throwing stop is a fatal ownership-contract violation
 };
-void options(const CheckpointOptions& o,bool bsgs){
+void validate_options(const CheckpointOptions& o,bool bsgs){
     if(o.work_unit_seconds>300 || (o.work_unit_seconds && o.work_unit_seconds<60) || o.checkpoint_seconds>60 || !o.candidate_capacity ||
        o.candidate_capacity>(bsgs?65536U:1048576U))throw std::invalid_argument("invalid checkpoint interval/candidate capacity");
     if(bsgs){
@@ -118,8 +118,13 @@ struct CheckpointRun::Impl {
     void verified(const ScalarInterval& interval,const std::vector<core::XPointMatch>& matches,bool unique_target){
         const auto start=Clock::now();
         std::set<UInt256> scalars;std::set<uint32_t> targets;
+        std::set<std::pair<UInt256,uint32_t>> relations;
         for(const auto& m:matches){
-            if(!interval.contains(m.scalar) || (unique_target?!targets.insert(m.target).second:!scalars.insert(m.scalar).second))
+            // HASH160 may legitimately match both encodings at the same scalar.
+            // Reject duplicate relations while retaining existing mode invariants.
+            const bool fresh=input.mode==Mode::Hash160?relations.emplace(m.scalar,m.target).second:
+                unique_target?targets.insert(m.target).second:scalars.insert(m.scalar).second;
+            if(!interval.contains(m.scalar) || !fresh)
                 throw std::runtime_error("duplicate or out-of-batch checkpoint match");
             input.verify(verifier,m.scalar,m.target);
         }
@@ -182,6 +187,8 @@ struct CheckpointRun::Impl {
         activity(CheckpointActivity::Stopped);
         return false;
     }
+    static CheckpointSummary scalar(Journal&,const Grant&,detail::Binding,unsigned,
+        const core::XPointVerifier&,const XPointRunner&,CheckpointOptions,CheckpointObserver,CheckpointCleanup,CheckpointControl);
     CheckpointSummary finish(){
         flush({},true);
         if(journal.block(grant.scope,grant.block).state!="finished")throw std::logic_error("checkpointed block is incomplete");
@@ -194,6 +201,11 @@ Scope CheckpointRun::create_xpoint(Journal& journal,const std::string& project,S
     const auto scope=journal.create_job(project,{Mode::XPoint,root,width,input.target_digest,input.algorithm_digest});
     journal.bind_search(scope,input);return scope;
 }
+Scope CheckpointRun::create_hash160(Journal& journal,const std::string& project,ScalarInterval root,UInt256 width,const core::Hash160Targets& targets){
+    const auto input=detail::binding(targets);
+    const auto scope=journal.create_job(project,{Mode::Hash160,root,width,input.target_digest,input.algorithm_digest});
+    journal.bind_search(scope,input);return scope;
+}
 Scope CheckpointRun::create_bsgs(Journal& journal,const std::string& project,ScalarInterval root,UInt256 width,const core::BsgsPublicKeyTargets& targets,const bsgs::Table& table){
     const auto input=detail::binding(targets,table);
     const auto scope=journal.create_job(project,{Mode::Bsgs,root,width,input.target_digest,input.algorithm_digest});
@@ -201,16 +213,30 @@ Scope CheckpointRun::create_bsgs(Journal& journal,const std::string& project,Sca
 }
 CheckpointSummary CheckpointRun::xpoint(Journal& journal,const Grant& grant,const core::XPointTargets& targets,
     const core::XPointVerifier& verifier,const XPointRunner& run,CheckpointOptions o,CheckpointObserver observer,CheckpointCleanup cleanup,CheckpointControl control){
-    options(o,false);Impl state(journal,grant,detail::binding(targets),verifier,o,std::move(observer),std::move(control));
+    return Impl::scalar(journal,grant,detail::binding(targets),1,verifier,run,o,std::move(observer),std::move(cleanup),std::move(control));
+}
+CheckpointSummary CheckpointRun::hash160(Journal& journal,const Grant& grant,const core::Hash160Targets& targets,
+    const core::XPointVerifier& verifier,const XPointRunner& run,CheckpointOptions o,CheckpointObserver observer,CheckpointCleanup cleanup,CheckpointControl control){
+    return Impl::scalar(journal,grant,detail::binding(targets),targets.max_matches_per_scalar(),verifier,run,o,
+                        std::move(observer),std::move(cleanup),std::move(control));
+}
+// Both exact scalar searches share ownership, pause/fence, adaptive work and
+// commit boundaries. Only target binding and the per-scalar candidate bound vary.
+CheckpointSummary CheckpointRun::Impl::scalar(Journal& journal,const Grant& grant,detail::Binding input,unsigned matches_per_scalar,
+    const core::XPointVerifier& verifier,const XPointRunner& run,CheckpointOptions o,CheckpointObserver observer,CheckpointCleanup cleanup,CheckpointControl control){
+    validate_options(o,false);
+    if(o.candidate_capacity<matches_per_scalar)throw std::invalid_argument("candidate capacity cannot fit one scalar");
+    Impl state(journal,grant,std::move(input),verifier,o,std::move(observer),std::move(control));
     Cleanup stopped_before_unlock{std::move(cleanup)};
     const auto manifest=journal.manifest(grant.scope);
     scheduler::BlockGrid grid(manifest.root,manifest.block_width);
     scheduler::ExecutionIdentity identity;
+    identity.algorithm=state.input.mode==Mode::Hash160?scheduler::WorkAlgorithm::DirectHash160V1:scheduler::WorkAlgorithm::DirectXPointV1;
     identity.job_digest=grant.scope.job;identity.target_digest=manifest.targets;identity.algorithm_digest=manifest.algorithm;
     if(grant.epoch.size()!=16)throw std::invalid_argument("invalid journal epoch");
     std::copy(grant.epoch.begin(),grant.epoch.end(),identity.assignment_id.begin());
     identity.assignment_generation=uint64_t(grant.generation);identity.executor_generation=uint64_t(state.executor);
-    scheduler::XPointBatchSize sizing(o.xpoint_steps,o.candidate_capacity);
+    scheduler::XPointBatchSize sizing(o.xpoint_steps,o.candidate_capacity,matches_per_scalar);
     scheduler::AdaptiveWorkSize units(UInt256(o.xpoint_steps),o.work_unit_seconds);
     for(const auto& gap:state.remaining){
         auto cursor=gap.begin();std::optional<scheduler::WorkUnit> work;uint64_t active_ns=0;
@@ -228,9 +254,9 @@ CheckpointSummary CheckpointRun::xpoint(Journal& journal,const Grant& grant,cons
             const auto result=run(batch);++state.summary.batches;
             if(!same(result.batch.interval(),batch.interval()) || result.batch.work().identity()!=identity ||
                result.batch.work().block_id()!=grant.block || !same(result.batch.work().block_interval(),grant.interval))
-                throw std::runtime_error("xpoint completion does not match submitted checkpoint work");
+                throw std::runtime_error("scalar completion does not match submitted checkpoint work");
             counts(result.overflow,result.verified_steps,result.device_steps,result.candidate_count,result.matches.size(),
-                batch.step_count(),batch.step_count(),o.candidate_capacity);
+                batch.step_count(),batch.step_count()*matches_per_scalar,o.candidate_capacity);
             state.account(result);
             if(result.overflow){
                 ++state.summary.overflows;
@@ -248,7 +274,7 @@ CheckpointSummary CheckpointRun::xpoint(Journal& journal,const Grant& grant,cons
 }
 CheckpointSummary CheckpointRun::bsgs(Journal& journal,const Grant& grant,const core::BsgsPublicKeyTargets& targets,const bsgs::Table& table,
     const core::XPointVerifier& verifier,const BsgsRunner& run,CheckpointOptions o,CheckpointObserver observer,CheckpointCleanup cleanup,CheckpointControl control){
-    options(o,true);Impl state(journal,grant,detail::binding(targets,table),verifier,o,std::move(observer),std::move(control));
+    validate_options(o,true);Impl state(journal,grant,detail::binding(targets,table),verifier,o,std::move(observer),std::move(control));
     Cleanup stopped_before_unlock{std::move(cleanup)};
     scheduler::AdaptiveWorkSize units(UInt256(table.memory().m).multiply(UInt256(o.giant_steps)),o.work_unit_seconds,table.memory().m);
     for(const auto& gap:state.remaining){

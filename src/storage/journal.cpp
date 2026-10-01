@@ -10,6 +10,15 @@
 #include <stdexcept>
 
 namespace keyhunt::storage {
+const char* mode_name(Mode mode) {
+    switch(mode){case Mode::XPoint:return "xpoint";case Mode::Bsgs:return "bsgs";case Mode::Hash160:return "hash160";}
+    throw std::invalid_argument("unsupported journal search semantics");
+}
+size_t target_width(Mode mode) {
+    switch(mode){case Mode::XPoint:return 32;case Mode::Bsgs:return 65;case Mode::Hash160:return 21;}
+    throw std::invalid_argument("unsupported journal target format");
+}
+
 using namespace detail;
 namespace {
 Bytes bytes(const Digest& d){return Bytes(d.begin(),d.end());}
@@ -22,7 +31,7 @@ void text(Bytes& to,const std::string& s){number(to,s.size());to.insert(to.end()
 void token(const std::string& s){if(s.empty() || s.size()>128)throw std::invalid_argument("identity/request must have 1..128 ASCII token characters");for(unsigned char c:s)if(!((c>='a'&&c<='z')||(c>='A'&&c<='Z')||(c>='0'&&c<='9')||c=='-'||c=='_'||c=='.'||c=='@'))throw std::invalid_argument("invalid identity/request token");}
 void project_id(const std::string& p){if(p.size()!=36)throw std::invalid_argument("project must be a canonical UUID");for(size_t i=0;i<p.size();++i){if(i==8||i==13||i==18||i==23){if(p[i]!='-')throw std::invalid_argument("invalid project UUID");}else if(!((p[i]>='0'&&p[i]<='9')||(p[i]>='a'&&p[i]<='f')))throw std::invalid_argument("invalid project UUID");}}
 Bytes encode(const Manifest& m){
-    if(m.mode!=Mode::XPoint && m.mode!=Mode::Bsgs)throw std::invalid_argument("unsupported journal search semantics");
+    if(m.mode!=Mode::XPoint && m.mode!=Mode::Bsgs && m.mode!=Mode::Hash160)throw std::invalid_argument("unsupported journal search semantics");
     scheduler::BlockGrid grid(m.root,m.block_width);
     Bytes b{'k','h','j','o','b',1,uint8_t(m.mode)};
     append(b,m.root.begin());append(b,m.root.end());append(b,m.block_width);append(b,bytes(m.targets));append(b,bytes(m.algorithm));return b;
@@ -369,7 +378,7 @@ std::vector<StoredMatch> Journal::results(const Scope& scope,int64_t after,uint3
     const auto input=decode_binding(job.manifest,binding.blob(0),binding.blob(1));
     Statement q(s.db.handle(),"SELECT id,block,scalar,target FROM results WHERE project=? AND job=? AND id>? ORDER BY id LIMIT ?");
     scope_bind(q,scope);q.bind(3,after);q.bind(4,int64_t(limit));std::vector<StoredMatch> out;
-    const size_t width=input.mode==Mode::XPoint?32:65;core::XPointVerifier verifier;
+    const size_t width=target_width(input.mode);core::XPointVerifier verifier;
     while(q.step()){
         const auto target=q.integer(3);if(target<0 || uint64_t(target)>=input.count())throw std::runtime_error("corrupt result target");
         input.verify(verifier,q.wide(2),uint32_t(target));

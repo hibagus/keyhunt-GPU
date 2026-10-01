@@ -31,9 +31,9 @@ bsgs::Table load_table(const Options& options,const core::BsgsPublicKeyTargets& 
 }
 int checkpoint_command(int argc,char** argv){
     static const std::map<std::string,std::set<std::string>> allowed{
-        {"create",{"project","mode","range","block-width","targets","table","host-memory"}},
+        {"create",{"project","mode","range","block-width","targets","table","host-memory","encoding"}},
         {"run",{"backend","grant","targets","table","device","batch-size","kernel","giant-batch",
-                "target-batch","candidate-capacity","group-size","host-memory","reserve-bytes","checkpoint-seconds"}},
+                "target-batch","candidate-capacity","group-size","host-memory","reserve-bytes","checkpoint-seconds","encoding","input-format"}},
         {"results",{"project","job","after","limit"}},
         {"pause",{"slot"}},{"resume",{"slot"}},{"stop",{"slot"}},{"status",{"slot"}}};
     if(argc<3)throw std::invalid_argument("usage: keyhunt checkpoint create|run|results|pause|resume|stop|status [--state-dir DIR] ...; see docs/CHECKPOINTS.md");
@@ -62,15 +62,23 @@ int checkpoint_command(int argc,char** argv){
         if(colon==std::string::npos || range.find(':',colon+1)!=std::string::npos)throw std::invalid_argument("range must be half-open HEX:HEX");
         const ScalarInterval root(UInt256::from_hex(range.substr(0,colon)),UInt256::from_hex(range.substr(colon+1)));
         const auto width=UInt256::from_hex(required(args,"block-width"));const auto mode=required(args,"mode");
+        if(mode!="hash160" && mode!="address" && args.count("encoding"))
+            throw std::invalid_argument("--encoding applies only to HASH160/address jobs");
         Scope id;
         if(mode=="xpoint"){
             if(args.count("table")||args.count("host-memory"))throw std::invalid_argument("xpoint has no BSGS table/memory option");
             const auto targets=core::XPointTargets::load(required(args,"targets"));
             id=CheckpointRun::create_xpoint(journal,required(args,"project"),root,width,targets);
+        }else if(mode=="hash160" || mode=="address"){
+            if(args.count("table")||args.count("host-memory"))throw std::invalid_argument("HASH160 has no BSGS table/memory option");
+            const auto targets=core::Hash160Targets::load(required(args,"targets"),
+                mode=="address"?core::Hash160Input::BitcoinAddress:core::Hash160Input::Hex,
+                core::hash160_encoding(optional(args,"encoding","both")));
+            id=CheckpointRun::create_hash160(journal,required(args,"project"),root,width,targets);
         }else if(mode=="bsgs"){
             const auto targets=core::BsgsPublicKeyTargets::load(required(args,"targets"));const auto table=load_table(args,targets);
             id=CheckpointRun::create_bsgs(journal,required(args,"project"),root,width,targets,table);
-        }else throw std::invalid_argument("checkpoint mode must be xpoint or bsgs");
+        }else throw std::invalid_argument("checkpoint mode must be xpoint, bsgs, hash160 or address");
         const auto manifest=journal.manifest(id);
         std::cout<<"{\"project\":"<<quote(id.project)<<",\"job\":"<<quote(hex(id.job.data(),32))
             <<",\"target_digest\":"<<quote(hex(manifest.targets.data(),32))
@@ -92,11 +100,15 @@ int checkpoint_command(int argc,char** argv){
         std::cout<<"],\"next_after\":"<<quote(std::to_string(rows.empty()?after:uint64_t(rows.back().id)))<<"}";flush();return 0;
     }
     const auto grant=parse_grant(journal,required(args,"grant"));const auto mode=journal.manifest(grant.scope).mode;
+    if(mode!=Mode::Hash160 && (args.count("encoding") || args.count("input-format")))
+        throw std::invalid_argument("encoding/input-format applies only to HASH160 jobs");
+    const auto format=optional(args,"input-format","hash160");
+    if(format!="hash160" && format!="address")throw std::invalid_argument("input-format must be hash160 or address");
     const auto device=decimal(optional(args,"device","0"),std::numeric_limits<int>::max());
     CheckpointOptions options;
-    options.candidate_capacity=uint32_t(number(optional(args,"candidate-capacity","1024"),mode==Mode::XPoint?1048576:65536));
+    options.candidate_capacity=uint32_t(number(optional(args,"candidate-capacity","1024"),mode==Mode::Bsgs?65536:1048576));
     options.checkpoint_seconds=uint32_t(decimal(optional(args,"checkpoint-seconds","10"),60));
-    if(mode==Mode::XPoint){
+    if(mode==Mode::XPoint || mode==Mode::Hash160){
         for(const auto* key:{"table","giant-batch","target-batch","group-size","host-memory","reserve-bytes"})
             if(args.count(key))throw std::invalid_argument(std::string("xpoint does not accept --")+key);
         options.xpoint_steps=uint64_t(number(optional(args,"batch-size","1048576"),1048576));
@@ -140,6 +152,21 @@ int checkpoint_command(int argc,char** argv){
             }
             const auto ticket=executor->submit(batch);executor->drain();return executor->take(ticket);
         },options,notify,[&]{executor.reset();control.close();},control.callbacks());
+    }else if(mode==Mode::Hash160){
+        const auto targets=core::Hash160Targets::load(required(args,"targets"),
+            format=="address"?core::Hash160Input::BitcoinAddress:core::Hash160Input::Hex,
+            core::hash160_encoding(optional(args,"encoding","both")));
+        Hash160Options gpu;gpu.max_steps=options.xpoint_steps;gpu.candidate_capacity=options.candidate_capacity;
+        gpu.kernel=optional(args,"kernel","stepped")=="direct"?XPointKernel::Direct:XPointKernel::Stepped;
+        std::unique_ptr<GpuHash160Executor> executor;
+        summary=CheckpointRun::hash160(journal,grant,targets,verifier,[&](const auto& batch){
+            if(!executor){
+                const auto setup_start=elapsed();
+                executor=std::make_unique<GpuHash160Executor>(int(device),targets,verifier,gpu);
+                executor_setup_ms=elapsed()-setup_start;preparation_ms=elapsed();
+            }
+            const auto ticket=executor->submit(batch);executor->drain();return executor->take(ticket);
+        },options,notify,[&]{executor.reset();control.close();},control.callbacks());
     }else{
         const auto targets=core::BsgsPublicKeyTargets::load(required(args,"targets"));const auto table=load_table(args,targets);
         BsgsSearchOptions gpu;gpu.max_steps=options.giant_steps*options.target_batch;gpu.candidate_capacity=options.candidate_capacity;
@@ -164,7 +191,7 @@ int checkpoint_command(int argc,char** argv){
         <<",\"batches\":"<<summary.batches<<",\"overflow_replays\":"<<summary.overflows<<",\"checkpoints\":"<<summary.checkpoints
         <<",\"checkpoint_ms\":"<<summary.checkpoint_ms
         <<",\"metrics_version\":2,\"device\":"<<device<<",\"uuid\":"<<quote(selected.device.uuid)
-        <<",\"mode\":"<<quote(mode==Mode::XPoint?"xpoint":"bsgs")
+        <<",\"mode\":"<<quote(mode_name(mode))
         <<",\"checkpoint_seconds\":"<<options.checkpoint_seconds<<",\"bsgs_group_size\":"<<summary.bsgs_group_size
         <<",\"verified_device_steps\":"<<quote(summary.verified_device_steps.hex())
         <<",\"kernel_ms\":"<<summary.kernel_ms<<",\"download_ms\":"<<summary.download_ms

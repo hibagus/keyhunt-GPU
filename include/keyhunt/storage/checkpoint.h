@@ -2,6 +2,7 @@
 #include "keyhunt/storage/journal.h"
 #include <array>
 #include "keyhunt/backend/gpu_xpoint.h"
+#include "keyhunt/backend/gpu_hash160.h"
 #include "keyhunt/backend/gpu_bsgs.h"
 
 namespace keyhunt::storage {
@@ -61,9 +62,13 @@ class CheckpointRun {
 public:
     static Scope create_xpoint(Journal&,const std::string& project,ScalarInterval root,UInt256 width,
         const core::XPointTargets&);
+    static Scope create_hash160(Journal&,const std::string& project,ScalarInterval root,UInt256 width,
+        const core::Hash160Targets&);
     static Scope create_bsgs(Journal&,const std::string& project,ScalarInterval root,UInt256 width,
         const core::BsgsPublicKeyTargets&,const bsgs::Table&);
     static CheckpointSummary xpoint(Journal&,const Grant&,const core::XPointTargets&,
+        const core::XPointVerifier&,const XPointRunner&,CheckpointOptions={},CheckpointObserver={},CheckpointCleanup={},CheckpointControl={});
+    static CheckpointSummary hash160(Journal&,const Grant&,const core::Hash160Targets&,
         const core::XPointVerifier&,const XPointRunner&,CheckpointOptions={},CheckpointObserver={},CheckpointCleanup={},CheckpointControl={});
     static CheckpointSummary bsgs(Journal&,const Grant&,const core::BsgsPublicKeyTargets&,const bsgs::Table&,
         const core::XPointVerifier&,const BsgsRunner&,CheckpointOptions={},CheckpointObserver={},CheckpointCleanup={},CheckpointControl={});

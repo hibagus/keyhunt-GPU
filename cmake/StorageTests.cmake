@@ -88,3 +88,20 @@ target_link_libraries(storage_checkpoint_concurrent_test PRIVATE keyhunt_storage
 keyhunt_configure_target(storage_checkpoint_concurrent_test)
 add_test(NAME storage_checkpoint_concurrent COMMAND storage_checkpoint_concurrent_test)
 set_tests_properties(storage_checkpoint_concurrent PROPERTIES TIMEOUT 120 LABELS "cpu;storage;recovery")
+
+add_executable(storage_hash160_checkpoint_test tests/storage/hash160_checkpoint.cpp)
+target_include_directories(storage_hash160_checkpoint_test PRIVATE src/storage)
+target_link_libraries(storage_hash160_checkpoint_test PRIVATE keyhunt_storage)
+keyhunt_configure_target(storage_hash160_checkpoint_test)
+add_test(NAME storage_hash160_checkpoint COMMAND storage_hash160_checkpoint_test)
+set_tests_properties(storage_hash160_checkpoint PROPERTIES TIMEOUT 120 LABELS "cpu;storage;hash160;recovery")
+
+if(KEYHUNT_ENABLE_GPU)
+    add_test(NAME checkpoint_hash160_pause_${KEYHUNT_GPU_BACKEND} COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/checkpoint_pause_hip.py"
+        --binary $<TARGET_FILE:keyhunt> --oracle $<TARGET_FILE:secp256k1_oracle>
+        --backend ${KEYHUNT_GPU_BACKEND} --mode hash160
+        --report "${CMAKE_CURRENT_BINARY_DIR}/checkpoint-hash160-pause-${KEYHUNT_GPU_BACKEND}.json")
+    set_tests_properties(checkpoint_hash160_pause_${KEYHUNT_GPU_BACKEND} PROPERTIES TIMEOUT 180
+        LABELS "${KEYHUNT_GPU_BACKEND};hardware;storage;hash160;recovery" RESOURCE_LOCK gpu_device)
+endif()

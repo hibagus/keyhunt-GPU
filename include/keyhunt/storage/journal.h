@@ -19,7 +19,11 @@ public:
     ExecutionBlocked(Reason why,const char* message):std::invalid_argument(message),reason(why){}
     Reason reason;
 };
-enum class Mode:uint8_t { XPoint=1, Bsgs=2 };
+enum class Mode:uint8_t { XPoint=1, Bsgs=2, Hash160=3 };
+// Explicit switches prevent a future/invalid mode from silently using BSGS
+// widths or identity strings in persisted and transported records.
+const char* mode_name(Mode mode);
+size_t target_width(Mode mode);
 struct Manifest {
     Mode mode;
     ScalarInterval root;
