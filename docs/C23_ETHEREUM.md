@@ -71,3 +71,13 @@ separate from Bitcoin HASH160. This preserves the accepted Bitcoin register and
 serialization paths while the new hash receives its own parity gates. Shared
 checkpoint ownership and receipt logic remain common. A future common GPU owner
 refactor should retain both families' fault and native regression corpora.
+
+
+## Optional exact-range GLV kernel
+
+`--kernel glv` computes the same scalar/public-point relation using signed
+128-bit endomorphism components. Unit strides, positive strides, reverse order,
+CPU match verification and checkpoint identities keep their existing contracts.
+The default remains `stepped`; `direct` is still available. This option does not
+expand a candidate into additional related keys. See [GLV contracts](C23_GLV.md)
+and [executable examples](GPU_QUICKSTART.md).

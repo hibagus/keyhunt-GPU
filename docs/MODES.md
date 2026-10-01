@@ -149,3 +149,14 @@ private keys. Public records expose the candidate ordinal and derived scalar
 separately. The legacy `-m minikeys` path remains unchanged. See the
 [contract](C23_MINIKEYS.md), [quickstart](GPU_QUICKSTART.md) and
 [checkpoint guide](CHECKPOINTS.md#minikey-ordinal-jobs).
+
+
+## Exact-range GLV scalar multiplication
+
+The four native scalar families (`xpoint`, Bitcoin `hash160`/`address`,
+`ethereum`, `vanity`) also accept `--kernel glv`. It uses GLV arithmetic
+for the original candidate scalar without changing the candidate set. Forward,
+positive-stride and reverse mappings keep the same coverage and job identities.
+`stepped` remains the default. Legacy related-key endomorphism expansion and
+other search mappings remain separate work; BSGS and minikeys have no GLV kernel.
+See [contracts and validation](C23_GLV.md).

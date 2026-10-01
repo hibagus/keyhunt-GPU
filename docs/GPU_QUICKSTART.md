@@ -1,7 +1,7 @@
 # Finite HIP and CUDA searches
 
 This example uses the public secp256k1 generator (scalar 1) and two published minikeys. It exercises
-bounded xpoint/BSGS/Bitcoin HASH160/Ethereum/vanity/minikey searches with positive scalar strides and reverse traversal, real-input job creation, sequential/random claims,
+bounded xpoint/BSGS/Bitcoin HASH160/Ethereum/vanity/minikey searches with positive scalar strides, reverse traversal and opt-in GLV multiplication, real-input job creation, sequential/random claims,
 local checkpoints and completed-grant replay. Follow [BUILD.md](BUILD.md) first.
 No coordinator is required. Run the blocks below in order in the **same Bash
 shell**, starting in the repository root. Use a new private example directory
@@ -120,6 +120,13 @@ for mode in xpoint hash160 address ethereum vanity; do
     --range 1:301 --stride 3 --order reverse --targets "$example_dir/$mode.txt" --batch-size 256 \
     > "$example_dir/reverse-$mode.ndjson"
 done
+# GLV computes the same kG; this distinct stride-5 job has 256 candidates.
+for mode in xpoint hash160 address ethereum vanity; do
+  "$KEYHUNT_BIN" "$mode" --backend "$GPU_BACKEND" --device "$GPU_DEVICE" \
+    --range 1:501 --stride 5 --order reverse --kernel glv \
+    --targets "$example_dir/$mode.txt" --batch-size 256 \
+    > "$example_dir/glv-$mode.ndjson"
+done
 for length in 22 30; do
   bounds="$(python3 -c 'import json,sys; o=int(json.load(open(sys.argv[1]))["ordinal"],16); print(f"{o:x}:{o+256:x}")' "$example_dir/minikeys$length-inspect.json")"
   "$KEYHUNT_BIN" minikeys --backend "$GPU_BACKEND" --device "$GPU_DEVICE" \
@@ -165,6 +172,12 @@ index 256. Unit-stride reverse jobs also use candidate indices. Checkpoint runs
 recover both stride and order automatically; an explicit conflicting `--order`
 is rejected. See [reverse contracts](C23_REVERSE.md).
 
+The `glv-*` examples visit `0x4fc, 0x4f7, ..., 1` using opt-in
+`--kernel glv`. GLV changes scalar multiplication, so job identity and coverage
+stay identical to direct/stepped execution of that range, stride and order.
+The durable examples reopen the completed GLV grants with `stepped`.
+See [GLV contracts](C23_GLV.md); `stepped` remains the default.
+
 These `.ndjson` files contain start, batch and summary records. They are volatile
 output, not restart checkpoints. `gpu-smoke` validates a diagnostic launch and
 explicitly reports no search coverage. Use the next steps for durable work.
@@ -184,9 +197,13 @@ slice makes no throughput or calibrated-width claim.
 ```bash
 "$KEYHUNT_BIN" state project-create --name "GPU quickstart" > "$example_dir/project.json"
 PROJECT="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["project"])' "$example_dir/project.json")"
-for mode in xpoint bsgs hash160 ethereum vanity minikeys22 minikeys30 stride-xpoint stride-hash160 stride-ethereum stride-vanity reverse-xpoint reverse-hash160 reverse-ethereum reverse-vanity; do
+for mode in xpoint bsgs hash160 ethereum vanity minikeys22 minikeys30 stride-xpoint stride-hash160 stride-ethereum stride-vanity reverse-xpoint reverse-hash160 reverse-ethereum reverse-vanity glv-xpoint glv-hash160 glv-ethereum glv-vanity; do
   job_mode="$mode"
-  if [[ "$mode" = reverse-* ]]; then
+  if [[ "$mode" = glv-* ]]; then
+    job_mode="${mode#glv-}"
+    targets="$example_dir/$job_mode.txt"; bounds=1:501; width=100; policy=sequential
+    table_options=(--stride 5 --order reverse)
+  elif [[ "$mode" = reverse-* ]]; then
     job_mode="${mode#reverse-}"
     targets="$example_dir/$job_mode.txt"; bounds=1:301; width=100; policy=sequential
     table_options=(--stride 3 --order reverse)
@@ -235,10 +252,12 @@ do not allocate remote coordinator work.
 
 <!-- example: durable -->
 ```bash
-for mode in xpoint bsgs hash160 ethereum vanity minikeys22 minikeys30 stride-xpoint stride-hash160 stride-ethereum stride-vanity reverse-xpoint reverse-hash160 reverse-ethereum reverse-vanity; do
+for mode in xpoint bsgs hash160 ethereum vanity minikeys22 minikeys30 stride-xpoint stride-hash160 stride-ethereum stride-vanity reverse-xpoint reverse-hash160 reverse-ethereum reverse-vanity glv-xpoint glv-hash160 glv-ethereum glv-vanity; do
   JOB="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["job"])' "$example_dir/$mode-job.json")"
   GRANT="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["assignments"][0]["grant"])' "$example_dir/$mode-grant.json")"
-  if [[ "$mode" = reverse-* ]]; then
+  if [[ "$mode" = glv-* ]]; then
+    run_options=(--targets "$example_dir/${mode#glv-}.txt" --batch-size 256 --kernel glv)
+  elif [[ "$mode" = reverse-* ]]; then
     # Recover both stride and direction from the immutable job binding.
     run_options=(--targets "$example_dir/${mode#reverse-}.txt" --batch-size 256)
   elif [[ "$mode" = stride-* ]]; then
@@ -262,6 +281,10 @@ for mode in xpoint bsgs hash160 ethereum vanity minikeys22 minikeys30 stride-xpo
   "$KEYHUNT_BIN" checkpoint run --backend "$GPU_BACKEND" --device "$GPU_DEVICE" \
     --grant "$GRANT" "${run_options[@]}" > "$example_dir/$mode-durable.ndjson"
   # The same completed grant must return without launching more search batches.
+  # Kernel choice is execution-only: reopen the GLV grant with stepped.
+  if [[ "$mode" = glv-* ]]; then
+    run_options=(--targets "$example_dir/${mode#glv-}.txt" --batch-size 256 --kernel stepped)
+  fi
   "$KEYHUNT_BIN" checkpoint run --backend "$GPU_BACKEND" --device "$GPU_DEVICE" \
     --grant "$GRANT" "${run_options[@]}" > "$example_dir/$mode-retry.ndjson"
   "$KEYHUNT_BIN" checkpoint results --project "$PROJECT" --job "$JOB" \
@@ -303,7 +326,7 @@ public fixtures and temporary local state; remove that directory when finished.
 The harness reads the marked Bash blocks above directly; it does not keep another
 copy of the commands. CPU CI runs table preparation, canonical job creation and
 both claim policies. Hardware runs additionally check discovery, launches, all
-eighteen volatile commands and all fifteen durable searches/retries:
+twenty-three volatile commands and all nineteen durable searches/retries:
 
 ```sh
 python3 tests/integration/gpu_examples.py --binary build/cpu-release/keyhunt \

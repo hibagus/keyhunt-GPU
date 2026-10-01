@@ -52,3 +52,13 @@ curve-order/carry tails, both encodings and all visible ordinals; checkpoint
 recovery, pause/restart, HTTPS and disconnected workers; executable examples and
 frozen evidence. Only public scalar fixtures are used. No throughput, scaling,
 calibrated block-width or partition/MIG certification claim accompanies this slice.
+
+
+## Optional exact-range GLV kernel
+
+`--kernel glv` computes the same scalar/public-point relation using signed
+128-bit endomorphism components. Unit strides, positive strides, reverse order,
+CPU match verification and checkpoint identities keep their existing contracts.
+The default remains `stepped`; `direct` is still available. This option does not
+expand a candidate into additional related keys. See [GLV contracts](C23_GLV.md)
+and [executable examples](GPU_QUICKSTART.md).

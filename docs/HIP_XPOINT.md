@@ -196,3 +196,13 @@ build output and the documentation check. The sanitizer run retains the existing
 C09 is complete. [C10 tables](BSGS_TABLES.md) and [C11 BSGS search](HIP_BSGS.md)
 are implemented separately. Durable coverage, multi-GPU
 scheduling and later ISA/occupancy tuning remain separate milestones.
+
+
+## Optional exact-range GLV kernel
+
+`--kernel glv` computes the same scalar/public-point relation using signed
+128-bit endomorphism components. Unit strides, positive strides, reverse order,
+CPU match verification and checkpoint identities keep their existing contracts.
+The default remains `stepped`; `direct` is still available. This option does not
+expand a candidate into additional related keys. See [GLV contracts](C23_GLV.md)
+and [executable examples](GPU_QUICKSTART.md).

@@ -35,9 +35,9 @@ def validate(artifacts, hardware, device):
 
     require(one('table-inspect')['m'] == 257, 'wrong baby-table size')
     require(one('preflight')['integrity'] == 'ok', 'preflight audit failed')
-    for mode, width in [('xpoint', 256), ('bsgs', 65536), ('hash160', 256), ('ethereum', 256), ('vanity', 256), ('minikeys22',256), ('minikeys30',256),('stride-xpoint',256),('stride-hash160',256),('stride-ethereum',256),('stride-vanity',256),('reverse-xpoint',256),('reverse-hash160',256),('reverse-ethereum',256),('reverse-vanity',256)]:
-        reverse=mode.startswith('reverse-');strided=mode.startswith('stride-') or reverse
-        family=mode.removeprefix('stride-').removeprefix('reverse-')
+    for mode, width in [('xpoint', 256), ('bsgs', 65536), ('hash160', 256), ('ethereum', 256), ('vanity', 256), ('minikeys22',256), ('minikeys30',256),('stride-xpoint',256),('stride-hash160',256),('stride-ethereum',256),('stride-vanity',256),('reverse-xpoint',256),('reverse-hash160',256),('reverse-ethereum',256),('reverse-vanity',256),('glv-xpoint',256),('glv-hash160',256),('glv-ethereum',256),('glv-vanity',256)]:
+        reverse=mode.startswith(('reverse-','glv-'));strided=mode.startswith('stride-') or reverse
+        family=mode.removeprefix('stride-').removeprefix('reverse-').removeprefix('glv-')
         mini=public_fixture(int(mode[-2:])) if mode.startswith('minikeys') else None
         first=mini['ordinal'] if mini else 1
         private=mini['scalar'] if mini else 1
@@ -55,6 +55,8 @@ def validate(artifacts, hardware, device):
                 int(grant['end_exclusive'], 16) == width + first, 'wrong assignment bounds')
         if not hardware:
             continue
+        if mode.startswith('glv-'):
+            require(artifacts[mode+'.ndjson'][0]['kernel']=='glv', 'GLV example selected wrong kernel')
         summary = artifacts[mode + '.ndjson'][-1]
         require(summary['type'] == 'summary' and summary['complete'] and
                 not summary['durable_coverage'], 'wrong volatile completion')
@@ -113,7 +115,7 @@ def validate(artifacts, hardware, device):
                 [m for r in hashed[1:-1] for m in r.get('matches', [])], 'address/hash matches differ')
         require(address[-1]['complete'] and int(address[-1]['verified_steps'], 16) == 256,
                 'address search incomplete')
-        for order in ('stride','reverse'):
+        for order in ('stride','reverse','glv'):
             mapped_address=artifacts[order+'-address.ndjson'];mapped_hash=artifacts[order+'-hash160.ndjson']
             require(mapped_address[0]['target_digest']==mapped_hash[0]['target_digest'], 'strided address/hash identity differs')
             require([m for r in mapped_address[1:-1] for m in r.get('matches',[])]==
