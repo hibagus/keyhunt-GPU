@@ -295,3 +295,26 @@ if(KEYHUNT_ENABLE_GPU)
     set_tests_properties(bsgs_reverse_pause_${KEYHUNT_GPU_BACKEND} PROPERTIES TIMEOUT 240
         LABELS "${KEYHUNT_GPU_BACKEND};hardware;bsgs;reverse;recovery" RESOURCE_LOCK gpu_device)
 endif()
+
+add_test(NAME bsgs_both_ends_recovery_cli COMMAND "${Python3_EXECUTABLE}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/bsgs_reverse_cli.py" --binary $<TARGET_FILE:keyhunt>
+    --oracle $<TARGET_FILE:secp256k1_oracle> --suite recovery --both-ends
+    --report "${CMAKE_CURRENT_BINARY_DIR}/bsgs-both-ends-recovery-cli.json" ${checkpoint_cli_options})
+set_tests_properties(bsgs_both_ends_recovery_cli PROPERTIES TIMEOUT 480 LABELS "cpu;bsgs;both-ends;recovery")
+if(KEYHUNT_ENABLE_GPU)
+    set_tests_properties(bsgs_both_ends_recovery_cli PROPERTIES LABELS "${KEYHUNT_GPU_BACKEND};hardware;bsgs;both-ends;recovery" RESOURCE_LOCK gpu_device)
+    add_test(NAME bsgs_both_ends_pause_${KEYHUNT_GPU_BACKEND} COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/checkpoint_pause_hip.py"
+        --binary $<TARGET_FILE:keyhunt> --oracle $<TARGET_FILE:secp256k1_oracle>
+        --backend ${KEYHUNT_GPU_BACKEND} --mode bsgs --tile-order both-ends
+        --report "${CMAKE_CURRENT_BINARY_DIR}/bsgs-both-ends-pause-${KEYHUNT_GPU_BACKEND}.json")
+    set_tests_properties(bsgs_both_ends_pause_${KEYHUNT_GPU_BACKEND} PROPERTIES TIMEOUT 240
+        LABELS "${KEYHUNT_GPU_BACKEND};hardware;bsgs;both-ends;recovery" RESOURCE_LOCK gpu_device)
+endif()
+
+add_executable(storage_bsgs_both_ends_test tests/storage/bsgs_both_ends.cpp)
+target_include_directories(storage_bsgs_both_ends_test PRIVATE src/storage)
+target_link_libraries(storage_bsgs_both_ends_test PRIVATE keyhunt_storage)
+keyhunt_configure_target(storage_bsgs_both_ends_test)
+add_test(NAME storage_bsgs_both_ends COMMAND storage_bsgs_both_ends_test)
+set_tests_properties(storage_bsgs_both_ends PROPERTIES TIMEOUT 180 LABELS "cpu;bsgs;storage;both-ends;recovery")

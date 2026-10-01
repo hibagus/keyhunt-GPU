@@ -12,7 +12,7 @@ namespace keyhunt::storage {
 struct CheckpointOptions {
     // Execution-only BSGS policy: receipts continue to name actual scalar ranges.
     // Optional distinguishes omitted from explicitly unsupported use on scalar jobs.
-    std::optional<bool> bsgs_reverse_tiles;
+    std::optional<core::BsgsTileOrder> bsgs_tile_order;
     // Supervised devices share the journal but retain an exclusive block guard.
     // Standalone callers keep the original whole-journal exclusion by default.
     bool concurrent_blocks=false;

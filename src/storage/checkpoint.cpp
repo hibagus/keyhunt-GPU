@@ -1,6 +1,7 @@
 #include "keyhunt/scheduler/xpoint_batch_size.h"
 #include "keyhunt/scheduler/adaptive_work.h"
 #include "keyhunt/storage/checkpoint.h"
+#include <map>
 #include "checkpoint_data.h"
 #include "sqlite.h"
 #include <algorithm>
@@ -54,10 +55,11 @@ struct Cleanup {
     ~Cleanup(){if(stop)stop();} // a throwing stop is a fatal ownership-contract violation
 };
 void validate_options(const CheckpointOptions& o,bool bsgs){
-    if(!bsgs && o.bsgs_reverse_tiles)throw std::invalid_argument("tile-order applies only to BSGS");
+    if(!bsgs && o.bsgs_tile_order)throw std::invalid_argument("tile-order applies only to BSGS");
     if(o.work_unit_seconds>300 || (o.work_unit_seconds && o.work_unit_seconds<60) || o.checkpoint_seconds>60 || !o.candidate_capacity ||
        o.candidate_capacity>(bsgs?65536U:1048576U))throw std::invalid_argument("invalid checkpoint interval/candidate capacity");
     if(bsgs){
+        if(o.bsgs_tile_order)(void)core::bsgs_tile_order_name(*o.bsgs_tile_order);
         if(!o.target_batch || o.target_batch>64 || !o.giant_steps || o.giant_steps>1048576/o.target_batch)
             throw std::invalid_argument("invalid checkpoint BSGS batch limits");
     }else if(!o.xpoint_steps || o.xpoint_steps>1048576)throw std::invalid_argument("invalid checkpoint xpoint batch size");
@@ -377,63 +379,57 @@ CheckpointSummary CheckpointRun::bsgs(Journal& journal,const Grant& grant,const 
     validate_options(o,true);Impl state(journal,grant,detail::binding(targets,table),verifier,o,std::move(observer),std::move(control));
     Cleanup stopped_before_unlock{std::move(cleanup)};
     scheduler::AdaptiveWorkSize units(UInt256(table.memory().m).multiply(UInt256(o.giant_steps)),o.work_unit_seconds,table.memory().m);
-    const bool reverse_tiles=o.bsgs_reverse_tiles.value_or(false);
-    // Saved coverage may leave several disjoint gaps. Visit those gaps in the
-    // chosen direction while keeping journal receipts in actual scalar space.
-    if(reverse_tiles)std::reverse(state.remaining.begin(),state.remaining.end());
-    for(const auto& gap:state.remaining){
-        auto cursor=reverse_tiles?gap.end():gap.begin();std::optional<ScalarInterval> work;uint64_t active_ns=0;
-        while(reverse_tiles?cursor>gap.begin():cursor<gap.end()){
-            if(!work || cursor==(reverse_tiles?work->begin():work->end())){
-                if(work)units.observed(work->size(),active_ns);
-                const auto available=reverse_tiles?cursor.subtract(gap.begin()):gap.end().subtract(cursor);
-                const auto span=std::min(units.span(),available);
-                work=reverse_tiles?ScalarInterval(cursor.subtract(span),cursor):ScalarInterval(cursor,cursor.add(span));
-                active_ns=0;state.planned(*work);
+    core::BsgsTilePlanner planner(state.remaining,table.memory().m,o.giant_steps,o.bsgs_tile_order.value_or(core::BsgsTileOrder::Forward));
+    // Up to two work units can be active at opposite ends. Charge only their
+    // own admitted execution time; paused time and the other unit are excluded.
+    std::map<UInt256,uint64_t> active_work;
+    while(const auto selected=planner.next(units.span())){
+        const auto& tile=selected->interval;
+        if(selected->starts_work)state.planned(selected->work);
+        auto& active_ns=active_work[selected->work.begin()];
+        uint32_t first=0,limit=o.target_batch;
+        while(first<targets.values().size()){
+            if(!state.boundary())return state.summary;
+            const auto started=Clock::now();state.validate();const auto count=uint32_t(std::min<size_t>(limit,targets.values().size()-first));
+            const core::BsgsBatch batch(tile,table.memory().m,first,count,targets.digest(),table.checksum());
+            const auto result=run(batch);++state.summary.batches;const auto& returned=result.batch;
+            if(!same(returned.interval(),tile) || returned.m()!=batch.m() || returned.first_target()!=first ||
+               returned.target_count()!=count || returned.target_digest()!=batch.target_digest() ||
+               returned.table_checksum()!=batch.table_checksum())
+                throw std::runtime_error("BSGS completion does not match submitted checkpoint work");
+            counts(result.overflow,result.verified_steps,result.device_steps,result.candidate_count,result.matches.size(),
+                batch.steps(),count,o.candidate_capacity);
+            if(result.group_size!=1 && result.group_size!=8)
+                throw std::runtime_error("invalid BSGS dispatch group");
+            state.account(result);state.summary.bsgs_group_size=result.group_size;
+            // A target tail or replay can switch kernels within one run.
+            // Preserve all dispatch costs, not only the last group observed.
+            auto& group=state.summary.bsgs_groups[result.group_size==8];
+            ++group.batches;group.overflows+=result.overflow;
+            group.device_steps=group.device_steps.add(UInt256(result.device_steps));
+            group.verified_device_steps=group.verified_device_steps.add(UInt256(result.verified_steps));
+            group.kernel_ms+=result.kernel_ms;
+            if(result.overflow){
+                ++state.summary.overflows;if(count==1)throw std::logic_error("single-target overflow");
+                limit=uint32_t(std::min<uint64_t>(o.candidate_capacity,count/2));
+                active_ns+=uint64_t(std::chrono::duration_cast<std::chrono::nanoseconds>(Clock::now()-started).count());continue;
             }
-            const auto remaining=reverse_tiles?ScalarInterval(work->begin(),cursor):ScalarInterval(cursor,work->end());
-            const auto tile=core::bsgs_tile(remaining,table.memory().m,o.giant_steps,reverse_tiles);
-            uint32_t first=0,limit=o.target_batch;
-            while(first<targets.values().size()){
-                if(!state.boundary())return state.summary;
-                const auto started=Clock::now();state.validate();const auto count=uint32_t(std::min<size_t>(limit,targets.values().size()-first));
-                const core::BsgsBatch batch(tile,table.memory().m,first,count,targets.digest(),table.checksum());
-                const auto result=run(batch);++state.summary.batches;const auto& returned=result.batch;
-                if(!same(returned.interval(),tile) || returned.m()!=batch.m() || returned.first_target()!=first ||
-                   returned.target_count()!=count || returned.target_digest()!=batch.target_digest() ||
-                   returned.table_checksum()!=batch.table_checksum())
-                    throw std::runtime_error("BSGS completion does not match submitted checkpoint work");
-                counts(result.overflow,result.verified_steps,result.device_steps,result.candidate_count,result.matches.size(),
-                    batch.steps(),count,o.candidate_capacity);
-                if(result.group_size!=1 && result.group_size!=8)
-                    throw std::runtime_error("invalid BSGS dispatch group");
-                state.account(result);state.summary.bsgs_group_size=result.group_size;
-                // A target tail or replay can switch kernels within one run.
-                // Preserve all dispatch costs, not only the last group observed.
-                auto& group=state.summary.bsgs_groups[result.group_size==8];
-                ++group.batches;group.overflows+=result.overflow;
-                group.device_steps=group.device_steps.add(UInt256(result.device_steps));
-                group.verified_device_steps=group.verified_device_steps.add(UInt256(result.verified_steps));
-                group.kernel_ms+=result.kernel_ms;
-                if(result.overflow){
-                    ++state.summary.overflows;if(count==1)throw std::logic_error("single-target overflow");
-                    limit=uint32_t(std::min<uint64_t>(o.candidate_capacity,count/2));
-                    active_ns+=uint64_t(std::chrono::duration_cast<std::chrono::nanoseconds>(Clock::now()-started).count());continue;
-                }
-                std::vector<core::XPointMatch> matches;
-                for(const auto& m:result.matches){
-                    if(m.target<first || m.target>=first+count)throw std::runtime_error("match outside BSGS target group");
-                    matches.push_back({m.scalar,m.target});
-                }
-                state.verified(tile,matches,true);state.summary.match_observations+=matches.size();
-                first+=count;
-                // Persist subgroup matches immediately; credit the scalar tile
-                // only when every canonical target has completed without overflow.
-                if(first==targets.values().size())state.cover(tile);
-                state.flush(matches);
-                active_ns+=uint64_t(std::chrono::duration_cast<std::chrono::nanoseconds>(Clock::now()-started).count());
+            std::vector<core::XPointMatch> matches;
+            for(const auto& m:result.matches){
+                if(m.target<first || m.target>=first+count)throw std::runtime_error("match outside BSGS target group");
+                matches.push_back({m.scalar,m.target});
             }
-            cursor=reverse_tiles?tile.begin():tile.end();
+            state.verified(tile,matches,true);state.summary.match_observations+=matches.size();
+            first+=count;
+            // Persist subgroup matches immediately; credit the scalar tile
+            // only when every canonical target has completed without overflow.
+            if(first==targets.values().size())state.cover(tile);
+            state.flush(matches);
+            active_ns+=uint64_t(std::chrono::duration_cast<std::chrono::nanoseconds>(Clock::now()-started).count());
+        }
+        if(selected->finishes_work){
+            units.observed(selected->work.size(),active_ns);
+            active_work.erase(selected->work.begin());
         }
     }
     if(!state.boundary())return state.summary;

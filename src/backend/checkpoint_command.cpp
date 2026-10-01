@@ -154,9 +154,7 @@ int checkpoint_command(int argc,char** argv){
     CheckpointOptions options;
     if(args.count("tile-order")){
         if(mode!=Mode::Bsgs)throw std::invalid_argument("tile-order applies only to BSGS");
-        const auto order=required(args,"tile-order");
-        if(order!="forward" && order!="reverse")throw std::invalid_argument("tile-order must be forward or reverse");
-        options.bsgs_reverse_tiles=order=="reverse";
+        options.bsgs_tile_order=core::parse_bsgs_tile_order(required(args,"tile-order"));
     }
     if(args.count("order")){
         const auto order=required(args,"order");

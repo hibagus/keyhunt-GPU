@@ -5,7 +5,8 @@
 using namespace cfixture;
 using namespace keyhunt::storage::detail;
 int main(){try{
-    for(bool reverse:{false,true}){
+    for(const auto order:{core::BsgsTileOrder::Forward,core::BsgsTileOrder::Reverse,core::BsgsTileOrder::BothEnds})for(unsigned seconds:{0U,180U}){
+        const bool reverse=order==core::BsgsTileOrder::Reverse;
         Temporary server,local;int64_t now=1800000000;
         Repository repo(server.path.string(),[&]{return now;});
         const auto leaf=pem(1,now-60,now+90*86400);const auto cert=certificate(leaf);
@@ -44,18 +45,23 @@ int main(){try{
         const auto before=worker.journal().block(grant.scope,grant.block);
         require(before.covered.size()==3&&before.remaining.size()==4,"fragmented recovery fixture lost islands");
         CheckpointOptions options;options.giant_steps=1;options.target_batch=2;options.checkpoint_seconds=0;
-        options.bsgs_reverse_tiles=reverse;std::optional<ScalarInterval> previous;unsigned tiles=0;
+        options.bsgs_tile_order=order;options.work_unit_seconds=seconds;std::optional<ScalarInterval> previous;unsigned tiles=0;
+        auto missing=before.remaining;
         const auto summary=CheckpointRun::bsgs(worker.journal(),grant,targets,table,verifier,[&](const auto& batch){
             const auto& tile=batch.interval();bool inside=false;
             for(const auto& gap:before.remaining)inside|=gap.contains(tile);
             require(inside,"tile crossed previously accepted coverage");
             if(!previous||tile.begin()!=previous->begin()||tile.end()!=previous->end()){
-                if(previous)require(reverse?tile.end()<=previous->begin():tile.begin()>=previous->end(),"gap traversal changed direction");
+                const bool high=reverse||(order==core::BsgsTileOrder::BothEnds && tiles%2);
+                const auto index=high?missing.size()-1:0;const auto gap=missing[index];
+                require(gap.contains(tile) && (high?tile.end()==gap.end():tile.begin()==gap.begin()),"wrong global endpoint");
+                if(tile.size()==gap.size())missing.erase(missing.begin()+index);
+                else missing[index]=high?ScalarInterval(gap.begin(),tile.begin()):ScalarInterval(tile.end(),gap.end());
                 previous=tile;++tiles;
             }
             return execute(batch,targets,verifier,1024);
         },options);
-        require(summary.complete&&summary.resumed_scalars==UInt256(19)&&summary.computed_scalars==UInt256(38)&&tiles==7,"fragmented complement was not exact");
+        require(summary.complete&&summary.resumed_scalars==UInt256(19)&&summary.computed_scalars==UInt256(38)&&tiles==7&&missing.empty(),"fragmented complement was not exact");
         require(worker.journal().results(grant.scope).size()==5,"recovered worker recomputed old owner's target");
         // The prior owner's result stays server-side. A lost reply must replay
         // the exact pending upload and preserve its union with the new results.
@@ -71,5 +77,5 @@ int main(){try{
         require(repo.request(cert,"GET",path+"/results")==rows,"retry duplicated results");
         worker.journal().check();repo.admin({{"operation","check"}});
     }
-    std::cout<<"BSGS fragmented grant recovery in both directions and upload retry passed\n";
+    std::cout<<"BSGS fragmented grant recovery in all tile orders and upload retry passed\n";
 }catch(const std::exception& e){std::cerr<<e.what()<<'\n';return 1;}}
