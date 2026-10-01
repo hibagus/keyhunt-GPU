@@ -43,7 +43,7 @@ if args.tile_order and args.mode!=["bsgs"]:
     parser.error("tile-order requires explicit BSGS mode")
 binary = args.binary.resolve()
 report = {"ordinal_order":args.ordinal_order,"tile_order":args.tile_order,"orbit":args.orbit,"oracle_commit": check_source(), "binary_sha256": hashlib.sha256(binary.read_bytes()).hexdigest(),
-          "cases": [], "kernels": [args.kernel,"direct","stepped"] if args.kernel else ["stepped"]*3, "pause_latency_scope": "local socket request through durably-paused status, including admitted batch and up to 20 ms idle polling"}
+          "cases": [], "kernels": [args.kernel,"direct","stepped"] if args.kernel else ["direct"]*3 if args.mode and all(v.startswith("minikeys") for v in args.mode) else ["stepped"]*3, "pause_latency_scope": "local socket request through durably-paused status, including admitted batch and up to 20 ms idle polling"}
 def invoke(words, env=None, ok=True):
     result = subprocess.run([str(binary), *map(str, words)], capture_output=True, text=True, timeout=90, env=env)
     assert (result.returncode == 0) == ok, (words, result.stdout, result.stderr)

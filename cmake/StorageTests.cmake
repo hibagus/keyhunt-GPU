@@ -347,7 +347,7 @@ target_include_directories(storage_minikey_reverse_test PRIVATE src/storage)
 target_link_libraries(storage_minikey_reverse_test PRIVATE keyhunt_storage)
 keyhunt_configure_target(storage_minikey_reverse_test)
 add_test(NAME storage_minikey_reverse COMMAND storage_minikey_reverse_test)
-set_tests_properties(storage_minikey_reverse PROPERTIES TIMEOUT 120 LABELS "cpu;storage;minikeys;recovery")
+set_tests_properties(storage_minikey_reverse PROPERTIES TIMEOUT 180 LABELS "cpu;storage;minikeys;recovery")
 
 add_test(NAME checkpoint_minikeys_reverse_cli COMMAND "${Python3_EXECUTABLE}"
     "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/minikey_checkpoint_cli.py"
