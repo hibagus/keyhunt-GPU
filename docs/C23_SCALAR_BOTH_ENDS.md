@@ -38,7 +38,8 @@ Native start/summary, checkpoint summary and worker grant-finish report
 
 For an unmapped `[1,18)` range, work width 5 and batch width 3, accepted intervals
 are `[1,4)`, `[15,18)`, `[4,6)`, `[13,15)`, `[6,9)`, `[11,13)`, `[9,11)`.
-The last two fronts share the final reservation. With reverse scalar mapping,
+With work width 5 and batch width 2 over `[1,6)`, the fronts share one owner:
+`[1,3)`, `[4,6)`, `[3,4)`. With reverse scalar mapping,
 these same canonical intervals map through the saved descending progression.
 
 Acceptance requires independent integer sequence/coverage checks, orbit boundary

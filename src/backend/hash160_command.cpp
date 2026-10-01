@@ -1,3 +1,4 @@
+#include "keyhunt/scheduler/scalar_batch_planner.h"
 #include "keyhunt/backend/device.h"
 #include "keyhunt/core/hash160_search.h"
 #include "keyhunt/scheduler/xpoint_batch_size.h"
@@ -37,13 +38,13 @@ void flush_record() {
 #endif
 }
 int hash160_command(int argc, char** argv) {
-    const char* usage = "usage: keyhunt hash160|address --backend hip|cuda --range START:END --targets FILE [--encoding compressed|uncompressed|both] [--device N] [--batch-size 1..1048576] [--candidate-capacity 1..1048576] [--kernel stepped|direct|glv] [--stride HEX] [--order forward|reverse] [--endomorphism none|orbit] (END is exclusive; NDJSON output)";
+    const char* usage = "usage: keyhunt hash160|address --backend hip|cuda --range START:END --targets FILE [--encoding compressed|uncompressed|both] [--device N] [--batch-size 1..1048576] [--candidate-capacity 1..1048576] [--kernel stepped|direct|glv] [--stride HEX] [--order forward|reverse] [--batch-order forward|both-ends] [--endomorphism none|orbit] (END is exclusive; NDJSON output)";
     std::map<std::string,std::string> args;
     for (int i=2;i<argc;i+=2) {
         if (i+1 == argc) throw std::invalid_argument(usage);
         const std::string key = argv[i];
         if (key != "--backend" && key != "--range" && key != "--targets" && key != "--device" &&
-            key != "--encoding" && key != "--batch-size" && key != "--candidate-capacity" && key != "--kernel" && key != "--stride" && key != "--order" && key != "--endomorphism") throw std::invalid_argument(usage);
+            key != "--encoding" && key != "--batch-size" && key != "--candidate-capacity" && key != "--kernel" && key != "--stride" && key != "--batch-order" && key != "--order" && key != "--endomorphism") throw std::invalid_argument(usage);
         if (!args.emplace(key,argv[i+1]).second) throw std::invalid_argument("duplicate hash160 option: "+key);
     }
     if ((args["--backend"] != "hip" && args["--backend"] != "cuda") || args["--range"].empty() || args["--targets"].empty())
@@ -59,6 +60,7 @@ int hash160_command(int argc, char** argv) {
     const auto order=args.count("--order")?args["--order"]:"forward";
     if(order!="forward" && order!="reverse")throw std::invalid_argument("order must be forward or reverse");
     const bool reverse=order=="reverse";
+    const auto batch_order=scheduler::parse_scalar_batch_order(args.count("--batch-order")?args["--batch-order"]:"forward");
     const auto endomorphism=args.count("--endomorphism")?args["--endomorphism"]:"none";
     if(endomorphism!="none" && endomorphism!="orbit")throw std::invalid_argument("endomorphism must be none or orbit");
     const bool orbit=endomorphism=="orbit";
@@ -105,51 +107,50 @@ int hash160_command(int argc, char** argv) {
     if(mapping)std::cout<<",\"coordinate_space\":\""<<mapping->coordinate_space()<<"\",\"scalar_begin\":\""<<scalar_range.begin().hex()
         <<"\",\"scalar_end_exclusive\":\""<<scalar_range.end().hex()<<"\",\"stride\":\""<<stride.hex()<<'"';
     if(orbit)std::cout<<",\"endomorphism\":\"orbit\",\"seed_count\":\""<<mapping->seed_count().hex()<<'"';
-    std::cout<<'}';
+    std::cout<<",\"batch_order\":\""<<scheduler::scalar_batch_order_name(batch_order)<<"\"}";
     flush_record();
-    auto cursor = interval.begin();
+    scheduler::ScalarBatchPlanner planner(grid,UInt256(),{interval},identity,batch_order);
     UInt256 verified, attempts, match_count;
     uint64_t launches = 0, overflows = 0;
     scheduler::XPointBatchSize sizing(batch_size,uint32_t(capacity),targets.max_matches_per_scalar());
     double kernel_ms = 0, download_ms = 0, verification_ms = 0, seed_ms = 0;
-    while (auto work = scheduler::WorkUnit::plan(grid,UInt256(0),cursor,batch_size,identity)) {
-        while (auto batch = scheduler::KernelBatch::plan(*work,cursor,sizing.limit())) {
-            const auto ticket = executor.submit(*batch);
-            executor.drain(); // only this stream; executor API also supports poll()
-            const auto result = executor.take(ticket);
-            ++launches;
-            attempts = attempts.add(UInt256(result.device_steps));
-            seed_ms += result.seed_ms; kernel_ms += result.kernel_ms; download_ms += result.download_ms; verification_ms += result.verification_ms;
-            std::cout << "{\"type\":\"batch\",\"begin\":\"" << batch->interval().begin().hex()
-                      << "\",\"end_exclusive\":\"" << batch->interval().end().hex()
-                      << "\",\"overflow\":" << (result.overflow ? "true" : "false")
-                      << ",\"verified_steps\":" << result.verified_steps << ",\"device_steps\":" << result.device_steps
-                      << ",\"candidate_count\":" << result.candidate_count << ",\"kernel_ms\":" << result.kernel_ms
-                      << ",\"download_ms\":" << result.download_ms << ",\"verification_ms\":" << result.verification_ms
-                      << ",\"seed_ms\":" << result.seed_ms << ",\"wall_ms\":" << result.wall_ms << ",\"device_allocation_bytes\":" << result.device_allocation_bytes
-                      << ",\"pinned_allocation_bytes\":" << result.pinned_allocation_bytes
-                      << ",\"download_bytes\":" << result.download_bytes << ",\"matches\":[";
-            for (size_t i=0;i<result.matches.size();++i) {
-                const auto& match = result.matches[i];
-                std::cout << (i ? "," : "") << "{\"scalar\":\"" << (mapping?mapping->scalar(match.scalar):match.scalar).hex() << "\",\"hash160\":\""
-                          << hex_bytes(targets.values()[match.target].data()+1,20) << "\",\"encoding\":\"" << core::hash160_encoding_name(targets.values()[match.target][0]) << "\",\"target\":" << match.target ;
-                if(mapping)std::cout<<",\"candidate_index\":\""<<match.scalar.hex()<<'"';
-                if(orbit)std::cout<<",\"seed_scalar\":\""<<mapping->seed(match.scalar).hex()
-                    <<"\",\"orbit_variant\":"<<mapping->variant(match.scalar);
-                std::cout<<'}';
-            }
-            std::cout << "]}";
-            flush_record(); // output backpressure precedes any cursor advancement
-            if (result.overflow) {
-                ++overflows;
-                sizing.overflow(batch->step_count());
-                continue;
-            }
-            sizing.accepted(result.candidate_count);
-            verified = verified.add(UInt256(result.verified_steps));
-            match_count = match_count.add(UInt256(result.matches.size()));
-            cursor = batch->interval().end();
+    while (const auto selected_batch=planner.plan(UInt256(batch_size),sizing.limit())) {
+        const auto* batch=&selected_batch->batch;
+        const auto ticket = executor.submit(*batch);
+        executor.drain(); // only this stream; executor API also supports poll()
+        const auto result = executor.take(ticket);
+        ++launches;
+        attempts = attempts.add(UInt256(result.device_steps));
+        seed_ms += result.seed_ms; kernel_ms += result.kernel_ms; download_ms += result.download_ms; verification_ms += result.verification_ms;
+        std::cout << "{\"type\":\"batch\",\"begin\":\"" << batch->interval().begin().hex()
+                  << "\",\"end_exclusive\":\"" << batch->interval().end().hex()
+                  << "\",\"overflow\":" << (result.overflow ? "true" : "false")
+                  << ",\"verified_steps\":" << result.verified_steps << ",\"device_steps\":" << result.device_steps
+                  << ",\"candidate_count\":" << result.candidate_count << ",\"kernel_ms\":" << result.kernel_ms
+                  << ",\"download_ms\":" << result.download_ms << ",\"verification_ms\":" << result.verification_ms
+                  << ",\"seed_ms\":" << result.seed_ms << ",\"wall_ms\":" << result.wall_ms << ",\"device_allocation_bytes\":" << result.device_allocation_bytes
+                  << ",\"pinned_allocation_bytes\":" << result.pinned_allocation_bytes
+                  << ",\"download_bytes\":" << result.download_bytes << ",\"matches\":[";
+        for (size_t i=0;i<result.matches.size();++i) {
+            const auto& match = result.matches[i];
+            std::cout << (i ? "," : "") << "{\"scalar\":\"" << (mapping?mapping->scalar(match.scalar):match.scalar).hex() << "\",\"hash160\":\""
+                      << hex_bytes(targets.values()[match.target].data()+1,20) << "\",\"encoding\":\"" << core::hash160_encoding_name(targets.values()[match.target][0]) << "\",\"target\":" << match.target ;
+            if(mapping)std::cout<<",\"candidate_index\":\""<<match.scalar.hex()<<'"';
+            if(orbit)std::cout<<",\"seed_scalar\":\""<<mapping->seed(match.scalar).hex()
+                <<"\",\"orbit_variant\":"<<mapping->variant(match.scalar);
+            std::cout<<'}';
         }
+        std::cout << "]}";
+        flush_record(); // output backpressure precedes any cursor advancement
+        if (result.overflow) {
+            ++overflows;
+            sizing.overflow(batch->step_count());
+            continue;
+        }
+        sizing.accepted(result.candidate_count);
+        verified = verified.add(UInt256(result.verified_steps));
+        match_count = match_count.add(UInt256(result.matches.size()));
+        planner.accept();
     }
     if (verified != interval.size()) throw std::logic_error("hash160 verified interval is incomplete");
     const double wall_ms = std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-wall_start).count();
@@ -159,7 +160,7 @@ int hash160_command(int argc, char** argv) {
               << ",\"kernel_ms\":" << kernel_ms << ",\"download_ms\":" << download_ms
               << ",\"verification_ms\":" << verification_ms << ",\"seed_ms\":" << seed_ms << ",\"wall_ms\":" << wall_ms ;
     if(mapping)std::cout<<",\"coordinate_space\":\""<<mapping->coordinate_space()<<'"';
-    std::cout<<'}';
+    std::cout<<",\"batch_order\":\""<<scheduler::scalar_batch_order_name(batch_order)<<"\"}";
     flush_record();
     return 0;
 #endif

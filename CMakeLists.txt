@@ -127,7 +127,8 @@ add_library(keyhunt_ranges STATIC
     src/core/scalar_stride.cpp
     src/core/exact_range.cpp
     src/scheduler/block_grid.cpp
-    src/scheduler/work_unit.cpp)
+    src/scheduler/work_unit.cpp
+    src/scheduler/scalar_batch_planner.cpp)
 target_include_directories(keyhunt_ranges PUBLIC include)
 keyhunt_configure_target(keyhunt_ranges)
 
@@ -278,6 +279,7 @@ if(BUILD_TESTING)
     include(cmake/MinikeyTests.cmake)
     include(cmake/StrideTests.cmake)
     include(cmake/ReverseTests.cmake)
+    include(cmake/ScalarBatchTests.cmake)
     include(cmake/GlvTests.cmake)
     include(cmake/OrbitTests.cmake)
     include(cmake/BsgsTableTests.cmake)

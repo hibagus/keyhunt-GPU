@@ -55,6 +55,10 @@ struct Cleanup {
     ~Cleanup(){if(stop)stop();} // a throwing stop is a fatal ownership-contract violation
 };
 void validate_options(const CheckpointOptions& o,bool bsgs){
+    if(o.scalar_batch_order){
+        (void)scheduler::scalar_batch_order_name(*o.scalar_batch_order);
+        if(bsgs)throw std::invalid_argument("batch-order applies only to scalar search families");
+    }
     if(bsgs && (o.minikey_order || o.minikey_random_window))throw std::invalid_argument("ordinal-order applies only to minikeys");
     if(!bsgs && (o.bsgs_tile_order || o.bsgs_random_window))throw std::invalid_argument("tile-order applies only to BSGS");
     if(o.work_unit_seconds>300 || (o.work_unit_seconds && o.work_unit_seconds<60) || o.checkpoint_seconds>60 || !o.candidate_capacity ||
@@ -304,6 +308,7 @@ CheckpointSummary CheckpointRun::ethereum(Journal& journal,const Grant& grant,co
 CheckpointSummary CheckpointRun::Impl::scalar(Journal& journal,const Grant& grant,detail::Binding input,unsigned matches_per_scalar,
     const core::XPointVerifier& verifier,const XPointRunner& run,CheckpointOptions o,CheckpointObserver observer,CheckpointCleanup cleanup,CheckpointControl control){
     validate_options(o,false);
+    if(o.scalar_batch_order && input.mode==Mode::Minikeys)throw std::invalid_argument("batch-order applies only to scalar search families");
     if((o.minikey_order || o.minikey_random_window) && input.mode!=Mode::Minikeys)throw std::invalid_argument("ordinal-order applies only to minikeys");
     if(input.mode==Mode::Minikeys)core::validate_minikey_random_window(o.minikey_order.value_or(core::MinikeyOrder::Forward),o.minikey_random_window);
     const auto mapping=journal.stride_mapping(grant.scope);
@@ -380,17 +385,22 @@ CheckpointSummary CheckpointRun::Impl::scalar(Journal& journal,const Grant& gran
                 if(selected->finishes_work){units.observed(work.size(),active_ns);active_work.erase(work.begin());}
             }
         }
-    }else for(const auto& gap:state.remaining){
-        auto cursor=gap.begin();std::optional<scheduler::WorkUnit> work;uint64_t active_ns=0;
-        while(cursor<gap.end()){
+    }else{
+        scheduler::ScalarBatchPlanner planner(grid,grant.block,state.remaining,identity,
+            o.scalar_batch_order.value_or(scheduler::ScalarBatchOrder::Forward));
+        // Two fronts may own different units or meet inside one. Charge only
+        // each owner's execution/replay time, excluding pauses and the other side.
+        std::map<UInt256,uint64_t> active_work;
+        for(;;){
             if(!state.boundary())return state.summary;
-            if(!work || cursor==work->interval().end()){
-                if(work)units.observed(work->interval().size(),active_ns);
-                const auto span=std::min({units.span(),gap.end().subtract(cursor),UInt256(UINT64_MAX)}).to_uint64();
-                work=scheduler::WorkUnit::plan(grid,grant.block,cursor,span,identity);active_ns=0;state.planned(work->interval());
+            const auto selected=planner.plan(units.span(),sizing.limit());if(!selected)break;
+            const auto& work=selected->batch.work().interval();
+            if(selected->starts_work)state.planned(work);
+            auto& active_ns=active_work[work.begin()];
+            if(execute(selected->batch,active_ns)){
+                planner.accept();
+                if(selected->finishes_work){units.observed(work.size(),active_ns);active_work.erase(work.begin());}
             }
-            const auto batch=*scheduler::KernelBatch::plan(*work,cursor,sizing.limit());
-            if(execute(batch,active_ns))cursor=batch.interval().end();
         }
     }
     if(!state.boundary())return state.summary;

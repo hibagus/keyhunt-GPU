@@ -1,6 +1,7 @@
 #pragma once
 #include "keyhunt/storage/journal.h"
 #include <array>
+#include "keyhunt/scheduler/scalar_batch_planner.h"
 #include "keyhunt/backend/gpu_xpoint.h"
 #include "keyhunt/backend/gpu_hash160.h"
 #include "keyhunt/backend/gpu_ethereum.h"
@@ -10,6 +11,8 @@
 
 namespace keyhunt::storage {
 struct CheckpointOptions {
+    // Execution order only; omitted means forward and never changes job mapping.
+    std::optional<scheduler::ScalarBatchOrder> scalar_batch_order;
     // Execution-only BSGS policy: receipts continue to name actual scalar ranges.
     // Optional distinguishes omitted from explicitly unsupported use on scalar jobs.
     std::optional<core::BsgsTileOrder> bsgs_tile_order;

@@ -72,6 +72,8 @@ struct Prepared {
         const auto raw=wire::unhex(inputs["targets"].get<std::string>());
         if(raw.size()>host_memory/4)throw std::runtime_error("target preparation exceeds host memory budget");
         const auto mode=wire::mode(inputs["mode"].get<std::string>());
+        if((mode==Mode::Minikeys || mode==Mode::Bsgs) && options.count("batch-order"))
+            throw std::invalid_argument("batch-order applies only to scalar search families");
         if(mode!=Mode::Minikeys && (options.count("ordinal-order") || options.count("ordinal-seed") || options.count("ordinal-window")))
             throw std::invalid_argument("ordinal-order applies only to minikeys");
         if(mode!=Mode::Bsgs && (options.count("tile-order") || options.count("tile-seed") || options.count("tile-window")))
@@ -131,6 +133,7 @@ int run_device(const Options& args){
     const auto once=option(args,"once","no"),rebind=option(args,"rebind","no");
     if((once!="yes"&&once!="no")||(rebind!="yes"&&rebind!="no"))throw std::invalid_argument("once/rebind require yes or no");
     CheckpointOptions limits;limits.concurrent_blocks=true;limits.work_unit_seconds=180;
+    if(args.count("batch-order"))limits.scalar_batch_order=scheduler::parse_scalar_batch_order(option(args,"batch-order"));
     if(args.count("ordinal-order"))limits.minikey_order=core::parse_minikey_order(option(args,"ordinal-order"));
     if(args.count("ordinal-seed") || args.count("ordinal-window") || limits.minikey_order==core::MinikeyOrder::RandomWindow){
         limits.minikey_random_window=core::parse_minikey_random_window(option(args,"ordinal-seed","0"),option(args,"ordinal-window","64"));
@@ -272,6 +275,7 @@ int run_device(const Options& args){
                 {"m",prepared.table?prepared.table->memory().m:1},
                 {"table_upload_ms",prepared.b_executor?prepared.b_executor->table_upload_ms():0}};
             if(prepared.stride_mapping)finished["coordinate_space"]=prepared.stride_mapping->coordinate_space();
+            if(!prepared.m_targets && !prepared.b_targets)finished["batch_order"]=scheduler::scalar_batch_order_name(limits.scalar_batch_order.value_or(scheduler::ScalarBatchOrder::Forward));
             if(prepared.m_targets){finished["coordinate_space"]="minikey-ordinal-v1";
                 finished["ordinal_order"]=core::minikey_order_name(limits.minikey_order.value_or(core::MinikeyOrder::Forward));}
             if(prepared.m_targets && limits.minikey_random_window){
