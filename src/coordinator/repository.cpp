@@ -295,7 +295,12 @@ struct Repository::Impl {
             if(targets.size()%22)throw Error(400,"invalid minikey target bytes");
             std::vector<core::MinikeyTarget> values(targets.size()/22);
             for(size_t i=0;i<values.size();++i)std::copy_n(targets.begin()+22*i,22,values[i].begin());
-            m.targets=core::MinikeyTargets(std::move(values)).digest();
+            const core::MinikeyTargets canonical(std::move(values));
+            // An out-of-domain request is a client error, not unavailable
+            // coordinator state. Reject it before any job can be persisted.
+            if(m.root.end()>core::minikey_space_end(canonical.length()))
+                throw Error(400,"range exceeds minikey ordinal space");
+            m.targets=canonical.digest();
         }else if(mode=="vanity"){
             if(targets.size()%36)throw Error(400,"invalid vanity target bytes");
             std::vector<core::VanityTarget> values(targets.size()/36);

@@ -20,7 +20,7 @@ int main(){try{
     const auto job=repo.request(cert,"POST","/api/v1/projects/"+project+"/jobs",body);
     require(job["mode"]=="minikeys","new job mode silently changed");
     auto outside=body;outside["end_exclusive"]=core::minikey_space_end(length).add(UInt256(1)).hex();
-    rejects([&]{repo.request(cert,"POST","/api/v1/projects/"+project+"/jobs",outside);});
+    denied(400,[&]{repo.request(cert,"POST","/api/v1/projects/"+project+"/jobs",outside);});
     auto bad_length=body;auto invalid=input.targets;invalid[0]=26;bad_length["targets"]=wire::hex(invalid);
     rejects([&]{repo.request(cert,"POST","/api/v1/projects/"+project+"/jobs",bad_length);});
     auto bad=body;bad["mode"]="future";denied(400,[&]{repo.request(cert,"POST","/api/v1/projects/"+project+"/jobs",bad);});

@@ -1,7 +1,7 @@
 # C23: exact minikey candidate search
 
-Status: implementation in progress. The agreed scope is SHA-256 minikeys of
-22 or 30 characters, both public-key encodings, and native HIP/CUDA recovery.
+Status: implemented for SHA-256 minikeys of 22 or 30 characters, both public-key
+encodings, and native HIP/CUDA recovery. See [acceptance](C23_MINIKEYS_VALIDATION.md).
 
 ## Mapping and identity
 
@@ -90,3 +90,12 @@ throughput, calibration, multi-device scaling or partition/MIG claim is implied.
   now keeps its latency timestamp separate from its expected starting ordinal.
 - The supervisor will omit an unspecified kernel option so the device owner can
   select the mode default. An explicit stepped override is rejected for minikeys.
+
+- Volatile match rows inherit `coordinate_space` from stream start/summary
+  records; standalone durable result rows include their own label. The example
+  harness checks each output at the level where that metadata is defined.
+
+- Coordinator creation classifies an ordinal endpoint beyond the selected
+  length's domain as HTTP 400 before persistence. Without that boundary check,
+  the shared verifier's `out_of_range` exception would be reported as temporary
+  state unavailability by the HTTP adapter. A repository regression asserts 400.
