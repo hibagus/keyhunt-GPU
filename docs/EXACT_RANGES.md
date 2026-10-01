@@ -161,3 +161,15 @@ This is a host planning library, without new user-facing CLI commands. The CPU
 compatibility path retains its C01 behavior. New scheduled execution must use this
 contract; old CPU output cannot be imported as coverage just because a candidate
 passes the C04 cryptographic verifier.
+
+## Positive scalar strides
+
+C23 adds a separate immutable affine mapping for xpoint, HASH160/P2PKH, Ethereum
+and vanity. `--range A:B --stride S` visits `A+i*S<B` with checked 256-bit integer
+arithmetic. For `S>1`, one-based candidate indices `[1,N+1)` define every block,
+work unit, batch and saved interval, where `N=1+floor((B-A-1)/S)`. The private scalar
+at index `j` is `A+(j-1)*S`. Block width counts candidates. The original range and
+stride bind job and execution identity; CPU verification maps indices before
+checking targets. Stride one retains consecutive-scalar identities and records.
+See [contracts and compatibility](C23_STRIDES.md). This does not adopt legacy `-I`
+loop behavior, endomorphism or random traversal as exact coverage.

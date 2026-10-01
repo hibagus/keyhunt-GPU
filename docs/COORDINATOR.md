@@ -115,10 +115,10 @@ renewal remain outside this localhost gate.
 ## S04a: atomic machine synchronization
 
 `POST /api/v1/sync` accepts protocol 1. Current workers send the exact capability
-list `["checkpoint-v1", "offline-lease-v1", "hash160-v1", "ethereum-v1", "vanity-v1", "minikeys-v1"]`.
+list `["checkpoint-v1", "offline-lease-v1", "hash160-v1", "ethereum-v1", "vanity-v1", "minikeys-v1", "scalar-stride-v1"]`.
 Updated coordinators also accept the older two-element list for xpoint/BSGS and
 the three-element list for those modes plus HASH160, and the four-element list
-that also supports Ethereum, and the five-element list adding vanity. HASH160, Ethereum, vanity and minikey jobs
+that also supports Ethereum, the five-element list adding vanity, and the six-element list adding minikeys. HASH160, Ethereum, vanity and minikey jobs
 require their respective capability before reservation, renewal, update or receipt replay;
 incompatible requests receive HTTP 426. Deploy the updated coordinator before
 updated workers. Unknown capabilities and wire modes fail explicitly. A request
@@ -448,3 +448,25 @@ an explicit stepped override fails. The supervisor forwards a kernel override
 only when supplied, preserving previous scalar-mode defaults. Targets and GPU
 allocations survive grant handoff; startup tests cover both lengths and encodings
 on the selected ordinal. See [acceptance](C23_MINIKEYS_VALIDATION.md).
+
+## C23 scalar stride jobs
+
+Version-2 search configuration binds exact positive strides for wire modes
+`xpoint`, `hash160`, `ethereum` and `vanity`. It is 146 bytes: the existing header
+with version byte 2 and zero table fields, followed by 32-byte big-endian scalar
+begin, exclusive scalar end and stride. Job `begin`/`end_exclusive` must equal the
+one-based candidate domain `[1,N+1)`; block width counts candidates. API wide
+integers retain their canonical `0x` plus 64-hex-digit representation.
+
+Upgrade coordinator and workers together. Strided jobs require the seventh
+capability `scalar-stride-v1` before allocation, renewal, checkpoint updates or
+cached replies. Older two-through-six-capability workers retain access to their
+supported version-1 jobs. Unknown/malformed mappings fail shared binding
+validation before import. No schema migration is needed.
+
+Worker startup checks both kernel variants for every scalar family on its owned
+device. The prepared executor retains the immutable SG cache across grants;
+`grant-finish` reports `computed_candidates` with the coordinate-space label.
+Owner-only result views show candidate index and actual scalar separately. See
+[stride contracts](C23_STRIDES.md). Explicit candidate block widths are supported;
+existing xpoint/BSGS calibration does not calibrate strided jobs.

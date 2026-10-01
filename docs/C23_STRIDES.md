@@ -1,6 +1,7 @@
 # C23: exact positive scalar strides
 
-Status: implementation in progress. The selected scope is xpoint, Bitcoin
+Status: complete on the recorded MI300X/H200 stacks; see [acceptance and evidence](C23_STRIDES_VALIDATION.md).
+The selected scope is xpoint, Bitcoin
 HASH160/P2PKH, Ethereum and Bitcoin vanity, with HIP/CUDA execution, durable
 checkpoints and online/offline owners. BSGS, minikey enumeration, endomorphism
 and alternative search orders remain separate mappings.
@@ -24,10 +25,12 @@ version-1 bindings. Stride greater than 1 has a one-based candidate index `j`:
 Blocks, grants, work units, batches and saved complements operate in candidate
 indices for strided jobs. Block width therefore counts candidates, not the
 numeric distance between private scalars. This permits exact replay even with
-wide strides and short final blocks. Public records identify
+wide strides and short final blocks. Search metadata, checkpoint notifications, summaries and result views identify
 `coordinate_space:"scalar-stride-index-v1"`, show `candidate_index` separately
 from the actual `scalar`, and use `computed_candidates`/`resumed_candidates`.
-Historical receipt/SQL fields named `scalar` contain the candidate index for
+Generic state/grant interval records retain their existing shape and must be
+interpreted using the immutable job binding. Historical receipt/SQL fields named
+`scalar` contain the candidate index for
 these bindings. A relation is `(candidate index, canonical target)`.
 
 ## Binding and compatibility

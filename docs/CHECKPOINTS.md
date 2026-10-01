@@ -23,10 +23,12 @@ points, plus C23's 21-byte encoding/HASH160 relations, 20-byte Ethereum addresse
 malformed/noncanonical inputs;
 compressed/uncompressed encodings of the same BSGS point identify one target.
 
-The algorithm fingerprint is SHA256 of exactly 50 bytes: `khsearch` (8 bytes),
-semantic version 1, mode byte (1=xpoint, 2=BSGS, 3=HASH160, 4=Ethereum, 5=vanity, 6=minikeys), big-endian 64-bit `m`, and the
+For version 1, the algorithm fingerprint is SHA256 of exactly 50 bytes: `khsearch` (8 bytes),
+semantic version 1 for unit stride, mode byte (1=xpoint, 2=BSGS, 3=HASH160, 4=Ethereum, 5=vanity, 6=minikeys), big-endian 64-bit `m`, and the
 32-byte table checksum. Xpoint, HASH160, Ethereum, vanity and minikeys use zero `m` and checksum. Semantics are secp256k1,
-stride one, exhaustive all-target coverage. BSGS binds the validated C10 cache
+stride one for version 1, exhaustive all-target coverage. Nonunit scalar strides
+use version 2 with an additional 96 bytes for the original range and stride, as
+described below. BSGS binds the validated C10 cache
 including its table size and checksum. Changing `m` or rebuilding a differently
 encoded cache requires a new job; incompatible progress is never silently reused.
 
@@ -291,7 +293,7 @@ printf '%s\n' 0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798
 
 | Action | Options |
 | --- | --- |
-| `create` | Required `--project`, `--mode xpoint\|bsgs\|hash160\|address\|ethereum\|vanity\|minikeys`, `--range`, `--block-width`, `--targets`; BSGS requires `--table` and accepts `--host-memory` |
+| `create` | Required `--project`, `--mode xpoint\|bsgs\|hash160\|address\|ethereum\|vanity\|minikeys`, `--range`, `--block-width`, `--targets`; BSGS requires `--table` and accepts `--host-memory`; scalar families accept `--stride HEX` |
 | `run`, common | Required `--backend hip\|cuda`, `--grant`, `--targets`; optional `--device` (0), `--candidate-capacity` (1024), `--checkpoint-seconds 0..60` (10) |
 | `run`, xpoint | `--batch-size 1..1048576` (1048576), `--kernel stepped\|direct` (stepped); capacity 1..1048576 |
 | `run`, BSGS | Required `--table`; `--giant-batch` (16384), `--target-batch 1..64` (64), product at most 1048576; capacity 1..65536; `--group-size auto\|1\|8`; `--host-memory` (1073741824 bytes), `--reserve-bytes` (67108864 bytes) |
@@ -454,3 +456,21 @@ overflow attempts. `bsgs_group_size` is retained for compatibility and means onl
 an empty group list. Benchmark readers label the complete group set unknown for
 version 1 summaries; they cannot reconstruct it from the final group. See
 [the C17 live reproduction](baselines/C17_GROUPS.json).
+
+## Exact positive scalar strides
+
+Create xpoint, HASH160/address, Ethereum or vanity jobs with `--stride HEX`.
+The range still names private scalar bounds; block width counts visited
+candidates. For example, range `1:301`, stride `3`, width `100` creates one
+256-candidate block. `checkpoint run` recovers the persisted stride automatically;
+an optional explicit stride must match. Changing batch size, kernel or visible
+device does not change the progression or its saved complement.
+
+Nonunit jobs use `scalar-stride-index-v1`. Saved/granted intervals are one-based
+candidate indices, and summaries expose `computed_candidates`/`resumed_candidates`.
+Result views include `candidate_index` and the actual private `scalar`. The
+146-byte version-2 configuration binds A, B and S as three 32-byte big-endian
+integers after the existing header. Its manifest root must be exactly `[1,N+1)`.
+Schema 7 and receipt encoding are unchanged. `--stride 1` retains the old job
+identity. BSGS and minikey jobs reject this option. See [contracts](C23_STRIDES.md)
+and [executable examples](GPU_QUICKSTART.md).

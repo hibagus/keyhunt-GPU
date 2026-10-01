@@ -322,3 +322,14 @@ Every result is checked from candidate text through its derived key before
 local persistence and again at coordinator acceptance. Public result views show
 both ordinal and derived scalar. Both 22- and 30-character jobs are covered by
 [minikey acceptance](C23_MINIKEYS_VALIDATION.md); prior C22 evidence is unchanged.
+
+## C23 exact scalar strides
+
+Both courier file transport and HTTPS carry the full version-2 stride binding.
+Update coordinator and worker for `scalar-stride-v1`; older workers cannot claim,
+renew or upload candidate-index jobs. The original scalar range and stride bind
+each grant's coordinate meaning. Local/server receipts retain candidate indices;
+public results show `candidate_index`, actual `scalar` and
+`coordinate_space:"scalar-stride-index-v1"`. Offline replay, lease deadlines and
+acknowledgment rules remain the same. See [contracts](C23_STRIDES.md) and the
+recorded acceptance linked there. These jobs use explicit candidate block widths.

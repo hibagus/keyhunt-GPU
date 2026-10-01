@@ -60,6 +60,8 @@ Use a separate build directory for each backend. HIP and CUDA cannot be enabled
 in the same configuration. The GPU preset still builds the CPU verifier and
 legacy CPU modes; `-m` flags never select a GPU. Both native backends support the
 same exact xpoint, BSGS, HASH160, Ethereum, vanity, minikeys, checkpoint and supervised execution commands.
+Native scalar families also accept [exact positive strides](C23_STRIDES.md); BSGS
+and minikey enumeration use their existing mappings.
 
 These are recorded working combinations, not minimum SDK or driver versions:
 
