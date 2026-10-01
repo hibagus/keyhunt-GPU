@@ -9,10 +9,12 @@ from minikey import PUBLIC_KEYS,text,ordinal,scalar
 p=argparse.ArgumentParser()
 for name in ('binary','oracle','report'):p.add_argument('--'+name,type=Path,required=True)
 p.add_argument('--hardware',action='store_true');p.add_argument('--backend',choices=('hip','cuda'),default='hip')
-orders=p.add_mutually_exclusive_group();orders.add_argument('--reverse',action='store_true');orders.add_argument('--both-ends',action='store_true');orders.add_argument('--dance',action='store_true')
-a=p.parse_args();order='dance' if a.dance else 'both-ends' if a.both_ends else 'reverse' if a.reverse else 'forward';binary=str(a.binary.resolve())
+orders=p.add_mutually_exclusive_group();orders.add_argument('--reverse',action='store_true');orders.add_argument('--both-ends',action='store_true');orders.add_argument('--dance',action='store_true');orders.add_argument('--random-window',action='store_true')
+a=p.parse_args();order='random-window' if a.random_window else 'dance' if a.dance else 'both-ends' if a.both_ends else 'reverse' if a.reverse else 'forward';binary=str(a.binary.resolve())
 report=dict(passed=False,oracle_commit=check_source(),binary_sha256=hashlib.sha256(a.binary.read_bytes()).hexdigest(),
             hardware=a.hardware,reverse=a.reverse,ordinal_order=order,backend=a.backend,cases=[],checks=0)
+def tuning(policy,seed=42,window=4):
+    return ['--ordinal-seed',f'{seed:x}','--ordinal-window',str(window)] if policy=='random-window' else []
 with tempfile.TemporaryDirectory(prefix='kh-minikey-checkpoint-') as directory:
     root=Path(directory);state=root/'state'
     def command(family,action,*words):return [binary,family,action,'--state-dir',str(state),*map(str,words)]
@@ -34,6 +36,8 @@ with tempfile.TemporaryDirectory(prefix='kh-minikey-checkpoint-') as directory:
         assert call('checkpoint','create',*equiv)[0]==created
         assert call('checkpoint','create',*words,'--encoding','compressed')[0]['job']!=created['job']
         assert not call('checkpoint','create',*words,'--ordinal-order','reverse',ok=False).stdout
+        for flag,value in (('--ordinal-seed','0'),('--ordinal-window','64')):
+            assert not call('checkpoint','create',*words,flag,value,ok=False).stdout
         scope=['--project',project,'--job',created['job']]
         grant=call('state','claim',*scope,'--owner','test','--request',label)[0]['assignments'][0]['grant']
         return scope,['--backend',a.backend,'--grant',grant,'--targets',file,'--length',length,'--input-format','hash160']
@@ -65,9 +69,10 @@ with tempfile.TemporaryDirectory(prefix='kh-minikey-checkpoint-') as directory:
             wrong_length=run.copy();wrong_length[wrong_length.index('--length')+1]=30 if length==22 else 22
             for words in (mismatch,wrong_length,run+['--encoding','compressed'],run+['--candidate-capacity','1'],run+['--kernel','stepped']):
                 assert not call('checkpoint','run',*words,ok=False).stdout
-            summary=call('checkpoint','run',*run,'--ordinal-order',order,'--batch-size','8192','--candidate-capacity','2')[-1]
+            summary=call('checkpoint','run',*run,'--ordinal-order',order,*tuning(order),'--batch-size','8192','--candidate-capacity','2')[-1]
             assert summary['complete'] and int(summary['computed_ordinals'],16)==count and summary['durability']=='local'
             assert summary['ordinal_order']==(order)
+            if a.random_window:assert int(summary['ordinal_seed'],16)==42 and summary['ordinal_window']==4
             assert summary['coordinate_space']=='minikey-ordinal-v1' and 'computed_scalars' not in summary
             if label=='overflow':assert summary['overflow_replays']>0
             expected={(o,f'{length:02x}{tag:02x}'+v) for (o,tag),v in values.items() if start<=o<start+count}
@@ -76,19 +81,26 @@ with tempfile.TemporaryDirectory(prefix='kh-minikey-checkpoint-') as directory:
             assert again['batches']==0 and int(again['resumed_ordinals'],16)==count
             report['cases'].append(dict(name=label,length=length,relations=len(expected),summary=summary))
         if not a.hardware:continue
-        for first,resume in ([('dance','forward'),('forward','dance'),('dance','reverse'),('reverse','dance'),('dance','both-ends'),('both-ends','dance'),('dance','dance')] if a.dance else [('both-ends','forward'),('forward','both-ends'),('both-ends','reverse'),('reverse','both-ends'),('both-ends','both-ends')] if a.both_ends else [('reverse','forward'),('forward','reverse'),('reverse','reverse')] if a.reverse else [('forward','forward')]):
+        for first,resume in ([(first,last) for other in ('forward','reverse','both-ends','dance') for first,last in (('random-window',other),(other,'random-window'))]+[('random-window','random-window')] if a.random_window else [('dance','forward'),('forward','dance'),('dance','reverse'),('reverse','dance'),('dance','both-ends'),('both-ends','dance'),('dance','dance')] if a.dance else [('both-ends','forward'),('forward','both-ends'),('both-ends','reverse'),('reverse','both-ends'),('both-ends','both-ends')] if a.both_ends else [('reverse','forward'),('forward','reverse'),('reverse','reverse')] if a.reverse else [('forward','forward')]):
             # Kill only after an acknowledged durable prefix; all later work is
             # reconstructed from its exact ordinal complement with new batch sizes.
             start=begin-1048575 if first=='reverse' else begin
             scope,run=prepare(f'killed-{length}-{first}-{resume}',length,start,start+1048576,[values[begin,tag] for tag in (1,2)])
-            process=subprocess.Popen(command('checkpoint','run',*run,'--ordinal-order',first,'--batch-size','32',*(['--checkpoint-seconds','0'] if first in ('both-ends','dance') else [])),stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
+            process=subprocess.Popen(command('checkpoint','run',*run,'--ordinal-order',first,*tuning(first),'--batch-size','32',*(['--checkpoint-seconds','0'] if first in ('both-ends','dance','random-window') else [])),stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
             try:
                 assert select.select([process.stdout],[],[],30)[0],'no durable acknowledgment'
                 notice=json.loads(process.stdout.readline())
                 for _ in range(2 if first=='dance' else 1 if first=='both-ends' else 0):
                     # Persist every selected front before killing this owner.
                     notice=json.loads(process.stdout.readline())
-                assert notice['type']=='checkpoint' and notice['durable_results'] and notice['coordinate_space']=='minikey-ordinal-v1'
+                if first=='random-window':
+                    # The public candidate is in the first window. Wait for its
+                    # durable result even when the seeded permutation visits it last.
+                    for _ in range(3):
+                        if notice['match_observations']:break
+                        notice=json.loads(process.stdout.readline())
+                    assert notice['match_observations']
+                assert notice['type']=='checkpoint'  and notice['durable_results'] and notice['coordinate_space']=='minikey-ordinal-v1'
                 assert 'already held' in call('checkpoint','run',*run,ok=False).stderr
                 process.kill();process.communicate(timeout=30)
             finally:
@@ -98,8 +110,9 @@ with tempfile.TemporaryDirectory(prefix='kh-minikey-checkpoint-') as directory:
             covered=sum(int(v['end_exclusive'],16)-int(v['begin'],16) for v in retained['covered'])
             if first in ('both-ends','dance'):assert int(retained['covered'][0]['begin'],16)==start and int(retained['covered'][-1]['end_exclusive'],16)==start+1048576
             if first=='dance':assert any(int(v['begin'],16)<=start+524288<int(v['end_exclusive'],16) for v in retained['covered'])
-            summary=call('checkpoint','run',*run,'--ordinal-order',resume,'--batch-size','65536')[-1]
+            summary=call('checkpoint','run',*run,'--ordinal-order',resume,*tuning(resume,2**256-1,3),'--batch-size','65536')[-1]
             assert summary['complete'] and int(summary['resumed_ordinals'],16)==covered
+            if resume=='random-window':assert int(summary['ordinal_seed'],16)==2**256-1 and summary['ordinal_window']==3
             assert covered+int(summary['computed_ordinals'],16)==1048576
             verify(scope,{(begin,f'{length:02x}{tag:02x}'+values[begin,tag]) for tag in (1,2)},length)
             report['cases'].append(dict(name='kill-and-restart',length=length,first=first,resume=resume,retained=retained,summary=summary))

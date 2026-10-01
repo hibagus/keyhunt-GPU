@@ -433,3 +433,26 @@ target_link_libraries(storage_bsgs_random_window_test PRIVATE keyhunt_storage)
 keyhunt_configure_target(storage_bsgs_random_window_test)
 add_test(NAME storage_bsgs_random_window COMMAND storage_bsgs_random_window_test)
 set_tests_properties(storage_bsgs_random_window PROPERTIES TIMEOUT 180 LABELS "cpu;bsgs;storage;random-window;recovery")
+
+add_test(NAME checkpoint_minikeys_random_window_cli COMMAND "${Python3_EXECUTABLE}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/minikey_checkpoint_cli.py"
+    --binary $<TARGET_FILE:keyhunt> --oracle $<TARGET_FILE:secp256k1_oracle>
+    --random-window --report "${CMAKE_CURRENT_BINARY_DIR}/checkpoint-minikeys-random-window-cli.json" ${checkpoint_cli_options})
+set_tests_properties(checkpoint_minikeys_random_window_cli PROPERTIES TIMEOUT 600 LABELS "cpu;storage;minikeys;recovery")
+if(KEYHUNT_ENABLE_GPU)
+    set_tests_properties(checkpoint_minikeys_random_window_cli PROPERTIES LABELS "${KEYHUNT_GPU_BACKEND};hardware;storage;minikeys;recovery" RESOURCE_LOCK gpu_device)
+    add_test(NAME checkpoint_minikeys_random_window_pause_${KEYHUNT_GPU_BACKEND} COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/checkpoint_pause_hip.py"
+        --binary $<TARGET_FILE:keyhunt> --oracle $<TARGET_FILE:secp256k1_oracle>
+        --backend ${KEYHUNT_GPU_BACKEND} --mode minikeys22 --mode minikeys30 --ordinal-order random-window
+        --report "${CMAKE_CURRENT_BINARY_DIR}/checkpoint-minikeys-random-window-pause-${KEYHUNT_GPU_BACKEND}.json")
+    set_tests_properties(checkpoint_minikeys_random_window_pause_${KEYHUNT_GPU_BACKEND} PROPERTIES TIMEOUT 180
+        LABELS "${KEYHUNT_GPU_BACKEND};hardware;storage;minikeys;recovery" RESOURCE_LOCK gpu_device)
+endif()
+
+add_executable(storage_minikey_random_window_test tests/storage/minikey_random_window.cpp)
+target_include_directories(storage_minikey_random_window_test PRIVATE src/storage)
+target_link_libraries(storage_minikey_random_window_test PRIVATE keyhunt_storage)
+keyhunt_configure_target(storage_minikey_random_window_test)
+add_test(NAME storage_minikey_random_window COMMAND storage_minikey_random_window_test)
+set_tests_properties(storage_minikey_random_window PROPERTIES TIMEOUT 180 LABELS "cpu;storage;minikeys;random-window;recovery")
