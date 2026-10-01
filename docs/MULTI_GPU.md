@@ -130,6 +130,10 @@ meet, both ends can consume one unit. Each unit adapts from its own active time,
 while elapsed completion can include opposite-end work. Checkpoint coverage and
 block claims remain exact and independent of this policy. See
 [both-ends contracts](C23_BSGS_BOTH_ENDS.md).
+Dance cycles low/high/middle with up to three interleaved work units. The fixed
+midpoint bounds fragmentation; no tile or unit crosses it. Each unit retains its
+own timing, and a resumed grant reconstructs the midpoint from saved coverage.
+See [dance contracts](C23_BSGS_DANCE.md).
 
 For a new job, recommend a fixed width from at least five warmed, complete,
 validated single-device measurements of the exact inputs:

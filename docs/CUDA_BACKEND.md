@@ -319,9 +319,11 @@ recorded in the [C20 follow-up](C20_CUDA_VALIDATION.md); MIG remains unvalidated
 ## BSGS tile traversal
 
 Native `bsgs`, `checkpoint run` and supervised workers accept execution-only
-`--tile-order forward|reverse|both-ends`. Reverse selects the highest remaining scalar
+`--tile-order forward|reverse|both-ends|dance`. Reverse selects the highest remaining scalar
 tile within each grant, preserving all-target completion and actual scalar
 receipts. Both-ends alternates low/high tiles and starts low again after restart;
-see [its contract](C23_BSGS_BOTH_ENDS.md). Tile order can change on restart without
+see [its contract](C23_BSGS_BOTH_ENDS.md). Dance cycles low/high/middle with a
+fixed midpoint and exact coverage; see [contract and example](C23_BSGS_DANCE.md).
+Tile order can change on restart without
 recreating the job. See the
 [contract and executable HIP/CUDA example](C23_BSGS_REVERSE.md).

@@ -185,11 +185,14 @@ only for candidates, not every scalar in a no-match GPU range.
 
 ## BSGS target groups and replay
 
-`checkpoint run --tile-order forward|reverse|both-ends` selects the order of BSGS tiles
+`checkpoint run --tile-order forward|reverse|both-ends|dance` selects the order of BSGS tiles
 inside a grant; the default is forward. Reverse walks saved uncovered gaps from
 highest to lowest. Both-ends starts low and alternates low/high per completed tile,
 even when active work units interleave. A both-ends restart begins low again on the exact
 remaining coverage; see [both-ends contracts](C23_BSGS_BOTH_ENDS.md).
+Dance cycles low/high/middle with a fixed midpoint and at most three active units.
+It restarts low with a new midpoint over the saved complement; see
+[the exact dance contract](C23_BSGS_DANCE.md).
 This execution choice can change on restart, including after
 partial-target matches were saved. Job identity, table identity and actual scalar
 receipts stay unchanged. `create` and non-BSGS runners reject this option. See
@@ -308,7 +311,7 @@ printf '%s\n' 0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798
 | `create` | Required `--project`, `--mode xpoint\|bsgs\|hash160\|address\|ethereum\|vanity\|minikeys`, `--range`, `--block-width`, `--targets`; BSGS requires `--table` and accepts `--host-memory`; scalar families accept `--stride HEX`, `--order forward\|reverse` and `--endomorphism none\|orbit` |
 | `run`, common | Required `--backend hip\|cuda`, `--grant`, `--targets`; optional `--device` (0), `--candidate-capacity` (1024), `--checkpoint-seconds 0..60` (10) |
 | `run`, xpoint | `--batch-size 1..1048576` (1048576), `--kernel stepped\|direct\|glv` (stepped); capacity 1..1048576 |
-| `run`, BSGS | Required `--table`; `--giant-batch` (16384), `--target-batch 1..64` (64), product at most 1048576; capacity 1..65536; `--group-size auto\|1\|8`; `--tile-order forward\|reverse\|both-ends` (forward); `--host-memory` (1073741824 bytes), `--reserve-bytes` (67108864 bytes) |
+| `run`, BSGS | Required `--table`; `--giant-batch` (16384), `--target-batch 1..64` (64), product at most 1048576; capacity 1..65536; `--group-size auto\|1\|8`; `--tile-order forward\|reverse\|both-ends\|dance` (forward); `--host-memory` (1073741824 bytes), `--reserve-bytes` (67108864 bytes) |
 | `results` | Required `--project`, `--job`; optional `--after` (0), `--limit 1..1000` (100) |
 
 The BSGS memory limit retains the C11 target/table/executor budgeting contract.
