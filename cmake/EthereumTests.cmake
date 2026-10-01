@@ -1,0 +1,5 @@
+add_executable(ethereum_search_test tests/unit/ethereum_search.cpp)
+target_link_libraries(ethereum_search_test PRIVATE keyhunt_core)
+keyhunt_configure_target(ethereum_search_test)
+add_test(NAME ethereum_search_contract COMMAND ethereum_search_test)
+set_tests_properties(ethereum_search_contract PROPERTIES TIMEOUT 30 LABELS "cpu;core;ethereum")

@@ -136,6 +136,7 @@ add_library(keyhunt_core STATIC
     src/core/result_verifier.cpp
     src/core/xpoint_search.cpp
     src/core/hash160_search.cpp
+    src/core/ethereum_search.cpp
     src/core/bsgs_table.cpp
     src/core/bsgs_search.cpp)
 target_include_directories(keyhunt_core PRIVATE kernels)
@@ -269,6 +270,7 @@ if(BUILD_TESTING)
     include(cmake/GpuArithmeticTests.cmake)
     include(cmake/XPointTests.cmake)
     include(cmake/Hash160Tests.cmake)
+    include(cmake/EthereumTests.cmake)
     include(cmake/BsgsTableTests.cmake)
     include(cmake/BsgsSearchTests.cmake)
     include(cmake/StorageTests.cmake)
