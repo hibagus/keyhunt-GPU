@@ -1,4 +1,5 @@
 #pragma once
+#include "common/scalar_stride.h"
 #include "device_runtime.h"
 #include "common/point.h"
 #include "common/hash160.h"
@@ -61,13 +62,18 @@ __device__ inline void hash160_normalized_lookup(const Field& px,const Field& py
     Field zz,zzz,x,y;square(zz,zi);mul(zzz,zz,zi);mul(x,px,zz);mul(y,py,zzz);
     hash160_lookup(x,y,offset,encodings,targets,target_count,output,capacity,counters);
 }
-__global__ KEYHUNT_HASH160_LAUNCH_BOUND void hash160_direct(Scalar begin,uint64_t count,uint8_t encodings,
+template<bool Strided>
+__global__ KEYHUNT_HASH160_LAUNCH_BOUND void hash160_direct(Scalar begin,Scalar stride,uint64_t count,uint8_t encodings,
     const Hash160DeviceTarget* targets,uint32_t target_count,core::XPointCandidate* output,
     uint32_t capacity,Hash160Counters* counters) {
     const uint64_t index=uint64_t(blockIdx.x)*blockDim.x+threadIdx.x;
     if(index>=count)return;
+    Scalar scalar;
+    if constexpr(Strided){
+        if(!stride_scalar(begin,stride,index,scalar)){atomicExch(&counters->invalid,1U);return;}
+    }else scalar=hash160_offset_scalar(begin,index);
     Point point;
-    if(!public_key(point,hash160_offset_scalar(begin,index))||is_infinity(point)){
+    if(!public_key(point,scalar)||is_infinity(point)){
         atomicExch(&counters->invalid,1U);return;}
     Field zi;
 #if defined(__CUDACC__)

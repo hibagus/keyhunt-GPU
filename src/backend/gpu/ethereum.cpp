@@ -33,6 +33,7 @@ struct GpuEthereumExecutor::Impl {
 
     Impl(int ordinal, core::EthereumTargets values, const core::XPointVerifier& cpu, EthereumOptions config)
         : device(ordinal), targets(std::move(values)), verifier(cpu), options(config) {
+        core::validate_scalar_stride(options.stride);
         if (!options.max_steps || options.max_steps > 1048576)
             throw std::invalid_argument("ethereum max_steps must be in [1, 1048576]");
         if (!options.candidate_capacity || options.candidate_capacity > 1048576)
@@ -70,7 +71,7 @@ struct GpuEthereumExecutor::Impl {
                 // Preserve each backend's measured cache representation.
                 gpu::EthereumPower powers[20];
                 for (unsigned bit=0;bit<20;++bit) {
-                    const auto point = seed(core::UInt256::power_of_two(bit));
+                    const auto point = seed(core::scalar_stride_power(options.stride,bit));
 #if defined(__CUDACC__)
                     powers[bit] = point;
 #else
@@ -127,28 +128,39 @@ Ticket GpuEthereumExecutor::submit(const scheduler::KernelBatch& batch) {
     s.healthy();
     if (s.batch) throw std::logic_error("GPU result slot busy; take its result before submitting");
     if (batch.step_count() > s.options.max_steps) throw std::invalid_argument("batch exceeds GPU executor capacity");
-    if (batch.work().identity().algorithm != scheduler::WorkAlgorithm::DirectEthereumV1 ||
+    if (scheduler::scalar_family(batch.work().identity().algorithm) != scheduler::WorkAlgorithm::DirectEthereumV1 ||
         batch.work().identity().target_digest != s.targets.digest())
         throw std::invalid_argument("ethereum target digest does not match the plan");
+    if(batch.scalar_stride()!=s.options.stride)throw std::invalid_argument("batch stride differs from prepared executor");
     if (s.sequence == std::numeric_limits<uint64_t>::max()) throw std::overflow_error("GPU ticket sequence exhausted");
     s.batch = batch;
     ++s.sequence;
     s.submitted = Clock::now();
     try {
         DeviceScope selected(s.device);
-        const auto bytes = batch.interval().begin().bytes();
+        const auto bytes = batch.scalar_at(0).bytes();
         const auto begin = gpu::scalar_from_bytes(bytes.data());
+        const auto stride_bytes=s.options.stride.bytes();
+        const auto stride=gpu::scalar_from_bytes(stride_bytes.data());
         const auto seed_start = Clock::now();
-        const auto base = s.options.kernel == XPointKernel::Stepped ? s.seed(batch.interval().begin()) : gpu::Point{};
+        const auto base = s.options.kernel == XPointKernel::Stepped ? s.seed(batch.scalar_at(0)) : gpu::Point{};
         s.seed_ms = milliseconds(Clock::now()-seed_start);
         gpu_check(gpuMemsetAsync(s.device_output,0xa5,s.output_bytes,s.stream),"gpuMemsetAsync(output)");
         gpu_check(gpuMemsetAsync(s.device_count,0,sizeof(*s.device_count),s.stream),"gpuMemsetAsync(count)");
         gpu_check(gpuEventRecord(s.start,s.stream),"gpuEventRecord(start)");
         (void)gpuGetLastError();
         if (s.options.kernel == XPointKernel::Direct) {
-            gpuLaunchKernelGGL(gpu::ethereum_direct,dim3((batch.step_count()+127)/128),dim3(128),0,s.stream,
-                begin,batch.step_count(),s.device_targets,uint32_t(s.targets.values().size()),
+            // Compile the old stride-one arithmetic separately; arbitrary
+            // strides use a checked multiply-add in the direct specialization.
+            if(s.options.stride==core::UInt256(1)){
+            gpuLaunchKernelGGL(gpu::ethereum_direct<false>,dim3((batch.step_count()+127)/128),dim3(128),0,s.stream,
+                begin,stride,batch.step_count(),s.device_targets,uint32_t(s.targets.values().size()),
                 s.device_output,s.capacity,s.device_count);
+            }else{
+            gpuLaunchKernelGGL(gpu::ethereum_direct<true>,dim3((batch.step_count()+127)/128),dim3(128),0,s.stream,
+                begin,stride,batch.step_count(),s.device_targets,uint32_t(s.targets.values().size()),
+                s.device_output,s.capacity,s.device_count);
+            }
         } else {
             const auto lanes = (batch.step_count()+gpu::ethereum_group-1)/gpu::ethereum_group;
             const dim3 blocks((lanes+127)/128);

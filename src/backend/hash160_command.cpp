@@ -37,13 +37,13 @@ void flush_record() {
 #endif
 }
 int hash160_command(int argc, char** argv) {
-    const char* usage = "usage: keyhunt hash160|address --backend hip|cuda --range START:END --targets FILE [--encoding compressed|uncompressed|both] [--device N] [--batch-size 1..1048576] [--candidate-capacity 1..1048576] [--kernel stepped|direct] (END is exclusive; NDJSON output)";
+    const char* usage = "usage: keyhunt hash160|address --backend hip|cuda --range START:END --targets FILE [--encoding compressed|uncompressed|both] [--device N] [--batch-size 1..1048576] [--candidate-capacity 1..1048576] [--kernel stepped|direct] [--stride HEX] (END is exclusive; NDJSON output)";
     std::map<std::string,std::string> args;
     for (int i=2;i<argc;i+=2) {
         if (i+1 == argc) throw std::invalid_argument(usage);
         const std::string key = argv[i];
         if (key != "--backend" && key != "--range" && key != "--targets" && key != "--device" &&
-            key != "--encoding" && key != "--batch-size" && key != "--candidate-capacity" && key != "--kernel") throw std::invalid_argument(usage);
+            key != "--encoding" && key != "--batch-size" && key != "--candidate-capacity" && key != "--kernel" && key != "--stride") throw std::invalid_argument(usage);
         if (!args.emplace(key,argv[i+1]).second) throw std::invalid_argument("duplicate hash160 option: "+key);
     }
     if ((args["--backend"] != "hip" && args["--backend"] != "cuda") || args["--range"].empty() || args["--targets"].empty())
@@ -53,7 +53,11 @@ int hash160_command(int argc, char** argv) {
     const auto colon = range.find(':');
     if (colon == std::string::npos) throw std::invalid_argument(usage);
     using core::UInt256;
-    const core::ScalarInterval interval(UInt256::from_hex(range.substr(0,colon)),UInt256::from_hex(range.substr(colon+1)));
+    const core::ScalarInterval scalar_range(UInt256::from_hex(range.substr(0,colon)),UInt256::from_hex(range.substr(colon+1)));
+    const auto stride=UInt256::from_hex(args.count("--stride")?args["--stride"]:"1");
+    core::validate_scalar_stride(stride);
+    const auto mapping=stride==UInt256(1)?std::optional<core::ScalarStride>{}:std::make_optional(core::ScalarStride(scalar_range,stride));
+    const auto interval=mapping?mapping->indices():scalar_range;
     const uint64_t device = args.count("--device") ? decimal(args["--device"]) : 0;
     const uint64_t batch_size = args.count("--batch-size") ? decimal(args["--batch-size"]) : 1048576;
     const uint64_t capacity = args.count("--candidate-capacity") ? decimal(args["--candidate-capacity"]) : 1024;
@@ -73,6 +77,7 @@ int hash160_command(int argc, char** argv) {
     const auto selected = select_gpu(int(device));
     core::XPointVerifier verifier;
     Hash160Options options;
+    options.stride = stride;
     options.max_steps = batch_size; options.candidate_capacity = uint32_t(capacity);
     options.kernel = kernel == "direct" ? XPointKernel::Direct : XPointKernel::Stepped;
     GpuHash160Executor executor(int(device),targets,verifier,options);
@@ -83,13 +88,17 @@ int hash160_command(int argc, char** argv) {
     scheduler::ExecutionIdentity identity;
     identity.target_digest = targets.digest();
     identity.algorithm = scheduler::WorkAlgorithm::DirectHash160V1;
+    if(mapping){identity.algorithm=scheduler::strided_algorithm(identity.algorithm);identity.stride_mapping=mapping;}
     identity.assignment_id[0] = 1;
     identity.assignment_generation = identity.executor_generation = 1;
     std::cout << std::setprecision(9) << "{\"type\":\"start\",\"backend\":\"" << gpu_backend_name() << "\",\"mode\":\"hash160\",\"device\":" << device
               << ",\"uuid\":\"" << selected.device.uuid << "\",\"target_count\":" << targets.values().size()
               << ",\"target_digest\":\"" << hex_bytes(targets.digest().data(),targets.digest().size())
               << "\",\"begin\":\"" << interval.begin().hex() << "\",\"end_exclusive\":\"" << interval.end().hex()
-              << "\",\"kernel\":\"" << kernel << "\",\"durable_coverage\":false,\"preparation_ms\":" << preparation_ms << '}';
+              << "\",\"kernel\":\"" << kernel << "\",\"durable_coverage\":false,\"preparation_ms\":" << preparation_ms;
+    if(mapping)std::cout<<",\"coordinate_space\":\"scalar-stride-index-v1\",\"scalar_begin\":\""<<scalar_range.begin().hex()
+        <<"\",\"scalar_end_exclusive\":\""<<scalar_range.end().hex()<<"\",\"stride\":\""<<stride.hex()<<'"';
+    std::cout<<'}';
     flush_record();
     auto cursor = interval.begin();
     UInt256 verified, attempts, match_count;
@@ -115,8 +124,10 @@ int hash160_command(int argc, char** argv) {
                       << ",\"download_bytes\":" << result.download_bytes << ",\"matches\":[";
             for (size_t i=0;i<result.matches.size();++i) {
                 const auto& match = result.matches[i];
-                std::cout << (i ? "," : "") << "{\"scalar\":\"" << match.scalar.hex() << "\",\"hash160\":\""
-                          << hex_bytes(targets.values()[match.target].data()+1,20) << "\",\"encoding\":\"" << core::hash160_encoding_name(targets.values()[match.target][0]) << "\",\"target\":" << match.target << '}';
+                std::cout << (i ? "," : "") << "{\"scalar\":\"" << (mapping?mapping->scalar(match.scalar):match.scalar).hex() << "\",\"hash160\":\""
+                          << hex_bytes(targets.values()[match.target].data()+1,20) << "\",\"encoding\":\"" << core::hash160_encoding_name(targets.values()[match.target][0]) << "\",\"target\":" << match.target ;
+                if(mapping)std::cout<<",\"candidate_index\":\""<<match.scalar.hex()<<'"';
+                std::cout<<'}';
             }
             std::cout << "]}";
             flush_record(); // output backpressure precedes any cursor advancement
@@ -137,7 +148,9 @@ int hash160_command(int argc, char** argv) {
               << "\",\"device_steps\":\"" << attempts.hex() << "\",\"matches\":\"" << match_count.hex()
               << "\",\"launch_count\":" << launches << ",\"overflow_replays\":" << overflows
               << ",\"kernel_ms\":" << kernel_ms << ",\"download_ms\":" << download_ms
-              << ",\"verification_ms\":" << verification_ms << ",\"seed_ms\":" << seed_ms << ",\"wall_ms\":" << wall_ms << '}';
+              << ",\"verification_ms\":" << verification_ms << ",\"seed_ms\":" << seed_ms << ",\"wall_ms\":" << wall_ms ;
+    if(mapping)std::cout<<",\"coordinate_space\":\"scalar-stride-index-v1\"";
+    std::cout<<'}';
     flush_record();
     return 0;
 #endif

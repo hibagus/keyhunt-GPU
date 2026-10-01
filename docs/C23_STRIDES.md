@@ -72,3 +72,19 @@ must agree on HIP and CUDA. Storage and coordinator gates cover immutable stride
 identity, overflow, restart, pause, old-worker rejection and authenticated/offline
 result reconciliation. Executable examples and source/binary-bound evidence are
 recorded under `docs/` before acceptance.
+
+## GPU implementation and first validation
+
+Direct scalar kernels use a separately compiled checked multiply-add path when
+stride exceeds one. Stepped kernels cache `(S * 2^bit mod n)G` for the twenty
+kernel-local offset bits, then advance by `SG`. Every batch receives a fresh
+CPU-derived seed at its mapped private scalar. The prepared executor rejects a
+batch whose stride differs from its immutable options.
+
+Initial MI300X validation passed the portable/native arithmetic oracle, all four
+existing executor ownership/fault suites and 104 independent CLI cases across
+both kernels and all eight visible GPUs. Cases include 128/192-bit arithmetic,
+order boundaries, off-lattice targets, overlapping vanity relations, bounded
+buffer overflow/replay and the maximum 1,048,576-candidate batch. Explicit stride
+one retains the existing coordinate space and target relations. These checks are
+correctness evidence, not throughput or multi-GPU scaling measurements.

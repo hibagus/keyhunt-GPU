@@ -6,6 +6,7 @@ namespace keyhunt::backend {
 enum class XPointKernel { Direct, Stepped };
 struct XPointOptions {
     uint64_t max_steps = 1048576;
+    core::UInt256 stride{1}; // immutable point-cache step; batch identity must agree
     XPointKernel kernel = XPointKernel::Stepped;
     uint32_t candidate_capacity = 1024;
     uint64_t memory_reserve_bytes = 64*1024*1024;
