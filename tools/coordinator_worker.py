@@ -142,6 +142,7 @@ def main():
                         help="allow a stopped queue to move to a different UUID")
     parser.add_argument("--stall-seconds", type=int, default=300)
     parser.add_argument("--kernel", choices=("direct", "stepped", "glv"), help="scalar search also accepts glv; override the mode default: direct for minikeys, stepped for scalar search")
+    parser.add_argument("--ordinal-order", choices=("forward", "reverse"), help="Minikeys only: choose ordinal execution order within each grant")
     parser.add_argument("--tile-order", choices=("forward", "reverse", "both-ends", "dance"), help="BSGS only: choose tiles within each grant; saved scalar coverage is unchanged")
     parser.add_argument("--group-size", choices=("auto", "1", "8"), default="auto")
     parser.add_argument("--batch-size", type=int, default=1048576)
@@ -278,6 +279,8 @@ def main():
                         "--target-batch", args.target_batch, "--host-memory", per_device_memory)
         if args.kernel:
             words += ["--kernel", args.kernel]
+        if args.ordinal_order:
+            words += ["--ordinal-order", args.ordinal_order]
         if args.tile_order:
             words += ["--tile-order", args.tile_order]
         if args.table:

@@ -72,6 +72,8 @@ struct Prepared {
         const auto raw=wire::unhex(inputs["targets"].get<std::string>());
         if(raw.size()>host_memory/4)throw std::runtime_error("target preparation exceeds host memory budget");
         const auto mode=wire::mode(inputs["mode"].get<std::string>());
+        if(mode!=Mode::Minikeys && options.count("ordinal-order"))
+            throw std::invalid_argument("ordinal-order applies only to minikeys");
         if(mode!=Mode::Bsgs && options.count("tile-order"))
             throw std::invalid_argument("tile-order applies only to BSGS");
         if(raw.empty()||raw.size()%target_width(mode))throw std::runtime_error("invalid device target width");
@@ -129,6 +131,7 @@ int run_device(const Options& args){
     const auto once=option(args,"once","no"),rebind=option(args,"rebind","no");
     if((once!="yes"&&once!="no")||(rebind!="yes"&&rebind!="no"))throw std::invalid_argument("once/rebind require yes or no");
     CheckpointOptions limits;limits.concurrent_blocks=true;limits.work_unit_seconds=180;
+    if(args.count("ordinal-order"))limits.minikey_reverse=core::parse_minikey_order(option(args,"ordinal-order"));
     if(args.count("tile-order")){
         limits.bsgs_tile_order=core::parse_bsgs_tile_order(option(args,"tile-order"));
     }
@@ -261,7 +264,8 @@ int run_device(const Options& args){
                 {"m",prepared.table?prepared.table->memory().m:1},
                 {"table_upload_ms",prepared.b_executor?prepared.b_executor->table_upload_ms():0}};
             if(prepared.stride_mapping)finished["coordinate_space"]=prepared.stride_mapping->coordinate_space();
-            if(prepared.m_targets)finished["coordinate_space"]="minikey-ordinal-v1";
+            if(prepared.m_targets){finished["coordinate_space"]="minikey-ordinal-v1";
+                finished["ordinal_order"]=limits.minikey_reverse.value_or(false)?"reverse":"forward";}
             if(prepared.b_targets)finished["tile_order"]=core::bsgs_tile_order_name(limits.bsgs_tile_order.value_or(core::BsgsTileOrder::Forward));
             emit(std::move(finished));
             if(!result.complete)break;
