@@ -13,8 +13,11 @@ int main(){
             if(!(in>>count)||count>32)throw std::invalid_argument("invalid gap count");
             std::vector<ScalarInterval> gaps;
             for(unsigned i=0;i<count;++i){std::string end;if(!(in>>word>>end))throw std::invalid_argument("missing gap");gaps.emplace_back(UInt256::from_hex(word),UInt256::from_hex(end));}
-            if(in>>word)throw std::invalid_argument("trailing input");
-            BsgsTilePlanner planner(gaps,m,giants,parse_bsgs_tile_order(order));std::ostringstream out;out<<"ok";
+            std::optional<BsgsRandomWindow> random;
+            if(in>>word){std::string window;if(!(in>>window))throw std::invalid_argument("missing window");
+                random=parse_bsgs_random_window(word,window);
+                if(in>>word)throw std::invalid_argument("trailing input");}
+            BsgsTilePlanner planner(gaps,m,giants,parse_bsgs_tile_order(order),random);std::ostringstream out;out<<"ok";
             for(unsigned i=0;i<limit;++i){
                 const auto tile=planner.next(sizes[i%sizes.size()]);if(!tile)break;
                 out<<' '<<tile->interval.begin().hex()<<':'<<tile->interval.end().hex()<<':'

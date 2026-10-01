@@ -13,6 +13,7 @@ struct CheckpointOptions {
     // Execution-only BSGS policy: receipts continue to name actual scalar ranges.
     // Optional distinguishes omitted from explicitly unsupported use on scalar jobs.
     std::optional<core::BsgsTileOrder> bsgs_tile_order;
+    std::optional<core::BsgsRandomWindow> bsgs_random_window;
     std::optional<core::MinikeyOrder> minikey_order; // Execution-only; receipts remain canonical ordinals.
     // Supervised devices share the journal but retain an exclusive block guard.
     // Standalone callers keep the original whole-journal exclusion by default.

@@ -32,20 +32,24 @@ void flush_record() {
 #endif
 }
 int bsgs_command(int argc,char** argv) {
-    const char* usage="usage: keyhunt bsgs --backend hip|cuda --range START:END --targets FILE --table FILE [--device N] [--giant-batch 1..1048576] [--target-batch 1..64] [--candidate-capacity 1..65536] [--group-size auto|1|8] [--tile-order forward|reverse|both-ends|dance] [--host-memory BYTES] [--reserve-bytes BYTES] (END exclusive; NDJSON output)";
+    const char* usage="usage: keyhunt bsgs --backend hip|cuda --range START:END --targets FILE --table FILE [--device N] [--giant-batch 1..1048576] [--target-batch 1..64] [--candidate-capacity 1..65536] [--group-size auto|1|8] [--tile-order forward|reverse|both-ends|dance|random-window] [--tile-seed HEX] [--tile-window 1..256] [--host-memory BYTES] [--reserve-bytes BYTES] (END exclusive; NDJSON output)";
     std::map<std::string,std::string> args;
     for(int i=2;i<argc;i+=2) {
         if(i+1==argc) throw std::invalid_argument(usage);
         const std::string key=argv[i];
         if(key!="--backend" && key!="--range" && key!="--targets" && key!="--table" && key!="--device" &&
            key!="--giant-batch" && key!="--target-batch" && key!="--candidate-capacity" && key!="--group-size" &&
-           key!="--host-memory" && key!="--reserve-bytes" && key!="--tile-order") throw std::invalid_argument(usage);
+           key!="--host-memory" && key!="--reserve-bytes" && key!="--tile-order" && key!="--tile-seed" && key!="--tile-window") throw std::invalid_argument(usage);
         if(!args.emplace(key,argv[i+1]).second) throw std::invalid_argument("duplicate BSGS option: "+key);
     }
     if((args["--backend"]!="hip" && args["--backend"]!="cuda") || args["--range"].empty() || args["--targets"].empty() || args["--table"].empty())
         throw std::invalid_argument(usage);
     const auto tile_order=args.count("--tile-order")?args["--tile-order"]:"forward";
     const auto order=core::parse_bsgs_tile_order(tile_order);
+    std::optional<core::BsgsRandomWindow> random;
+    if(args.count("--tile-seed") || args.count("--tile-window") || order==core::BsgsTileOrder::RandomWindow)
+        random=core::parse_bsgs_random_window(args.count("--tile-seed")?args["--tile-seed"]:"0",args.count("--tile-window")?args["--tile-window"]:"64");
+    core::validate_bsgs_random_window(order,random);
     require_backend(args["--backend"]);
     const auto range=args["--range"]; const auto colon=range.find(':');
     if(colon==std::string::npos) throw std::invalid_argument(usage);
@@ -84,9 +88,11 @@ int bsgs_command(int argc,char** argv) {
         <<",\"table_checksum\":\""<<hex(table.checksum().data(),32)<<"\",\"target_digest\":\""<<hex(targets.digest().data(),32)
         <<"\",\"target_count\":"<<targets.values().size()<<",\"begin\":\""<<interval.begin().hex()<<"\",\"end_exclusive\":\""<<interval.end().hex()
         <<"\",\"group_size\":"<<group<<",\"tile_order\":"<<std::quoted(tile_order)<<",\"durable_coverage\":false,\"preparation_ms\":"<<elapsed()
-        <<",\"table_upload_ms\":"<<executor.table_upload_ms()<<'}';
+        <<",\"table_upload_ms\":"<<executor.table_upload_ms();
+    if(random)std::cout<<",\"tile_seed\":"<<std::quoted(random->seed.hex())<<",\"tile_window\":"<<random->tiles;
+    std::cout<<'}';
     flush_record();
-    core::BsgsTilePlanner planner({interval},table.memory().m,giants,order);
+    core::BsgsTilePlanner planner({interval},table.memory().m,giants,order,random);
     const auto tile_width=UInt256(table.memory().m).multiply(UInt256(giants));
     UInt256 verified_scalars,verified_steps,device_steps,match_count;
     uint64_t launches=0,overflows=0,tiles=0;
@@ -140,7 +146,9 @@ int bsgs_command(int argc,char** argv) {
         <<"\",\"verified_target_steps\":\""<<verified_steps.hex()<<"\",\"device_steps\":\""<<device_steps.hex()
         <<"\",\"matches\":\""<<match_count.hex()<<"\",\"launch_count\":"<<launches<<",\"overflow_replays\":"<<overflows<<",\"tile_order\":"<<std::quoted(tile_order)<<",\"tiles\":"<<tiles
         <<",\"kernel_ms\":"<<kernel_ms<<",\"download_ms\":"<<download_ms<<",\"verification_ms\":"<<verification_ms
-        <<",\"seed_ms\":"<<seed_ms<<",\"wall_ms\":"<<elapsed()<<'}';
+        <<",\"seed_ms\":"<<seed_ms<<",\"wall_ms\":"<<elapsed();
+    if(random)std::cout<<",\"tile_seed\":"<<std::quoted(random->seed.hex())<<",\"tile_window\":"<<random->tiles;
+    std::cout<<'}';
     flush_record(); return 0;
 #endif
 }

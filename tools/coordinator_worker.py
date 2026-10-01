@@ -4,6 +4,7 @@
 Device events describe completed batches and authoritative local control states.
 Log growth is never a progress signal. HTTPS runs in a separate bounded child.
 """
+import re
 import argparse
 from dataclasses import dataclass
 import fcntl
@@ -143,7 +144,9 @@ def main():
     parser.add_argument("--stall-seconds", type=int, default=300)
     parser.add_argument("--kernel", choices=("direct", "stepped", "glv"), help="scalar search also accepts glv; override the mode default: direct for minikeys, stepped for scalar search")
     parser.add_argument("--ordinal-order", choices=("forward", "reverse", "both-ends", "dance"), help="Minikeys only: choose ordinal execution order within each grant")
-    parser.add_argument("--tile-order", choices=("forward", "reverse", "both-ends", "dance"), help="BSGS only: choose tiles within each grant; saved scalar coverage is unchanged")
+    parser.add_argument("--tile-order", choices=("forward", "reverse", "both-ends", "dance", "random-window"), help="BSGS only: choose tiles within each grant; saved scalar coverage is unchanged")
+    parser.add_argument("--tile-seed", help="random-window only: hexadecimal 256-bit seed (default zero)")
+    parser.add_argument("--tile-window", type=int, help="random-window only: shuffle 1..256 tiles (default 64)")
     parser.add_argument("--group-size", choices=("auto", "1", "8"), default="auto")
     parser.add_argument("--batch-size", type=int, default=1048576)
     parser.add_argument("--giant-batch", type=int, default=16384)
@@ -153,6 +156,13 @@ def main():
                         help="aggregate table/target budget across selected device processes")
     parser.add_argument("--backend", choices=("hip", "cuda"), default="hip")
     args = parser.parse_args()
+    if (args.tile_seed is not None or args.tile_window is not None) and args.tile_order != "random-window":
+        parser.error("tile-seed/tile-window require tile-order random-window")
+    if args.tile_window is not None and not 1 <= args.tile_window <= 256:
+        parser.error("tile-window must be 1..256")
+    if args.tile_seed is not None:
+        if not re.fullmatch(r"(?:0[xX])?[0-9a-fA-F]{1,64}", args.tile_seed):
+            parser.error("tile-seed must be a hexadecimal 256-bit integer")
     if args.stall_seconds < 60 or min(args.host_memory, args.host_memory_total) < 1:
         parser.error("stall deadline must be at least 60 seconds and memory budgets must be positive")
     root, worker = args.state_dir.resolve(), args.worker.resolve()
@@ -283,6 +293,8 @@ def main():
             words += ["--ordinal-order", args.ordinal_order]
         if args.tile_order:
             words += ["--tile-order", args.tile_order]
+        if args.tile_seed is not None:words += ["--tile-seed", args.tile_seed]
+        if args.tile_window is not None:words += ["--tile-window", str(args.tile_window)]
         if args.table:
             words += ["--table", str(args.table.resolve())]
         device.log = private_log(root / ("execution-" + device.queue + ".log"))

@@ -49,7 +49,10 @@ private:
 // UInt256 integers; no absolute scalar, endpoint or m*i product is truncated.
 // Reverse selects the highest remaining tile; arithmetic inside it is unchanged.
 ScalarInterval bsgs_tile(const ScalarInterval& remaining,uint64_t m,uint64_t max_giants,bool reverse=false);
-enum class BsgsTileOrder { Forward, Reverse, BothEnds, Dance };
+enum class BsgsTileOrder { Forward, Reverse, BothEnds, Dance, RandomWindow };
+struct BsgsRandomWindow { UInt256 seed{0}; unsigned tiles=64; };
+BsgsRandomWindow parse_bsgs_random_window(const std::string& seed,const std::string& window);
+void validate_bsgs_random_window(BsgsTileOrder order,const std::optional<BsgsRandomWindow>& settings);
 BsgsTileOrder parse_bsgs_tile_order(const std::string& value);
 const char* bsgs_tile_order_name(BsgsTileOrder order);
 
@@ -64,7 +67,8 @@ struct BsgsPlannedTile {
 // Both advance per tile, even inside adaptive work units (see docs/C23_BSGS_DANCE.md).
 class BsgsTilePlanner {
 public:
-    BsgsTilePlanner(const std::vector<ScalarInterval>& gaps,uint64_t m,uint64_t max_giants,BsgsTileOrder order);
+    BsgsTilePlanner(const std::vector<ScalarInterval>& gaps,uint64_t m,uint64_t max_giants,BsgsTileOrder order,
+        std::optional<BsgsRandomWindow> random=std::nullopt);
     std::optional<BsgsPlannedTile> next(const UInt256& work_span);
 private:
     struct Remaining { ScalarInterval interval; std::optional<ScalarInterval> work; };
@@ -73,6 +77,12 @@ private:
     BsgsTileOrder order_;
     unsigned phase_=0;
     std::optional<UInt256> pivot_;
+    BsgsRandomWindow random_;
+    UInt256 random_counter_;
+    std::vector<BsgsPlannedTile> window_;
+    size_t window_next_=0;
+    unsigned random_below(unsigned bound);
+    void fill_window(const UInt256& work_span);
 };
 std::vector<BsgsMatch> verify_bsgs(const BsgsBatch& batch,const BsgsPublicKeyTargets& targets,
     const XPointVerifier& verifier,std::vector<BsgsCandidate> candidates);

@@ -10,7 +10,7 @@ The default tile order remains forward.
 
 Build a window from the next W tiles at the lowest missing endpoints, clipping
 every tile at saved gaps. Tile width is m times the giant-batch limit. Shuffle
-those tiles, exhaust the entire window, then build the next window. Tiles may
+those tiles, exhaust the entire window, then build the next window. A window may
 span different missing intervals but no tile or accounting unit crosses a saved
 hole. Window size one is sequential. The policy is local randomization within
 ascending windows, not globally uniform random selection or legacy sampling

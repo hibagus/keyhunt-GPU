@@ -74,7 +74,7 @@ struct Prepared {
         const auto mode=wire::mode(inputs["mode"].get<std::string>());
         if(mode!=Mode::Minikeys && options.count("ordinal-order"))
             throw std::invalid_argument("ordinal-order applies only to minikeys");
-        if(mode!=Mode::Bsgs && options.count("tile-order"))
+        if(mode!=Mode::Bsgs && (options.count("tile-order") || options.count("tile-seed") || options.count("tile-window")))
             throw std::invalid_argument("tile-order applies only to BSGS");
         if(raw.empty()||raw.size()%target_width(mode))throw std::runtime_error("invalid device target width");
         if(mode==Mode::XPoint){
@@ -134,6 +134,10 @@ int run_device(const Options& args){
     if(args.count("ordinal-order"))limits.minikey_order=core::parse_minikey_order(option(args,"ordinal-order"));
     if(args.count("tile-order")){
         limits.bsgs_tile_order=core::parse_bsgs_tile_order(option(args,"tile-order"));
+    }
+    if(args.count("tile-seed") || args.count("tile-window") || limits.bsgs_tile_order==core::BsgsTileOrder::RandomWindow){
+        limits.bsgs_random_window=core::parse_bsgs_random_window(option(args,"tile-seed","0"),option(args,"tile-window","64"));
+        core::validate_bsgs_random_window(limits.bsgs_tile_order.value_or(core::BsgsTileOrder::Forward),limits.bsgs_random_window);
     }
     limits.xpoint_steps=number(args,"batch-size",1048576,1048576);
     limits.target_batch=uint32_t(number(args,"target-batch",64,64));
@@ -267,6 +271,9 @@ int run_device(const Options& args){
             if(prepared.m_targets){finished["coordinate_space"]="minikey-ordinal-v1";
                 finished["ordinal_order"]=core::minikey_order_name(limits.minikey_order.value_or(core::MinikeyOrder::Forward));}
             if(prepared.b_targets)finished["tile_order"]=core::bsgs_tile_order_name(limits.bsgs_tile_order.value_or(core::BsgsTileOrder::Forward));
+            if(prepared.b_targets && limits.bsgs_random_window){
+                finished["tile_seed"]=limits.bsgs_random_window->seed.hex();finished["tile_window"]=limits.bsgs_random_window->tiles;
+            }
             emit(std::move(finished));
             if(!result.complete)break;
         }catch(const ExecutionBlocked& blocked){

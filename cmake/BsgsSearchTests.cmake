@@ -134,3 +134,8 @@ set_tests_properties(bsgs_dance_documented_example PROPERTIES TIMEOUT 150 LABELS
 if(KEYHUNT_ENABLE_GPU)
     set_tests_properties(bsgs_dance_documented_example PROPERTIES LABELS "${KEYHUNT_GPU_BACKEND};hardware;bsgs;dance;examples" RESOURCE_LOCK gpu_device)
 endif()
+
+add_test(NAME bsgs_random_window_plan_oracle COMMAND "${Python3_EXECUTABLE}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests/oracle/bsgs_random_windows.py" --binary $<TARGET_FILE:bsgs_plan_probe>
+    --report "${CMAKE_CURRENT_BINARY_DIR}/bsgs-random-window-plan-oracle.json")
+set_tests_properties(bsgs_random_window_plan_oracle PROPERTIES TIMEOUT 210 LABELS "cpu;bsgs;random-window;oracle")

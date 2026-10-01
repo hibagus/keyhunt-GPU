@@ -2,6 +2,7 @@
 #include "keyhunt/crypto/hash/sha256.h"
 #include "common/point.h"
 #include <algorithm>
+#include <charconv>
 #include <fstream>
 #include <iterator>
 #include <stdexcept>
@@ -105,7 +106,8 @@ BsgsTileOrder parse_bsgs_tile_order(const std::string& value) {
     if(value=="reverse")return BsgsTileOrder::Reverse;
     if(value=="both-ends")return BsgsTileOrder::BothEnds;
     if(value=="dance")return BsgsTileOrder::Dance;
-    throw std::invalid_argument("tile-order must be forward, reverse, both-ends or dance");
+    if(value=="random-window")return BsgsTileOrder::RandomWindow;
+    throw std::invalid_argument("tile-order must be forward, reverse, both-ends, dance or random-window");
 }
 const char* bsgs_tile_order_name(BsgsTileOrder order) {
     switch(order){
@@ -113,12 +115,26 @@ const char* bsgs_tile_order_name(BsgsTileOrder order) {
         case BsgsTileOrder::Reverse:return "reverse";
         case BsgsTileOrder::BothEnds:return "both-ends";
         case BsgsTileOrder::Dance:return "dance";
+        case BsgsTileOrder::RandomWindow:return "random-window";
     }
     throw std::invalid_argument("invalid BSGS tile order");
 }
-BsgsTilePlanner::BsgsTilePlanner(const std::vector<ScalarInterval>& gaps,uint64_t m,uint64_t max_giants,BsgsTileOrder order)
-    :m_(m),giants_(max_giants),order_(order) {
+BsgsRandomWindow parse_bsgs_random_window(const std::string& seed,const std::string& window){
+    BsgsRandomWindow result;result.seed=UInt256::from_hex(seed);
+    const auto parsed=std::from_chars(window.data(),window.data()+window.size(),result.tiles);
+    if(parsed.ec!=std::errc{} || parsed.ptr!=window.data()+window.size() || !result.tiles || result.tiles>256)
+        throw std::invalid_argument("tile-window must be 1..256");
+    return result;
+}
+void validate_bsgs_random_window(BsgsTileOrder order,const std::optional<BsgsRandomWindow>& settings){
     (void)bsgs_tile_order_name(order);
+    if(settings && order!=BsgsTileOrder::RandomWindow)
+        throw std::invalid_argument("tile-seed/tile-window require tile-order random-window");
+    if(settings && (!settings->tiles || settings->tiles>256))throw std::invalid_argument("tile-window must be 1..256");
+}
+BsgsTilePlanner::BsgsTilePlanner(const std::vector<ScalarInterval>& gaps,uint64_t m,uint64_t max_giants,BsgsTileOrder order,std::optional<BsgsRandomWindow> random)
+    :m_(m),giants_(max_giants),order_(order),random_(random.value_or(BsgsRandomWindow{})) {
+    validate_bsgs_random_window(order,random);
     if(!m || !max_giants || max_giants>1048576)throw std::invalid_argument("invalid BSGS tile limit");
     for(size_t i=1;i<gaps.size();++i)
         if(gaps[i-1].end()>gaps[i].begin())throw std::invalid_argument("BSGS gaps must be sorted and disjoint");
@@ -136,8 +152,56 @@ BsgsTilePlanner::BsgsTilePlanner(const std::vector<ScalarInterval>& gaps,uint64_
         }else remaining_.emplace(gap.begin(),Remaining{gap,std::nullopt});
     }
 }
+unsigned BsgsTilePlanner::random_below(unsigned bound){
+    // The SHA stream and byte mask are specified explicitly so CPU/GPU owners
+    // and independent oracles reproduce the same shuffle on every platform.
+    constexpr char domain[]="khbsgs-window-v1";
+    alignas(uint64_t) uint8_t input[sizeof(domain)+64]{},hash[32]{};
+    std::copy_n(domain,sizeof(domain),input);
+    const auto seed=random_.seed.bytes();std::copy(seed.begin(),seed.end(),input+sizeof(domain));
+    unsigned mask=1;while(mask<bound-1)mask=(mask<<1)|1;
+    for(unsigned attempt=0;attempt<1024;++attempt){
+        const auto counter=random_counter_.bytes();
+        std::copy(counter.begin(),counter.end(),input+sizeof(domain)+32);
+        random_counter_=random_counter_.add(UInt256(1));
+        sha256(input,sizeof(input),hash);
+        const unsigned value=hash[0]&mask;if(value<bound)return value;
+    }
+    throw std::runtime_error("BSGS shuffle sampler did not converge");
+}
+void BsgsTilePlanner::fill_window(const UInt256& work_span){
+    window_.clear();window_next_=0;
+    const auto tile_width=UInt256(m_).multiply(UInt256(giants_));
+    const auto work_tiles=std::max(UInt256(1),std::min(UInt256(random_.tiles),work_span.divmod(tile_width).first)).to_uint64();
+    std::map<UInt256,unsigned> totals,visited;
+    // Freeze accounting partitions for this window before shuffling. This
+    // allows fixed one-tile units and adaptive multi-tile units to share the
+    // same random policy without accumulating unbounded live reservations.
+    while(window_.size()<random_.tiles && !remaining_.empty()){
+        const auto first=remaining_.begin();const auto gap=first->second.interval;
+        const auto count=std::min<uint64_t>(work_tiles,random_.tiles-window_.size());
+        const auto span=std::min(gap.size(),tile_width.multiply(UInt256(count)));
+        const ScalarInterval work(gap.begin(),gap.begin().add(span));
+        remaining_.erase(first);
+        if(work.end()<gap.end())remaining_.emplace(work.end(),Remaining{{work.end(),gap.end()},std::nullopt});
+        for(auto cursor=work.begin();cursor<work.end();){
+            const auto tile=bsgs_tile({cursor,work.end()},m_,giants_);
+            window_.push_back({tile,work,false,false});++totals[work.begin()];cursor=tile.end();
+        }
+    }
+    for(size_t i=window_.size();i>1;--i)std::swap(window_[i-1],window_[random_below(unsigned(i))]);
+    // First/last refer to shuffled submission order, not scalar coordinates.
+    // Callers finish every target subgroup before requesting the next tile.
+    for(auto& tile:window_){const auto count=++visited[tile.work.begin()];
+        tile.starts_work=count==1;tile.finishes_work=count==totals.at(tile.work.begin());}
+}
 std::optional<BsgsPlannedTile> BsgsTilePlanner::next(const UInt256& work_span) {
     if(work_span.is_zero())throw std::invalid_argument("zero BSGS work span");
+    if(order_==BsgsTileOrder::RandomWindow){
+        if(window_next_==window_.size())fill_window(work_span);
+        if(window_.empty())return std::nullopt;
+        return window_[window_next_++];
+    }
     if(remaining_.empty())return std::nullopt;
     const bool high=order_==BsgsTileOrder::Reverse ||
         ((order_==BsgsTileOrder::BothEnds || order_==BsgsTileOrder::Dance) && phase_==1);

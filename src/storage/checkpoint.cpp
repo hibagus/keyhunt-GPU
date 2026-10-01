@@ -56,11 +56,11 @@ struct Cleanup {
 };
 void validate_options(const CheckpointOptions& o,bool bsgs){
     if(bsgs && o.minikey_order)throw std::invalid_argument("ordinal-order applies only to minikeys");
-    if(!bsgs && o.bsgs_tile_order)throw std::invalid_argument("tile-order applies only to BSGS");
+    if(!bsgs && (o.bsgs_tile_order || o.bsgs_random_window))throw std::invalid_argument("tile-order applies only to BSGS");
     if(o.work_unit_seconds>300 || (o.work_unit_seconds && o.work_unit_seconds<60) || o.checkpoint_seconds>60 || !o.candidate_capacity ||
        o.candidate_capacity>(bsgs?65536U:1048576U))throw std::invalid_argument("invalid checkpoint interval/candidate capacity");
     if(bsgs){
-        if(o.bsgs_tile_order)(void)core::bsgs_tile_order_name(*o.bsgs_tile_order);
+        core::validate_bsgs_random_window(o.bsgs_tile_order.value_or(core::BsgsTileOrder::Forward),o.bsgs_random_window);
         if(!o.target_batch || o.target_batch>64 || !o.giant_steps || o.giant_steps>1048576/o.target_batch)
             throw std::invalid_argument("invalid checkpoint BSGS batch limits");
     }else if(!o.xpoint_steps || o.xpoint_steps>1048576)throw std::invalid_argument("invalid checkpoint xpoint batch size");
@@ -401,8 +401,8 @@ CheckpointSummary CheckpointRun::bsgs(Journal& journal,const Grant& grant,const 
     validate_options(o,true);Impl state(journal,grant,detail::binding(targets,table),verifier,o,std::move(observer),std::move(control));
     Cleanup stopped_before_unlock{std::move(cleanup)};
     scheduler::AdaptiveWorkSize units(UInt256(table.memory().m).multiply(UInt256(o.giant_steps)),o.work_unit_seconds,table.memory().m);
-    core::BsgsTilePlanner planner(state.remaining,table.memory().m,o.giant_steps,o.bsgs_tile_order.value_or(core::BsgsTileOrder::Forward));
-    // Up to three work units can be active (low/high/middle for dance). Charge
+    core::BsgsTilePlanner planner(state.remaining,table.memory().m,o.giant_steps,o.bsgs_tile_order.value_or(core::BsgsTileOrder::Forward),o.bsgs_random_window);
+    // Active units are bounded by the policy (three for dance, W for a random window). Charge
     // only their own execution time; pauses and other units are excluded.
     std::map<UInt256,uint64_t> active_work;
     while(const auto selected=planner.next(units.span())){
