@@ -51,6 +51,21 @@ Json device_self_test(int ordinal){
         if(result.overflow||result.verified_steps!=33||found!=wanted||result.matches.size()!=wanted.size())
             throw std::runtime_error("GPU HASH160 runtime self-test failed");
     }
+    std::vector<EthereumTarget> addresses;
+    for(const auto& point:points)addresses.push_back(ethereum_target(point));
+    const EthereumTargets etargets(std::move(addresses));
+    identity.algorithm=scheduler::WorkAlgorithm::DirectEthereumV1;identity.target_digest=etargets.digest();
+    const auto ework=*scheduler::WorkUnit::plan(grid,UInt256(),UInt256(1),33,identity);
+    const auto ebatch=*scheduler::KernelBatch::plan(ework,UInt256(1),33);
+    // Check the Keccak path on this ordinal before accepting any new grant.
+    for(auto kernel:{backend::XPointKernel::Direct,backend::XPointKernel::Stepped}){
+        backend::EthereumOptions options;options.max_steps=64;options.kernel=kernel;options.candidate_capacity=16;
+        backend::GpuEthereumExecutor gpu(ordinal,etargets,verifier,options);
+        const auto ticket=gpu.submit(ebatch);gpu.drain();const auto result=gpu.take(ticket);
+        std::set<UInt256> found;for(const auto& match:result.matches)found.insert(match.scalar);
+        if(result.overflow||result.verified_steps!=33||found!=expected||result.matches.size()!=expected.size())
+            throw std::runtime_error("GPU Ethereum runtime self-test failed");
+    }
     const auto table=bsgs::Table::build(16);const BsgsPublicKeyTargets btargets(points);
     const BsgsBatch bb(interval,16,0,4,btargets.digest(),table.checksum());
     for(unsigned group:{1U,8U}){

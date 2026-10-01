@@ -293,3 +293,12 @@ owners preserve exact coverage, both encoding results, bounded outbox state and
 one prepared executor across active/spare handoffs while disconnected. The
 [mode contract and acceptance](C23_HASH160.md) describe this extension; C22's
 historical evidence above remains scoped to xpoint/BSGS.
+
+## C23 Ethereum family
+
+Mode `ethereum` uses the same file export/relay/import workflow and saved lease
+rules. Update both coordinator and worker for `ethereum-v1` negotiation. The
+canonical 20-byte address binding survives disconnected execution, local results,
+subsequent upload and duplicate acknowledgment import. Both native backends are
+covered by the [Ethereum acceptance](C23_ETHEREUM_VALIDATION.md); the original C22
+archive remains an unchanged record of its earlier release.

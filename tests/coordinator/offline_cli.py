@@ -14,6 +14,7 @@ from coordinator_local import Environment, HOST, REPO
 
 GX = '79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798'
 GY = '483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8'
+ETH_TARGET = '7e5f4552091a69125d5dfcb7b8c2659029395bdf'
 HASH_TARGETS = '01751e76e8199196d454941c45d1b3a323f1433bd6' + '0291b24bf9f5288532960ac687abb035127b1d28a5'
 
 
@@ -78,13 +79,13 @@ def main():
 
             table = root / 'babies.khb'
             metadata = command([keyhunt, 'bsgs-table', 'build', '--m', '257', '--output', table])
-            for mode, width in [('xpoint', 512), ('bsgs', 32768), ('hash160', 512)]:
-                configuration = b'khsearch\x01' + (b'\x01' + bytes(40) if mode == 'xpoint' else b'\x03' + bytes(40) if mode == 'hash160' else
+            for mode, width in [('xpoint', 512), ('bsgs', 32768), ('hash160', 512), ('ethereum', 512)]:
+                configuration = b'khsearch\x01' + (b'\x01' + bytes(40) if mode == 'xpoint' else b'\x03' + bytes(40) if mode == 'hash160' else b'\x04' + bytes(40) if mode == 'ethereum' else
                                 b'\x02' + (257).to_bytes(8, 'big') + bytes.fromhex(metadata['checksum']))
                 job = api('POST', f'/api/v1/projects/{project}/jobs', dict(
                     mode=mode, begin=f'0x{1:064x}', end_exclusive=f'0x{1 + width * 2:064x}',
                     block_width=f'0x{width:064x}', configuration=configuration.hex(),
-                    targets=GX if mode == 'xpoint' else HASH_TARGETS if mode == 'hash160' else '04' + GX + GY))['job']
+                    targets=GX if mode == 'xpoint' else HASH_TARGETS if mode == 'hash160' else ETH_TARGET if mode == 'ethereum' else '04' + GX + GY))['job']
                 path = f'/api/v1/projects/{project}/jobs/{job}'
                 state = root / mode
                 # No key/certificate/CA paths are copied to the disconnected
@@ -171,6 +172,8 @@ def main():
                     assert all(int(row['scalar'],16)==1 for row in results['results'])
                     if mode=='hash160':
                         assert {row['target_bytes'] for row in results['results']}=={HASH_TARGETS[:42],HASH_TARGETS[42:]}
+                    if mode=='ethereum':
+                        assert results['results'][0]['target_bytes']==ETH_TARGET
                     env.start(port=port)
                     assert api('GET', path + '/status')['finished'] == f'0x{0:064x}'
                     upload, acknowledgment = root / (mode + '-upload.json'), root / (mode + '-ack.json')

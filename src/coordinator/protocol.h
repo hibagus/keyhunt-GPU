@@ -63,6 +63,7 @@ inline Mode mode(const std::string& name){
     if(name=="xpoint")return Mode::XPoint;
     if(name=="bsgs")return Mode::Bsgs;
     if(name=="hash160")return Mode::Hash160;
+    if(name=="ethereum")return Mode::Ethereum;
     throw Error(400,"unknown search mode");
 }
 inline Json manifest(const Scope& s,const Manifest& m){

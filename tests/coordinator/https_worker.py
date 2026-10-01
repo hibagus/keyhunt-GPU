@@ -168,6 +168,25 @@ def main():
                 assert api("bob","GET",hpath+"/status")["finished"]==f"0x{2:064x}"
                 results=api("bob","GET",hpath+"/results")
                 assert len(results)==2 and all(int(row["scalar"],16)==1 for row in results)
+                # Ethereum must retain its Keccak mode and executor across grants.
+                body.update(mode="ethereum",end_exclusive=f"0x{1025:064x}",block_width=f"0x{512:064x}",
+                    configuration=(b"khsearch\x01\x04"+bytes(40)).hex(),
+                    targets="7e5f4552091a69125d5dfcb7b8c2659029395bdf")
+                ejob=api("bob","POST",f"/api/v1/projects/{projects[1]}/jobs",body)
+                state=root/"ethereum-worker"
+                configure(state,"bob",projects[1],ejob["job"],jobs=[dict(
+                    project=projects[1],job=ejob["job"],devices=["0"],spares=1,policy="sequential")])
+                invoke(state,"sync");supervise(state)
+                events=[json.loads(line) for line in (state/"execution-0.log").read_text().splitlines()]
+                finished=[row for row in events if row.get("type")=="grant-finish"]
+                assert len(finished)==2 and all(row["mode"]=="ethereum" and row["executor_setups"]==1 for row in finished)
+                assert finished[0]["cold"] and not finished[1]["cold"]
+                assert invoke(state,"status")["outbox_bytes"]>0 and not invoke(state,"scheduled-sync")["sent"]
+                invoke(state,"sync")
+                epath=f"/api/v1/projects/{projects[1]}/jobs/{ejob['job']}"
+                assert api("bob","GET",epath+"/status")["finished"]==f"0x{2:064x}"
+                results=api("bob","GET",epath+"/results")
+                assert len(results)==1 and all(int(row["scalar"],16)==1 for row in results)
             env.admin("check")
         except BaseException:
             for file in env.directory.glob("*.log"):
@@ -175,7 +194,7 @@ def main():
             raise
         finally:
             env.stop()
-    print("Two native HTTPS workers and project isolation passed" + ("; supervised GPU xpoint/BSGS/HASH160 passed" if args.hardware else ""))
+    print("Two native HTTPS workers and project isolation passed" + ("; supervised GPU xpoint/BSGS/HASH160/Ethereum passed" if args.hardware else ""))
 
 
 if __name__ == "__main__":

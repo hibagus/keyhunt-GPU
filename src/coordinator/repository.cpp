@@ -87,7 +87,10 @@ struct Repository::Impl {
     }
     Json sync(const Actor& actor, const Json& body) {
         fields(body, {"protocol", "capabilities", "instance", "request", "jobs", "updates", "returns"});
-        const bool hash160_capable=body["capabilities"]==Json({"checkpoint-v1","offline-lease-v1","hash160-v1"});
+        // Preserve the two previously shipped capability sets. Each new family
+        // must be advertised before a worker can acquire or renew its grants.
+        const bool ethereum_capable=body["capabilities"]==Json({"checkpoint-v1","offline-lease-v1","hash160-v1","ethereum-v1"});
+        const bool hash160_capable=ethereum_capable || body["capabilities"]==Json({"checkpoint-v1","offline-lease-v1","hash160-v1"});
         if (integer(body, "protocol") != 1 || (!hash160_capable &&
             body["capabilities"] != Json({"checkpoint-v1", "offline-lease-v1"})))
             throw Error(426, "protocol 1 and supported checkpoint/offline capabilities required");
@@ -110,6 +113,8 @@ struct Repository::Impl {
             // checkpoint mutation or lease renewal can change durable state.
             if(manifest.mode==Mode::Hash160 && !hash160_capable)
                 throw Error(426,"HASH160 jobs require hash160-v1 worker capability");
+            if(manifest.mode==Mode::Ethereum && !ethereum_capable)
+                throw Error(426,"Ethereum jobs require ethereum-v1 worker capability");
             if (!scopes.emplace(scope.project, scope.job).second) throw Error(400, "duplicate sync job");
             integer(row, "spares", 0, 1);
             const auto policy = str(row, "policy", 16);
@@ -280,6 +285,11 @@ struct Repository::Impl {
             std::vector<core::Hash160Target> values(targets.size()/21);
             for(size_t i=0;i<values.size();++i)std::copy_n(targets.begin()+21*i,21,values[i].begin());
             m.targets=core::Hash160Targets(std::move(values)).digest();
+        }else if(mode=="ethereum"){
+            if(targets.size()%20)throw Error(400,"invalid Ethereum target bytes");
+            std::vector<core::EthereumTarget> values(targets.size()/20);
+            for(size_t i=0;i<values.size();++i)std::copy_n(targets.begin()+20*i,20,values[i].begin());
+            m.targets=core::EthereumTargets(std::move(values)).digest();
         }else{
             if(targets.size()%65)throw Error(400,"invalid BSGS target bytes");
             std::vector<core::UncompressedPublicKey> values(targets.size()/65);
