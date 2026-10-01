@@ -175,6 +175,12 @@ restart. Overflow retains the current end; see [the both-ends contract](C23_MINI
 `--ordinal-order dance` cycles low/high/fixed-midpoint-forward per accepted batch.
 The pivot is fixed within an invocation and rebuilt after restart; see
 [the dance contract and example](C23_MINIKEYS_DANCE.md).
+`--ordinal-order random-window` shuffles bounded ascending windows of tiles,
+exhausting the current tile's suffix through smaller overflow batches before
+advancing. `--ordinal-seed HEX` (256-bit, default zero) and
+`--ordinal-window 1..256` (default 64) require this policy. Work and tile geometry
+are fixed per window; restart resets the stream on the exact saved complement. See [the contract and
+example](C23_MINIKEYS_RANDOM_WINDOW.md).
 
 
 ## Exact-range GLV scalar multiplication

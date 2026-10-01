@@ -338,7 +338,7 @@ recreating the job. See the
 ## Minikey ordinal orders
 
 Native minikey search, checkpoint runs and workers accept `--ordinal-order
-forward|reverse|both-ends|dance` for both lengths and all supported encodings. Reverse changes
+forward|reverse|both-ends|dance|random-window` for both lengths and all supported encodings. Reverse changes
 batch selection and lane-to-ordinal mapping, preserving canonical ordinal
 receipts. Both-ends alternates successful batches between low and high endpoints,
 including inside adaptive work reservations. Direction is read from each
@@ -351,3 +351,9 @@ See [the contract/example](C23_MINIKEYS_REVERSE.md) and
 [both-ends HIP/H200 acceptance](C23_MINIKEYS_BOTH_ENDS_VALIDATION.md).
 The [dance contract](C23_MINIKEYS_DANCE.md) defines midpoint, overflow and restart
 behavior; [dance acceptance](C23_MINIKEYS_DANCE_VALIDATION.md) records its checks.
+Random-window shuffles ascending windows of 1..256 fixed ordinal tiles using
+`--ordinal-window` (default 64) and `--ordinal-seed HEX` (256-bit, default zero).
+The selected tile retains its unaccepted suffix through overflow. New windows
+sample current batch/work sizing; restart resets the stream on saved gaps.
+See [the contract/example](C23_MINIKEYS_RANDOM_WINDOW.md) and
+[HIP/H200 acceptance](C23_MINIKEYS_RANDOM_WINDOW_VALIDATION.md).

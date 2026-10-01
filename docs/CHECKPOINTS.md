@@ -545,7 +545,7 @@ restore retain this identity. See [example and contract](C23_ORBITS.md).
 
 ## Minikey ordinal execution
 
-`checkpoint run --ordinal-order forward|reverse|both-ends|dance` selects minikey execution order
+`checkpoint run --ordinal-order forward|reverse|both-ends|dance|random-window` selects minikey execution order
 within the grant. Reverse consumes the highest missing ordinals first, including
 inside each GPU batch. Receipts and result identities retain actual canonical
 ordinals. Both-ends starts low and alternates after each verified batch; overflow
@@ -559,6 +559,14 @@ Restart recomputes it from the durable complement and starts low. At most three
 work reservations remain active; overflow preserves the selected phase. See
 [the dance contract and example](C23_MINIKEYS_DANCE.md).
 
-The option is rejected by `checkpoint create` and non-minikey runners, including
+Random-window shuffles up to `--ordinal-window 1..256` tiles (default 64) from
+lowest missing endpoints, using `--ordinal-seed HEX` (256-bit, default zero).
+Both overrides require random-window. Tile geometry and work ownership are fixed
+per window; overflow shrinks batches within the selected tile and exhausts its
+suffix before another tile is selected. New windows sample current batch/work
+sizes. Restart resets the stream over saved gaps and may change seed/window.
+See [the random-window contract and example](C23_MINIKEYS_RANDOM_WINDOW.md).
+
+These options are rejected by `checkpoint create` and non-minikey runners, including
 explicit forward. Scalar `--order` remains a separate immutable mapping. See
 [the contract and executable example](C23_MINIKEYS_REVERSE.md).

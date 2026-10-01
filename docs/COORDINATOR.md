@@ -551,14 +551,23 @@ HTTPS and disconnected file transports use the same runner. See
 
 ## Minikey traversal policies
 
-Pass `--ordinal-order reverse`, `--ordinal-order both-ends` or `--ordinal-order dance` to
+Pass `--ordinal-order forward|reverse|both-ends|dance|random-window` to
 `tools/coordinator_worker.py` or `keyhunt-worker run-device` for minikey queues.
 Reverse works downward; both-ends alternates low/high batches within each grant.
 Dance cycles low/high/fixed-midpoint-forward, with at most three active work
 reservations. Recovery rebuilds its midpoint from the missing complement and
 starts low. Any supported ordinal order can resume the same grant.
 Receipts retain exact canonical ordinals. Block claims remain independent.
-Targets and GPU allocations are reused across grants; `grant-finish` reports `ordinal_order`.
+Targets and GPU allocations are reused across grants; `grant-finish` reports
+`ordinal_order`, plus `ordinal_seed` and `ordinal_window` for random-window.
+
+Random-window shuffles bounded ascending windows inside each grant. The
+supervisor forwards `--ordinal-seed HEX` (256-bit, default zero) and
+`--ordinal-window 1..256` (default 64); both require random-window. Each window
+fixes tile geometry and work ownership, with at most W active owners. Overflow
+replays within the current tile; sizing updates apply to the next window.
+Recovery resets the stream on saved gaps and permits changed seed/window.
+See [the contract and example](C23_MINIKEYS_RANDOM_WINDOW.md).
 
 The existing `minikeys-v1` capability remains sufficient because job identity and
 receipt coordinates are unchanged. Old minikey-capable workers can recover the

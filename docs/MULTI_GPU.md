@@ -152,6 +152,15 @@ successful batches at the two endpoints of each device grant, even inside
 large adaptive work units. Overflow replays at the same end. See
 [reverse](C23_MINIKEYS_REVERSE.md) and [both-ends minikey contracts](C23_MINIKEYS_BOTH_ENDS.md).
 
+Minikey `--ordinal-order random-window --ordinal-seed 2a --ordinal-window 64`
+shuffles bounded ascending windows within each grant. Seed is hexadecimal
+(default zero); window size is 1..256 tiles (default 64). At most W owners
+interleave, each retaining its own execution/replay time. Overflow finishes the
+selected tile's suffix before advancing, and sizing observations affect the next
+window. Recovery resets the stream on saved gaps; seed/window may change.
+Block claims and fleet partitioning remain separate. See [random-window
+contracts](C23_MINIKEYS_RANDOM_WINDOW.md).
+
 For a new job, recommend a fixed width from at least five warmed, complete,
 validated single-device measurements of the exact inputs:
 
