@@ -4,6 +4,7 @@
 using namespace cfixture;
 using namespace keyhunt::storage::detail;
 int main(int argc,char** argv){try{
+    const bool dance=argc==2 && std::string(argv[1])=="--dance";
     const bool both=argc==2 && std::string(argv[1])=="--both-ends";
     for(const auto mode:{Mode::XPoint,Mode::Hash160,Mode::Ethereum,Mode::Vanity}){
         Temporary server,local;int64_t now=1800000000,monotonic=boot_seconds();
@@ -52,15 +53,22 @@ int main(int argc,char** argv){try{
         while(auto grant=worker.next("gpu0")){
             require(worker.journal().stride_mapping(grant->scope)==input.stride_mapping,"worker lost mapping");
             CheckpointOptions options;options.xpoint_steps=5;options.checkpoint_seconds=0;
-            if(both)options.scalar_batch_order=scheduler::ScalarBatchOrder::BothEnds;
+            if(both || dance)options.scalar_batch_order=dance?scheduler::ScalarBatchOrder::Dance:scheduler::ScalarBatchOrder::BothEnds;
             std::set<UInt256> missing;const auto bounds=worker.journal().manifest(grant->scope);
             const auto interval=scheduler::BlockGrid(bounds.root,bounds.block_width).block(grant->block);
             for(auto i=interval.begin();i<interval.end();i=i.add(UInt256(1)))missing.insert(i);
-            bool high=false;
+            unsigned phase=0;
+            const auto pivot=interval.begin().add(interval.size().divmod(UInt256(2)).first);
             const auto runner=[&](const auto& batch){
-                if(both){
-                    require((high?batch.interval().end().subtract(UInt256(1)):batch.interval().begin())==(high?*missing.rbegin():*missing.begin()),"wrong batch endpoint");
-                    high=!high;
+                if(both || dance){
+                    // Expected endpoints come from the uncovered set, not the
+                    // production planner. The grant midpoint is fixed once.
+                    const bool high=phase==1;
+                    auto next=missing.begin();
+                    if(dance && phase==2){next=missing.lower_bound(pivot);if(next==missing.end())next=missing.begin();}
+                    require((high?batch.interval().end().subtract(UInt256(1)):batch.interval().begin())==(high?*missing.rbegin():*next),"wrong batch endpoint");
+                    if(dance)require(!(batch.interval().begin()<pivot && pivot<batch.interval().end()),"worker crossed pivot");
+                    phase=(phase+1)%(dance?3:2);
                 }
                 for(auto i=batch.interval().begin();i<batch.interval().end();i=i.add(UInt256(1)))require(missing.erase(i)==1,"duplicate coordinate");
                 backend::XPointResult result{batch,{}};result.device_steps=result.verified_steps=batch.step_count();

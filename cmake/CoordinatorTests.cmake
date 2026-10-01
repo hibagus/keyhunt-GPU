@@ -407,3 +407,21 @@ if(KEYHUNT_TEST_APACHE_ROOT AND TARGET keyhunt-worker)
         endif()
     endforeach()
 endif()
+
+add_test(NAME coordinator_scalar_dance COMMAND coordinator_reverse_test --dance)
+set_tests_properties(coordinator_scalar_dance PROPERTIES TIMEOUT 180 LABELS "cpu;coordinator;scalar-batches;recovery")
+if(KEYHUNT_TEST_APACHE_ROOT AND TARGET keyhunt-worker)
+    foreach(mapping forward reverse)
+        add_test(NAME coordinator_scalar_dance_${mapping}_cli COMMAND ${Python3_EXECUTABLE}
+            ${PROJECT_SOURCE_DIR}/tests/coordinator/strides_cli.py
+            --coordinator $<TARGET_FILE:keyhunt-coordinator> --worker $<TARGET_FILE:keyhunt-worker>
+            --keyhunt $<TARGET_FILE:keyhunt> --oracle $<TARGET_FILE:secp256k1_oracle>
+            --apache-root ${KEYHUNT_TEST_APACHE_ROOT} --order ${mapping} --orbit --batch-order dance
+            --report ${CMAKE_CURRENT_BINARY_DIR}/coordinator-scalar-dance-${mapping}.json ${coordinator_worker_options})
+        set_tests_properties(coordinator_scalar_dance_${mapping}_cli PROPERTIES TIMEOUT 600 LABELS "cpu;coordinator;scalar-batches;recovery")
+        if(KEYHUNT_ENABLE_GPU)
+            set_tests_properties(coordinator_scalar_dance_${mapping}_cli PROPERTIES
+                LABELS "${KEYHUNT_GPU_BACKEND};hardware;coordinator;scalar-batches;recovery" RESOURCE_LOCK gpu_device)
+        endif()
+    endforeach()
+endif()
