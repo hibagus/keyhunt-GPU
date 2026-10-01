@@ -15,7 +15,7 @@ for name in ('coordinator', 'worker', 'keyhunt', 'oracle', 'report'):
 p.add_argument('--apache-root', default='/')
 p.add_argument('--hardware', action='store_true')
 p.add_argument('--backend', choices=('hip', 'cuda'), default='hip')
-p.add_argument('--ordinal-order',choices=('reverse','both-ends'),default='reverse')
+p.add_argument('--ordinal-order',choices=('reverse','both-ends','dance'),default='reverse')
 a = p.parse_args()
 worker, keyhunt = str(a.worker.resolve()), str(a.keyhunt.resolve())
 report = dict(ordinal_order=a.ordinal_order, passed=False, hardware=a.hardware, backend=a.backend, oracle_commit=check_source(), cases=[],
@@ -97,11 +97,24 @@ with tempfile.TemporaryDirectory(prefix='kh-minikey-reverse-worker-', dir='/var/
                     if event.get('type') == 'grant-start':
                         cursor = upper = int(event['grant']['end_exclusive'], 16)
                         lower = int(event['grant']['begin'], 16); units = [];free_low,free_high=lower,upper
+                        pivot=lower+(upper-lower)//2
+                        unreserved=set(range(lower,upper))
                     elif event.get('type') == 'work-unit':
                         span = event['interval']; lo, hi = int(span['begin'], 16), int(span['end_exclusive'], 16)
                         assert lower <= lo < hi <= upper
                         if a.ordinal_order=='reverse':
                             assert hi==cursor;cursor=lo
+                        elif a.ordinal_order=='dance':
+                            assert not lo<pivot<hi
+                            # Work events announce ownership, not every batch.
+                            # Check disjoint reservations and pivot/front bounds;
+                            # the host fixture checks every accepted batch phase.
+                            fronts={min(unreserved),max(unreserved)+1}
+                            above=[v for v in unreserved if v>=pivot]
+                            if above:fronts.add(min(above))
+                            assert lo in fronts or hi in fronts
+                            assert all(v in unreserved for v in range(lo,hi))
+                            unreserved.difference_update(range(lo,hi))
                         else:
                             assert free_low<=lo<hi<=free_high and (lo==free_low or hi==free_high)
                             if lo==free_low:free_low=hi
@@ -110,6 +123,7 @@ with tempfile.TemporaryDirectory(prefix='kh-minikey-reverse-worker-', dir='/var/
                     elif event.get('type') == 'grant-finish':
                         assert len(units) >= 2 and units[0][1] - units[0][0] == 129
                         assert units[0][1]==upper if a.ordinal_order=='reverse' else units[0][0]==lower
+                        if a.ordinal_order=='dance':assert not unreserved
                         ordered=sorted(units)
                         assert ordered[0][0]==lower and ordered[-1][1]==upper
                         assert all(left[1]==right[0] for left,right in zip(ordered,ordered[1:]))

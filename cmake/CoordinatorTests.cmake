@@ -344,3 +344,18 @@ endif()
 
 add_test(NAME coordinator_minikey_both_ends COMMAND coordinator_minikey_reverse_test --both-ends)
 set_tests_properties(coordinator_minikey_both_ends PROPERTIES TIMEOUT 180 LABELS "cpu;coordinator;minikeys;both-ends;recovery")
+
+if(KEYHUNT_ENABLE_HTTPS_WORKER)
+    add_test(NAME coordinator_minikey_dance_cli COMMAND ${Python3_EXECUTABLE}
+        ${PROJECT_SOURCE_DIR}/tests/coordinator/minikey_reverse_cli.py
+        --coordinator $<TARGET_FILE:keyhunt-coordinator> --worker $<TARGET_FILE:keyhunt-worker>
+        --keyhunt $<TARGET_FILE:keyhunt> --oracle $<TARGET_FILE:secp256k1_oracle>
+        --ordinal-order dance --apache-root ${KEYHUNT_TEST_APACHE_ROOT} --report ${CMAKE_CURRENT_BINARY_DIR}/coordinator-minikey-dance-cli.json ${coordinator_worker_options})
+    set_tests_properties(coordinator_minikey_dance_cli PROPERTIES TIMEOUT 300 LABELS "cpu;coordinator;minikeys;dance;integration;recovery")
+    if(KEYHUNT_ENABLE_GPU)
+        set_tests_properties(coordinator_minikey_dance_cli PROPERTIES LABELS "${KEYHUNT_GPU_BACKEND};hardware;coordinator;minikeys;dance;integration;recovery" RESOURCE_LOCK gpu_device)
+    endif()
+endif()
+
+add_test(NAME coordinator_minikey_dance COMMAND coordinator_minikey_reverse_test --dance)
+set_tests_properties(coordinator_minikey_dance PROPERTIES TIMEOUT 180 LABELS "cpu;coordinator;minikeys;dance;recovery")
