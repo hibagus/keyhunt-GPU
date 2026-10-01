@@ -455,4 +455,6 @@ target_include_directories(storage_minikey_random_window_test PRIVATE src/storag
 target_link_libraries(storage_minikey_random_window_test PRIVATE keyhunt_storage)
 keyhunt_configure_target(storage_minikey_random_window_test)
 add_test(NAME storage_minikey_random_window COMMAND storage_minikey_random_window_test)
-set_tests_properties(storage_minikey_random_window PROPERTIES TIMEOUT 180 LABELS "cpu;storage;minikeys;random-window;recovery")
+# Forty crash/recovery combinations exceed 180 seconds in the ASan/UBSan build.
+# Keep the full corpus and allow instrumentation overhead without changing it.
+set_tests_properties(storage_minikey_random_window PROPERTIES TIMEOUT 600 LABELS "cpu;storage;minikeys;random-window;recovery")
