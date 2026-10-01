@@ -466,7 +466,7 @@ cached replies. Older two-through-six-capability workers retain access to their
 supported version-1 jobs. Unknown/malformed mappings fail shared binding
 validation before import. No schema migration is needed.
 
-Worker startup checks both kernel variants for every scalar family on its owned
+Worker startup checks direct, stepped and GLV kernels for every scalar family on its owned
 device. The prepared executor retains the immutable SG cache across grants;
 `grant-finish` reports `computed_candidates` with the coordinate-space label.
 Owner-only result views show candidate index and actual scalar separately. See
@@ -485,6 +485,20 @@ coverage. Receipt bytes and protocol/schema versions remain unchanged.
 The eighth capability `scalar-reverse-v1` is required before allocation, renewal,
 updates or cached replies for reverse jobs. Previous two-through-seven capability
 sets retain their supported forward jobs. Fresh owned-device self-tests exercise
-both kernels and both directions. Prepared executors retain signed point steps
+all three kernels and both directions. Prepared executors retain signed point steps
 across grants and reject direction mismatches. HTTPS and courier-file transport
 share this binding; see [reverse acceptance](C23_REVERSE_VALIDATION.md).
+
+
+## C23 GLV execution choice
+
+`tools/coordinator_worker.py --kernel glv` forwards the opt-in scalar kernel to
+the owned device process. Fresh owners self-test all three scalar kernels before
+executing grants. Prepared targets survive grant handoff; GLV needs no stepped
+point-power cache. HTTPS and file workers share this execution path.
+
+GLV changes no configuration, schema, receipt or capability list: versions 1/2/3
+still describe the same candidate mappings. Upgrade the executing binary to one
+that understands `glv`; use the existing stride/reverse capability requirements
+for those jobs. The default remains `stepped`. Explicit kernel overrides are
+rejected for BSGS; minikeys accepts only `direct`. See [GLV contracts](C23_GLV.md).

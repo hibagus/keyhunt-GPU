@@ -23,7 +23,7 @@ void stride_self_test(int ordinal,const Targets& targets,scheduler::WorkAlgorith
         }
         // Fresh direct and stepped execution checks both orders and the signed SG cache
         // preparation on the one ordinal owned by this worker process.
-        for(auto kernel:{backend::XPointKernel::Direct,backend::XPointKernel::Stepped}){
+        for(auto kernel:{backend::XPointKernel::Direct,backend::XPointKernel::Stepped,backend::XPointKernel::Glv}){
             backend::XPointOptions options;options.stride=UInt256(8);options.reverse=reverse;options.max_steps=5;options.candidate_capacity=128;options.kernel=kernel;
             Executor gpu(ordinal,targets,verifier,options);const auto ticket=gpu.submit(batch);gpu.drain();const auto result=gpu.take(ticket);
             std::set<std::pair<UInt256,uint32_t>> found;for(const auto& match:result.matches)found.emplace(match.scalar,match.target);
@@ -56,7 +56,7 @@ Json device_self_test(int ordinal){
     const std::set<UInt256> expected{UInt256(1),UInt256(17),UInt256(32)};
     // Hit, miss, boundary and tail vectors exercise field/point/search paths.
     // Run both xpoint variants and both BSGS groups on the visible partition.
-    for(auto kernel:{backend::XPointKernel::Direct,backend::XPointKernel::Stepped}){
+    for(auto kernel:{backend::XPointKernel::Direct,backend::XPointKernel::Stepped,backend::XPointKernel::Glv}){
         backend::XPointOptions options;options.max_steps=64;options.kernel=kernel;options.candidate_capacity=16;
         backend::GpuXPointExecutor gpu(ordinal,targets,verifier,options);
         const auto ticket=gpu.submit(*batch);gpu.drain();const auto result=gpu.take(ticket);
@@ -72,7 +72,7 @@ Json device_self_test(int ordinal){
     const auto hbatch=*scheduler::KernelBatch::plan(hwork,UInt256(1),33);
     // Exercise both serializations and kernel variants in the new process. A
     // persisted self-test result cannot bypass a changed runtime or binary.
-    for(auto kernel:{backend::XPointKernel::Direct,backend::XPointKernel::Stepped}){
+    for(auto kernel:{backend::XPointKernel::Direct,backend::XPointKernel::Stepped,backend::XPointKernel::Glv}){
         backend::Hash160Options options;options.max_steps=64;options.kernel=kernel;options.candidate_capacity=16;
         backend::GpuHash160Executor gpu(ordinal,htargets,verifier,options);
         const auto ticket=gpu.submit(hbatch);gpu.drain();const auto result=gpu.take(ticket);
@@ -89,7 +89,7 @@ Json device_self_test(int ordinal){
     const auto ework=*scheduler::WorkUnit::plan(grid,UInt256(),UInt256(1),33,identity);
     const auto ebatch=*scheduler::KernelBatch::plan(ework,UInt256(1),33);
     // Check the Keccak path on this ordinal before accepting any new grant.
-    for(auto kernel:{backend::XPointKernel::Direct,backend::XPointKernel::Stepped}){
+    for(auto kernel:{backend::XPointKernel::Direct,backend::XPointKernel::Stepped,backend::XPointKernel::Glv}){
         backend::EthereumOptions options;options.max_steps=64;options.kernel=kernel;options.candidate_capacity=16;
         backend::GpuEthereumExecutor gpu(ordinal,etargets,verifier,options);
         const auto ticket=gpu.submit(ebatch);gpu.drain();const auto result=gpu.take(ticket);
@@ -111,7 +111,7 @@ Json device_self_test(int ordinal){
         const auto& prefix=vtargets.values()[t];
         if(vanity_matches(bitcoin_address(verifier.derive(UInt256(scalar)),prefix[0]),prefix))wanted.emplace(UInt256(scalar),t);
     }
-    for(auto kernel:{backend::XPointKernel::Direct,backend::XPointKernel::Stepped}){
+    for(auto kernel:{backend::XPointKernel::Direct,backend::XPointKernel::Stepped,backend::XPointKernel::Glv}){
         backend::VanityOptions options;options.max_steps=64;options.kernel=kernel;options.candidate_capacity=128;
         backend::GpuVanityExecutor gpu(ordinal,vtargets,verifier,options);
         const auto ticket=gpu.submit(vbatch);gpu.drain();const auto result=gpu.take(ticket);

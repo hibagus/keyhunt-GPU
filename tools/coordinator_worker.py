@@ -141,7 +141,7 @@ def main():
     parser.add_argument("--rebind-device", action="append", default=[], metavar="QUEUE",
                         help="allow a stopped queue to move to a different UUID")
     parser.add_argument("--stall-seconds", type=int, default=300)
-    parser.add_argument("--kernel", choices=("direct", "stepped"), help="override the mode default: direct for minikeys, stepped for scalar search")
+    parser.add_argument("--kernel", choices=("direct", "stepped", "glv"), help="scalar search also accepts glv; override the mode default: direct for minikeys, stepped for scalar search")
     parser.add_argument("--group-size", choices=("auto", "1", "8"), default="auto")
     parser.add_argument("--batch-size", type=int, default=1048576)
     parser.add_argument("--giant-batch", type=int, default=16384)

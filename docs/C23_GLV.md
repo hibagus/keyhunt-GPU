@@ -68,3 +68,13 @@ every-index tails, ownership checks and runtime/download corruption gates for
 all three kernels. The new sparse unit-reverse fixture initially included an
 in-range negative target; moving it outside the interval corrected the expected
 set. Both complete CLI matrices passed after that fixture correction.
+
+## Durable execution finding
+
+HIP passed 36 checkpoint/restart cases, eight four-family pause/visibility cases
+and 16 online/offline worker cases. GLV work resumes under direct/stepped without
+changing job identity; both transports retain one executor across two grants
+and deliver the independently expected local/server relations. Schema, search
+configuration and capability bytes are unchanged. BSGS device owners now reject
+an explicit scalar kernel override instead of silently ignoring it; minikeys
+still rejects every kernel except direct.

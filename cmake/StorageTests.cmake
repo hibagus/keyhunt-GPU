@@ -217,3 +217,27 @@ if(KEYHUNT_ENABLE_GPU)
     set_tests_properties(checkpoint_reverse_pause_${KEYHUNT_GPU_BACKEND} PROPERTIES TIMEOUT 240
         LABELS "${KEYHUNT_GPU_BACKEND};hardware;storage;reverse;recovery" RESOURCE_LOCK gpu_device)
 endif()
+
+foreach(order forward reverse)
+    add_test(NAME checkpoint_glv_${order}_cli COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/stride_checkpoint_cli.py"
+        --binary $<TARGET_FILE:keyhunt> --oracle $<TARGET_FILE:secp256k1_oracle>
+        --kernel glv --order ${order} --report "${CMAKE_CURRENT_BINARY_DIR}/checkpoint-glv-${order}-cli.json" ${checkpoint_cli_options})
+    set_tests_properties(checkpoint_glv_${order}_cli PROPERTIES TIMEOUT 480 LABELS "cpu;storage;glv;recovery")
+    if(KEYHUNT_ENABLE_GPU)
+        set_tests_properties(checkpoint_glv_${order}_cli PROPERTIES LABELS "${KEYHUNT_GPU_BACKEND};hardware;storage;glv;recovery" RESOURCE_LOCK gpu_device)
+        # Forward uses legacy scalar coordinates; reverse uses indexed stride 17.
+        set(glv_pause_stride 1)
+        if(order STREQUAL "reverse")
+            set(glv_pause_stride 11)
+        endif()
+        add_test(NAME checkpoint_glv_${order}_pause_${KEYHUNT_GPU_BACKEND} COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/checkpoint_pause_hip.py"
+            --binary $<TARGET_FILE:keyhunt> --oracle $<TARGET_FILE:secp256k1_oracle>
+            --backend ${KEYHUNT_GPU_BACKEND} --kernel glv --order ${order} --stride ${glv_pause_stride}
+            --mode xpoint --mode hash160 --mode ethereum --mode vanity
+            --report "${CMAKE_CURRENT_BINARY_DIR}/checkpoint-glv-${order}-pause-${KEYHUNT_GPU_BACKEND}.json")
+        set_tests_properties(checkpoint_glv_${order}_pause_${KEYHUNT_GPU_BACKEND} PROPERTIES TIMEOUT 300
+            LABELS "${KEYHUNT_GPU_BACKEND};hardware;storage;glv;recovery" RESOURCE_LOCK gpu_device)
+    endif()
+endforeach()

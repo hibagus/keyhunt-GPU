@@ -230,3 +230,18 @@ if(KEYHUNT_TEST_APACHE_ROOT AND TARGET keyhunt-worker)
         set_tests_properties(coordinator_reverse_cli PROPERTIES LABELS "${KEYHUNT_GPU_BACKEND};hardware;coordinator;reverse;integration;recovery" RESOURCE_LOCK gpu_device)
     endif()
 endif()
+
+if(KEYHUNT_TEST_APACHE_ROOT AND TARGET keyhunt-worker)
+    foreach(order forward reverse)
+        add_test(NAME coordinator_glv_${order}_cli COMMAND ${Python3_EXECUTABLE}
+            ${PROJECT_SOURCE_DIR}/tests/coordinator/strides_cli.py
+            --coordinator $<TARGET_FILE:keyhunt-coordinator> --worker $<TARGET_FILE:keyhunt-worker>
+            --keyhunt $<TARGET_FILE:keyhunt> --oracle $<TARGET_FILE:secp256k1_oracle>
+            --apache-root ${KEYHUNT_TEST_APACHE_ROOT} --order ${order} --kernel glv
+            --report ${CMAKE_CURRENT_BINARY_DIR}/coordinator-glv-${order}-cli.json ${coordinator_worker_options})
+        set_tests_properties(coordinator_glv_${order}_cli PROPERTIES TIMEOUT 480 LABELS "cpu;coordinator;glv;integration;recovery")
+        if(KEYHUNT_ENABLE_GPU)
+            set_tests_properties(coordinator_glv_${order}_cli PROPERTIES LABELS "${KEYHUNT_GPU_BACKEND};hardware;coordinator;glv;integration;recovery" RESOURCE_LOCK gpu_device)
+        endif()
+    endforeach()
+endif()

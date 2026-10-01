@@ -165,7 +165,7 @@ int checkpoint_command(int argc,char** argv){
         options.xpoint_steps=uint64_t(number(optional(args,"batch-size","1048576"),1048576));
         const auto kernel=optional(args,"kernel",mode==Mode::Minikeys?"direct":"stepped");
         if(mode==Mode::Minikeys&&kernel!="direct")throw std::invalid_argument("minikeys supports only the direct kernel");
-        if(kernel!="stepped" && kernel!="direct")throw std::invalid_argument("kernel must be stepped or direct");
+        (void)scalar_search_kernel(kernel);
     }else{
         if(args.count("batch-size") || args.count("kernel"))throw std::invalid_argument("BSGS uses --giant-batch and --group-size");
         options.target_batch=uint32_t(number(optional(args,"target-batch","64"),64));
@@ -194,7 +194,7 @@ int checkpoint_command(int argc,char** argv){
     if(mode==Mode::XPoint){
         const auto targets=core::XPointTargets::load(required(args,"targets"));
         XPointOptions gpu;gpu.stride=mapping?mapping->stride():UInt256(1);gpu.reverse=mapping && mapping->reverse();gpu.max_steps=options.xpoint_steps;gpu.candidate_capacity=options.candidate_capacity;
-        gpu.kernel=optional(args,"kernel","stepped")=="direct"?XPointKernel::Direct:XPointKernel::Stepped;
+        gpu.kernel=scalar_search_kernel(optional(args,"kernel","stepped"));
         std::unique_ptr<GpuXPointExecutor> executor;
         summary=CheckpointRun::xpoint(journal,grant,targets,verifier,[&](const auto& batch){
             if(!executor){
@@ -209,7 +209,7 @@ int checkpoint_command(int argc,char** argv){
             format=="address"?core::Hash160Input::BitcoinAddress:core::Hash160Input::Hex,
             core::hash160_encoding(optional(args,"encoding","both")));
         Hash160Options gpu;gpu.stride=mapping?mapping->stride():UInt256(1);gpu.reverse=mapping && mapping->reverse();gpu.max_steps=options.xpoint_steps;gpu.candidate_capacity=options.candidate_capacity;
-        gpu.kernel=optional(args,"kernel","stepped")=="direct"?XPointKernel::Direct:XPointKernel::Stepped;
+        gpu.kernel=scalar_search_kernel(optional(args,"kernel","stepped"));
         std::unique_ptr<GpuHash160Executor> executor;
         summary=CheckpointRun::hash160(journal,grant,targets,verifier,[&](const auto& batch){
             if(!executor){
@@ -222,7 +222,7 @@ int checkpoint_command(int argc,char** argv){
     }else if(mode==Mode::Vanity){
         const auto targets=core::VanityTargets::load(required(args,"targets"),core::hash160_encoding(optional(args,"encoding","both")));
         VanityOptions gpu;gpu.stride=mapping?mapping->stride():UInt256(1);gpu.reverse=mapping && mapping->reverse();gpu.max_steps=options.xpoint_steps;gpu.candidate_capacity=options.candidate_capacity;
-        gpu.kernel=optional(args,"kernel","stepped")=="direct"?XPointKernel::Direct:XPointKernel::Stepped;
+        gpu.kernel=scalar_search_kernel(optional(args,"kernel","stepped"));
         std::unique_ptr<GpuVanityExecutor> executor;
         summary=CheckpointRun::vanity(journal,grant,targets,verifier,[&](const auto& batch){
             if(!executor){
@@ -246,7 +246,7 @@ int checkpoint_command(int argc,char** argv){
     }else if(mode==Mode::Ethereum){
         const auto targets=core::EthereumTargets::load(required(args,"targets"));
         EthereumOptions gpu;gpu.stride=mapping?mapping->stride():UInt256(1);gpu.reverse=mapping && mapping->reverse();gpu.max_steps=options.xpoint_steps;gpu.candidate_capacity=options.candidate_capacity;
-        gpu.kernel=optional(args,"kernel","stepped")=="direct"?XPointKernel::Direct:XPointKernel::Stepped;
+        gpu.kernel=scalar_search_kernel(optional(args,"kernel","stepped"));
         std::unique_ptr<GpuEthereumExecutor> executor;
         summary=CheckpointRun::ethereum(journal,grant,targets,verifier,[&](const auto& batch){
             if(!executor){

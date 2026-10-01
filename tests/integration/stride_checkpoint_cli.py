@@ -10,8 +10,9 @@ p=argparse.ArgumentParser()
 for name in ('binary','oracle','report'):p.add_argument('--'+name,type=Path,required=True)
 p.add_argument('--hardware',action='store_true');p.add_argument('--backend',choices=('hip','cuda'),default='hip')
 p.add_argument('--order',choices=('forward','reverse'),default='forward')
+p.add_argument('--kernel',choices=('direct','stepped','glv'))
 a=p.parse_args();binary=str(a.binary.resolve())
-report=dict(order=a.order,passed=False,hardware=a.hardware,oracle_commit=check_source(),binary_sha256=hashlib.sha256(a.binary.read_bytes()).hexdigest(),cases=[])
+report=dict(order=a.order,selected_kernel=a.kernel,passed=False,hardware=a.hardware,oracle_commit=check_source(),binary_sha256=hashlib.sha256(a.binary.read_bytes()).hexdigest(),cases=[])
 with tempfile.TemporaryDirectory(prefix='kh-stride-checkpoint-') as directory:
     root=Path(directory);state=root/'state'
     def command(family,action,*words):return [binary,family,action,'--state-dir',str(state),*map(str,words)]
@@ -45,7 +46,7 @@ with tempfile.TemporaryDirectory(prefix='kh-stride-checkpoint-') as directory:
         assert call('state','block',*scope,'--block','0')[0]['state']=='finished'
         call('state','check')
     for mode in ('xpoint','hash160','ethereum','vanity'):
-        for kernel in ('direct','stepped'):
+        for kernel in ([a.kernel] if a.kernel else ('direct','stepped')):
             for label,begin,end,step in [('overlap',101,101+33*7-3,7),('wide',1<<128,(1<<128)+17*((1<<192)+1),(1<<192)+1),('order',N-129,N,7)]+([('unit',101,134,1)] if a.order=='reverse' else []):
                 count=1+(end-begin-1)//step
                 scope,run,expected,bound=prepare(mode,label+'-'+kernel,begin,end,step,list(range(1,count+1)))
@@ -65,7 +66,7 @@ with tempfile.TemporaryDirectory(prefix='kh-stride-checkpoint-') as directory:
         if a.hardware:
             begin=1<<100;step=17;count=1048576
             scope,run,expected,bound=prepare(mode,'killed',begin,begin+count*step,step,[1,2,count])
-            child=subprocess.Popen(command('checkpoint','run',*run,'--batch-size','32'),stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
+            child=subprocess.Popen(command('checkpoint','run',*run,'--batch-size','32',*(['--kernel',a.kernel] if a.kernel else [])),stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
             try:
                 assert select.select([child.stdout],[],[],30)[0],'no durable acknowledgment'
                 notice=json.loads(child.stdout.readline());assert notice['coordinate_space']==('scalar-reverse-index-v1' if a.order=='reverse' else 'scalar-stride-index-v1')

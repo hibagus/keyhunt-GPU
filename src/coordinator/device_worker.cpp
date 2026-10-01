@@ -96,6 +96,7 @@ struct Prepared {
             for(size_t i=0;i<values.size();++i)std::copy_n(raw.begin()+i*20,20,values[i].begin());
             e_targets=std::make_unique<core::EthereumTargets>(std::move(values));
         }else{
+            if(options.count("kernel"))throw std::invalid_argument("BSGS uses --group-size, not --kernel");
             std::vector<core::UncompressedPublicKey> values(raw.size()/65);
             for(size_t i=0;i<values.size();++i)std::copy_n(raw.begin()+i*65,65,values[i].begin());
             b_targets=std::make_unique<core::BsgsPublicKeyTargets>(std::move(values));
@@ -131,7 +132,7 @@ int run_device(const Options& args){
     limits.giant_steps=number(args,"giant-batch",16384,1048576/limits.target_batch);
     const auto host_memory=number(args,"host-memory",1073741824,UINT64_MAX);
     const auto kernel=option(args,"kernel","stepped"),group=option(args,"group-size","auto");
-    if(kernel!="direct"&&kernel!="stepped")throw std::invalid_argument("invalid kernel");
+    (void)scalar_search_kernel(kernel);
     if(group!="auto"&&group!="1"&&group!="8")throw std::invalid_argument("invalid group size");
     Worker worker(option(args,"state-dir"));const auto selected=select_gpu(ordinal);
     if(selected.device.uuid.empty())throw std::runtime_error("device has no stable UUID");
@@ -188,7 +189,7 @@ int run_device(const Options& args){
                 result=CheckpointRun::xpoint(worker.journal(),*grant,*prepared.x_targets,prepared.verifier,[&](const auto& batch){
                     if(!prepared.x_executor){
                         XPointOptions gpu;gpu.stride=batch.scalar_stride();gpu.reverse=batch.scalar_reverse();gpu.max_steps=limits.xpoint_steps;
-                        gpu.kernel=kernel=="direct"?XPointKernel::Direct:XPointKernel::Stepped;
+                        gpu.kernel=scalar_search_kernel(kernel);
                         prepared.x_executor=std::make_unique<GpuXPointExecutor>(ordinal,*prepared.x_targets,prepared.verifier,gpu);++prepared.setups;
                     }
                     prepared.in_flight=true;const auto ticket=prepared.x_executor->submit(batch);
@@ -198,7 +199,7 @@ int run_device(const Options& args){
                 result=CheckpointRun::hash160(worker.journal(),*grant,*prepared.h_targets,prepared.verifier,[&](const auto& batch){
                     if(!prepared.h_executor){
                         Hash160Options gpu;gpu.stride=batch.scalar_stride();gpu.reverse=batch.scalar_reverse();gpu.max_steps=limits.xpoint_steps;
-                        gpu.kernel=kernel=="direct"?XPointKernel::Direct:XPointKernel::Stepped;
+                        gpu.kernel=scalar_search_kernel(kernel);
                         prepared.h_executor=std::make_unique<GpuHash160Executor>(ordinal,*prepared.h_targets,prepared.verifier,gpu);++prepared.setups;
                     }
                     prepared.in_flight=true;const auto ticket=prepared.h_executor->submit(batch);
@@ -217,7 +218,7 @@ int run_device(const Options& args){
                 result=CheckpointRun::vanity(worker.journal(),*grant,*prepared.v_targets,prepared.verifier,[&](const auto& batch){
                     if(!prepared.v_executor){
                         VanityOptions gpu;gpu.stride=batch.scalar_stride();gpu.reverse=batch.scalar_reverse();gpu.max_steps=limits.xpoint_steps;
-                        gpu.kernel=kernel=="direct"?XPointKernel::Direct:XPointKernel::Stepped;
+                        gpu.kernel=scalar_search_kernel(kernel);
                         prepared.v_executor=std::make_unique<GpuVanityExecutor>(ordinal,*prepared.v_targets,prepared.verifier,gpu);++prepared.setups;
                     }
                     prepared.in_flight=true;const auto ticket=prepared.v_executor->submit(batch);
@@ -227,7 +228,7 @@ int run_device(const Options& args){
                 result=CheckpointRun::ethereum(worker.journal(),*grant,*prepared.e_targets,prepared.verifier,[&](const auto& batch){
                     if(!prepared.e_executor){
                         EthereumOptions gpu;gpu.stride=batch.scalar_stride();gpu.reverse=batch.scalar_reverse();gpu.max_steps=limits.xpoint_steps;
-                        gpu.kernel=kernel=="direct"?XPointKernel::Direct:XPointKernel::Stepped;
+                        gpu.kernel=scalar_search_kernel(kernel);
                         prepared.e_executor=std::make_unique<GpuEthereumExecutor>(ordinal,*prepared.e_targets,prepared.verifier,gpu);++prepared.setups;
                     }
                     prepared.in_flight=true;const auto ticket=prepared.e_executor->submit(batch);

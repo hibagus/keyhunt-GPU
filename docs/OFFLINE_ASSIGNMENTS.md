@@ -343,3 +343,13 @@ while private scalars descend; public results label `scalar-reverse-index-v1`
 and show both coordinates. The existing courier digest checks, acknowledgements,
 offline leases, bounded outbox and quarantine rules continue to apply.
 See [reverse contracts](C23_REVERSE.md) and [HIP/CUDA evidence](C23_REVERSE_VALIDATION.md).
+
+
+## GLV scalar execution
+
+Disconnected scalar owners can use supervisor option `--kernel glv` with an
+updated executable. The option changes multiplication only; exported envelopes,
+job digests, candidate coverage, capabilities and schema remain unchanged.
+Switching kernels after a restart uses the same retained grants and committed
+complement. Fresh owners self-test GLV before consuming work. See
+[GLV contracts](C23_GLV.md) and [worker execution](COORDINATOR.md#c23-glv-execution-choice).

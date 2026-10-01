@@ -69,7 +69,7 @@ characters. Repeat `--encoding compressed|uncompressed|both` (default both) on
 create and run. Canonical targets bind mode 5 and preserve prefix length, case,
 encoding and zero padding. Results carry those full 36 bytes in `target_bytes`.
 
-Select scalar `--batch-size` and `--kernel stepped|direct`. Capacity must fit the
+Select scalar `--batch-size` and `--kernel stepped|direct|glv`. Capacity must fit the
 sum of distinct prefix lengths for each enabled encoding (at most 68). Overflow
 retries the whole attempted interval before committing coverage. Every overlapping
 prefix match at the same scalar remains a separate relation; exact duplicate
@@ -101,7 +101,7 @@ canonical target set. Equivalent address/raw files produce the same job identity
 
 On `checkpoint run`, use `--input-format hash160` (default) or `--input-format address`
 with the matching file, and repeat the original `--encoding` selection. Changed
-encoding or target bytes fail binding validation. Select `--kernel stepped|direct`
+encoding or target bytes fail binding validation. Select `--kernel stepped|direct|glv`
 and `--batch-size` as for xpoint. With both encodings, candidate capacity must be
 at least two; dense overflow retries smaller scalar intervals before coverage
 advances. Results include `target_bytes`: `01` or `02` followed by the full hash.
@@ -296,7 +296,7 @@ printf '%s\n' 0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798
 | --- | --- |
 | `create` | Required `--project`, `--mode xpoint\|bsgs\|hash160\|address\|ethereum\|vanity\|minikeys`, `--range`, `--block-width`, `--targets`; BSGS requires `--table` and accepts `--host-memory`; scalar families accept `--stride HEX` and `--order forward\|reverse` |
 | `run`, common | Required `--backend hip\|cuda`, `--grant`, `--targets`; optional `--device` (0), `--candidate-capacity` (1024), `--checkpoint-seconds 0..60` (10) |
-| `run`, xpoint | `--batch-size 1..1048576` (1048576), `--kernel stepped\|direct` (stepped); capacity 1..1048576 |
+| `run`, xpoint | `--batch-size 1..1048576` (1048576), `--kernel stepped\|direct\|glv` (stepped); capacity 1..1048576 |
 | `run`, BSGS | Required `--table`; `--giant-batch` (16384), `--target-batch 1..64` (64), product at most 1048576; capacity 1..65536; `--group-size auto\|1\|8`; `--host-memory` (1073741824 bytes), `--reserve-bytes` (67108864 bytes) |
 | `results` | Required `--project`, `--job`; optional `--after` (0), `--limit 1..1000` (100) |
 
@@ -491,3 +491,14 @@ Public results show `candidate_index`, actual `scalar` and
 their existing format and inherit the immutable mapping. Version-1/2 forward job
 identities, schema 7, receipt encoding and ownership rules remain unchanged.
 See [reverse contracts and recovery](C23_REVERSE.md).
+
+
+## Exact-range GLV execution
+
+Scalar jobs (`xpoint`, `hash160`/`address`, `ethereum`, `vanity`) accept
+`checkpoint run --kernel glv`. The kernel computes the same public point for
+each scalar; forward, strided and reverse jobs retain their existing bindings,
+coordinates, receipts and schema. A restart may switch between `glv`, `direct`
+and the default `stepped`. It resumes the committed complement of the same job.
+BSGS uses its group selection; minikeys accepts only `direct`.
+See [GLV arithmetic and compatibility](C23_GLV.md).
