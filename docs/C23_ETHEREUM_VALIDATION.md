@@ -3,7 +3,9 @@
 The Ethereum address family is complete on MI300X HIP and H200 CUDA. Native
 `ethereum` searches, durable checkpoints and authenticated/offline worker queues
 use exact scalar intervals with independent CPU verification. C23 remains
-partial: vanity, minikeys and other families still need their own parity gates.
+partial. Vanity was pending at this acceptance; its later
+[separate acceptance](C23_VANITY_VALIDATION.md) completes that family. Minikeys
+and other families still need their own parity gates.
 Bitcoin P2PKH/HASH160 retains its [separate acceptance](C23_VALIDATION.md).
 
 ## Behavior and decisions

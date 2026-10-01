@@ -302,3 +302,13 @@ canonical 20-byte address binding survives disconnected execution, local results
 subsequent upload and duplicate acknowledgment import. Both native backends are
 covered by the [Ethereum acceptance](C23_ETHEREUM_VALIDATION.md); the original C22
 archive remains an unchanged record of its earlier release.
+
+## C23 vanity family
+
+Mode `vanity` uses the existing manual file exchange and saved lease deadlines.
+Update both coordinator and worker for `vanity-v1` negotiation. Canonical 36-byte
+prefix/encoding targets remain intact through assignment import, disconnected GPU
+execution, result upload and acknowledgment retries. Every overlapping relation
+is CPU-verified before local persistence. The [vanity acceptance](C23_VANITY_VALIDATION.md)
+records native HIP/CUDA file round trips and persistent two-grant owners; the
+original C22 evidence retains its historical scope.

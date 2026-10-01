@@ -8,16 +8,18 @@
 | Exact `bsgs --backend …` | Explicitly rejected | Validated | Validated |
 | Exact `hash160` / Bitcoin P2PKH `address --backend …` | Explicitly rejected | Validated | Validated |
 | Exact `ethereum --backend …` | Explicitly rejected | Validated | Validated |
+| Exact `vanity --backend …` | Explicitly rejected | Validated | Validated |
 | `bsgs-table build` / `inspect`, state, job creation and result inspection | Supported | CPU operations | CPU operations |
-| `checkpoint run --backend …` | Explicitly rejected | Validated durable xpoint/BSGS/HASH160/Ethereum | Validated durable xpoint/BSGS/HASH160/Ethereum |
-| Optional supervised workers | Configuration/sync/file exchange; no CPU search executor | Validated xpoint/BSGS/HASH160/Ethereum owners | Validated xpoint/BSGS/HASH160/Ethereum owners |
+| `checkpoint run --backend …` | Explicitly rejected | Validated durable xpoint/BSGS/HASH160/Ethereum/vanity | Validated durable xpoint/BSGS/HASH160/Ethereum/vanity |
+| Optional supervised workers | Configuration/sync/file exchange; no CPU search executor | Validated xpoint/BSGS/HASH160/Ethereum/vanity owners | Validated xpoint/BSGS/HASH160/Ethereum/vanity owners |
 
 The [GPU quickstart](GPU_QUICKSTART.md) includes exact ranges and public fixtures.
 The [build matrix](BUILD.md#validated-gpu-builds) identifies tested stacks and
 partition limits. [C23's first family](C23_HASH160.md) adds exact raw HASH160 and
 Bitcoin mainnet P2PKH inputs with explicit public-key encoding identity.
-[The next family](C23_ETHEREUM_VALIDATION.md) adds Ethereum Keccak addresses.
-Vanity, minikeys and other C23 families remain pending. C22 adds
+[Ethereum](C23_ETHEREUM_VALIDATION.md) adds Keccak addresses;
+[vanity](C23_VANITY_VALIDATION.md) adds exact case-sensitive Bitcoin P2PKH prefixes.
+Minikeys and other C23 families remain pending. C22 adds
 [manual offline assignment files](OFFLINE_ASSIGNMENTS.md) for disconnected workers
 and connected couriers. HTTPS workers also retain valid leases and a durable
 outbox between scheduled contacts.
@@ -118,3 +120,14 @@ Endomorphism, random orders, special encodings and large table configurations
 need dedicated correctness gates before being included in the new scheduler.
 The [historical documentation](HISTORICAL_README.md) is retained for reference;
 [current baseline findings](CPU_BASELINE.md) take precedence over old claims.
+
+## Native Bitcoin vanity prefixes
+
+`vanity --backend hip|cuda --targets FILE --range BEGIN:END` checks complete
+Bitcoin mainnet P2PKH Base58Check addresses. Each nonblank line is a 1..34-character
+case-sensitive Base58 prefix beginning with `1`. `--encoding` selects compressed,
+uncompressed or both (default). Full-address targets and leading-zero prefixes
+are accepted. Overlapping prefixes produce separate verified results at a scalar.
+The exact half-open range is exhausted. See [contracts](C23_VANITY.md),
+[quickstart](GPU_QUICKSTART.md) and [checkpoints](CHECKPOINTS.md#bitcoin-vanity-prefix-jobs).
+Legacy `-m vanity` keeps its original CPU behavior and flags.

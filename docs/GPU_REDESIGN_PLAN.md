@@ -836,7 +836,7 @@ The original CLI sketch has been superseded by tested commands:
 
 | Task | Implemented interface and guide |
 | --- | --- |
-| Finite exact GPU search | `keyhunt xpoint`, `bsgs`, `hash160`, `address`, `ethereum --backend hip\|cuda`; [complete examples](GPU_QUICKSTART.md) |
+| Finite exact GPU search | `keyhunt xpoint`, `bsgs`, `hash160`, `address`, `ethereum`, `vanity --backend hip\|cuda`; [complete examples](GPU_QUICKSTART.md) |
 | Canonical job and local assignment | `keyhunt checkpoint create`, `keyhunt state claim`; [checkpoint guide](CHECKPOINTS.md#public-commands) |
 | Durable execution and controls | `keyhunt checkpoint run\|pause\|resume\|stop\|status`; [controls and recovery](PAUSE_RESUME.md) |
 | Authenticated coordinator | `keyhunt-coordinator serve` / `admin`; [localhost setup](COORDINATOR.md#s06-isolated-localhost-operation) |
@@ -905,7 +905,7 @@ implementation evidence in [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md).
 | C20 | `feat: schedule and balance multiple GPU devices` | C14–C17 | Completed (HIP and CUDA / localhost): calibrated immutable twelve-hour-target blocks, transactional balancing, persistent device owners, local controls, safe restart/handoff, batched sync, 1/2/4/8-GPU scaling and isolated memory/stall recovery pass; [C20 implementation and evidence](MULTI_GPU.md) |
 | C21 | `docs: publish validated GPU build and operations guides` | C14, C16, C20 | Completed: current build/mode matrices, executable HIP/CUDA searches/checkpoints, CPU CI preparation, localhost worker operations, benchmark/recovery limits and checked links; [C21 acceptance](C21_VALIDATION.md) |
 | C22 | `feat: export and reconcile offline work assignments` | C15 | Completed: trusted courier files over authenticated sync, schema-v7 receipts, reservation exclusion, duplicate imports, revocation/generation/deadline fences, incompatible manifests and exact unions; disconnected HIP/CUDA xpoint/BSGS pass; [C22 acceptance](C22_VALIDATION.md) |
-| C23 | `feat: extend GPU mode coverage` | C18, C20 | Partial: Bitcoin mainnet P2PKH/HASH160 family complete with HIP/CUDA algorithm and recovery parity; [acceptance](C23_VALIDATION.md). [Ethereum](C23_ETHEREUM_VALIDATION.md) is also complete with Keccak/encoding and recovery parity. Vanity, minikeys and other families remain pending, each requiring separate parity gates. |
+| C23 | `feat: extend GPU mode coverage` | C18, C20 | Partial: Bitcoin mainnet P2PKH/HASH160 family complete with HIP/CUDA algorithm and recovery parity; [acceptance](C23_VALIDATION.md). [Ethereum](C23_ETHEREUM_VALIDATION.md) is also complete with Keccak/encoding and recovery parity. [Vanity](C23_VANITY_VALIDATION.md) adds exact P2PKH prefix and recovery parity. Minikeys and other families remain pending, each requiring separate parity gates. |
 
 C12 can be developed after C05 without waiting for HIP; its integration still
 requires GPU completion contracts to pass. NVIDIA validation requires access to a

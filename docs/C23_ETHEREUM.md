@@ -4,7 +4,8 @@ Status: complete on native MI300X HIP and H200 CUDA; see
 [C23_ETHEREUM_VALIDATION.md](C23_ETHEREUM_VALIDATION.md). Bitcoin P2PKH/HASH160 acceptance remains in
 [C23_VALIDATION.md](C23_VALIDATION.md). This pass implements the next family in
 [the delivery order](GPU_REDESIGN_PLAN.md): Ethereum externally owned account
-address derivation. Vanity, minikeys and other families remain pending.
+address derivation. The later [vanity acceptance](C23_VANITY_VALIDATION.md) completes that family;
+minikeys and other candidate mappings remain pending.
 
 ## Contract and decisions
 

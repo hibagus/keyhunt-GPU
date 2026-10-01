@@ -18,7 +18,9 @@ Ordinary `keyhunt xpoint`, `bsgs`, `hash160`, `address`, `ethereum` and `vanity`
 A checkpoint job uses the same immutable C12 manifest/root/block grid, with target
 and algorithm digests derived from actual loaded inputs. Canonical target sets
 are persisted as sorted unique 32-byte X values or 65-byte uncompressed SEC1
-points, plus C23's 21-byte encoding/HASH160 relations , 20-byte Ethereum addresses and 36-byte vanity prefix relations. The existing target loaders reject malformed/noncanonical inputs;
+points, plus C23's 21-byte encoding/HASH160 relations, 20-byte Ethereum addresses
+and 36-byte vanity prefix relations. The existing target loaders reject
+malformed/noncanonical inputs;
 compressed/uncompressed encodings of the same BSGS point identify one target.
 
 The algorithm fingerprint is SHA256 of exactly 50 bytes: `khsearch` (8 bytes),

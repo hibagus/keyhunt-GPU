@@ -1,6 +1,7 @@
 # C23: Bitcoin P2PKH vanity prefixes
 
-Status: implementation in progress. This family follows the accepted
+Status: complete on HIP MI300X and CUDA H200; see [acceptance](C23_VANITY_VALIDATION.md).
+This family follows the accepted
 [Bitcoin HASH160](C23_VALIDATION.md) and [Ethereum](C23_ETHEREUM_VALIDATION.md)
 paths. Minikeys and other candidate mappings remain pending.
 
