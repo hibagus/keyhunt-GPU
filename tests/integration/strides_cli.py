@@ -10,7 +10,7 @@ from stride import targets,relations
 p=argparse.ArgumentParser()
 for name in ('binary','oracle','report'):p.add_argument('--'+name,type=Path,required=True)
 p.add_argument('--hardware',action='store_true');p.add_argument('--backend',choices=('hip','cuda'),default='hip')
-p.add_argument('--batch-order',choices=('forward','both-ends'),default='forward')
+p.add_argument('--batch-order',choices=('forward','both-ends','dance'),default='forward')
 p.add_argument('--order',choices=('forward','reverse'),default='forward')
 p.add_argument('--kernel',choices=('direct','stepped','glv'))
 a=p.parse_args();binary=str(a.binary.resolve())
@@ -30,9 +30,9 @@ with tempfile.TemporaryDirectory(prefix='kh-strides-cli-') as directory:
         ('order',N-257,N,17,False),('large-step',1,N,N-1,False),
         ('byte-step',257,257+3*256,256,False),('overflow',1,1+257*2,2,True),
         ('no-hit',3,3+17*2,2,False),('max-batch',1<<128,(1<<128)+1048576*11,11,False)]
-    if a.order=='reverse':cases.append(('unit',101,138,1,False))
+    if a.order=='reverse' or a.batch_order=='dance':cases.append(('unit',101,138,1,False))
     if a.kernel=='glv':
-        if a.order=='forward':cases.append(('unit',101,138,1,False))
+        if a.order=='forward' and a.batch_order!='dance':cases.append(('unit',101,138,1,False))
         cases.extend([('unit-wide',1<<192,(1<<192)+37,1,False),
                       ('unit-order',N-33,N,1,False),
                       ('unit-max',1<<128,(1<<128)+1048576,1,False)])
@@ -87,14 +87,14 @@ with tempfile.TemporaryDirectory(prefix='kh-strides-cli-') as directory:
         assert not model.gaps and summary['complete'] and int(summary['verified_steps'],16)==count
         if overflow:assert overflows>0
         report['cases'].append(dict(mode=mode,kernel=kernel,name=name,device=device,count=count,relations=len(wanted),summary=summary))
-    for mode in (('xpoint','hash160','address','ethereum','vanity') if a.batch_order=='both-ends' else ('xpoint','hash160','ethereum','vanity')):
-        for kernel in ([a.kernel] if a.kernel else ('direct','stepped','glv') if a.batch_order=='both-ends' else ('direct','stepped')):
+    for mode in (('xpoint','hash160','address','ethereum','vanity') if a.batch_order!='forward' else ('xpoint','hash160','ethereum','vanity')):
+        for kernel in ([a.kernel] if a.kernel else ('direct','stepped','glv') if a.batch_order!='forward' else ('direct','stepped')):
             for case in cases:exercise(mode,kernel,*case)
         file=root/f'{mode}.txt'
         base=[mode,'--backend',a.backend,'--range','1:101','--targets',file]
         for step in ('0','-1',f'{N:x}',f'{1<<256:x}','junk',''):
             r=run(base+['--stride',step],False);assert not r.stdout;report['rejections']+=1
-        for bad in ('reverse','dance','random-window',''):
+        for bad in ('reverse','random-window',''):
             assert not run(base+['--batch-order',bad],False).stdout;report['rejections']+=1
         for order in ('backward','random',''):
             r=run(base+['--order',order],False);assert not r.stdout;report['rejections']+=1
@@ -103,7 +103,7 @@ with tempfile.TemporaryDirectory(prefix='kh-strides-cli-') as directory:
             mode=('xpoint','hash160','ethereum','vanity')[device%4]
             exercise(mode,a.kernel or 'stepped','visible-device',101,101+33*7,7,False,device)
         # Explicit unit stride must retain the original coordinates and relations.
-        for mode in (('xpoint','hash160','address','ethereum','vanity') if a.batch_order=='both-ends' else ('xpoint','hash160','ethereum','vanity')):
+        for mode in (('xpoint','hash160','address','ethereum','vanity') if a.batch_order!='forward' else ('xpoint','hash160','ethereum','vanity')):
             file=root/f'{mode}.txt';pub=oracle_run(a.oracle,['pub '+f'{1:064x}'])[0]
             lines,_=targets(mode,[pub]);file.write_text('\n'.join(lines))
             base=[mode,'--backend',a.backend,'--range','1:4','--targets',file]+(['--kernel',a.kernel] if a.kernel else [])

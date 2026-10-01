@@ -11,7 +11,7 @@ L=int('5363ad4cc05c30e0a5261c028812645a122e22ea20816678df02967c1b23bd72',16)
 p=argparse.ArgumentParser()
 for name in ('binary','oracle','report'):p.add_argument('--'+name,type=Path,required=True)
 p.add_argument('--hardware',action='store_true');p.add_argument('--backend',default='hip',choices=('hip','cuda'))
-p.add_argument('--batch-order',choices=('forward','both-ends'),default='forward')
+p.add_argument('--batch-order',choices=('forward','both-ends','dance'),default='forward')
 p.add_argument('--order',choices=('forward','reverse'),default='forward');a=p.parse_args();binary=str(a.binary.resolve())
 report=dict(batch_order=a.batch_order,passed=False,order=a.order,hardware=a.hardware,cases=[],rejections=0,oracle_commit=check_source(),binary_sha256=hashlib.sha256(a.binary.read_bytes()).hexdigest())
 def run(words,ok=True):
@@ -68,7 +68,7 @@ with tempfile.TemporaryDirectory(prefix='kh-orbit-cli-') as temporary:
   assert not model.gaps and summary['complete'] and int(summary['verified_steps'],16)==6*count
   if overflow:assert replayed>0
   report['cases'].append(dict(mode=mode,kernel=kernel,name=name,device=device,seeds=count,relations=len(wanted),batches=batches,summary=summary))
- for mode in (('xpoint','hash160','address','ethereum','vanity') if a.batch_order=='both-ends' else ('xpoint','hash160','ethereum','vanity')):
+ for mode in (('xpoint','hash160','address','ethereum','vanity') if a.batch_order!='forward' else ('xpoint','hash160','ethereum','vanity')):
   for kernel in ('direct','glv','stepped'):
    for case in cases:exercise(mode,kernel,*case)
   if a.hardware and a.order=='forward':exercise(mode,'stepped','maximum-tail',1<<128,(1<<128)+1048577,1)

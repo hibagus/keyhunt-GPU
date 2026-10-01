@@ -21,6 +21,21 @@ foreach(mapping forward reverse)
     endforeach()
 endforeach()
 
+foreach(mapping forward reverse)
+    foreach(family strides orbits)
+        add_test(NAME scalar_dance_${family}_${mapping}_cli COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/${family}_cli.py"
+            --binary $<TARGET_FILE:keyhunt> --oracle $<TARGET_FILE:secp256k1_oracle>
+            --batch-order dance --order ${mapping}
+            --report "${CMAKE_CURRENT_BINARY_DIR}/scalar-dance-${family}-${mapping}.json" ${stride_cli_args})
+        set_tests_properties(scalar_dance_${family}_${mapping}_cli PROPERTIES TIMEOUT 1200 LABELS "cpu;scalar-batches;oracle")
+        if(KEYHUNT_ENABLE_GPU)
+            set_tests_properties(scalar_dance_${family}_${mapping}_cli PROPERTIES
+                LABELS "${KEYHUNT_GPU_BACKEND};hardware;scalar-batches;oracle" RESOURCE_LOCK gpu_device)
+        endif()
+    endforeach()
+endforeach()
+
 set(scalar_batch_example_backend cpu)
 if(KEYHUNT_ENABLE_GPU)
     set(scalar_batch_example_backend ${KEYHUNT_GPU_BACKEND})
