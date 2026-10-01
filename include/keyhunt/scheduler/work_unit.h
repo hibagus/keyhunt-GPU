@@ -10,9 +10,9 @@ namespace keyhunt::scheduler {
 using Digest = std::array<uint8_t, 32>;
 using AssignmentId = std::array<uint8_t, 16>;
 
-// The first executor mapping is k = batch.begin + local_index. BSGS, strides,
-// endomorphisms and minikey ordinals need separately validated mappings.
-enum class WorkAlgorithm : uint8_t { DirectXPointV1 = 1, DirectHash160V1 = 2, DirectEthereumV1 = 3, DirectVanityV1 = 4 };
+// Direct scalar mappings use k = begin + local_index. Minikeys use that same
+// integer coordinate as an ordinal; hashing derives an unrelated private scalar.
+enum class WorkAlgorithm : uint8_t { DirectXPointV1 = 1, DirectHash160V1 = 2, DirectEthereumV1 = 3, DirectVanityV1 = 4, DirectMinikeysV1 = 5 };
 
 struct ExecutionIdentity {
     Digest job_digest{};
@@ -57,6 +57,7 @@ public:
     const core::ScalarInterval& interval() const { return interval_; }
     uint64_t step_count() const { return interval_.size().to_uint64(); }
     core::UInt256 scalar_at(uint64_t local_index) const;
+    core::UInt256 ordinal_at(uint64_t local_index) const;
 
 private:
     KernelBatch(WorkUnit work, core::ScalarInterval interval);

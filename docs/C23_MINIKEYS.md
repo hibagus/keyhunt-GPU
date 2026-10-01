@@ -68,7 +68,7 @@ are outside this agreed slice. `pub2rmd` remains removed from the main parser.
 
 The admission and scalar derivation follow the original format's
 [Bitcoin developer description](https://developer.bitcoin.org/devguide/wallets.html#mini-private-key-format)
-and [Casascius implementation](https://github.com/casascius/Bitcoin-Address-Utility).
+and [Casascius implementation](https://github.com/casascius/Bitcoin-Address-Utility/blob/master/Model/MiniKeyPair.cs).
 Tests use public published examples, Python integer arithmetic/hashlib and pinned
 libsecp256k1 as independent oracles. No wallet files are used.
 

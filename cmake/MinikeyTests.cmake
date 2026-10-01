@@ -1,0 +1,5 @@
+add_executable(minikey_search_test tests/unit/minikey_search.cpp)
+target_link_libraries(minikey_search_test PRIVATE keyhunt_core)
+keyhunt_configure_target(minikey_search_test)
+add_test(NAME minikey_search_contract COMMAND minikey_search_test)
+set_tests_properties(minikey_search_contract PROPERTIES TIMEOUT 60 LABELS "cpu;core;minikeys")

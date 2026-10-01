@@ -135,6 +135,7 @@ add_library(keyhunt_core STATIC
     src/core/cpu_targets.cpp
     src/core/result_verifier.cpp
     src/core/xpoint_search.cpp
+    src/core/minikey_search.cpp
     src/core/hash160_search.cpp
     src/core/ethereum_search.cpp
     src/core/vanity_search.cpp
@@ -273,6 +274,7 @@ if(BUILD_TESTING)
     include(cmake/Hash160Tests.cmake)
     include(cmake/EthereumTests.cmake)
     include(cmake/VanityTests.cmake)
+    include(cmake/MinikeyTests.cmake)
     include(cmake/BsgsTableTests.cmake)
     include(cmake/BsgsSearchTests.cmake)
     include(cmake/StorageTests.cmake)

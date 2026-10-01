@@ -21,7 +21,7 @@ std::optional<ScalarInterval> bounded_interval(const ScalarInterval& parent,
 
 void validate(const ExecutionIdentity& identity) {
     if (identity.algorithm != WorkAlgorithm::DirectXPointV1 && identity.algorithm != WorkAlgorithm::DirectHash160V1 &&
-        identity.algorithm != WorkAlgorithm::DirectEthereumV1 && identity.algorithm != WorkAlgorithm::DirectVanityV1)
+        identity.algorithm != WorkAlgorithm::DirectEthereumV1 && identity.algorithm != WorkAlgorithm::DirectVanityV1 && identity.algorithm != WorkAlgorithm::DirectMinikeysV1)
         throw std::invalid_argument("unsupported work algorithm mapping");
     if (!identity.assignment_generation || !identity.executor_generation)
         throw std::invalid_argument("execution generations must be positive");
@@ -61,8 +61,14 @@ std::optional<KernelBatch> KernelBatch::plan(const WorkUnit& work,
 }
 
 UInt256 KernelBatch::scalar_at(uint64_t local_index) const {
+    if(work_.identity().algorithm==WorkAlgorithm::DirectMinikeysV1)throw std::logic_error("minikey work uses ordinal_at");
     if (local_index >= step_count()) throw std::out_of_range("local index outside batch");
     return interval_.begin().add(UInt256(local_index));
 }
 
+UInt256 KernelBatch::ordinal_at(uint64_t local_index) const {
+    if(work_.identity().algorithm!=WorkAlgorithm::DirectMinikeysV1)throw std::logic_error("scalar work uses scalar_at");
+    if(local_index>=step_count())throw std::out_of_range("local index outside batch");
+    return interval_.begin().add(UInt256(local_index));
+}
 } // namespace keyhunt::scheduler
