@@ -227,5 +227,6 @@ should omit this override. Execution summaries report `batch_order`.
 See [contracts and an executable public example](C23_SCALAR_BOTH_ENDS.md) and
 [both-ends HIP/H200 validation](C23_SCALAR_BOTH_ENDS_VALIDATION.md).
 The [dance contract and public example](C23_SCALAR_DANCE.md) define the fixed
-midpoint and recovery behavior. Scalar random windows remain pending.
+midpoint and recovery behavior; [HIP/H200 acceptance](C23_SCALAR_DANCE_VALIDATION.md)
+records the checks and evidence. Scalar random windows remain pending.
 Neither policy makes a performance claim.

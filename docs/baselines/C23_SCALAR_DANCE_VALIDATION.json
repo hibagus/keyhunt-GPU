@@ -1,0 +1,1278 @@
+{
+  "feature": "C23 scalar dance batch traversal",
+  "source_commit": "c96dc0fcf12d58ac1c43b87a35e485f46211b8c4",
+  "previous_acceptance": "f94a46b992924497cf7040484d920bc046a5aaa6",
+  "passed": true,
+  "phases": {
+    "contract": "890eb82",
+    "implementation": "7f03433",
+    "native": "b2c91bf",
+    "recovery": "fb681a3",
+    "workers": "dcee3af",
+    "example": "2a5ec89",
+    "guides": "b448b6b",
+    "contract_status": "c96dc0f"
+  },
+  "suites": {
+    "local": {
+      "tests": 183,
+      "seconds": "132",
+      "ctest_seconds": 133.0,
+      "metadata": {
+        "source_commit": "c96dc0fcf12d58ac1c43b87a35e485f46211b8c4",
+        "platform": "Linux-5.15.0-191-generic-x86_64-with-glibc2.35",
+        "binaries": {
+          "block_grid_test": "ee4ff54521f408938022d41591b3d7e0ed5a0b2edd8a9467cb2185597e17d949",
+          "bounded_search_probe": "dad2015065b9062a9e268c9ddfaea65f665656ca5b837ace03636e622181af7e",
+          "bsgs_plan_probe": "e518cc88e9f260dbdad58a7116c70cfd6b5f8415c780d8c558e7203bde2c8944",
+          "bsgs_search_test": "f69201ce1e5035cb6231bb21f1fa334a979f22fbf0174f55a6ae078189672b77",
+          "bsgs_table_test": "2a709bec792edbb789c378ba91c4639d0b50e777351298d290b1cd6de8e5638f",
+          "bsgs_tile_probe": "d350044eceab3eee5e3785b1a51be90c107724ae64ca3dc648fcc85c6ad2ec12",
+          "checkpoint_control_driver": "526c6700c00a2e3063aeed5fb8f3e20209a36683f9b5a54ddcbdf9a1ceaf8500",
+          "coordinator_bsgs_reverse_test": "c06bd974ca2e93d14c2d8b51414a8bcd7fe27f5b62a1713f9009afa55e1132a6",
+          "coordinator_budget_test": "cf28224b448880ebafd12c59b4299c3a3fe17551493ab26c4121721979edac7c",
+          "coordinator_dispatch_test": "a17bf7fd1fc8d9005d438c69a64bcc0c0ed0305f2e02a49efb54040961f7062f",
+          "coordinator_ethereum_test": "2736f205889fb3e74065cacd175802ecf67774defc9b1a99d79ed204b80ffe2a",
+          "coordinator_hash160_test": "a95ed9bf26f71d800c171d30dcf9fd06c5c3d165718b9ac3d33718c95359151f",
+          "coordinator_minikey_reverse_test": "67e61497a234d6417bfe127b78052f461fc0731f81c28d80aa851822d76d6390",
+          "coordinator_minikeys_test": "7fdf468b19b05e168b39793f5d9871646bd8c5857acd600f7db49cfae6c881ac",
+          "coordinator_offline_failures_test": "66215d81fc72274257b3c33828c451dc40639bbe01f866c72ec2ad3bd638c6df",
+          "coordinator_offline_files_test": "c77ba486f35802f6de4416735eff7f5d198070517d1845dc59c8721fe2529cef",
+          "coordinator_offline_test": "a9bfd977c1e2e0407e010e67e02e35ae3a509e6a5855ef004fce746e026fcbb1",
+          "coordinator_orbits_test": "a32f66082409a7ccdc0546f788fab74ca802c7fbcf212099563980301839508b",
+          "coordinator_recovery_test": "923dd56dc903e5c22e41b314a6185b922c26d5a5d346eae45ecb95056734a7d3",
+          "coordinator_registry_test": "9dba1d84307093e882c13f835769ce861685b6d67282c6ff0afd2dbbe33055b3",
+          "coordinator_reverse_test": "b539fabaedbe533887986bba4bd17619f1cfc92e4011cbe73426baf5767e32d9",
+          "coordinator_strides_test": "b5936c7729919c81241ed4a75d1c695a4a7a78ad3ba26672524bcef702a44490",
+          "coordinator_sync_failures_test": "d24d6803a8e2dbf7f09a2a75d9c55e0b2e1f0d3f98e321759d64c15f5e2634a5",
+          "coordinator_sync_test": "2e3f415df8fb57a5f09c02d8b3753e12104e7e3f8877aa5f9e050d1a6c45ce84",
+          "coordinator_vanity_test": "c7f41acd3a89eb2a82e296a20330633a0d0441e0b092056a965b2aba746f13e1",
+          "coordinator_worker_failures_test": "dada703a4cdde1ad7800d49c2d41db5fffb6f96dd7e7e51f49fa0a89880ba236",
+          "coordinator_worker_test": "80578b4b3770c0c56ce6191cb290f54bcb69df747d5c92340dd0d9f2463d72c1",
+          "cpu_arithmetic_probe": "1ed107bf92e9a57c8e7335489766280e297aca692be3714b95fb5c84d6e36bf1",
+          "ethereum_search_test": "1ae254fa85c8a8e7f654c9e073b0e0bcbac87e64124d1ada914463db5ca41b65",
+          "exact_range_test": "59ef8e660afc005c264963d828658bc57b1ea49ef6e464dffcf7ee9f6ca29a55",
+          "hash160_search_test": "997bb7359ec425e7bb780de15652706810b96748f893d4a7a7e6bb57411989ab",
+          "hip_discovery_test": "6b75c743bc371d8b6a7eec2d48bef1ffa191187f2b03be9cd8475711295d96f7",
+          "keyhunt": "aaa7ff90c2a4fb2a5c2b00ff51d8703117496017e027e71912b53b99482c1102",
+          "keyhunt-coordinator": "ae2183b0fe08607dca8fedc5dac3e57397d95880616f45de1a1c7f26578b909f",
+          "keyhunt-worker": "c6c92aade56bc60dcae300056ce8edf25fc8084077ce9b8284acd41ab485769c",
+          "minikey_order_probe": "0a502c97781552780dde809ca3dd9133748faa9103bd9c192e16d0ab373f95d0",
+          "minikey_random_window_probe": "8981cf7c6a70c6a4c38a240acf06d1bdcdfedaea4fd9049b2c11bf40cbe9f0c0",
+          "minikey_search_test": "1271419a476a675e49913275ae060467e29f41cf84cdf6d0f92700cd9b8b9169",
+          "portable_arithmetic_probe": "d010166424337b90febed782b49465036ae7f07584b8e2c5993428ceb4d47081",
+          "portable_base58_probe": "44e1671def64527d86f73acad0f6ca109383ff7ea7609e3b6c6a0426ef6afbe2",
+          "portable_glv_probe": "e5c61b4fcaf12587e3eec49439c20ee86e51f37ebb7930c8616188c71e90b5c0",
+          "portable_hash160_probe": "594be2d59b1366c1ae1a435251ea5635f1920e325e27cad6418c212a4317b7a6",
+          "portable_keccak_probe": "06264f2008fdb21f11f90a93ec13295792a55bd536ffcdf888b76a5f2bfa38aa",
+          "portable_minikey_probe": "6f26de0fae45c95b2ed34fb5cb355e4e62ed2e91a3a0a064a37b274fc96e0e30",
+          "portable_stride_probe": "82a59e1a4012dc15dc6f7f8b4ed33eeaf9628abb7eb76c1980b7aeae921160a9",
+          "range_probe": "694bd8e12c28c25c8be0ff7decf7fc36f5ab10e7cb28ba6cd192dd0470d74920",
+          "result_verifier_test": "c0471b6cf429702cf549bce670ab5e0bb48ea25a855c9ba2f9f04cf2b7d59189",
+          "scalar_batch_probe": "41b37ed086d147db79a13a511d99a8861e726ccf78806faa0459c3c71d1d887b",
+          "scalar_orbit_probe": "b01b21f954bc06568f6bfa168d2a837a12740083f5fea9d466b23756d8930e01",
+          "scalar_orbit_test": "0759934a2278e41dab775321593575e47f9c6d4bab6eb4c24528706690e39d7a",
+          "scalar_reverse_test": "98b3d33234fcaadfb23b15c4c6436847b89e002d0d3d3fb74c965a9deaeada19",
+          "scalar_stride_probe": "1b14003517ac130422a752cbad1b5934d7f9af0c4882011eb2c10519fa87bafa",
+          "scalar_stride_test": "c053fca143fc4e3150bcb01ce84cf07068c527860762d6ed9bf083e7e55b9205",
+          "secp256k1_oracle": "8dc92137c49502e3de62cb20a750d1c7f0bd84294ae77c5ccc9c9dffd20763c6",
+          "storage_bsgs_both_ends_test": "07433735fe6c1007e3021997777086e58126e84a4e6b1e38349dbb3ec3806cd4",
+          "storage_bsgs_dance_test": "9672544612ebbe083cc01a39b6e9b3158510a51b0249d91b5fc501cbbaa82cd3",
+          "storage_bsgs_random_window_test": "8b6df9248dba1d4f3e0d9e197769ae826a0a4c3a5f3fd562cd3011f9c08770d4",
+          "storage_bsgs_reverse_test": "243c338d16e7e11caff0628575c9a1c607ffb3da78bdcd36dd0ca8a9ee4d8660",
+          "storage_checkpoint_concurrent_test": "71c39b268aa7152a90a838814b42a926b01a5fca2955b603f47414c485399a4f",
+          "storage_checkpoint_control_test": "ca009699ed264533053f56135a0aeb8c748837b7d7876bf1866e8f6de1b874f7",
+          "storage_checkpoint_failures_test": "6810ceca3391d8a9698e68ac44f5fb6fa09bba0ae715d18d099b24a4488f8393",
+          "storage_checkpoint_test": "2ab78d0c14010c2279a64cf61a7554a81aa53d9422fb8d12d764a24f82b8e41a",
+          "storage_concurrency_test": "9e0194cbf366a6a786482c825f48e15c2eb52a3aaef0c79fc5d6e7a49f62477a",
+          "storage_database_test": "4a87536aff0128c5a578d70ee03c057dc5d9a68d5d69e1fcada45e0836a60914",
+          "storage_ethereum_checkpoint_test": "cf32ec73d983b9358519234b5856d296864a9c023ea0f9709f94e2bc84848edd",
+          "storage_hash160_checkpoint_test": "0b4b1be60f73282596b385496b53259b85ca5a415078f8642aa2f96117adf127",
+          "storage_journal_test": "8602a8332d1ca592ee49edad41abb7c654969e7750b02efb58c7222cfdacb02c",
+          "storage_minikey_both_ends_test": "1464e7eb14ccb1fea4ed0e5886f0410cd4d65a7127f1f47fc9936d4e6774ffb8",
+          "storage_minikey_checkpoint_test": "ecb1f0c6d26c21a2aab70f1df95350874217044aba91e4978ab47ee758505fc0",
+          "storage_minikey_dance_test": "d3a37c1443ddfe53ed7c16dc7f6016235ebf5970f72c46ee5723f4e45e30a8bd",
+          "storage_minikey_random_window_test": "1be29ede76a7d6d48ad78fd330e19fa6db432d2dbc54edf1ea102d9b970bd5ba",
+          "storage_minikey_reverse_test": "dc633651fb53308ce6bf3932dc19925c0af3b33123111870ddef37da5f56a1da",
+          "storage_orbit_checkpoint_test": "9650e005ed2629581975ae43412799669ff0efb4f7b281c01a6d7b85b730f28d",
+          "storage_reverse_checkpoint_test": "0ba6e4afcd0556a24c622a7a379fe5ec2e9ac5ca71e5f78ebdcf4d1adfe3c64b",
+          "storage_scalar_both_ends_test": "5f0cb2a8666ee2a900ca8a0cfd39bbc7f0b328a2e6d865b2b936220286a49f94",
+          "storage_stride_checkpoint_test": "6d14cd6ea6ac3c48eacacbbeef390c2037a7452daf1607156da89e9dbbe6700c",
+          "storage_vanity_checkpoint_test": "a37ca3ea9e3414aeea0b379cbba73c395df3648aed3be47cd54a8e2d3f268b2b",
+          "vanity_search_test": "92f9ed5693d2653a4bff2e6313d2dd504462f100464027430e6e78cd20a9e604",
+          "work_unit_test": "649f118b16e43c83dff081c9ad8ead1f7e751525e821c3447a93d8994566fa6b",
+          "xpoint_search_test": "331885020004779bd73536944b4e583bda06036438b46d6adb330997deb9cf36"
+        },
+        "configuration": {
+          "CMAKE_BUILD_TYPE": "Release",
+          "CMAKE_CXX_COMPILER": "/usr/bin/c++",
+          "KEYHUNT_ENABLE_COORDINATOR": "ON",
+          "KEYHUNT_ENABLE_CUDA": "OFF",
+          "KEYHUNT_ENABLE_HIP": "OFF",
+          "KEYHUNT_ENABLE_HTTPS_WORKER": "ON",
+          "KEYHUNT_ENABLE_LTO": "ON",
+          "KEYHUNT_ENABLE_SANITIZERS": "OFF",
+          "KEYHUNT_GFX942_CARRY": "OFF"
+        },
+        "compilers": {
+          "/usr/bin/c++": "c++ (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0\nCopyright (C) 2021 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
+        }
+      },
+      "results": [
+        {
+          "name": "gpu_benchmark_metrics",
+          "seconds": "0.043155"
+        },
+        {
+          "name": "gpu_benchmark_pairs",
+          "seconds": "0.0520105"
+        },
+        {
+          "name": "oracle_selftest",
+          "seconds": "0.87143"
+        },
+        {
+          "name": "cpu_field_oracle",
+          "seconds": "0.252712"
+        },
+        {
+          "name": "cpu_point_oracle",
+          "seconds": "0.685205"
+        },
+        {
+          "name": "bounded_search_oracle",
+          "seconds": "1.6501"
+        },
+        {
+          "name": "portable_field_oracle",
+          "seconds": "0.345466"
+        },
+        {
+          "name": "portable_point_oracle",
+          "seconds": "1.3194"
+        },
+        {
+          "name": "xpoint_search_contract",
+          "seconds": "0.0934808"
+        },
+        {
+          "name": "xpoint_cli",
+          "seconds": "0.0795032"
+        },
+        {
+          "name": "hash160_search_contract",
+          "seconds": "0.161511"
+        },
+        {
+          "name": "portable_hash160_oracle",
+          "seconds": "1.02355"
+        },
+        {
+          "name": "hash160_cli",
+          "seconds": "0.11444"
+        },
+        {
+          "name": "ethereum_search_contract",
+          "seconds": "0.1272"
+        },
+        {
+          "name": "portable_keccak_oracle",
+          "seconds": "0.05061"
+        },
+        {
+          "name": "ethereum_cli",
+          "seconds": "0.0815581"
+        },
+        {
+          "name": "vanity_search_contract",
+          "seconds": "0.0911238"
+        },
+        {
+          "name": "portable_base58_oracle",
+          "seconds": "0.0420417"
+        },
+        {
+          "name": "vanity_cli",
+          "seconds": "0.081817"
+        },
+        {
+          "name": "minikey_search_contract",
+          "seconds": "0.0447434"
+        },
+        {
+          "name": "portable_minikey_oracle",
+          "seconds": "0.0586392"
+        },
+        {
+          "name": "minikeys_cli",
+          "seconds": "0.133323"
+        },
+        {
+          "name": "minikeys_reverse_cli",
+          "seconds": "0.123487"
+        },
+        {
+          "name": "minikey_order_oracle",
+          "seconds": "1.47957"
+        },
+        {
+          "name": "minikey_reverse_documented_example",
+          "seconds": "0.130802"
+        },
+        {
+          "name": "minikeys_both_ends_cli",
+          "seconds": "0.122581"
+        },
+        {
+          "name": "minikey_both_ends_documented_example",
+          "seconds": "0.129386"
+        },
+        {
+          "name": "minikeys_dance_cli",
+          "seconds": "0.127083"
+        },
+        {
+          "name": "minikey_dance_documented_example",
+          "seconds": "0.131036"
+        },
+        {
+          "name": "minikey_random_window_oracle",
+          "seconds": "4.54733"
+        },
+        {
+          "name": "minikeys_random_window_cli",
+          "seconds": "0.128353"
+        },
+        {
+          "name": "minikey_random_window_documented_example",
+          "seconds": "0.128947"
+        },
+        {
+          "name": "scalar_stride_contract",
+          "seconds": "0.0508"
+        },
+        {
+          "name": "scalar_stride_oracle",
+          "seconds": "0.0750022"
+        },
+        {
+          "name": "portable_stride_oracle",
+          "seconds": "0.0595683"
+        },
+        {
+          "name": "scalar_strides_cli",
+          "seconds": "0.612116"
+        },
+        {
+          "name": "scalar_reverse_contract",
+          "seconds": "0.0842162"
+        },
+        {
+          "name": "scalar_reverse_oracle",
+          "seconds": "0.076454"
+        },
+        {
+          "name": "portable_reverse_oracle",
+          "seconds": "0.0579298"
+        },
+        {
+          "name": "scalar_reverse_cli",
+          "seconds": "0.666906"
+        },
+        {
+          "name": "scalar_batch_oracle",
+          "seconds": "0.865117"
+        },
+        {
+          "name": "scalar_both_ends_strides_forward_cli",
+          "seconds": "1.07799"
+        },
+        {
+          "name": "scalar_both_ends_orbits_forward_cli",
+          "seconds": "0.427922"
+        },
+        {
+          "name": "scalar_both_ends_strides_reverse_cli",
+          "seconds": "1.11006"
+        },
+        {
+          "name": "scalar_both_ends_orbits_reverse_cli",
+          "seconds": "0.426716"
+        },
+        {
+          "name": "scalar_dance_strides_forward_cli",
+          "seconds": "1.20319"
+        },
+        {
+          "name": "scalar_dance_orbits_forward_cli",
+          "seconds": "0.452553"
+        },
+        {
+          "name": "scalar_dance_strides_reverse_cli",
+          "seconds": "1.19838"
+        },
+        {
+          "name": "scalar_dance_orbits_reverse_cli",
+          "seconds": "0.472847"
+        },
+        {
+          "name": "scalar_both_ends_documented_example",
+          "seconds": "0.110936"
+        },
+        {
+          "name": "scalar_dance_documented_example",
+          "seconds": "0.108737"
+        },
+        {
+          "name": "portable_glv_oracle",
+          "seconds": "0.186144"
+        },
+        {
+          "name": "glv_forward_cli",
+          "seconds": "0.462123"
+        },
+        {
+          "name": "glv_reverse_cli",
+          "seconds": "0.467003"
+        },
+        {
+          "name": "scalar_orbit_contract",
+          "seconds": "0.0825461"
+        },
+        {
+          "name": "scalar_orbit_oracle",
+          "seconds": "0.200078"
+        },
+        {
+          "name": "portable_orbit_oracle",
+          "seconds": "0.406845"
+        },
+        {
+          "name": "scalar_orbit_forward_cli",
+          "seconds": "0.374856"
+        },
+        {
+          "name": "scalar_orbit_reverse_cli",
+          "seconds": "0.369347"
+        },
+        {
+          "name": "orbit_documented_example",
+          "seconds": "0.109409"
+        },
+        {
+          "name": "bsgs_table_contract",
+          "seconds": "0.309539"
+        },
+        {
+          "name": "bsgs_table_oracle",
+          "seconds": "1.42299"
+        },
+        {
+          "name": "bsgs_table_devices",
+          "seconds": "0.081696"
+        },
+        {
+          "name": "bsgs_search_contract",
+          "seconds": "0.136644"
+        },
+        {
+          "name": "bsgs_cli",
+          "seconds": "0.0856749"
+        },
+        {
+          "name": "bsgs_reverse_tile_oracle",
+          "seconds": "0.0738012"
+        },
+        {
+          "name": "bsgs_reverse_search_cli",
+          "seconds": "0.16737"
+        },
+        {
+          "name": "bsgs_reverse_documented_example",
+          "seconds": "0.171716"
+        },
+        {
+          "name": "bsgs_both_ends_plan_oracle",
+          "seconds": "0.1823"
+        },
+        {
+          "name": "bsgs_both_ends_search_cli",
+          "seconds": "0.128065"
+        },
+        {
+          "name": "bsgs_both_ends_documented_example",
+          "seconds": "0.173768"
+        },
+        {
+          "name": "bsgs_dance_plan_oracle",
+          "seconds": "0.0970162"
+        },
+        {
+          "name": "bsgs_dance_search_cli",
+          "seconds": "0.123622"
+        },
+        {
+          "name": "bsgs_dance_documented_example",
+          "seconds": "0.174523"
+        },
+        {
+          "name": "bsgs_random_window_plan_oracle",
+          "seconds": "3.86242"
+        },
+        {
+          "name": "bsgs_random_window_search_cli",
+          "seconds": "0.171307"
+        },
+        {
+          "name": "bsgs_random_window_documented_example",
+          "seconds": "0.172793"
+        },
+        {
+          "name": "storage_database",
+          "seconds": "0.0208512"
+        },
+        {
+          "name": "storage_journal",
+          "seconds": "0.604154"
+        },
+        {
+          "name": "storage_concurrency",
+          "seconds": "0.162682"
+        },
+        {
+          "name": "state_cli",
+          "seconds": "0.305229"
+        },
+        {
+          "name": "storage_checkpoint",
+          "seconds": "3.58969"
+        },
+        {
+          "name": "storage_checkpoint_failures",
+          "seconds": "2.78198"
+        },
+        {
+          "name": "checkpoint_cli",
+          "seconds": "2.01927"
+        },
+        {
+          "name": "storage_checkpoint_control",
+          "seconds": "2.50319"
+        },
+        {
+          "name": "checkpoint_controls",
+          "seconds": "4.30093"
+        },
+        {
+          "name": "storage_checkpoint_concurrent",
+          "seconds": "0.20428"
+        },
+        {
+          "name": "storage_hash160_checkpoint",
+          "seconds": "0.947519"
+        },
+        {
+          "name": "storage_ethereum_checkpoint",
+          "seconds": "0.943636"
+        },
+        {
+          "name": "storage_vanity_checkpoint",
+          "seconds": "0.944443"
+        },
+        {
+          "name": "checkpoint_vanity_cli",
+          "seconds": "2.69348"
+        },
+        {
+          "name": "storage_minikey_checkpoint",
+          "seconds": "2.68182"
+        },
+        {
+          "name": "checkpoint_minikeys_cli",
+          "seconds": "1.74483"
+        },
+        {
+          "name": "storage_stride_checkpoint",
+          "seconds": "2.15978"
+        },
+        {
+          "name": "checkpoint_strides_cli",
+          "seconds": "0.660075"
+        },
+        {
+          "name": "storage_reverse_checkpoint",
+          "seconds": "3.26087"
+        },
+        {
+          "name": "checkpoint_reverse_cli",
+          "seconds": "0.8729"
+        },
+        {
+          "name": "checkpoint_glv_forward_cli",
+          "seconds": "0.34931"
+        },
+        {
+          "name": "checkpoint_glv_reverse_cli",
+          "seconds": "0.496369"
+        },
+        {
+          "name": "storage_orbit_checkpoint",
+          "seconds": "3.43102"
+        },
+        {
+          "name": "checkpoint_orbit_forward_cli",
+          "seconds": "0.75193"
+        },
+        {
+          "name": "checkpoint_orbit_reverse_cli",
+          "seconds": "0.756292"
+        },
+        {
+          "name": "storage_bsgs_reverse",
+          "seconds": "0.820486"
+        },
+        {
+          "name": "bsgs_reverse_recovery_cli",
+          "seconds": "0.426427"
+        },
+        {
+          "name": "bsgs_both_ends_recovery_cli",
+          "seconds": "0.257429"
+        },
+        {
+          "name": "storage_bsgs_both_ends",
+          "seconds": "2.16097"
+        },
+        {
+          "name": "bsgs_dance_recovery_cli",
+          "seconds": "0.255909"
+        },
+        {
+          "name": "storage_bsgs_dance",
+          "seconds": "5.58366"
+        },
+        {
+          "name": "storage_minikey_reverse",
+          "seconds": "8.25961"
+        },
+        {
+          "name": "checkpoint_minikeys_reverse_cli",
+          "seconds": "1.748"
+        },
+        {
+          "name": "checkpoint_minikeys_both_ends_cli",
+          "seconds": "1.74495"
+        },
+        {
+          "name": "storage_minikey_both_ends",
+          "seconds": "3.69217"
+        },
+        {
+          "name": "checkpoint_minikeys_dance_cli",
+          "seconds": "1.73303"
+        },
+        {
+          "name": "storage_minikey_dance",
+          "seconds": "4.20253"
+        },
+        {
+          "name": "bsgs_random_window_recovery_cli",
+          "seconds": "0.254953"
+        },
+        {
+          "name": "storage_bsgs_random_window",
+          "seconds": "7.04809"
+        },
+        {
+          "name": "checkpoint_minikeys_random_window_cli",
+          "seconds": "1.73466"
+        },
+        {
+          "name": "storage_minikey_random_window",
+          "seconds": "18.2991"
+        },
+        {
+          "name": "storage_scalar_both_ends",
+          "seconds": "80.396"
+        },
+        {
+          "name": "checkpoint_scalar_both_ends_forward",
+          "seconds": "0.772488"
+        },
+        {
+          "name": "checkpoint_scalar_both_ends_reverse",
+          "seconds": "0.768707"
+        },
+        {
+          "name": "storage_scalar_dance",
+          "seconds": "132.996"
+        },
+        {
+          "name": "checkpoint_scalar_dance_forward",
+          "seconds": "0.833123"
+        },
+        {
+          "name": "checkpoint_scalar_dance_reverse",
+          "seconds": "0.812476"
+        },
+        {
+          "name": "coordinator_registry",
+          "seconds": "0.111674"
+        },
+        {
+          "name": "coordinator_tls",
+          "seconds": "0.55446"
+        },
+        {
+          "name": "coordinator_sync",
+          "seconds": "0.321204"
+        },
+        {
+          "name": "coordinator_sync_failures",
+          "seconds": "0.60324"
+        },
+        {
+          "name": "coordinator_worker",
+          "seconds": "0.372774"
+        },
+        {
+          "name": "coordinator_worker_failures",
+          "seconds": "1.13218"
+        },
+        {
+          "name": "coordinator_https_worker",
+          "seconds": "0.48843"
+        },
+        {
+          "name": "coordinator_recovery",
+          "seconds": "0.399794"
+        },
+        {
+          "name": "coordinator_local_launcher",
+          "seconds": "0.608325"
+        },
+        {
+          "name": "coordinator_budget",
+          "seconds": "0.358859"
+        },
+        {
+          "name": "coordinator_dispatch",
+          "seconds": "0.189036"
+        },
+        {
+          "name": "coordinator_supervisor",
+          "seconds": "12.6477"
+        },
+        {
+          "name": "coordinator_calibration",
+          "seconds": "0.0290903"
+        },
+        {
+          "name": "coordinator_offline_files",
+          "seconds": "0.0430029"
+        },
+        {
+          "name": "coordinator_offline",
+          "seconds": "1.39403"
+        },
+        {
+          "name": "coordinator_offline_failures",
+          "seconds": "2.04555"
+        },
+        {
+          "name": "coordinator_offline_cli",
+          "seconds": "2.11156"
+        },
+        {
+          "name": "coordinator_hash160",
+          "seconds": "0.300002"
+        },
+        {
+          "name": "coordinator_ethereum",
+          "seconds": "0.312664"
+        },
+        {
+          "name": "coordinator_vanity",
+          "seconds": "0.312928"
+        },
+        {
+          "name": "coordinator_minikeys",
+          "seconds": "0.66456"
+        },
+        {
+          "name": "coordinator_strides",
+          "seconds": "1.18568"
+        },
+        {
+          "name": "coordinator_strides_cli",
+          "seconds": "1.28008"
+        },
+        {
+          "name": "coordinator_reverse",
+          "seconds": "1.19441"
+        },
+        {
+          "name": "coordinator_reverse_cli",
+          "seconds": "1.29433"
+        },
+        {
+          "name": "coordinator_glv_forward_cli",
+          "seconds": "1.30222"
+        },
+        {
+          "name": "coordinator_glv_reverse_cli",
+          "seconds": "1.31901"
+        },
+        {
+          "name": "coordinator_orbits",
+          "seconds": "1.27806"
+        },
+        {
+          "name": "coordinator_orbit_forward_cli",
+          "seconds": "1.32228"
+        },
+        {
+          "name": "coordinator_orbit_reverse_cli",
+          "seconds": "1.32345"
+        },
+        {
+          "name": "coordinator_bsgs_reverse",
+          "seconds": "2.70909"
+        },
+        {
+          "name": "coordinator_bsgs_reverse_cli",
+          "seconds": "0.557647"
+        },
+        {
+          "name": "coordinator_bsgs_both_ends_cli",
+          "seconds": "0.55792"
+        },
+        {
+          "name": "coordinator_bsgs_dance_cli",
+          "seconds": "0.556349"
+        },
+        {
+          "name": "coordinator_minikey_reverse_cli",
+          "seconds": "0.884788"
+        },
+        {
+          "name": "coordinator_minikey_reverse",
+          "seconds": "2.83552"
+        },
+        {
+          "name": "coordinator_minikey_both_ends_cli",
+          "seconds": "0.892782"
+        },
+        {
+          "name": "coordinator_minikey_both_ends",
+          "seconds": "1.4236"
+        },
+        {
+          "name": "coordinator_minikey_dance_cli",
+          "seconds": "0.885609"
+        },
+        {
+          "name": "coordinator_minikey_dance",
+          "seconds": "1.42458"
+        },
+        {
+          "name": "coordinator_bsgs_random_window_cli",
+          "seconds": "0.561049"
+        },
+        {
+          "name": "coordinator_bsgs_random_window",
+          "seconds": "0.683913"
+        },
+        {
+          "name": "coordinator_minikey_random_window_cli",
+          "seconds": "0.873995"
+        },
+        {
+          "name": "coordinator_minikey_random_window",
+          "seconds": "1.41885"
+        },
+        {
+          "name": "coordinator_scalar_both_ends",
+          "seconds": "1.19672"
+        },
+        {
+          "name": "coordinator_scalar_both_ends_forward_cli",
+          "seconds": "1.31281"
+        },
+        {
+          "name": "coordinator_scalar_both_ends_reverse_cli",
+          "seconds": "1.32638"
+        },
+        {
+          "name": "coordinator_scalar_dance",
+          "seconds": "1.19784"
+        },
+        {
+          "name": "coordinator_scalar_dance_forward_cli",
+          "seconds": "1.32158"
+        },
+        {
+          "name": "coordinator_scalar_dance_reverse_cli",
+          "seconds": "1.32391"
+        },
+        {
+          "name": "hip_discovery_contract",
+          "seconds": "0.134571"
+        },
+        {
+          "name": "backend_cli",
+          "seconds": "0.0580019"
+        },
+        {
+          "name": "exact_range",
+          "seconds": "0.0153261"
+        },
+        {
+          "name": "block_grid",
+          "seconds": "0.0931016"
+        },
+        {
+          "name": "work_unit",
+          "seconds": "0.0450231"
+        },
+        {
+          "name": "range_oracle",
+          "seconds": "1.84937"
+        },
+        {
+          "name": "result_verifier",
+          "seconds": "0.0323898"
+        },
+        {
+          "name": "cpu_baseline",
+          "seconds": "28.382"
+        },
+        {
+          "name": "target_loading",
+          "seconds": "8.51954"
+        }
+      ]
+    },
+    "sanitizer": {
+      "tests": 6,
+      "seconds": "627",
+      "ctest_seconds": 627.83,
+      "metadata": {
+        "source_commit": "c96dc0fcf12d58ac1c43b87a35e485f46211b8c4",
+        "platform": "Linux-5.15.0-191-generic-x86_64-with-glibc2.35",
+        "binaries": {
+          "coordinator_reverse_test": "c5f69b7253b7ea9d3cb5a1ce6dd4e5441f9e566e67be268554d137631dbdf501",
+          "keyhunt": "e5bb6d178c1eded5789f4d92f3fae31ea16aceb084f34db764e5e17c479602b1",
+          "keyhunt-coordinator": "3f2a5fe0e860e15b434417edc55c1c7bd29dd6acfbee3e1670b883e844f8ca51",
+          "keyhunt-worker": "412171641e38e0a12fa82f616df6e2a18299dd8c22bca279c1e8b45d9a009426",
+          "scalar_batch_probe": "20c33bf2707267c84cc341edebb4f2afdbb260470eb3a44b9277b2d089a1523d",
+          "secp256k1_oracle": "fc52fc04fe92fc395fb5a4b71b1afde220e9a4f391fd93348535291b09c3aca2",
+          "storage_scalar_both_ends_test": "e10bfebd8bcc2b4bfda48dc323809662c86ef1ee5423fa24e94979d4a09646b7",
+          "work_unit_test": "45c713869969acd1a9b36a04cf78a04af8db867fcf215e9c6c30bf6e8d39c78d"
+        },
+        "configuration": {
+          "CMAKE_BUILD_TYPE": "Debug",
+          "CMAKE_CXX_COMPILER": "/usr/bin/c++",
+          "KEYHUNT_ENABLE_COORDINATOR": "ON",
+          "KEYHUNT_ENABLE_CUDA": "OFF",
+          "KEYHUNT_ENABLE_HIP": "OFF",
+          "KEYHUNT_ENABLE_HTTPS_WORKER": "ON",
+          "KEYHUNT_ENABLE_LTO": "OFF",
+          "KEYHUNT_ENABLE_SANITIZERS": "ON",
+          "KEYHUNT_GFX942_CARRY": "OFF"
+        },
+        "compilers": {
+          "/usr/bin/c++": "c++ (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0\nCopyright (C) 2021 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
+        }
+      },
+      "results": [
+        {
+          "name": "scalar_batch_oracle",
+          "seconds": "28.4515"
+        },
+        {
+          "name": "storage_scalar_both_ends",
+          "seconds": "381.519"
+        },
+        {
+          "name": "storage_scalar_dance",
+          "seconds": "626.941"
+        },
+        {
+          "name": "coordinator_scalar_both_ends",
+          "seconds": "5.2047"
+        },
+        {
+          "name": "coordinator_scalar_dance",
+          "seconds": "5.19116"
+        },
+        {
+          "name": "work_unit",
+          "seconds": "0.881683"
+        }
+      ]
+    },
+    "hip": {
+      "tests": 19,
+      "seconds": "396",
+      "ctest_seconds": 396.17,
+      "metadata": {
+        "source_commit": "c96dc0fcf12d58ac1c43b87a35e485f46211b8c4",
+        "platform": "Linux-5.15.0-191-generic-x86_64-with-glibc2.35",
+        "binaries": {
+          "coordinator_reverse_test": "b539fabaedbe533887986bba4bd17619f1cfc92e4011cbe73426baf5767e32d9",
+          "hip_reverse_executor_test": "316a7784c4f3add836f8500221a3c6e06517749edeebe67e7d4767a28fe88723",
+          "hip_stride_executor_test": "ab26e84f4621cd93a68a34eacb000e1059ad24744a6afdc9951db726fb0ffcac",
+          "hip_xpoint_executor_test": "06e62e53469d9d97ff61d85309be27832758cc2a1f6cfe46b5b333f22e029b34",
+          "keyhunt": "0919dc2384092bf9ae43205c1f5fc9dd6ad177a800a31b575df9583b2f11e0e6",
+          "keyhunt-coordinator": "ae2183b0fe08607dca8fedc5dac3e57397d95880616f45de1a1c7f26578b909f",
+          "keyhunt-worker": "a0d44124838c52fa9c0470f9ef9b1f41e61ddd96f30c330657e8c7f09c414247",
+          "scalar_batch_probe": "41b37ed086d147db79a13a511d99a8861e726ccf78806faa0459c3c71d1d887b",
+          "secp256k1_oracle": "8dc92137c49502e3de62cb20a750d1c7f0bd84294ae77c5ccc9c9dffd20763c6",
+          "storage_scalar_both_ends_test": "5f0cb2a8666ee2a900ca8a0cfd39bbc7f0b328a2e6d865b2b936220286a49f94",
+          "work_unit_test": "649f118b16e43c83dff081c9ad8ead1f7e751525e821c3447a93d8994566fa6b"
+        },
+        "configuration": {
+          "CMAKE_BUILD_TYPE": "Release",
+          "CMAKE_CXX_COMPILER": "/usr/bin/c++",
+          "CMAKE_HIP_ARCHITECTURES": "gfx942",
+          "CMAKE_HIP_COMPILER": "/opt/rocm/core-10.0/lib/llvm/bin/clang++",
+          "KEYHUNT_ENABLE_COORDINATOR": "ON",
+          "KEYHUNT_ENABLE_CUDA": "OFF",
+          "KEYHUNT_ENABLE_HIP": "ON",
+          "KEYHUNT_ENABLE_HTTPS_WORKER": "ON",
+          "KEYHUNT_ENABLE_LTO": "ON",
+          "KEYHUNT_ENABLE_SANITIZERS": "OFF",
+          "KEYHUNT_GFX942_CARRY": "ON"
+        },
+        "compilers": {
+          "/opt/rocm/core-10.0/lib/llvm/bin/clang++": "AMD clang version 23.0.0git (https://github.com/ROCm/llvm-project.git 8f497e0992fb7513f7f78a6f6b6f1056c375e961)\nTarget: x86_64-unknown-linux-gnu\nThread model: posix\nInstalledDir: /opt/rocm/core-10.0/lib/llvm/bin",
+          "/usr/bin/c++": "c++ (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0\nCopyright (C) 2021 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
+        }
+      },
+      "results": [
+        {
+          "name": "hip_stride_executor",
+          "seconds": "0.451734"
+        },
+        {
+          "name": "hip_reverse_executor",
+          "seconds": "0.475342"
+        },
+        {
+          "name": "scalar_batch_oracle",
+          "seconds": "0.869387"
+        },
+        {
+          "name": "scalar_dance_strides_forward_cli",
+          "seconds": "72.3175"
+        },
+        {
+          "name": "scalar_dance_orbits_forward_cli",
+          "seconds": "32.2298"
+        },
+        {
+          "name": "scalar_dance_strides_reverse_cli",
+          "seconds": "68.9966"
+        },
+        {
+          "name": "scalar_dance_orbits_reverse_cli",
+          "seconds": "29.9148"
+        },
+        {
+          "name": "scalar_dance_documented_example",
+          "seconds": "1.14324"
+        },
+        {
+          "name": "hip_glv_xpoint_executor",
+          "seconds": "0.523453"
+        },
+        {
+          "name": "storage_scalar_both_ends",
+          "seconds": "80.1848"
+        },
+        {
+          "name": "storage_scalar_dance",
+          "seconds": "133.252"
+        },
+        {
+          "name": "checkpoint_scalar_dance_forward",
+          "seconds": "74.2287"
+        },
+        {
+          "name": "checkpoint_scalar_dance_reverse",
+          "seconds": "74.3247"
+        },
+        {
+          "name": "checkpoint_scalar_dance_pause",
+          "seconds": "10.1159"
+        },
+        {
+          "name": "coordinator_scalar_both_ends",
+          "seconds": "1.19454"
+        },
+        {
+          "name": "coordinator_scalar_dance",
+          "seconds": "1.19444"
+        },
+        {
+          "name": "coordinator_scalar_dance_forward_cli",
+          "seconds": "15.7939"
+        },
+        {
+          "name": "coordinator_scalar_dance_reverse_cli",
+          "seconds": "15.6396"
+        },
+        {
+          "name": "work_unit",
+          "seconds": "0.0411292"
+        }
+      ]
+    },
+    "cuda": {
+      "tests": 19,
+      "seconds": "2040",
+      "ctest_seconds": 2040.4,
+      "metadata": {
+        "source_commit": "c96dc0fcf12d58ac1c43b87a35e485f46211b8c4",
+        "platform": "Linux-5.15.0-194-generic-x86_64-with-glibc2.35",
+        "binaries": {
+          "coordinator_reverse_test": "a2ad990d6012ab1b1f0ffa952e7615fa307453016edf7dc9e24e2987df51cd46",
+          "cuda_reverse_executor_test": "d8edbbbb846a7bad7234cd006d99f16403c8fb72ba152e02095a76a5c52fc711",
+          "cuda_stride_executor_test": "f55e56dad22f3c5e7512fba3039277544e155ccbc302d6c562b47a62a51c870e",
+          "cuda_xpoint_executor_test": "6af07c683743c5623b2d72d524d390146b7ae46e18acce6ee0fb466a06c9a21f",
+          "keyhunt": "78fb4aa8dde9cb4cb6fe3d2820a314dc1ec20b011974cbf913f8796341f6186c",
+          "keyhunt-coordinator": "f3c8bf9c149f51aea13babe86939d2220b7fe5b02a2fbef38a21c41aaa4df65e",
+          "keyhunt-worker": "d8c507c59283cc7f0183b3d146b6a2d8ef2916df373b16533244a1f9706c5dd0",
+          "scalar_batch_probe": "69cea819a63ad5067cb416aa6ce41e5b1e633daf44a8167ec133c77a8537f136",
+          "secp256k1_oracle": "039bdb67a9ec9ca522b193385033bb578e133ecd300ba32da8a550299c07e5e0",
+          "storage_scalar_both_ends_test": "746f03b69ca5afb025795991c88b2333bff26a40536cbd431e9d0a5ad41f8d01",
+          "work_unit_test": "97b90583cc74c291937e016e64278a9d39cf9161db486114fa58f91c90260be7"
+        },
+        "configuration": {
+          "CMAKE_BUILD_TYPE": "Release",
+          "CMAKE_CUDA_ARCHITECTURES": "90",
+          "CMAKE_CUDA_COMPILER": "/usr/local/cuda/bin/nvcc",
+          "CMAKE_CXX_COMPILER": "/usr/bin/c++",
+          "KEYHUNT_ENABLE_COORDINATOR": "ON",
+          "KEYHUNT_ENABLE_CUDA": "ON",
+          "KEYHUNT_ENABLE_HIP": "OFF",
+          "KEYHUNT_ENABLE_HTTPS_WORKER": "ON",
+          "KEYHUNT_ENABLE_LTO": "ON",
+          "KEYHUNT_ENABLE_SANITIZERS": "OFF",
+          "KEYHUNT_GFX942_CARRY": "OFF"
+        },
+        "compilers": {
+          "/usr/bin/c++": "c++ (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0\nCopyright (C) 2021 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.",
+          "/usr/local/cuda/bin/nvcc": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2026 NVIDIA Corporation\nBuilt on Tue_Jun_09_02:43:40_PM_PDT_2026\nCuda compilation tools, release 13.3, V13.3.73\nBuild cuda_13.3.r13.3/compiler.38244171_0"
+        }
+      },
+      "results": [
+        {
+          "name": "cuda_stride_executor",
+          "seconds": "0.935461"
+        },
+        {
+          "name": "cuda_reverse_executor",
+          "seconds": "0.960292"
+        },
+        {
+          "name": "scalar_batch_oracle",
+          "seconds": "0.920236"
+        },
+        {
+          "name": "scalar_dance_strides_forward_cli",
+          "seconds": "383.685"
+        },
+        {
+          "name": "scalar_dance_orbits_forward_cli",
+          "seconds": "221.846"
+        },
+        {
+          "name": "scalar_dance_strides_reverse_cli",
+          "seconds": "520.353"
+        },
+        {
+          "name": "scalar_dance_orbits_reverse_cli",
+          "seconds": "325.295"
+        },
+        {
+          "name": "scalar_dance_documented_example",
+          "seconds": "11.2397"
+        },
+        {
+          "name": "cuda_glv_xpoint_executor",
+          "seconds": "3.70342"
+        },
+        {
+          "name": "storage_scalar_both_ends",
+          "seconds": "86.5922"
+        },
+        {
+          "name": "storage_scalar_dance",
+          "seconds": "144.754"
+        },
+        {
+          "name": "checkpoint_scalar_dance_forward",
+          "seconds": "240"
+        },
+        {
+          "name": "checkpoint_scalar_dance_reverse",
+          "seconds": "241.533"
+        },
+        {
+          "name": "checkpoint_scalar_dance_pause",
+          "seconds": "21.8704"
+        },
+        {
+          "name": "coordinator_scalar_both_ends",
+          "seconds": "1.27227"
+        },
+        {
+          "name": "coordinator_scalar_dance",
+          "seconds": "1.29522"
+        },
+        {
+          "name": "coordinator_scalar_dance_forward_cli",
+          "seconds": "34.9482"
+        },
+        {
+          "name": "coordinator_scalar_dance_reverse_cli",
+          "seconds": "34.0068"
+        },
+        {
+          "name": "work_unit",
+          "seconds": "0.0427041"
+        }
+      ]
+    }
+  },
+  "artifacts": {
+    "C23_SCALAR_DANCE_ALGORITHMS.json": "015fc3c79b393ea157e68acda4faf3a9079d8fcdaf67c35cdf5dfc163b252e4a",
+    "C23_SCALAR_DANCE_RECOVERY.json": "e2cb0de2ff2cff47c2ea8e400b3cd5fe3626c0b669f08e025634d4a9cb1f4e38",
+    "C23_SCALAR_DANCE_WORKERS.json": "8e82ff26b98a8e0adacd9140d542c283c840a5ddcd55ea1816b43e7f1c0b4ad6",
+    "C23_SCALAR_DANCE_EXAMPLES.json": "18be1247cd56b1107181026ca8aa2d82018f106471fb91d59a2083929ae7c57c",
+    "C23_SCALAR_DANCE_LOGS.tar.gz": "c2b84a1a951ae2da0d1b2516fa5c474bf58d6790a48dbfe5304956d2da66118b"
+  },
+  "raw_files": {
+    "builds/keyhunt-scalar-dance-cpu-build.log": "c30f9f6914486e8e0f81d27b1c0055ee81f5d9693c12b61e4cc6c32b48769ef6",
+    "builds/keyhunt-scalar-dance-cuda-build.log": "d0e588f4b6569641216ce0a5f49e08ca261187e582ff0fa91610ad1520dba32c",
+    "builds/keyhunt-scalar-dance-hip-build.log": "f46e8aa0041b55ee72c054ebd5aa5147a9ba5055a177265b812dc88d545e4efd",
+    "builds/keyhunt-scalar-dance-sanitizer-build.log": "d4cde1ee0604e06dce172f1c4b60c464393c9ca3eee31c70d1a216fd3828c6fd",
+    "cuda/LastTest.log": "0b995ca09d67f2219f8beff52eed0af64021e71118970381dd73bfbb5ec774d6",
+    "cuda/build-metadata.json": "b76c6cf792ad41a31f6894f31d48b24970b120f6b841bbfc06932423c4ca8831",
+    "cuda/checkpoint-scalar-dance-forward.json": "0a2ee02cfc95843e0e5cd629206f4ba3ee9d83b61a98ebb58a97716192ccef38",
+    "cuda/checkpoint-scalar-dance-pause.json": "ef7f2aabc1fb8bc0a649ba587822ff00e7807db847ad2feecdcc68c7e1951bd5",
+    "cuda/checkpoint-scalar-dance-reverse.json": "2a766064821d27d33f0f8f7b3dcbc76a33e158bf6687a565b5fb127608106c57",
+    "cuda/coordinator-scalar-dance-forward.json": "0fa63929942814d8a7c55c6ae1b7c16886ea24c508d99ffcff13fd3348ccb500",
+    "cuda/coordinator-scalar-dance-reverse.json": "040160aa1a2b2f7cc0ae576382377700aa0d23c940fb56cc63d3f57a74db46a3",
+    "cuda/scalar-batch-oracle.json": "d8563d36f0d924fe7121453f8c784f2ec08a27e28b571e1dc3e233405a50ac72",
+    "cuda/scalar-dance-example.json": "5d32ca43f5b488a98d54035c6cba058d9e7c24310336e5fdc6acd299278dff93",
+    "cuda/scalar-dance-orbits-forward.json": "accb7499cf2fe7c7f86e314eecf71e7596a0c980ce4300c8f8b7d8e457d1c722",
+    "cuda/scalar-dance-orbits-reverse.json": "0b487e69956ecb555b85d03d10047fe4d5ef66bc3e39ac930fd8dc2939958e6e",
+    "cuda/scalar-dance-strides-forward.json": "6bc3531d5c05bad6f9930f2292a4193389c9655260b15797285a1d5af1bd3262",
+    "cuda/scalar-dance-strides-reverse.json": "73544318df76d1f163ba59fca292aea46d96c5d164b1ed0265fbe1d9ab237ea3",
+    "cuda/selection.json": "0de419da70b1889d290078d973c5eb520c8393392498009be759b9ee7d77f25c",
+    "cuda/tests.log": "d5b67dbfb1d5c3808f35e82fa277554924cea04873349838e626ad50c92c27a8",
+    "cuda/tests.xml": "5e95b7ef5dcfbe2f3fb70c38948e848907bc7455a73c3465095b45398d9560a2",
+    "hip/LastTest.log": "293a1b1fb81383005df619000f4a22220ff9a471aec078969c952d620a43454d",
+    "hip/build-metadata.json": "8a4c80d36bb1b27509e2739ff2236f3202311ace00e35085a8ca622e95d2e02d",
+    "hip/checkpoint-scalar-dance-forward.json": "65fa9fa760ccdc6b0c157871c57c27ee9283fd2ece7ea9c1f47c553fb18e765c",
+    "hip/checkpoint-scalar-dance-pause.json": "abc309149603642207fcc98b980192ea38dd93b37d543d178cc25ffd05557623",
+    "hip/checkpoint-scalar-dance-reverse.json": "e3a5f2640f86ca8f99b8779d98cf1839e434f122dec9ffae344a4f2c5553f1d3",
+    "hip/coordinator-scalar-dance-forward.json": "2a01d50d5fc913fd025c8e0c1641cdf4595f04489dd467a453ba6bac25e8c3ec",
+    "hip/coordinator-scalar-dance-reverse.json": "8389ca17f14161c9654270e81228ce961270ab549e639f74a92771ef0e0c6284",
+    "hip/scalar-batch-oracle.json": "65ab99af673096c27b27875fadca380620928834eaaf368cb78dae37158d46ab",
+    "hip/scalar-dance-example.json": "3cb3565a8dcea4ae98946009da62c7d7b96c809e4616b7f1d9b81ef4cb8398a3",
+    "hip/scalar-dance-orbits-forward.json": "fcb9fdbc3b1d839242a0b90475dea61e2b4cc304bcaae4ce2fceafac4a5b200c",
+    "hip/scalar-dance-orbits-reverse.json": "87aa7776a9c69b612b243fe6d11fc4ca119220d2bce7f850cc61e05567a214cc",
+    "hip/scalar-dance-strides-forward.json": "376c43d7cb3d182a77d7810dc823337b328a2bfed4939dd73f20e964b6ce9d0e",
+    "hip/scalar-dance-strides-reverse.json": "74c9584094f2a3c5c701f94d0166f9dda82811622decd2d64fe0e8774720455d",
+    "hip/selection.json": "2e0d8403aa7f8149d607c8a237bae0b43f9896b3999124fc0fbb266d65b67446",
+    "hip/tests.log": "7f44a0f30daf6895c68f2e150a53691d189d2bdbe4e7244dc34fe0740f3b39b4",
+    "hip/tests.xml": "2170b3ad31ac3cf8fba713f24e6b329bed52f6a00943a0bba64a0b210094dc5f",
+    "local/LastTest.log": "1ee4125cee163d45517f74f6b41e734f3dc9de607b01f84b6a97eeb21ea55b82",
+    "local/bsgs-reverse-documented-example.json": "6aecbd39ece69eecfc777039e5f73f5ed31cf9588a74d3e454369183d373d52d",
+    "local/bsgs-reverse-recovery-cli.json": "3d497b1f40517097e3ded7b44623913dfd487b33273bb0d161e80911afe2f833",
+    "local/bsgs-reverse-search-cli.json": "47aa649d8126584fa213272bd6341bdbd59c2b58228653c4a7d0ef739a8de139",
+    "local/bsgs-reverse-tile-oracle.json": "96ecf8d0640b7007aade94a38bc33f55371482b260ee0bcc78a3ea64e199cf1b",
+    "local/build-metadata.json": "3c93a441619dbaed198df7f5212163ee8aec03a4d1e202f641975d99906bc9b2",
+    "local/checkpoint-glv-forward-cli.json": "45c22d94434263d8a81f7d5b02c49cd690902977d0d4c14cc90359f95f1a141e",
+    "local/checkpoint-glv-reverse-cli.json": "74d02fcaed8e104b1875f4182f9de0b3687f123fc7334d119cbc0232c4e0a55b",
+    "local/checkpoint-minikeys-reverse-cli.json": "8c3ceb262ed7f003087cdfcc18a25a970e558d91ea9f008afea6cb1e83903509",
+    "local/checkpoint-orbit-forward-cli.json": "d953e72bba9b7c8e902354d948adc59c8ce10707eab1d1586a0eb092d1e7c935",
+    "local/checkpoint-orbit-reverse-cli.json": "837869b37372fbfbd0fcf7de86e1a29484987d38ca3f12da28bf88288848f27c",
+    "local/checkpoint-reverse-cli.json": "48fd88fc0a2f3992401108d08292300d6264d074647714b07973732cb5998b6e",
+    "local/checkpoint-scalar-both-ends-forward.json": "664e9adf229fe18f4e580459c74ecd8f09bf2dafdea10248af1b15e52035668d",
+    "local/checkpoint-scalar-both-ends-reverse.json": "3904d762c810acf984e114288c7e2b203749f3fc9b108923139ba97f9ccf27fe",
+    "local/checkpoint-scalar-dance-forward.json": "af107e619265563c4d821f9d35cbc9163728535622753009c643eec63cbfedb7",
+    "local/checkpoint-scalar-dance-reverse.json": "7dc2cab560adffd70ad6a612f4ff299088a023b35a878e047474c826739734fc",
+    "local/checkpoint-strides-cli.json": "f28ca905f516393d7af9a3a846ea5298a99e0755a76dbf184967650c4c1b00c7",
+    "local/coordinator-bsgs-reverse-cli.json": "60010cddd12ec27c2f03079aae16265bbd777679731ea558fdfbd35ff8553e13",
+    "local/coordinator-glv-forward-cli.json": "2d95ea1460a50913860b4314a6a589da8cc832bad9d528a210be09d73f374916",
+    "local/coordinator-glv-reverse-cli.json": "42d500fe648d1bd874e361db639494e533ba6e43ed542d057f91ba8e7184ad2b",
+    "local/coordinator-minikey-reverse-cli.json": "6b1462b120091a9458c90d3a0f835905f18b2d1759720d7df23bbdc0663b9fc9",
+    "local/coordinator-orbit-forward-cli.json": "60dea807ae78d788570e2e1150379dbef01f1e7ed5db3f136a5da4a27c5d720c",
+    "local/coordinator-orbit-reverse-cli.json": "44597fc69aa460ae27ad9a6f9f280e43ca3a19fd41d6cdef44e1ed0dfe98b9a3",
+    "local/coordinator-reverse-cli.json": "8acf82f917a46bb11bf03aabe1cd4a0ab3f59d2f55ba37966a8e6de511263755",
+    "local/coordinator-scalar-both-ends-forward.json": "d7a9bf9e55595036db2e7580e9e8d59748c133b19113f26770ec1caaa83c8698",
+    "local/coordinator-scalar-both-ends-reverse.json": "6e84dc075df38d4221aef98720a0bff7c261feff45b933d5df7799f59fbfe4b3",
+    "local/coordinator-scalar-dance-forward.json": "b317f454bccfe05e178ca257beee6ac8639e6e531841b9d5927f41d791cca8f8",
+    "local/coordinator-scalar-dance-reverse.json": "9e545d917e522eadb2f737b5785555eb68911f8c1208e73e5082d87dafbee2fc",
+    "local/coordinator-strides-cli.json": "a07b2102cd40169f98de27ba376380e1c49b6aaf389a70c6d409fd21bc5c901f",
+    "local/glv-forward-cli.json": "1e23cf0b2d7c23cc35ab440fd3dfa8de074202be51295a71f3d232a6b5f03148",
+    "local/glv-reverse-cli.json": "48720e33c9752be893748b5b4a7835caae63c534230a3e1caffa64fe1fb1aab4",
+    "local/minikey-reverse-documented-example.json": "cb95e099493b94199a75d4e01318c3819b70caa4ff552055af2af9c299fb64b9",
+    "local/minikeys-reverse-cli-results.json": "72f244cba6c3b93465979ab972a89c41086a4c67575bb48cb189329942fc2fa3",
+    "local/orbit-documented-example.json": "eed01b2c57def6ad8bdf221c9352d74d0cfb0ecb033fdcbfedf11ec36456f08f",
+    "local/portable-glv-oracle.json": "8dde11f61bd55b22e26446ef6f264e3dbd0c7ef6b7c2d3c21a15003778106860",
+    "local/portable-orbit-oracle.json": "fc659ac85c68b2dbb9752499fbe13087ecb88b865f359fe30f704598e970eed7",
+    "local/portable-reverse-oracle.json": "ebe64c65854fd537821d3b4b4f6adb5fd2e62679da3486b49db6c4599fd62b53",
+    "local/portable-stride-oracle.json": "ebe64c65854fd537821d3b4b4f6adb5fd2e62679da3486b49db6c4599fd62b53",
+    "local/scalar-batch-oracle.json": "65ab99af673096c27b27875fadca380620928834eaaf368cb78dae37158d46ab",
+    "local/scalar-both-ends-example.json": "612f78d9568563b66833fb649b3692ebf12da980f72e5ce266de414f2734074f",
+    "local/scalar-both-ends-orbits-forward.json": "616fb7c9d4e3d9896dabfb0a7054241903b1100e6ec2867149e1d945b9ea1a2d",
+    "local/scalar-both-ends-orbits-reverse.json": "6480efc38ba5f8b02433b4f9720c4b4537e27537a71b7af06b6b71db52c5524c",
+    "local/scalar-both-ends-strides-forward.json": "79e2090ec75db35b332ea610009e5ece3f56702de617e40e2a0156263f5afe27",
+    "local/scalar-both-ends-strides-reverse.json": "41bf9e539f188d61354ba0b0c635c3cf63722214323c5535de8083b324e1addb",
+    "local/scalar-dance-example.json": "24198f63e69125b71535c176b0c57def0d1bc6529cd3a6ecce23873d914db933",
+    "local/scalar-dance-orbits-forward.json": "cea74032899b60f84f39d910075b429a38432f04f07487cfa53a6246d355ecf3",
+    "local/scalar-dance-orbits-reverse.json": "9facb05091d3042dffbfdd365df8cf61aa9a5297586f29e1fde3356b0d27123a",
+    "local/scalar-dance-strides-forward.json": "294fa8b594033a147944204c717b0a1e5b90098786f6fc2dee3f9b2f2a2d35c0",
+    "local/scalar-dance-strides-reverse.json": "034d7fb5dd73c0d6b8ff9d6a7c338adb8f447c8627650285d529070685686920",
+    "local/scalar-orbit-forward-cli.json": "6273cc3aaba75e6d497013a6ceef7587f9f6e8089e28568095ccc939a9fa2870",
+    "local/scalar-orbit-oracle.json": "4602d56cc2ad546bc8a8990502fb94d38a185caf0fb75990bc99696ff97ea51a",
+    "local/scalar-orbit-reverse-cli.json": "a69df4bf6db65fe98f2d2cd5e0a9709d59eec6d1db333ad413f15535e405fc6b",
+    "local/scalar-reverse-cli-results.json": "6c77dd09431aa7838df8eb4b128fc5e5c971b812d8cc16502c85bccb01716272",
+    "local/scalar-reverse-oracle.json": "f62a98f0afc2314763d2002cbbb5a097d8db364acd03ae581c100f4ed2815562",
+    "local/scalar-stride-oracle.json": "c34fd8619d9c342d656816040e6555fffbef77c7e15fdd2d34dcb6491276f08a",
+    "local/scalar-strides-cli-results.json": "c11bb8a12aefbba45e068227da0bcf0fcc03d789c1d7843ae4c97adc4926108f",
+    "local/selection.json": "6a8ca7b2a0fac2d205583087944703c5aa3e1cf4de5aa4837730c98e1b6ded9d",
+    "local/tests.log": "01f0e125fc7dacc1fe2bbc0fa6dfd04abb1f1a9985c762b3cc3acf7ecd290a7a",
+    "local/tests.xml": "499f0b997aca88e634a74ec6c3b14f044425afde4d262e0a28f616fec3d5bdd9",
+    "sanitizer/LastTest.log": "30f25be95e6de566fa35f30524bb9b8b68760c95eb304752ca3957aa6e740917",
+    "sanitizer/build-metadata.json": "18f5b58165cf2c0b2cb5da86759339a605f9948b9df0d4fce066157b5c095c61",
+    "sanitizer/scalar-batch-oracle.json": "2f47e400abe1e2534a1645d78c4d2b977f7e2a662f550766a8f0bd76b4d36807",
+    "sanitizer/selection.json": "4d7496fc838ebcedd83dbded9f5a7ce28cefd73cfa970e3b043dca07c32eb829",
+    "sanitizer/tests.log": "80002661eeebb0c88f1023cbb7e8d3837c561c51b0c4f825ec345cb12997006c",
+    "sanitizer/tests.xml": "fa2382be1c02a07469732f67a8a1a6457135398ad6ee4564fe7b894c38c3ef6f",
+    "scripts/kh_scalar_both_collect.py": "65325a02ed27abb2cd5982bbe1c10b200f06b6fe63607a60d57df27e80bd245c",
+    "scripts/kh_scalar_both_metadata.py": "aea2bbc2027a394838b02dfd85ede1497564d470329c57496442003b38034645",
+    "scripts/kh_scalar_dance_evidence.py": "84ad35b752d79fc81cb279b587c4ed8c74b2a58b3d190332f3ca7beec0172056",
+    "scripts/kh_scalar_dance_validate.sh": "33b3851205f5812e6436885afeec58490be9f62d2676c400c2450cec877ed986"
+  },
+  "decisions": [
+    "Dance fixes the midpoint of the missing envelope once per invocation, splits crossing gaps before reservations, and uses a logarithmic middle lookup with low fallback.",
+    "The phase advances only on accepted batches; high orbit selections retain the existing lower variant-boundary clip.",
+    "At most three original work owners stay live; restarting computes a new pivot from the saved complement and can switch between all three scalar batch orders.",
+    "Scalar mapping, identities, schema, receipts, protocols and capabilities are unchanged; this is execution policy only.",
+    "The native corpus adds unmapped unit-stride forward dance cases as well as mapped strides, reverse order and six-member orbits."
+  ],
+  "development_findings": [
+    "No production or test failures were observed in the recorded acceptance runs."
+  ],
+  "limits": [
+    "Synthetic public fixtures; no production-scale throughput or discovery-probability claim.",
+    "Scalar random-window traversal remains pending."
+  ]
+}
