@@ -13,9 +13,10 @@ for name in ('coordinator', 'worker', 'keyhunt', 'oracle', 'report'):
 p.add_argument('--apache-root', default='/')
 p.add_argument('--hardware', action='store_true')
 p.add_argument('--backend', choices=('hip', 'cuda'), default='hip')
+p.add_argument('--tile-order', choices=('reverse', 'both-ends'), default='reverse')
 a = p.parse_args()
 worker, keyhunt = str(a.worker.resolve()), str(a.keyhunt.resolve())
-report = dict(passed=False, hardware=a.hardware, backend=a.backend, oracle_commit=check_source(), cases=[],
+report = dict(tile_order=a.tile_order, passed=False, hardware=a.hardware, backend=a.backend, oracle_commit=check_source(), cases=[],
               binaries={v.name: hashlib.sha256(v.read_bytes()).hexdigest() for v in (a.coordinator, a.worker, a.keyhunt)})
 
 def command(words, ok=True):
@@ -80,27 +81,31 @@ with tempfile.TemporaryDirectory(prefix='kh-bsgs-reverse-worker-', dir='/var/tmp
                 if transport == 'file': env.stop()
                 command([sys.executable, REPO / 'tools/coordinator_worker.py', '--state-dir', state,
                          '--worker', worker, '--keyhunt', keyhunt, '--backend', a.backend,
-                         '--table', table, '--tile-order', 'reverse', '--giant-batch', '1',
+                         '--table', table, '--tile-order', a.tile_order, '--giant-batch', '1',
                          '--target-batch', '2', '--group-size', group, '--once'])
                 events = [json.loads(v) for v in (state / 'execution-0.log').read_text().splitlines()]
                 finished = [v for v in events if v.get('type') == 'grant-finish']
-                assert len(finished) == 2 and all(v['complete'] and v['tile_order'] == 'reverse' and
+                assert len(finished) == 2 and all(v['complete'] and v['tile_order'] == a.tile_order and
                     int(v['computed_scalars'], 16) == width and v['executor_setups'] == 1 for v in finished)
                 assert finished[0]['cold'] and not finished[1]['cold']
                 # Adaptive work-unit widths may change after a timing sample;
                 # their exact descending union must still equal each grant.
-                cursor = lower = None; units = []
+                cursor = lower = upper = None; units = []
                 for event in events:
                     if event.get('type') == 'grant-start':
-                        cursor = int(event['grant']['end_exclusive'], 16)
+                        cursor = upper = int(event['grant']['end_exclusive'], 16)
                         lower = int(event['grant']['begin'], 16); units = []
                     elif event.get('type') == 'work-unit':
                         span = event['interval']; lo, hi = int(span['begin'], 16), int(span['end_exclusive'], 16)
-                        assert lower <= lo < hi == cursor
+                        assert lower <= lo < hi <= upper
+                        if a.tile_order=='reverse':assert hi == cursor
                         cursor = lo; units.append((lo, hi))
                     elif event.get('type') == 'grant-finish':
-                        assert cursor == lower and len(units) >= 2
-                        assert units[0][1] - units[0][0] == 17
+                        assert len(units) >= 2 and units[0][1] - units[0][0] == 17
+                        ordered=sorted(units)
+                        assert ordered[0][0]==lower and ordered[-1][1]==upper
+                        assert all(left[1]==right[0] for left,right in zip(ordered,ordered[1:]))
+                        if a.tile_order=='both-ends':assert units[0][0]==lower
                 if transport == 'file': assert not (state / 'sync.log').exists()
                 def check(rows):
                     assert len(rows) == len(expected) and {(int(v['scalar'], 16), v['target_bytes']) for v in rows} == expected
