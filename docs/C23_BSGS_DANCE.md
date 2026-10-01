@@ -63,3 +63,53 @@ identities, raw logs and machine-readable acceptance evidence in docs/.
 Additional random traversal semantics and alternative minikey orders remain
 pending. This policy does not emulate legacy random sampling or claim a kernel
 throughput improvement.
+
+## Executable public example
+
+Choose `KEYHUNT_BIN` and `GPU_BACKEND` as in [GPU_QUICKSTART.md](GPU_QUICKSTART.md).
+Run both blocks in the same Bash shell. The hexadecimal range `1:65` contains 100
+scalars. The fixed midpoint is 51. With m=17 and two giants per tile, dance
+visits [1,35), [67,101), [51,67), then [35,51) in decimal. Scalar 1 matches the public generator in the first tile.
+
+<!-- bsgs-dance-example: prepare -->
+```bash
+set -euo pipefail
+: "${KEYHUNT_BIN:?choose the built executable}"
+umask 077
+bsgs_dance_dir="$(mktemp -d "${EXAMPLE_PARENT:-/var/tmp}/keyhunt-bsgs-dance.XXXXXX")"
+export KEYHUNT_STATE_DIR="$bsgs_dance_dir/state"
+printf '%s\n' 0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798 \
+  > "$bsgs_dance_dir/points.txt"
+"$KEYHUNT_BIN" bsgs-table build --m 17 --output "$bsgs_dance_dir/babies.khb" \
+  > "$bsgs_dance_dir/table.json"
+"$KEYHUNT_BIN" state project-create --name 'Public dance BSGS example' > "$bsgs_dance_dir/project.json"
+bsgs_dance_project="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["project"])' "$bsgs_dance_dir/project.json")"
+"$KEYHUNT_BIN" checkpoint create --project "$bsgs_dance_project" --mode bsgs \
+  --range 1:65 --block-width 64 --targets "$bsgs_dance_dir/points.txt" \
+  --table "$bsgs_dance_dir/babies.khb" > "$bsgs_dance_dir/job.json"
+bsgs_dance_job="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["job"])' "$bsgs_dance_dir/job.json")"
+"$KEYHUNT_BIN" state claim --project "$bsgs_dance_project" --job "$bsgs_dance_job" \
+  --owner example --request first > "$bsgs_dance_dir/grant.json"
+bsgs_dance_grant="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["assignments"][0]["grant"])' "$bsgs_dance_dir/grant.json")"
+```
+
+<!-- bsgs-dance-example: execute -->
+```bash
+: "${GPU_BACKEND:?choose hip or cuda}"
+"$KEYHUNT_BIN" bsgs --backend "$GPU_BACKEND" --device "${GPU_DEVICE:-0}" \
+  --range 1:65 --targets "$bsgs_dance_dir/points.txt" --table "$bsgs_dance_dir/babies.khb" \
+  --giant-batch 2 --tile-order dance > "$bsgs_dance_dir/volatile.ndjson"
+"$KEYHUNT_BIN" checkpoint run --backend "$GPU_BACKEND" --device "${GPU_DEVICE:-0}" \
+  --grant "$bsgs_dance_grant" --targets "$bsgs_dance_dir/points.txt" \
+  --table "$bsgs_dance_dir/babies.khb" --giant-batch 2 --tile-order dance \
+  > "$bsgs_dance_dir/durable.ndjson"
+"$KEYHUNT_BIN" checkpoint run --backend "$GPU_BACKEND" --device "${GPU_DEVICE:-0}" \
+  --grant "$bsgs_dance_grant" --targets "$bsgs_dance_dir/points.txt" \
+  --table "$bsgs_dance_dir/babies.khb" --tile-order forward > "$bsgs_dance_dir/retry.ndjson"
+"$KEYHUNT_BIN" checkpoint results --project "$bsgs_dance_project" --job "$bsgs_dance_job" \
+  > "$bsgs_dance_dir/results.json"
+"$KEYHUNT_BIN" state check > "$bsgs_dance_dir/check.json"
+```
+
+`results.json` contains scalar 1 once. The final forward retry reports 100 resumed
+scalars and zero batches, using the same job and grant.

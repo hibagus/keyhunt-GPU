@@ -32,7 +32,7 @@ void flush_record() {
 #endif
 }
 int bsgs_command(int argc,char** argv) {
-    const char* usage="usage: keyhunt bsgs --backend hip|cuda --range START:END --targets FILE --table FILE [--device N] [--giant-batch 1..1048576] [--target-batch 1..64] [--candidate-capacity 1..65536] [--group-size auto|1|8] [--tile-order forward|reverse|both-ends] [--host-memory BYTES] [--reserve-bytes BYTES] (END exclusive; NDJSON output)";
+    const char* usage="usage: keyhunt bsgs --backend hip|cuda --range START:END --targets FILE --table FILE [--device N] [--giant-batch 1..1048576] [--target-batch 1..64] [--candidate-capacity 1..65536] [--group-size auto|1|8] [--tile-order forward|reverse|both-ends|dance] [--host-memory BYTES] [--reserve-bytes BYTES] (END exclusive; NDJSON output)";
     std::map<std::string,std::string> args;
     for(int i=2;i<argc;i+=2) {
         if(i+1==argc) throw std::invalid_argument(usage);

@@ -1,7 +1,7 @@
 #pragma once
 #include "keyhunt/core/bsgs_table.h"
 #include "keyhunt/core/xpoint_search.h"
-#include <deque>
+#include <map>
 #include <optional>
 
 namespace keyhunt::core {
@@ -49,7 +49,7 @@ private:
 // UInt256 integers; no absolute scalar, endpoint or m*i product is truncated.
 // Reverse selects the highest remaining tile; arithmetic inside it is unchanged.
 ScalarInterval bsgs_tile(const ScalarInterval& remaining,uint64_t m,uint64_t max_giants,bool reverse=false);
-enum class BsgsTileOrder { Forward, Reverse, BothEnds };
+enum class BsgsTileOrder { Forward, Reverse, BothEnds, Dance };
 BsgsTileOrder parse_bsgs_tile_order(const std::string& value);
 const char* bsgs_tile_order_name(BsgsTileOrder order);
 
@@ -60,17 +60,19 @@ struct BsgsPlannedTile {
 // Process-local selection over sorted, disjoint missing intervals. Each next()
 // consumes one planned tile; callers must finish all its targets before calling
 // again. On failure/restart, reconstruct from durable coverage, never this queue.
-// Both-ends starts low and alternates per tile, even inside adaptive work units.
+// Both-ends alternates low/high; dance cycles low/high/fixed-midpoint-forward.
+// Both advance per tile, even inside adaptive work units (see docs/C23_BSGS_DANCE.md).
 class BsgsTilePlanner {
 public:
     BsgsTilePlanner(const std::vector<ScalarInterval>& gaps,uint64_t m,uint64_t max_giants,BsgsTileOrder order);
     std::optional<BsgsPlannedTile> next(const UInt256& work_span);
 private:
     struct Remaining { ScalarInterval interval; std::optional<ScalarInterval> work; };
-    std::deque<Remaining> remaining_;
+    std::map<UInt256,Remaining> remaining_;
     uint64_t m_,giants_;
     BsgsTileOrder order_;
-    bool high_=false;
+    unsigned phase_=0;
+    std::optional<UInt256> pivot_;
 };
 std::vector<BsgsMatch> verify_bsgs(const BsgsBatch& batch,const BsgsPublicKeyTargets& targets,
     const XPointVerifier& verifier,std::vector<BsgsCandidate> candidates);

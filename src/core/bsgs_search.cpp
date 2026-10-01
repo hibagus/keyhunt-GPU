@@ -3,6 +3,7 @@
 #include "common/point.h"
 #include <algorithm>
 #include <fstream>
+#include <iterator>
 #include <stdexcept>
 #include <tuple>
 
@@ -103,49 +104,72 @@ BsgsTileOrder parse_bsgs_tile_order(const std::string& value) {
     if(value=="forward")return BsgsTileOrder::Forward;
     if(value=="reverse")return BsgsTileOrder::Reverse;
     if(value=="both-ends")return BsgsTileOrder::BothEnds;
-    throw std::invalid_argument("tile-order must be forward, reverse or both-ends");
+    if(value=="dance")return BsgsTileOrder::Dance;
+    throw std::invalid_argument("tile-order must be forward, reverse, both-ends or dance");
 }
 const char* bsgs_tile_order_name(BsgsTileOrder order) {
     switch(order){
         case BsgsTileOrder::Forward:return "forward";
         case BsgsTileOrder::Reverse:return "reverse";
         case BsgsTileOrder::BothEnds:return "both-ends";
+        case BsgsTileOrder::Dance:return "dance";
     }
     throw std::invalid_argument("invalid BSGS tile order");
 }
 BsgsTilePlanner::BsgsTilePlanner(const std::vector<ScalarInterval>& gaps,uint64_t m,uint64_t max_giants,BsgsTileOrder order)
-    :m_(m),giants_(max_giants),order_(order),high_(order==BsgsTileOrder::Reverse) {
+    :m_(m),giants_(max_giants),order_(order) {
     (void)bsgs_tile_order_name(order);
     if(!m || !max_giants || max_giants>1048576)throw std::invalid_argument("invalid BSGS tile limit");
+    for(size_t i=1;i<gaps.size();++i)
+        if(gaps[i-1].end()>gaps[i].begin())throw std::invalid_argument("BSGS gaps must be sorted and disjoint");
+    if(order==BsgsTileOrder::Dance && !gaps.empty()){
+        // Subtract before adding: endpoints near n must not overflow. A fixed
+        // pivot adds only one gap; repeatedly choosing a new middle would
+        // fragment huge searches in proportion to the number of tiles.
+        const auto low=gaps.front().begin();
+        pivot_=low.add(gaps.back().end().subtract(low).divmod(UInt256(2)).first);
+    }
     for(const auto& gap:gaps){
-        if(!remaining_.empty() && remaining_.back().interval.end()>gap.begin())
-            throw std::invalid_argument("BSGS gaps must be sorted and disjoint");
-        remaining_.push_back({gap,std::nullopt});
+        if(pivot_ && gap.begin()<*pivot_ && *pivot_<gap.end()){
+            remaining_.emplace(gap.begin(),Remaining{{gap.begin(),*pivot_},std::nullopt});
+            remaining_.emplace(*pivot_,Remaining{{*pivot_,gap.end()},std::nullopt});
+        }else remaining_.emplace(gap.begin(),Remaining{gap,std::nullopt});
     }
 }
 std::optional<BsgsPlannedTile> BsgsTilePlanner::next(const UInt256& work_span) {
     if(work_span.is_zero())throw std::invalid_argument("zero BSGS work span");
     if(remaining_.empty())return std::nullopt;
-    auto& edge=high_?remaining_.back():remaining_.front();
-    const bool starts_work=!edge.work;
-    if(starts_work){
-        const auto span=std::min(work_span,edge.interval.size());
-        const ScalarInterval work=high_?ScalarInterval(edge.interval.end().subtract(span),edge.interval.end()):
-            ScalarInterval(edge.interval.begin(),edge.interval.begin().add(span));
-        if(span==edge.interval.size()){
-            if(high_)remaining_.pop_back();else remaining_.pop_front();
-        }else edge.interval=high_?ScalarInterval(edge.interval.begin(),work.begin()):ScalarInterval(work.end(),edge.interval.end());
-        // Only the two outermost entries can hold active work. When the fronts
-        // meet, both ends consume the same entry without reserving it twice.
-        if(high_)remaining_.push_back({work,work});else remaining_.push_front({work,work});
+    const bool high=order_==BsgsTileOrder::Reverse ||
+        ((order_==BsgsTileOrder::BothEnds || order_==BsgsTileOrder::Dance) && phase_==1);
+    auto chosen=high?std::prev(remaining_.end()):remaining_.begin();
+    if(order_==BsgsTileOrder::Dance && phase_==2){
+        chosen=remaining_.lower_bound(*pivot_);
+        if(chosen==remaining_.end())chosen=remaining_.begin();
     }
-    auto& active=high_?remaining_.back():remaining_.front();
-    const auto tile=bsgs_tile(active.interval,m_,giants_,high_);
-    const BsgsPlannedTile result{tile,*active.work,starts_work,tile.size()==active.interval.size()};
-    if(result.finishes_work){
-        if(high_)remaining_.pop_back();else remaining_.pop_front();
-    }else active.interval=high_?ScalarInterval(active.interval.begin(),tile.begin()):ScalarInterval(tile.end(),active.interval.end());
-    if(order_==BsgsTileOrder::BothEnds)high_=!high_;
+    // Every front consumes an interval endpoint. Reservations never overlap;
+    // fronts that meet share the existing owner, including a short final tile.
+    const auto entry=chosen->second;
+    const bool starts_work=!entry.work;
+    const auto span=std::min(work_span,entry.interval.size());
+    const auto work=entry.work.value_or(high?
+        ScalarInterval(entry.interval.end().subtract(span),entry.interval.end()):
+        ScalarInterval(entry.interval.begin(),entry.interval.begin().add(span)));
+    const auto active=starts_work?work:entry.interval;
+    const auto tile=bsgs_tile(active,m_,giants_,high);
+    const BsgsPlannedTile result{tile,work,starts_work,tile.size()==active.size()};
+    remaining_.erase(chosen);
+    if(starts_work && work.size()!=entry.interval.size()){
+        const ScalarInterval free=high?ScalarInterval(entry.interval.begin(),work.begin()):
+            ScalarInterval(work.end(),entry.interval.end());
+        remaining_.emplace(free.begin(),Remaining{free,std::nullopt});
+    }
+    if(!result.finishes_work){
+        const ScalarInterval rest=high?ScalarInterval(active.begin(),tile.begin()):
+            ScalarInterval(tile.end(),active.end());
+        remaining_.emplace(rest.begin(),Remaining{rest,work});
+    }
+    if(order_==BsgsTileOrder::BothEnds)phase_=(phase_+1)%2;
+    if(order_==BsgsTileOrder::Dance)phase_=(phase_+1)%3;
     return result;
 }
 std::vector<BsgsMatch> verify_bsgs(const BsgsBatch& batch,const BsgsPublicKeyTargets& targets,

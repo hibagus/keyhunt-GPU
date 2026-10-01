@@ -110,3 +110,27 @@ set_tests_properties(bsgs_both_ends_documented_example PROPERTIES TIMEOUT 150 LA
 if(KEYHUNT_ENABLE_GPU)
     set_tests_properties(bsgs_both_ends_documented_example PROPERTIES LABELS "${KEYHUNT_GPU_BACKEND};hardware;bsgs;both-ends;examples" RESOURCE_LOCK gpu_device)
 endif()
+
+add_test(NAME bsgs_dance_plan_oracle COMMAND "${Python3_EXECUTABLE}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests/oracle/bsgs_plans.py" --dance --binary $<TARGET_FILE:bsgs_plan_probe>
+    --report "${CMAKE_CURRENT_BINARY_DIR}/bsgs-dance-plan-oracle.json")
+set_tests_properties(bsgs_dance_plan_oracle PROPERTIES TIMEOUT 180 LABELS "cpu;bsgs;dance;oracle")
+
+add_test(NAME bsgs_dance_search_cli COMMAND "${Python3_EXECUTABLE}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/bsgs_reverse_cli.py" --binary $<TARGET_FILE:keyhunt>
+    --oracle $<TARGET_FILE:secp256k1_oracle> --suite search --dance
+    --report "${CMAKE_CURRENT_BINARY_DIR}/bsgs-dance-search-cli.json" ${bsgs_search_args})
+set_tests_properties(bsgs_dance_search_cli PROPERTIES TIMEOUT 600 LABELS "cpu;bsgs;dance;oracle")
+if(KEYHUNT_ENABLE_GPU)
+    set_tests_properties(bsgs_dance_search_cli PROPERTIES LABELS "${KEYHUNT_GPU_BACKEND};hardware;bsgs;dance;oracle" RESOURCE_LOCK gpu_device)
+endif()
+
+
+add_test(NAME bsgs_dance_documented_example COMMAND "${Python3_EXECUTABLE}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/bsgs_reverse_examples.py" --dance
+    --binary $<TARGET_FILE:keyhunt> --backend ${bsgs_reverse_example_backend}
+    --report "${CMAKE_CURRENT_BINARY_DIR}/bsgs-dance-documented-example.json")
+set_tests_properties(bsgs_dance_documented_example PROPERTIES TIMEOUT 150 LABELS "cpu;bsgs;dance;examples")
+if(KEYHUNT_ENABLE_GPU)
+    set_tests_properties(bsgs_dance_documented_example PROPERTIES LABELS "${KEYHUNT_GPU_BACKEND};hardware;bsgs;dance;examples" RESOURCE_LOCK gpu_device)
+endif()
