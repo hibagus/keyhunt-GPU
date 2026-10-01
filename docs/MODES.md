@@ -167,6 +167,9 @@ checkpoint runs and workers. It preserves actual ordinal receipts and can change
 on restart; see [the reverse contract and example](C23_MINIKEYS_REVERSE.md).
 `--ordinal-order both-ends` alternates low/high batches, starting low after each
 restart. Overflow retains the current end; see [the both-ends contract](C23_MINIKEYS_BOTH_ENDS.md).
+`--ordinal-order dance` cycles low/high/fixed-midpoint-forward per accepted batch.
+The pivot is fixed within an invocation and rebuilt after restart; see
+[the dance contract and example](C23_MINIKEYS_DANCE.md).
 
 
 ## Exact-range GLV scalar multiplication

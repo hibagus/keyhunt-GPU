@@ -544,9 +544,12 @@ HTTPS and disconnected file transports use the same runner. See
 
 ## Minikey traversal policies
 
-Pass `--ordinal-order reverse` or `--ordinal-order both-ends` to
+Pass `--ordinal-order reverse`, `--ordinal-order both-ends` or `--ordinal-order dance` to
 `tools/coordinator_worker.py` or `keyhunt-worker run-device` for minikey queues.
 Reverse works downward; both-ends alternates low/high batches within each grant.
+Dance cycles low/high/fixed-midpoint-forward, with at most three active work
+reservations. Recovery rebuilds its midpoint from the missing complement and
+starts low. Any supported ordinal order can resume the same grant.
 Receipts retain exact canonical ordinals. Block claims remain independent.
 Targets and GPU allocations are reused across grants; `grant-finish` reports `ordinal_order`.
 
@@ -554,5 +557,5 @@ The existing `minikeys-v1` capability remains sufficient because job identity an
 receipt coordinates are unchanged. Old minikey-capable workers can recover the
 same job forward. Both HTTPS and disconnected file workers support the option;
 non-minikey jobs reject an explicit ordinal-order override. See
-[reverse coverage](C23_MINIKEYS_REVERSE.md) and
-[both-ends recovery contracts](C23_MINIKEYS_BOTH_ENDS.md).
+[reverse coverage](C23_MINIKEYS_REVERSE.md),
+[both-ends](C23_MINIKEYS_BOTH_ENDS.md) and [dance recovery contracts](C23_MINIKEYS_DANCE.md).

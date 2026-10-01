@@ -538,7 +538,7 @@ restore retain this identity. See [example and contract](C23_ORBITS.md).
 
 ## Minikey ordinal execution
 
-`checkpoint run --ordinal-order forward|reverse|both-ends` selects minikey execution order
+`checkpoint run --ordinal-order forward|reverse|both-ends|dance` selects minikey execution order
 within the grant. Reverse consumes the highest missing ordinals first, including
 inside each GPU batch. Receipts and result identities retain actual canonical
 ordinals. Both-ends starts low and alternates after each verified batch; overflow
@@ -546,6 +546,11 @@ retries stay at the same end. Direction can change on restart; omission selects
 forward. Adaptive work sizing and overflow replay preserve the exact missing
 complement. Both-ends restarts low without persisting an alternating phase; see
 [the both-ends contract and example](C23_MINIKEYS_BOTH_ENDS.md).
+Dance cycles low/high/fixed-midpoint-forward after each accepted batch. Its pivot
+splits the initial missing envelope in half; work cannot cross that pivot.
+Restart recomputes it from the durable complement and starts low. At most three
+work reservations remain active; overflow preserves the selected phase. See
+[the dance contract and example](C23_MINIKEYS_DANCE.md).
 
 The option is rejected by `checkpoint create` and non-minikey runners, including
 explicit forward. Scalar `--order` remains a separate immutable mapping. See

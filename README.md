@@ -16,7 +16,7 @@ on each host; [C23](docs/C23_VALIDATION.md) adds Bitcoin/HASH160 execution and r
 [exact-range GLV](docs/C23_GLV_VALIDATION.md) adds an opt-in scalar multiplication kernel;
 [related-key orbits](docs/C23_ORBITS.md) add explicit six-member expansion and exact recovery;
 [reverse](docs/C23_BSGS_REVERSE.md), [both-ends](docs/C23_BSGS_BOTH_ENDS.md), and [dance BSGS tiles](docs/C23_BSGS_DANCE.md) add exact traversal with restart and worker support.
-[Reverse](docs/C23_MINIKEYS_REVERSE.md) and [both-ends minikeys](docs/C23_MINIKEYS_BOTH_ENDS.md) preserve canonical ordinal coverage for both lengths.
+[Reverse](docs/C23_MINIKEYS_REVERSE.md), [both-ends](docs/C23_MINIKEYS_BOTH_ENDS.md) and [dance minikeys](docs/C23_MINIKEYS_DANCE.md) preserve canonical ordinal coverage for both lengths.
 Authenticated coordination adds mTLS, project roles, an offline outbox and fenced
 recovery, plus [manual offline file exchange](docs/OFFLINE_ASSIGNMENTS.md). Its
 deployment gate is isolated localhost. Other search modes retain
@@ -180,7 +180,7 @@ exact positive scalar strides, reverse traversal and opt-in [GLV multiplication]
 - [x] C20: [concurrent HIP/CUDA scheduling, balancing and recovery](docs/MULTI_GPU.md); [H200 acceptance](docs/C20_CUDA_VALIDATION.md).
 - [x] C21: [validated GPU build/operations guides and executable quickstarts](docs/C21_VALIDATION.md).
 - [x] C22: [offline assignment export, trusted courier exchange and reconciliation](docs/C22_VALIDATION.md).
-- [ ] C23: [Bitcoin P2PKH/HASH160](docs/C23_VALIDATION.md), [Ethereum](docs/C23_ETHEREUM_VALIDATION.md), [vanity](docs/C23_VANITY_VALIDATION.md), [minikeys 22/30](docs/C23_MINIKEYS_VALIDATION.md), [positive scalar strides](docs/C23_STRIDES.md), [reverse traversal](docs/C23_REVERSE_VALIDATION.md), [exact-range GLV](docs/C23_GLV_VALIDATION.md), [related-key orbits](docs/C23_ORBITS_VALIDATION.md), [reverse BSGS tiles](docs/C23_BSGS_REVERSE_VALIDATION.md), [both-ends BSGS tiles](docs/C23_BSGS_BOTH_ENDS_VALIDATION.md), [dance BSGS tiles](docs/C23_BSGS_DANCE_VALIDATION.md), [reverse minikeys](docs/C23_MINIKEYS_REVERSE_VALIDATION.md), and [both-ends minikeys](docs/C23_MINIKEYS_BOTH_ENDS_VALIDATION.md) complete; additional random traversal semantics and other minikey orders pending.
+- [ ] C23: [Bitcoin P2PKH/HASH160](docs/C23_VALIDATION.md), [Ethereum](docs/C23_ETHEREUM_VALIDATION.md), [vanity](docs/C23_VANITY_VALIDATION.md), [minikeys 22/30](docs/C23_MINIKEYS_VALIDATION.md), [positive scalar strides](docs/C23_STRIDES.md), [reverse traversal](docs/C23_REVERSE_VALIDATION.md), [exact-range GLV](docs/C23_GLV_VALIDATION.md), [related-key orbits](docs/C23_ORBITS_VALIDATION.md), [reverse BSGS tiles](docs/C23_BSGS_REVERSE_VALIDATION.md), [both-ends BSGS tiles](docs/C23_BSGS_BOTH_ENDS_VALIDATION.md), [dance BSGS tiles](docs/C23_BSGS_DANCE_VALIDATION.md), [reverse minikeys](docs/C23_MINIKEYS_REVERSE_VALIDATION.md), [both-ends minikeys](docs/C23_MINIKEYS_BOTH_ENDS_VALIDATION.md), and [dance minikeys](docs/C23_MINIKEYS_DANCE_VALIDATION.md) complete; additional random traversal semantics pending.
 
 See [implementation status](docs/IMPLEMENTATION_STATUS.md) for evidence and
 [acceptance gates](docs/GPU_REDESIGN_PLAN.md#10-commit-sized-implementation-sequence)
