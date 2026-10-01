@@ -1,0 +1,222 @@
+{
+  "passed": true,
+  "recorded_utc": "2026-10-01T15:54:18.772995+00:00",
+  "base_commit": "564bee6ae3dcec371ccfb88a169bfcb98c029ead",
+  "scope": "Execution-only reverse BSGS tile selection with exact scalar recovery and HTTPS/disconnected-file workers",
+  "source_phases": {
+    "contract": "d11b839f7502786821f0d887324996d3ddcecfe9",
+    "native": "11bc0f1c1a5f3e2379a9e81faad65fa66de27e16",
+    "checkpoints": "85f5f0369102aa5b94fc471f2b1de96ad329a5ae",
+    "workers": "a86f78c761a2447707244977694b9e28eaa78cce",
+    "example": "97aba26164a3d951b23f0b2a3a14049eff8c0b4c"
+  },
+  "metadata": {
+    "hip": {
+      "source_commit": "97aba26164a3d951b23f0b2a3a14049eff8c0b4c",
+      "platform": "Linux-5.15.0-191-generic-x86_64-with-glibc2.35",
+      "binaries": {
+        "build/hip-release": {
+          "keyhunt": "99c84764b476904887c70a3c7d4b5c8653a326e1ee10a40c288504aa7aab8cfb",
+          "keyhunt-worker": "70252b6f32f1d5da1fa8ec80eae65a33d8c8b0a7678702d283f60e575bd3e263",
+          "keyhunt-coordinator": "52c46f6d82b0bfe0fa7c7b5050c04aea8283540767687c6b2cfe761b9b0185e4",
+          "bsgs_tile_probe": "ccbc7e57f6146df983513126d075795613cef2440c80f4810a88a79333481008",
+          "secp256k1_oracle": "8dc92137c49502e3de62cb20a750d1c7f0bd84294ae77c5ccc9c9dffd20763c6",
+          "storage_bsgs_reverse_test": "049bc9d0ae658967e200a0d3947c3c1415d5a696578b7e3b183c376313248d01",
+          "coordinator_bsgs_reverse_test": "ea371107f76f95d8ac4fe469a6c19d4bceef0bca6b6ae8350a6da530c9a2169e"
+        }
+      },
+      "build_configuration": {
+        "build/hip-release": {
+          "CMAKE_BUILD_TYPE": "Release",
+          "CMAKE_CXX_COMPILER": "/usr/bin/c++",
+          "CMAKE_HIP_ARCHITECTURES": "gfx942",
+          "CMAKE_HIP_COMPILER": "/opt/rocm/core-10.0/lib/llvm/bin/clang++",
+          "KEYHUNT_ENABLE_COORDINATOR": "ON",
+          "KEYHUNT_ENABLE_CUDA": "OFF",
+          "KEYHUNT_ENABLE_HIP": "ON",
+          "KEYHUNT_ENABLE_HTTPS_WORKER": "ON",
+          "KEYHUNT_ENABLE_LTO": "ON",
+          "KEYHUNT_ENABLE_SANITIZERS": "OFF",
+          "KEYHUNT_GFX942_CARRY": "ON"
+        }
+      },
+      "compilers": {
+        "/opt/rocm/core-10.0/lib/llvm/bin/clang++": "AMD clang version 23.0.0git (https://github.com/ROCm/llvm-project.git 8f497e0992fb7513f7f78a6f6b6f1056c375e961)\nTarget: x86_64-unknown-linux-gnu\nThread model: posix\nInstalledDir: /opt/rocm/core-10.0/lib/llvm/bin",
+        "/usr/bin/c++": "c++ (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0\nCopyright (C) 2021 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
+      }
+    },
+    "cuda": {
+      "source_commit": "97aba26164a3d951b23f0b2a3a14049eff8c0b4c",
+      "platform": "Linux-5.15.0-194-generic-x86_64-with-glibc2.35",
+      "binaries": {
+        "build/cuda-h200": {
+          "keyhunt": "97fa0f1c0ce5cfb3aa9bc83fb0ac6c291f4ba4b8a28f8f050fded89b36f7d6ff",
+          "keyhunt-worker": "3a83f41119c18a2a6442e2dd157c1cd3e8cb3dc7893d2dc8c6dd4fc42efcca04",
+          "keyhunt-coordinator": "8502d0c3f49ee64b380877ce0c29fcc5b2c1cd67d3217396d6daf6670dcf160b",
+          "bsgs_tile_probe": "51da8e5e3a83a438deb90c968b29b8ad505c552f58ddfa494339bd1867d58798",
+          "secp256k1_oracle": "039bdb67a9ec9ca522b193385033bb578e133ecd300ba32da8a550299c07e5e0",
+          "storage_bsgs_reverse_test": "ec7207933a1a65e5e9fe5ce8c3c92746afa9ef679c22381526b626c69aa1a385",
+          "coordinator_bsgs_reverse_test": "bccb553ac47bfa524de919224ef4cc5efc77b499d2bd7387022b4bb176d35acb"
+        }
+      },
+      "build_configuration": {
+        "build/cuda-h200": {
+          "CMAKE_BUILD_TYPE": "Release",
+          "CMAKE_CUDA_ARCHITECTURES": "90",
+          "CMAKE_CUDA_COMPILER": "/usr/local/cuda/bin/nvcc",
+          "CMAKE_CXX_COMPILER": "/usr/bin/c++",
+          "KEYHUNT_ENABLE_COORDINATOR": "ON",
+          "KEYHUNT_ENABLE_CUDA": "ON",
+          "KEYHUNT_ENABLE_HIP": "OFF",
+          "KEYHUNT_ENABLE_HTTPS_WORKER": "ON",
+          "KEYHUNT_ENABLE_LTO": "ON",
+          "KEYHUNT_ENABLE_SANITIZERS": "OFF",
+          "KEYHUNT_GFX942_CARRY": "OFF"
+        }
+      },
+      "compilers": {
+        "/usr/bin/c++": "c++ (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0\nCopyright (C) 2021 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.",
+        "/usr/local/cuda/bin/nvcc": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2026 NVIDIA Corporation\nBuilt on Tue_Jun_09_02:43:40_PM_PDT_2026\nCuda compilation tools, release 13.3, V13.3.73\nBuild cuda_13.3.r13.3/compiler.38244171_0"
+      }
+    }
+  },
+  "host_metadata": {
+    "source_commit": "97aba26164a3d951b23f0b2a3a14049eff8c0b4c",
+    "platform": "Linux-5.15.0-191-generic-x86_64-with-glibc2.35",
+    "binaries": {
+      "build/coordinator-release": {
+        "keyhunt": "fe4ffe18be58b50bfd09702e5b9969d459a297cffdf821afcf78c6369243cfd9",
+        "keyhunt-worker": "21f132d3cbedf5e3450f01c36ba74450d45a42f655bbfde4584d023560169c25",
+        "keyhunt-coordinator": "52c46f6d82b0bfe0fa7c7b5050c04aea8283540767687c6b2cfe761b9b0185e4",
+        "bsgs_tile_probe": "ccbc7e57f6146df983513126d075795613cef2440c80f4810a88a79333481008",
+        "secp256k1_oracle": "8dc92137c49502e3de62cb20a750d1c7f0bd84294ae77c5ccc9c9dffd20763c6",
+        "storage_bsgs_reverse_test": "049bc9d0ae658967e200a0d3947c3c1415d5a696578b7e3b183c376313248d01",
+        "coordinator_bsgs_reverse_test": "ea371107f76f95d8ac4fe469a6c19d4bceef0bca6b6ae8350a6da530c9a2169e"
+      },
+      "build/coordinator-sanitizers": {
+        "bsgs_tile_probe": "b61734a5fde00ed4db91aa458d5726881ed360d0aa1609d72e92acba795bc772",
+        "secp256k1_oracle": "fc52fc04fe92fc395fb5a4b71b1afde220e9a4f391fd93348535291b09c3aca2",
+        "storage_bsgs_reverse_test": "83f80aea525c119698bfb46546404570d220f50eb81c5ced5f4328e73fd598cc",
+        "coordinator_bsgs_reverse_test": "dcb65ec6b7a3c37d8c5783e2872993d40bd9906397f416e988c39d0eb3b0ed2d"
+      }
+    },
+    "build_configuration": {
+      "build/coordinator-release": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_CXX_COMPILER": "/usr/bin/c++",
+        "KEYHUNT_ENABLE_COORDINATOR": "ON",
+        "KEYHUNT_ENABLE_CUDA": "OFF",
+        "KEYHUNT_ENABLE_HIP": "OFF",
+        "KEYHUNT_ENABLE_HTTPS_WORKER": "ON",
+        "KEYHUNT_ENABLE_LTO": "ON",
+        "KEYHUNT_ENABLE_SANITIZERS": "OFF",
+        "KEYHUNT_GFX942_CARRY": "OFF"
+      },
+      "build/coordinator-sanitizers": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_CXX_COMPILER": "/usr/bin/c++",
+        "KEYHUNT_ENABLE_COORDINATOR": "ON",
+        "KEYHUNT_ENABLE_CUDA": "OFF",
+        "KEYHUNT_ENABLE_HIP": "OFF",
+        "KEYHUNT_ENABLE_HTTPS_WORKER": "ON",
+        "KEYHUNT_ENABLE_LTO": "OFF",
+        "KEYHUNT_ENABLE_SANITIZERS": "ON",
+        "KEYHUNT_GFX942_CARRY": "OFF"
+      }
+    },
+    "compilers": {
+      "/usr/bin/c++": "c++ (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0\nCopyright (C) 2021 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
+    }
+  },
+  "checks": {
+    "cpu_release": {
+      "passed": 114,
+      "failed": 0,
+      "log": "local/full-tests.log"
+    },
+    "cpu_final_storage": {
+      "passed": 1,
+      "failed": 0,
+      "log": "local/final-storage-test.log"
+    },
+    "sanitizers": {
+      "passed": 3,
+      "failed": 0,
+      "log": "local/sanitizers-tests.log"
+    },
+    "hip": {
+      "passed": 9,
+      "failed": 0,
+      "log": "hip/tests.log"
+    },
+    "cuda": {
+      "passed": 9,
+      "failed": 0,
+      "log": "cuda/tests.log"
+    },
+    "local_example": {
+      "passed": 1,
+      "failed": 0,
+      "log": "local/example-tests.log"
+    },
+    "hip_example": {
+      "passed": 1,
+      "failed": 0,
+      "log": "hip/example-tests.log"
+    },
+    "cuda_example": {
+      "passed": 1,
+      "failed": 0,
+      "log": "cuda/example-tests.log"
+    },
+    "hip_initial_pause_environment": {
+      "passed": 6,
+      "failed": 1,
+      "log": "hip/search-recovery-tests.log",
+      "resolution": "The shared pause harness imports its other families' pinned Keccak dependency. Supplying the existing KEYHUNT_KECCAK_ORACLE_ROOT fixes collection; the unchanged production code and full nine-gate rerun pass."
+    }
+  },
+  "results": {
+    "host_integer_cases": 5535,
+    "cpu_distinct_passing_gates": 115,
+    "focused_sanitizer_gates": 3,
+    "search_cases_per_backend": 34,
+    "checkpoint_cases_per_backend": 8,
+    "killed_restarts_per_backend": 4,
+    "pause_visibility_cases_per_backend": 1,
+    "worker_transport_cases_per_backend": 2,
+    "worker_grants_per_case": 2,
+    "documented_examples_per_backend": 1
+  },
+  "limits": [
+    "Forward remains the default. Only tile selection changes; existing group-1/group-8 GPU arithmetic runs forward inside each tile.",
+    "Job/configuration/table identity, schema 7, receipt encoding, protocol and capability lists are unchanged. Scalar-search --order remains separate.",
+    "Reverse is local to a grant. Coordinator block claims do not change.",
+    "Both kernels tested on HIP/CUDA; group-8 spot checks cover all eight visible ordinals. No exhaustive kernel-by-ordinal product, fleet scaling or new partition claim.",
+    "Sanitizers cover three focused host gates, not the complete application or device code.",
+    "No throughput improvement claim. BSGS both-ends/dance, additional random traversal semantics and alternative minikey orders remain pending.",
+    "Only public fixtures used; no enrollment credentials or journal databases archived."
+  ],
+  "artifacts": {
+    "C23_BSGS_REVERSE_ALGORITHMS.json": {
+      "sha256": "14550e5d17172b98259fed1c49254d12aec93579f47c7c16d90a883946e6f8c5",
+      "bytes": 81253
+    },
+    "C23_BSGS_REVERSE_RECOVERY.json": {
+      "sha256": "0f67c0e88e3ef1c20c5f97d78c76a36d30afd89acee61565fa8f61f815f25ce9",
+      "bytes": 93141
+    },
+    "C23_BSGS_REVERSE_WORKERS.json": {
+      "sha256": "0deefa9bdb50c6d4bdd6e6d859a548a23f950205a07d3a60df448d88c9418d03",
+      "bytes": 60408
+    },
+    "C23_BSGS_REVERSE_EXAMPLES.json": {
+      "sha256": "15f690e3dd753b7f39666c9e9956af9764b9c303fa988a7c1ec633b6516f7c81",
+      "bytes": 27177
+    },
+    "C23_BSGS_REVERSE_LOGS.tar.gz": {
+      "sha256": "4d8ca03f0edde6aa96e55b92c110a70e26a96926cb1215ebb89ba0521a30f551",
+      "bytes": 48386
+    }
+  }
+}
