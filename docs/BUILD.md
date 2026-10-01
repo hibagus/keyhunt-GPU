@@ -464,3 +464,13 @@ HASH160 and vanity exercise both encodings. Reports include raw event/wall
 samples, allocation sizes, preparation, device inventory and binary hashes.
 This measures one device with volatile unit-stride coverage. Correctness tests
 cover other mappings; these timings make no durable or fleet throughput claim.
+
+## Related-key orbit validation
+
+No new build flag or dependency is needed for `--endomorphism orbit`. Configure
+and build the existing HIP or CUDA target, then run `ctest --test-dir BUILD
+--output-on-failure -R orbit` with the existing pinned Keccak oracle environment.
+Coordinator transport gates also require the existing Apache test dependency.
+The [orbit contract and runnable example](C23_ORBITS.md) describes the expanded
+coverage, limits and separate job identity. [Acceptance](C23_ORBITS_VALIDATION.md)
+records the hardware, recovery and focused sanitizer evidence.

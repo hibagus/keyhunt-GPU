@@ -115,12 +115,13 @@ renewal remain outside this localhost gate.
 ## S04a: atomic machine synchronization
 
 `POST /api/v1/sync` accepts protocol 1. Current workers send the exact capability
-list `["checkpoint-v1", "offline-lease-v1", "hash160-v1", "ethereum-v1", "vanity-v1", "minikeys-v1", "scalar-stride-v1", "scalar-reverse-v1"]`.
+list `["checkpoint-v1", "offline-lease-v1", "hash160-v1", "ethereum-v1", "vanity-v1", "minikeys-v1", "scalar-stride-v1", "scalar-reverse-v1", "scalar-orbit-v1"]`.
 Updated coordinators also accept the older two-element list for xpoint/BSGS and
 the three-element list for those modes plus HASH160, and the four-element list
 that also supports Ethereum, the five-element list adding vanity, the six-element
-list adding minikeys, and the seven-element list adding forward scalar strides.
-HASH160, Ethereum, vanity, minikey, strided and reverse jobs
+list adding minikeys, the seven-element list adding forward scalar strides,
+and the eight-element list adding reverse traversal.
+HASH160, Ethereum, vanity, minikey, strided, reverse and orbit jobs
 require their respective capability before reservation, renewal, update or receipt replay;
 incompatible requests receive HTTP 426. Deploy the updated coordinator before
 updated workers. Unknown capabilities and wire modes fail explicitly. A request
@@ -502,3 +503,18 @@ still describe the same candidate mappings. Upgrade the executing binary to one
 that understands `glv`; use the existing stride/reverse capability requirements
 for those jobs. The default remains `stepped`. Explicit kernel overrides are
 rejected for BSGS; minikeys accepts only `direct`. See [GLV contracts](C23_GLV.md).
+
+## C23 related-key orbit jobs
+
+Configuration versions 4/5 select six-member orbit expansion in forward/reverse
+seed order. Original seed A:B and S remain in the 146-byte configuration; job
+root `[1,6*N+1)` must agree exactly. Results report expanded index, seed, variant
+and derived scalar under `scalar-orbit-index-v1`. Overlapping seeds preserve
+separate observations. HTTPS and file transports carry the same immutable bytes.
+
+The ninth capability `scalar-orbit-v1` is required before allocation, renewal,
+updates or cached replies for these jobs. Previously supported capability lists
+remain valid for their original jobs. Upgrade the coordinator before enrolling
+new workers. Workers self-test the mapping on their owned ordinal, retain all
+six stepped caches across grants, and stop batches at variant boundaries.
+See [contracts](C23_ORBITS.md) and [acceptance](C23_ORBITS_VALIDATION.md).

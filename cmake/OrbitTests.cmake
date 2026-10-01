@@ -31,3 +31,16 @@ foreach(order forward reverse)
         set_tests_properties(scalar_orbit_${order}_cli PROPERTIES LABELS "${KEYHUNT_GPU_BACKEND};hardware;orbit;oracle" RESOURCE_LOCK gpu_device)
     endif()
 endforeach()
+
+set(orbit_example_backend cpu)
+if(KEYHUNT_ENABLE_GPU)
+    set(orbit_example_backend ${KEYHUNT_GPU_BACKEND})
+endif()
+add_test(NAME orbit_documented_example COMMAND "${Python3_EXECUTABLE}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/orbit_examples.py"
+    --binary $<TARGET_FILE:keyhunt> --backend ${orbit_example_backend}
+    --report "${CMAKE_CURRENT_BINARY_DIR}/orbit-documented-example.json")
+set_tests_properties(orbit_documented_example PROPERTIES TIMEOUT 150 LABELS "cpu;orbit;examples")
+if(KEYHUNT_ENABLE_GPU)
+    set_tests_properties(orbit_documented_example PROPERTIES LABELS "${KEYHUNT_GPU_BACKEND};hardware;orbit;examples" RESOURCE_LOCK gpu_device)
+endif()

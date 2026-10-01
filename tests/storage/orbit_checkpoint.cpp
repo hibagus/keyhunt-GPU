@@ -34,8 +34,8 @@ void exercise(const Targets& targets,unsigned bound,Create create,Run run){
     const auto runner=[&](const auto& batch){
         backend::XPointResult result{batch,{}};result.device_steps=batch.step_count();
         for(uint64_t i=0;i<batch.step_count();++i)for(uint32_t t=0;t<input.count();++t){
-            // The fixture enumerates all valid relations independently of the
-            // production candidate verifier. It retains index coordinates.
+            // This CPU runner exercises journal acceptance with exact coordinates.
+            // Separate pinned-oracle tests establish device arithmetic parity.
             try{input.verify(verifier,batch.coordinate_at(i),t);result.matches.push_back({batch.coordinate_at(i),t});}
             catch(const std::runtime_error&){}
         }

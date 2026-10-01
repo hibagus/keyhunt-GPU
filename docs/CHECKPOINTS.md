@@ -29,7 +29,8 @@ semantic version 1 for unit stride, mode byte (1=xpoint, 2=BSGS, 3=HASH160, 4=Et
 stride one for version 1, exhaustive all-target coverage. Nonunit scalar strides
 use version 2 with an additional 96 bytes for the original range and stride, as
 described below. Reverse traversal uses version 3 with the same 146-byte layout
-and permits stride one ([reverse contracts](C23_REVERSE.md)). BSGS binds the validated C10 cache
+and permits stride one ([reverse contracts](C23_REVERSE.md)). Orbit versions 4/5
+use the same layout with explicit six-member expansion ([orbit contracts](C23_ORBITS.md)). BSGS binds the validated C10 cache
 including its table size and checksum. Changing `m` or rebuilding a differently
 encoded cache requires a new job; incompatible progress is never silently reused.
 
@@ -294,7 +295,7 @@ printf '%s\n' 0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798
 
 | Action | Options |
 | --- | --- |
-| `create` | Required `--project`, `--mode xpoint\|bsgs\|hash160\|address\|ethereum\|vanity\|minikeys`, `--range`, `--block-width`, `--targets`; BSGS requires `--table` and accepts `--host-memory`; scalar families accept `--stride HEX` and `--order forward\|reverse` |
+| `create` | Required `--project`, `--mode xpoint\|bsgs\|hash160\|address\|ethereum\|vanity\|minikeys`, `--range`, `--block-width`, `--targets`; BSGS requires `--table` and accepts `--host-memory`; scalar families accept `--stride HEX`, `--order forward\|reverse` and `--endomorphism none\|orbit` |
 | `run`, common | Required `--backend hip\|cuda`, `--grant`, `--targets`; optional `--device` (0), `--candidate-capacity` (1024), `--checkpoint-seconds 0..60` (10) |
 | `run`, xpoint | `--batch-size 1..1048576` (1048576), `--kernel stepped\|direct\|glv` (stepped); capacity 1..1048576 |
 | `run`, BSGS | Required `--table`; `--giant-batch` (16384), `--target-batch 1..64` (64), product at most 1048576; capacity 1..65536; `--group-size auto\|1\|8`; `--host-memory` (1073741824 bytes), `--reserve-bytes` (67108864 bytes) |
@@ -502,3 +503,21 @@ coordinates, receipts and schema. A restart may switch between `glv`, `direct`
 and the default `stepped`. It resumes the committed complement of the same job.
 BSGS uses its group selection; minikeys accepts only `direct`.
 See [GLV arithmetic and compatibility](C23_GLV.md).
+
+## Related-key orbit coverage
+
+Create a scalar-family job with `--endomorphism orbit`. A:B and positive S define
+N seeds; the immutable root is `[1,6*N+1)`. Block widths, receipts, progress and
+computed/resumed candidate counts refer to that expanded domain. Version 4 is
+forward seed order and version 5 reverse seed order; old versions and schema 7
+are unchanged. A batch stops at the next variant boundary even when its grant
+continues into the next variant. Restart infers this mapping; explicit conflicts
+fail before any new coverage is committed.
+
+Results use `scalar-orbit-index-v1` and expose `candidate_index`, `seed_scalar`,
+`orbit_variant` and actual `scalar`. Identical private scalars reached through
+different seeds/variants retain distinct candidate/target records. Completion
+certifies the expanded candidates, not a contiguous private-scalar interval.
+The current coordinate domain requires `6*N+1 <= n`; split oversized seed ranges
+into separate jobs. Direct/GLV/stepped switches, pause, backup and quarantined
+restore retain this identity. See [example and contract](C23_ORBITS.md).

@@ -9,6 +9,7 @@
 | Exact `hash160` / Bitcoin P2PKH `address --backend …` | Explicitly rejected | Validated | Validated |
 | Exact `ethereum --backend …` | Explicitly rejected | Validated | Validated |
 | Exact `vanity --backend …` | Explicitly rejected | Validated | Validated |
+| Explicit six-member `--endomorphism orbit` (scalar families) | CPU job preparation only | Validated | Validated |
 | Exact scalar `--stride HEX` and `--order forward\|reverse` (xpoint/HASH160/address/Ethereum/vanity) | Explicitly rejected; CPU job preparation supported | Validated | Validated |
 | Exact `minikeys --backend … --length 22\|30` | Explicitly rejected; CPU inspect supported | Validated | Validated |
 | `bsgs-table build` / `inspect`, state, job creation and result inspection | Supported | CPU operations | CPU operations |
@@ -21,7 +22,7 @@ partition limits. [C23's first family](C23_HASH160.md) adds exact raw HASH160 an
 Bitcoin mainnet P2PKH inputs with explicit public-key encoding identity.
 [Ethereum](C23_ETHEREUM_VALIDATION.md) adds Keccak addresses;
 [vanity](C23_VANITY_VALIDATION.md) adds exact case-sensitive Bitcoin P2PKH prefixes.
-[Minikeys 22/30](C23_MINIKEYS_VALIDATION.md) adds exact candidate ordinals and recovery. [Positive strides](C23_STRIDES.md) add exact scalar progressions with candidate-index recovery. [Reverse traversal](C23_REVERSE_VALIDATION.md) covers the same candidates in descending order with exact recovery. Endomorphism and other mappings require separate parity gates. C22 adds
+[Minikeys 22/30](C23_MINIKEYS_VALIDATION.md) adds exact candidate ordinals and recovery. [Positive strides](C23_STRIDES.md) add exact scalar progressions with candidate-index recovery. [Reverse traversal](C23_REVERSE_VALIDATION.md) covers the same candidates in descending order with exact recovery. [Six-member orbit expansion](C23_ORBITS.md) adds explicit derived candidates; other mappings require separate parity gates. C22 adds
 [manual offline assignment files](OFFLINE_ASSIGNMENTS.md) for disconnected workers
 and connected couriers. HTTPS workers also retain valid leases and a durable
 outbox between scheduled contacts.
@@ -119,7 +120,7 @@ The old README describes `pub2rmd` as experimental, but the main parser exits
 immediately after announcing its removal. The optional legacy executable has
 separate historical behavior; it is not a replacement GPU backend.
 
-Endomorphism, random orders, special encodings and large table configurations
+Additional mappings, random orders, special encodings and large table configurations
 need dedicated correctness gates before being included in the new scheduler.
 The [historical documentation](HISTORICAL_README.md) is retained for reference;
 [current baseline findings](CPU_BASELINE.md) take precedence over old claims.
@@ -157,6 +158,18 @@ The four native scalar families (`xpoint`, Bitcoin `hash160`/`address`,
 `ethereum`, `vanity`) also accept `--kernel glv`. It uses GLV arithmetic
 for the original candidate scalar without changing the candidate set. Forward,
 positive-stride and reverse mappings keep the same coverage and job identities.
-`stepped` remains the default. Legacy related-key endomorphism expansion and
-other search mappings remain separate work; BSGS and minikeys have no GLV kernel.
+`stepped` remains the default. Related-key expansion is selected separately with
+`--endomorphism orbit`. Other search mappings remain separate work; BSGS and
+minikeys have no GLV kernel.
 See [contracts and validation](C23_GLV.md).
+
+## Related-key orbit expansion
+
+`--endomorphism orbit` searches six derived private scalars per seed for xpoint,
+HASH160/P2PKH, Ethereum and vanity. The range/stride bounds the seeds; derived
+keys can lie outside it. Default `none` preserves existing coverage and IDs.
+Reverse changes seed order within each variant. Results expose candidate index,
+seed, variant and actual private scalar; overlapping seed orbits remain distinct
+observations. All three kernels support this mapping. BSGS and minikeys reject
+it. See [coverage limits and executable example](C23_ORBITS.md) and
+[acceptance](C23_ORBITS_VALIDATION.md).
