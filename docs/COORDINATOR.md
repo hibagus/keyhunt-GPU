@@ -522,14 +522,20 @@ See [contracts](C23_ORBITS.md) and [acceptance](C23_ORBITS_VALIDATION.md).
 
 ## C23 BSGS tile execution
 
-Pass `--tile-order reverse`, `--tile-order both-ends` or `--tile-order dance` to `tools/coordinator_worker.py` or `keyhunt-worker
-run-device` for BSGS queues. The default is forward. Reverse visits each grant
+Pass `--tile-order forward|reverse|both-ends|dance|random-window` to
+`tools/coordinator_worker.py` or `keyhunt-worker run-device` for BSGS queues. The default is forward. Reverse visits each grant
 from its highest uncovered scalar tile; block claim policy still decides which grant is
 assigned. Both-ends starts low on each grant/invocation and alternates actual
 tiles across low/high frontiers, including inside adaptive work units. See
 [its coverage contract](C23_BSGS_BOTH_ENDS.md). Dance cycles low/high/middle
 with a fixed midpoint rebuilt from each grant's saved complement and at most three
 active units; see [the dance contract](C23_BSGS_DANCE.md).
+Random-window shuffles bounded ascending windows within each grant, independently
+of coordinator claim policy. `--tile-seed HEX` (256-bit, default zero) and
+`--tile-window 1..256` (default 64) require random-window and are forwarded to the
+worker. Work ownership and sizing are fixed per window. Recovery resets the
+stream on missing coverage, allowing new seed/window settings. See [the
+random-window contract](C23_BSGS_RANDOM_WINDOW.md).
 A heterogeneous queue containing scalar or minikey jobs rejects an
 explicit tile-order override when it reaches those jobs.
 
@@ -537,7 +543,8 @@ Tile order is execution policy: configuration version 1, protocol, schema 7 and
 the capability list are unchanged. Older BSGS workers can still process the same
 jobs forward. Recovered coverage can contain disjoint intervals; every tile order
 uses their exact complement. Results stay in actual scalar coordinates. Prepared
-targets and baby tables survive grant handoff; `grant-finish` reports `tile_order`.
+targets and baby tables survive grant handoff; `grant-finish` reports `tile_order`,
+plus `tile_seed` and `tile_window` for random-window.
 HTTPS and disconnected file transports use the same runner. See
 [contract, recovery limits and example](C23_BSGS_REVERSE.md).
 

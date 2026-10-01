@@ -37,7 +37,7 @@ The ordinary C11 command emits volatile receipts. The separate C13
 [checkpoint commands](CHECKPOINTS.md) provide verified durable execution using
 the same HIP kernels and the C12 local journal.
 
-C23 adds execution-only `--tile-order forward|reverse|both-ends|dance` to HIP/CUDA native searches,
+C23 adds execution-only `--tile-order forward|reverse|both-ends|dance|random-window` to HIP/CUDA native searches,
 checkpoint runs and workers. Reverse selects scalar tiles from the upper end;
 GPU arithmetic inside each tile remains forward. It can change on restart without
 changing job identity. See [contract and example](C23_BSGS_REVERSE.md).
@@ -47,6 +47,12 @@ work units. Restart begins low again on remaining coverage. See
 [the both-ends contract and example](C23_BSGS_BOTH_ENDS.md).
 Dance cycles low/high/middle with a fixed midpoint, at most three active work units
 and exact scalar recovery. See [the dance contract and example](C23_BSGS_DANCE.md).
+Random-window shuffles the next bounded window of tiles from the lowest missing
+endpoints, exhausting it before advancing. It samples adaptive work sizing once
+per window and permits at most that many active work units. This is local
+randomization within ascending windows, not globally uniform sampling.
+Restart rebuilds missing coverage and resets the stream; seed/window may change.
+See [the random-window contract and example](C23_BSGS_RANDOM_WINDOW.md).
 
 ## Initial host validation
 
@@ -78,7 +84,9 @@ stop-on-match behavior. Only finite full public keys are accepted as BSGS target
 | `--target-batch` | 64 | Maximum targets per launch, 1..64; product with giant batch at most 1048576 |
 | `--candidate-capacity` | 1024 | Bounded records, 1..65536; overflow requires replay |
 | `--group-size` | auto | Automatic selection or explicit 1/8 giants per lane |
-| `--tile-order` | forward | `forward` selects the lowest remaining tile; `reverse` selects the highest; `both-ends` alternates low/high; `dance` cycles low/high/fixed-midpoint-forward |
+| `--tile-order` | forward | `forward` selects the lowest remaining tile; `reverse` selects the highest; `both-ends` alternates low/high; `dance` cycles low/high/fixed-midpoint-forward; `random-window` shuffles bounded ascending windows |
+| `--tile-seed` | 0 | 256-bit hexadecimal seed; requires random-window |
+| `--tile-window` | 64 | Tiles per shuffled window, 1..256; requires random-window |
 | `--host-memory` | 1073741824 | Checked table decode/preparation/search buffer budget in bytes |
 | `--reserve-bytes` | 67108864 | Keep this many currently free bytes unused on the selected HIP device |
 | `--device` | 0 | Ordinal within the runtime's current visible logical devices |

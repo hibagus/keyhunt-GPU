@@ -319,11 +319,17 @@ recorded in the [C20 follow-up](C20_CUDA_VALIDATION.md); MIG remains unvalidated
 ## BSGS tile traversal
 
 Native `bsgs`, `checkpoint run` and supervised workers accept execution-only
-`--tile-order forward|reverse|both-ends|dance`. Reverse selects the highest remaining scalar
+`--tile-order forward|reverse|both-ends|dance|random-window`. Reverse selects the highest remaining scalar
 tile within each grant, preserving all-target completion and actual scalar
 receipts. Both-ends alternates low/high tiles and starts low again after restart;
 see [its contract](C23_BSGS_BOTH_ENDS.md). Dance cycles low/high/middle with a
 fixed midpoint and exact coverage; see [contract and example](C23_BSGS_DANCE.md).
+Random-window shuffles ascending windows of up to `--tile-window 1..256` tiles
+(default 64), using `--tile-seed HEX` (256-bit, default zero). These overrides
+require random-window. A window fixes work ownership before shuffling and samples
+new adaptive sizing only for the next window. Restart resets the stream over
+saved gaps; seed/window may change. See [the contract and executable
+example](C23_BSGS_RANDOM_WINDOW.md) and [HIP/H200 acceptance](C23_BSGS_RANDOM_WINDOW_VALIDATION.md).
 Tile order can change on restart without
 recreating the job. See the
 [contract and executable HIP/CUDA example](C23_BSGS_REVERSE.md).

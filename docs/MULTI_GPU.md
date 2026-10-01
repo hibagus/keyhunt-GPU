@@ -135,6 +135,15 @@ midpoint bounds fragmentation; no tile or unit crosses it. Each unit retains its
 own timing, and a resumed grant reconstructs the midpoint from saved coverage.
 See [dance contracts](C23_BSGS_DANCE.md).
 
+BSGS `--tile-order random-window --tile-seed 2a --tile-window 64` shuffles
+bounded ascending windows inside each grant. Seed is hexadecimal (default zero);
+window size is 1..256 tiles (default 64). Each window partitions contiguous work
+units before shuffling, retaining at most that many active owners. Each owner
+records only its own execution time, and adaptive sizing applies to the next
+window. Recovery reconstructs the saved complement and resets the stream;
+seed/window may change. This leaves block claims and fleet partitioning intact.
+See [random-window contracts](C23_BSGS_RANDOM_WINDOW.md).
+
 Minikey workers accept `--ordinal-order reverse`, selecting contiguous work units
 and batches from the highest uncovered ordinal downward. Each device retains
 its target allocation across grants. Restart may switch direction without
