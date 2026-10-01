@@ -32,7 +32,7 @@ def validate(artifacts, hardware, device):
 
     require(one('table-inspect')['m'] == 257, 'wrong baby-table size')
     require(one('preflight')['integrity'] == 'ok', 'preflight audit failed')
-    for mode, width in [('xpoint', 256), ('bsgs', 65536), ('hash160', 256), ('ethereum', 256)]:
+    for mode, width in [('xpoint', 256), ('bsgs', 65536), ('hash160', 256), ('ethereum', 256), ('vanity', 256)]:
         job = one(mode + '-job')
         assignments = one(mode + '-grant')['assignments']
         require(job['project'] == one('project')['project'], 'wrong project')
@@ -62,7 +62,7 @@ def validate(artifacts, hardware, device):
                 require(begin == cursor and end > begin, 'noncontiguous volatile coverage')
                 cursor = end
         require(cursor == 1 + width, 'wrong volatile endpoint')
-        expected_count = 2 if mode == 'hash160' else 1
+        expected_count = 3 if mode == 'vanity' else 2 if mode == 'hash160' else 1
         require(len(matches) == expected_count and all(int(m['scalar'], 16) == 1 for m in matches),
                 'wrong volatile match set')
         durable = artifacts[mode + '-durable.ndjson'][-1]
@@ -93,6 +93,12 @@ def validate(artifacts, hardware, device):
                 'durable encoding relation differs from public fixture')
         require(one('ethereum-results')['results'][0]['target_bytes'] == '7e5f4552091a69125d5dfcb7b8c2659029395bdf',
                 'durable Ethereum address differs from public fixture')
+        prefixes = [(1,'1BgGZ9tc'), (1,'1BgGZ9tcN4rm9KBzDn7KprQz87SZ26SAMH'),
+                    (2,'1EHNa6Q4Jz2uvNExL497mE43ikXhwF6kZm')]
+        expected_prefixes = {(bytes([tag,len(prefix)])+prefix.encode()+bytes(34-len(prefix))).hex()
+                             for tag,prefix in prefixes}
+        require({r['target_bytes'] for r in one('vanity-results')['results']} == expected_prefixes,
+                'durable overlapping prefixes differ from public fixture')
         require(one('check')['integrity'] == 'ok', 'final journal audit failed')
         require(one('table-validate')['m'] == 257 and
                 one('table-validate')['checksum'] == one('table-inspect')['checksum'],
