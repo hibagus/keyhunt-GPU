@@ -10,7 +10,13 @@ int main(){try{
     const auto client=repo.admin({{"operation","bootstrap"},{"name","owner"},{"certificate",leaf}});
     const auto project=repo.admin({{"operation","project-create"},{"name","vanity"},{"owner",client["client"]}})["project"].get<std::string>();
     core::XPointVerifier verifier;std::vector<core::VanityTarget> values;
-    for(unsigned scalar:{1,8,9,16})for(uint8_t tag:{1,2})values.push_back(core::vanity_target(core::bitcoin_address(verifier.derive(UInt256(scalar)),tag).substr(0,8),tag));
+    // The server must preserve two overlapping prefixes for each encoding,
+    // even when several distinct targets refer to the same scalar.
+    for(unsigned scalar:{1,8,9,16})for(uint8_t tag:{1,2}){
+        const auto address=core::bitcoin_address(verifier.derive(UInt256(scalar)),tag);
+        values.push_back(core::vanity_target(address.substr(0,8),tag));
+        values.push_back(core::vanity_target(address,tag));
+    }
     const core::VanityTargets targets(values);const auto input=binding(targets);
     const Json body{{"mode","vanity"},{"begin",UInt256(1).hex()},{"end_exclusive",UInt256(17).hex()},
         {"block_width",UInt256(8).hex()},{"configuration",wire::hex(input.configuration)},{"targets",wire::hex(input.targets)}};
@@ -46,13 +52,13 @@ int main(){try{
     unsigned completed=0;
     while(auto grant=worker.next("gpu0")){
         require(worker.execution(*grant)["mode"]=="vanity","execution manifest lost mode");
-        CheckpointOptions options;options.xpoint_steps=3;options.candidate_capacity=2;options.checkpoint_seconds=0;
+        CheckpointOptions options;options.xpoint_steps=3;options.candidate_capacity=4;options.checkpoint_seconds=0;
         const auto result=CheckpointRun::vanity(worker.journal(),*grant,targets,verifier,[&](const auto& batch){
             backend::VanityResult result{batch,{}};result.device_steps=batch.step_count();
             for(uint64_t i=0;i<batch.step_count();++i){const auto scalar=batch.scalar_at(i);const auto point=verifier.derive(scalar);
                 for(uint8_t tag:{1,2}){const auto address=core::bitcoin_address(point,tag);
                     for(uint32_t t=0;t<targets.values().size();++t)if(targets.values()[t][0]==tag && core::vanity_matches(address,targets.values()[t]))result.matches.push_back({scalar,t});}}
-            result.candidate_count=result.matches.size();result.overflow=result.candidate_count>2;
+            result.candidate_count=result.matches.size();result.overflow=result.candidate_count>4;
             if(result.overflow)result.matches.clear();else result.verified_steps=result.device_steps;
             return result;
         },options);
@@ -62,10 +68,10 @@ int main(){try{
     require(repo.request(cert,"GET",path+"/results").empty(),"offline results appeared before synchronization");
     Json first;
     rejects([&]{worker.synchronize([&](const Json& sent)->Json{first=sent;transport(sent);throw std::runtime_error("lost upload reply");},true);});
-    const auto rows=repo.request(cert,"GET",path+"/results");require(rows.size()==8,"server lost one encoding");
+    const auto rows=repo.request(cert,"GET",path+"/results");require(rows.size()==16,"server lost an overlapping prefix/encoding relation");
     worker.synchronize([&](const Json& sent){require(sent==first,"pending vanity retry mutated");return transport(sent);},true);
     require(worker.status()["outbox_bytes"]==0&&!worker.next("gpu0"),"acknowledged vanity outbox retained");
     require(repo.request(cert,"GET",path+"/results")==rows,"retry duplicated results");
     worker.journal().check();repo.admin({{"operation","check"}});
-    std::cout<<"vanity capability fencing, canonical import, two-encoding upload and durable retry passed\n";
+    std::cout<<"vanity capability fencing, canonical import, overlapping prefix/encoding upload and durable retry passed\n";
 }catch(const std::exception& error){std::cerr<<error.what()<<'\n';return 1;}}
