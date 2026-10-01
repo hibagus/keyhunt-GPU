@@ -1,0 +1,1344 @@
+{
+  "hip": {
+    "examples": {
+      "passed": true,
+      "backend": "hip",
+      "binary_sha256": "9b6a0277ff1010b0cc79ca10cdc95240b986074168bf07ce6afc1e818399dbfe",
+      "document_sha256": "3017cf87fc3970db06b98cbec8e9a093137098706000c2baa1ad6de23c1ad3cc",
+      "artifacts": {
+        "grant.json": {
+          "assignments": [
+            {
+              "project": "fccd7cff-054a-47a2-b0fc-e57e66122673",
+              "job": "28259f6b21c480b450b07d5e14caddeffe4dabab128b1303c133906d9047e7c3",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f0e1",
+              "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f146",
+              "owner": "example",
+              "generation": "1",
+              "expires_unix": 1793468646,
+              "grant": "v1:fccd7cff-054a-47a2-b0fc-e57e66122673:28259f6b21c480b450b07d5e14caddeffe4dabab128b1303c133906d9047e7c3:example:49f3eeceadc12a82d7119bb5558ee925:1:1793468646:0x0000000000000000000000000000000000000000000000000000000000000000"
+            }
+          ]
+        },
+        "durable.ndjson": [
+          {
+            "type": "checkpoint",
+            "durability": "local",
+            "durable_results": true,
+            "durable_coverage": true,
+            "coordinate_space": "minikey-ordinal-v1",
+            "intervals": [
+              {
+                "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f0e1",
+                "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f0f2"
+              },
+              {
+                "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f135",
+                "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f146"
+              }
+            ],
+            "match_observations": 1,
+            "transaction_ms": 0.362505
+          },
+          {
+            "type": "checkpoint",
+            "durability": "local",
+            "durable_results": true,
+            "durable_coverage": true,
+            "coordinate_space": "minikey-ordinal-v1",
+            "intervals": [
+              {
+                "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f0f2",
+                "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f135"
+              }
+            ],
+            "match_observations": 0,
+            "transaction_ms": 0.347705
+          },
+          {
+            "type": "summary",
+            "complete": true,
+            "durability": "local",
+            "durable_coverage": true,
+            "coordinate_space": "minikey-ordinal-v1",
+            "resumed_ordinals": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "computed_ordinals": "0x0000000000000000000000000000000000000000000000000000000000000065",
+            "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000065",
+            "match_observations": 1,
+            "batches": 6,
+            "overflow_replays": 0,
+            "checkpoints": 2,
+            "checkpoint_ms": 0.71021,
+            "metrics_version": 2,
+            "device": 0,
+            "uuid": "30646366333934386337333264313231",
+            "mode": "minikeys",
+            "checkpoint_seconds": 10,
+            "bsgs_group_size": 0,
+            "verified_device_steps": "0x0000000000000000000000000000000000000000000000000000000000000065",
+            "kernel_ms": 16.865998473,
+            "download_ms": 0.0766540002078,
+            "seed_ms": 0,
+            "verification_ms": 0.094795,
+            "revalidation_ms": 0.058324,
+            "executor_wall_ms": 17.218562,
+            "replay_kernel_ms": 0,
+            "download_bytes": "0x0000000000000000000000000000000000000000000000000000000000000db0",
+            "peak_device_allocation_bytes": 628,
+            "peak_pinned_allocation_bytes": 584,
+            "preparation_ms": 213.809037,
+            "executor_setup_ms": 49.650602,
+            "table_upload_ms": 0,
+            "wall_ms": 233.755233,
+            "bsgs_groups": [],
+            "ordinal_order": "both-ends"
+          }
+        ],
+        "check.json": {
+          "integrity": "ok"
+        },
+        "results.json": {
+          "results": [
+            {
+              "id": "1",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "coordinate_space": "minikey-ordinal-v1",
+              "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f145",
+              "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7NzrRy",
+              "scalar": "0x4c7a9640c72dc2099f23715d0c8a0d8a35f8906e3cab61dd3f78b67bf887c9ab",
+              "target": 1,
+              "target_bytes": "1e027f6ab65fa911f558ca2dde3e9d073acb02c0d5c6"
+            }
+          ],
+          "next_after": "1"
+        },
+        "job.json": {
+          "project": "fccd7cff-054a-47a2-b0fc-e57e66122673",
+          "job": "28259f6b21c480b450b07d5e14caddeffe4dabab128b1303c133906d9047e7c3",
+          "target_digest": "18d214a92748290fc13bf555f3ebd931b478581487ee804f1fd8f5ea2505b021",
+          "algorithm_digest": "167ac6e063d6a3fbc38d46bd70629a3f27f07c7148b1efd1b4bd6dd5af74ab8d"
+        },
+        "project.json": {
+          "project": "fccd7cff-054a-47a2-b0fc-e57e66122673"
+        },
+        "inspect.json": {
+          "coordinate_space": "minikey-ordinal-v1",
+          "length": 30,
+          "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f145",
+          "valid": true,
+          "scalar": "0x4c7a9640c72dc2099f23715d0c8a0d8a35f8906e3cab61dd3f78b67bf887c9ab",
+          "space_end_exclusive": "0x0000000000000000000003af380ba0846bd100f8699786d516914981a0000001"
+        },
+        "volatile.ndjson": [
+          {
+            "type": "start",
+            "backend": "hip",
+            "mode": "minikeys",
+            "coordinate_space": "minikey-ordinal-v1",
+            "device": 0,
+            "ordinal_order": "both-ends",
+            "uuid": "30646366333934386337333264313231",
+            "target_count": 2,
+            "target_digest": "18d214a92748290fc13bf555f3ebd931b478581487ee804f1fd8f5ea2505b021",
+            "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f0e1",
+            "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f146",
+            "kernel": "direct",
+            "durable_coverage": false,
+            "preparation_ms": 189.053808
+          },
+          {
+            "type": "batch",
+            "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f0e1",
+            "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f0f2",
+            "overflow": false,
+            "verified_steps": 17,
+            "device_steps": 17,
+            "candidate_count": 0,
+            "kernel_ms": 10.4992952,
+            "download_ms": 0.0126689998,
+            "verification_ms": 0.002373,
+            "seed_ms": 0,
+            "wall_ms": 10.581278,
+            "device_allocation_bytes": 628,
+            "pinned_allocation_bytes": 584,
+            "download_bytes": 584,
+            "matches": []
+          },
+          {
+            "type": "batch",
+            "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f135",
+            "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f146",
+            "overflow": false,
+            "verified_steps": 17,
+            "device_steps": 17,
+            "candidate_count": 1,
+            "kernel_ms": 3.540097,
+            "download_ms": 0.0120670004,
+            "verification_ms": 0.078984,
+            "seed_ms": 0,
+            "wall_ms": 3.653783,
+            "device_allocation_bytes": 628,
+            "pinned_allocation_bytes": 584,
+            "download_bytes": 584,
+            "matches": [
+              {
+                "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f145",
+                "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7NzrRy",
+                "scalar": "0x4c7a9640c72dc2099f23715d0c8a0d8a35f8906e3cab61dd3f78b67bf887c9ab",
+                "hash160": "7f6ab65fa911f558ca2dde3e9d073acb02c0d5c6",
+                "encoding": "uncompressed",
+                "target": 1
+              }
+            ]
+          },
+          {
+            "type": "batch",
+            "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f0f2",
+            "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f103",
+            "overflow": false,
+            "verified_steps": 17,
+            "device_steps": 17,
+            "candidate_count": 0,
+            "kernel_ms": 0.0574910007,
+            "download_ms": 0.0122680003,
+            "verification_ms": 0.001396,
+            "seed_ms": 0,
+            "wall_ms": 0.098252,
+            "device_allocation_bytes": 628,
+            "pinned_allocation_bytes": 584,
+            "download_bytes": 584,
+            "matches": []
+          },
+          {
+            "type": "batch",
+            "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f124",
+            "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f135",
+            "overflow": false,
+            "verified_steps": 17,
+            "device_steps": 17,
+            "candidate_count": 0,
+            "kernel_ms": 0.0566489995,
+            "download_ms": 0.0119869998,
+            "verification_ms": 0.001653,
+            "seed_ms": 0,
+            "wall_ms": 0.089424,
+            "device_allocation_bytes": 628,
+            "pinned_allocation_bytes": 584,
+            "download_bytes": 584,
+            "matches": []
+          },
+          {
+            "type": "batch",
+            "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f103",
+            "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f114",
+            "overflow": false,
+            "verified_steps": 17,
+            "device_steps": 17,
+            "candidate_count": 0,
+            "kernel_ms": 0.0555270016,
+            "download_ms": 0.0119070001,
+            "verification_ms": 0.001515,
+            "seed_ms": 0,
+            "wall_ms": 0.087318,
+            "device_allocation_bytes": 628,
+            "pinned_allocation_bytes": 584,
+            "download_bytes": 584,
+            "matches": []
+          },
+          {
+            "type": "batch",
+            "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f114",
+            "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f124",
+            "overflow": false,
+            "verified_steps": 16,
+            "device_steps": 16,
+            "candidate_count": 0,
+            "kernel_ms": 3.56423092,
+            "download_ms": 0.0121480003,
+            "verification_ms": 0.001282,
+            "seed_ms": 0,
+            "wall_ms": 3.596556,
+            "device_allocation_bytes": 628,
+            "pinned_allocation_bytes": 584,
+            "download_bytes": 584,
+            "matches": []
+          },
+          {
+            "type": "summary",
+            "coordinate_space": "minikey-ordinal-v1",
+            "complete": true,
+            "durable_coverage": false,
+            "verified_steps": "0x0000000000000000000000000000000000000000000000000000000000000065",
+            "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000065",
+            "matches": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "ordinal_order": "both-ends",
+            "launch_count": 6,
+            "overflow_replays": 0,
+            "kernel_ms": 17.7732902,
+            "download_ms": 0.0730460007,
+            "verification_ms": 0.087203,
+            "seed_ms": 0,
+            "wall_ms": 207.301377
+          }
+        ],
+        "retry.ndjson": [
+          {
+            "type": "summary",
+            "complete": true,
+            "durability": "local",
+            "durable_coverage": true,
+            "coordinate_space": "minikey-ordinal-v1",
+            "resumed_ordinals": "0x0000000000000000000000000000000000000000000000000000000000000065",
+            "computed_ordinals": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "match_observations": 0,
+            "batches": 0,
+            "overflow_replays": 0,
+            "checkpoints": 0,
+            "checkpoint_ms": 0,
+            "metrics_version": 2,
+            "device": 0,
+            "uuid": "30646366333934386337333264313231",
+            "mode": "minikeys",
+            "checkpoint_seconds": 10,
+            "bsgs_group_size": 0,
+            "verified_device_steps": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "kernel_ms": 0,
+            "download_ms": 0,
+            "seed_ms": 0,
+            "verification_ms": 0,
+            "revalidation_ms": 0,
+            "executor_wall_ms": 0,
+            "replay_kernel_ms": 0,
+            "download_bytes": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "peak_device_allocation_bytes": 0,
+            "peak_pinned_allocation_bytes": 0,
+            "preparation_ms": 0,
+            "executor_setup_ms": 0,
+            "table_upload_ms": 0,
+            "wall_ms": 158.635384,
+            "bsgs_groups": [],
+            "ordinal_order": "reverse"
+          }
+        ]
+      },
+      "exit_code": 0,
+      "stderr": ""
+    },
+    "reverse_examples": {
+      "passed": true,
+      "backend": "hip",
+      "binary_sha256": "9b6a0277ff1010b0cc79ca10cdc95240b986074168bf07ce6afc1e818399dbfe",
+      "document_sha256": "194a218a8f8e47d65cab58299f088bc1f2ff2a8e4c6b406f7fbd3ee3f7c980be",
+      "artifacts": {
+        "grant.json": {
+          "assignments": [
+            {
+              "project": "bc2b5337-f131-4785-813f-d9465a535b29",
+              "job": "28259f6b21c480b450b07d5e14caddeffe4dabab128b1303c133906d9047e7c3",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f0e1",
+              "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f146",
+              "owner": "example",
+              "generation": "1",
+              "expires_unix": 1793468612,
+              "grant": "v1:bc2b5337-f131-4785-813f-d9465a535b29:28259f6b21c480b450b07d5e14caddeffe4dabab128b1303c133906d9047e7c3:example:780159d509cbe9f3ba05756030ed6b07:1:1793468612:0x0000000000000000000000000000000000000000000000000000000000000000"
+            }
+          ]
+        },
+        "durable.ndjson": [
+          {
+            "type": "checkpoint",
+            "durability": "local",
+            "durable_results": true,
+            "durable_coverage": true,
+            "coordinate_space": "minikey-ordinal-v1",
+            "intervals": [
+              {
+                "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f135",
+                "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f146"
+              }
+            ],
+            "match_observations": 1,
+            "transaction_ms": 0.49077
+          },
+          {
+            "type": "checkpoint",
+            "durability": "local",
+            "durable_results": true,
+            "durable_coverage": true,
+            "coordinate_space": "minikey-ordinal-v1",
+            "intervals": [
+              {
+                "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f0e1",
+                "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f135"
+              }
+            ],
+            "match_observations": 0,
+            "transaction_ms": 0.343551
+          },
+          {
+            "type": "summary",
+            "complete": true,
+            "durability": "local",
+            "durable_coverage": true,
+            "coordinate_space": "minikey-ordinal-v1",
+            "resumed_ordinals": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "computed_ordinals": "0x0000000000000000000000000000000000000000000000000000000000000065",
+            "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000065",
+            "match_observations": 1,
+            "batches": 6,
+            "overflow_replays": 0,
+            "checkpoints": 2,
+            "checkpoint_ms": 0.834321,
+            "metrics_version": 2,
+            "device": 0,
+            "uuid": "30646366333934386337333264313231",
+            "mode": "minikeys",
+            "checkpoint_seconds": 10,
+            "bsgs_group_size": 0,
+            "verified_device_steps": "0x0000000000000000000000000000000000000000000000000000000000000065",
+            "kernel_ms": 16.390814092,
+            "download_ms": 0.0734090004116,
+            "seed_ms": 0,
+            "verification_ms": 0.09275,
+            "revalidation_ms": 0.05814,
+            "executor_wall_ms": 16.733512,
+            "replay_kernel_ms": 0,
+            "download_bytes": "0x0000000000000000000000000000000000000000000000000000000000000db0",
+            "peak_device_allocation_bytes": 628,
+            "peak_pinned_allocation_bytes": 584,
+            "preparation_ms": 241.260698,
+            "executor_setup_ms": 50.57749,
+            "table_upload_ms": 0,
+            "wall_ms": 260.838545,
+            "bsgs_groups": [],
+            "ordinal_order": "reverse"
+          }
+        ],
+        "check.json": {
+          "integrity": "ok"
+        },
+        "results.json": {
+          "results": [
+            {
+              "id": "1",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "coordinate_space": "minikey-ordinal-v1",
+              "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f145",
+              "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7NzrRy",
+              "scalar": "0x4c7a9640c72dc2099f23715d0c8a0d8a35f8906e3cab61dd3f78b67bf887c9ab",
+              "target": 1,
+              "target_bytes": "1e027f6ab65fa911f558ca2dde3e9d073acb02c0d5c6"
+            }
+          ],
+          "next_after": "1"
+        },
+        "job.json": {
+          "project": "bc2b5337-f131-4785-813f-d9465a535b29",
+          "job": "28259f6b21c480b450b07d5e14caddeffe4dabab128b1303c133906d9047e7c3",
+          "target_digest": "18d214a92748290fc13bf555f3ebd931b478581487ee804f1fd8f5ea2505b021",
+          "algorithm_digest": "167ac6e063d6a3fbc38d46bd70629a3f27f07c7148b1efd1b4bd6dd5af74ab8d"
+        },
+        "project.json": {
+          "project": "bc2b5337-f131-4785-813f-d9465a535b29"
+        },
+        "inspect.json": {
+          "coordinate_space": "minikey-ordinal-v1",
+          "length": 30,
+          "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f145",
+          "valid": true,
+          "scalar": "0x4c7a9640c72dc2099f23715d0c8a0d8a35f8906e3cab61dd3f78b67bf887c9ab",
+          "space_end_exclusive": "0x0000000000000000000003af380ba0846bd100f8699786d516914981a0000001"
+        },
+        "volatile.ndjson": [
+          {
+            "type": "start",
+            "backend": "hip",
+            "mode": "minikeys",
+            "coordinate_space": "minikey-ordinal-v1",
+            "device": 0,
+            "ordinal_order": "reverse",
+            "uuid": "30646366333934386337333264313231",
+            "target_count": 2,
+            "target_digest": "18d214a92748290fc13bf555f3ebd931b478581487ee804f1fd8f5ea2505b021",
+            "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f0e1",
+            "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f146",
+            "kernel": "direct",
+            "durable_coverage": false,
+            "preparation_ms": 191.41644
+          },
+          {
+            "type": "batch",
+            "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f135",
+            "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f146",
+            "overflow": false,
+            "verified_steps": 17,
+            "device_steps": 17,
+            "candidate_count": 1,
+            "kernel_ms": 14.53792,
+            "download_ms": 0.0128300004,
+            "verification_ms": 0.091265,
+            "seed_ms": 0,
+            "wall_ms": 14.709711,
+            "device_allocation_bytes": 628,
+            "pinned_allocation_bytes": 584,
+            "download_bytes": 584,
+            "matches": [
+              {
+                "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f145",
+                "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7NzrRy",
+                "scalar": "0x4c7a9640c72dc2099f23715d0c8a0d8a35f8906e3cab61dd3f78b67bf887c9ab",
+                "hash160": "7f6ab65fa911f558ca2dde3e9d073acb02c0d5c6",
+                "encoding": "uncompressed",
+                "target": 1
+              }
+            ]
+          },
+          {
+            "type": "batch",
+            "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f124",
+            "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f135",
+            "overflow": false,
+            "verified_steps": 17,
+            "device_steps": 17,
+            "candidate_count": 0,
+            "kernel_ms": 0.057409998,
+            "download_ms": 0.012108,
+            "verification_ms": 0.001691,
+            "seed_ms": 0,
+            "wall_ms": 0.101849,
+            "device_allocation_bytes": 628,
+            "pinned_allocation_bytes": 584,
+            "download_bytes": 584,
+            "matches": []
+          },
+          {
+            "type": "batch",
+            "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f113",
+            "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f124",
+            "overflow": false,
+            "verified_steps": 17,
+            "device_steps": 17,
+            "candidate_count": 0,
+            "kernel_ms": 3.56456089,
+            "download_ms": 0.0121069998,
+            "verification_ms": 0.001521,
+            "seed_ms": 0,
+            "wall_ms": 3.597462,
+            "device_allocation_bytes": 628,
+            "pinned_allocation_bytes": 584,
+            "download_bytes": 584,
+            "matches": []
+          },
+          {
+            "type": "batch",
+            "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f102",
+            "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f113",
+            "overflow": false,
+            "verified_steps": 17,
+            "device_steps": 17,
+            "candidate_count": 0,
+            "kernel_ms": 0.0584129989,
+            "download_ms": 0.0119470004,
+            "verification_ms": 0.001545,
+            "seed_ms": 0,
+            "wall_ms": 0.090996,
+            "device_allocation_bytes": 628,
+            "pinned_allocation_bytes": 584,
+            "download_bytes": 584,
+            "matches": []
+          },
+          {
+            "type": "batch",
+            "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f0f1",
+            "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f102",
+            "overflow": false,
+            "verified_steps": 17,
+            "device_steps": 17,
+            "candidate_count": 0,
+            "kernel_ms": 0.0563680008,
+            "download_ms": 0.0120679997,
+            "verification_ms": 0.001532,
+            "seed_ms": 0,
+            "wall_ms": 0.087933,
+            "device_allocation_bytes": 628,
+            "pinned_allocation_bytes": 584,
+            "download_bytes": 584,
+            "matches": []
+          },
+          {
+            "type": "batch",
+            "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f0e1",
+            "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f0f1",
+            "overflow": false,
+            "verified_steps": 16,
+            "device_steps": 16,
+            "candidate_count": 0,
+            "kernel_ms": 0.0549650006,
+            "download_ms": 0.0121879997,
+            "verification_ms": 0.001581,
+            "seed_ms": 0,
+            "wall_ms": 0.087523,
+            "device_allocation_bytes": 628,
+            "pinned_allocation_bytes": 584,
+            "download_bytes": 584,
+            "matches": []
+          },
+          {
+            "type": "summary",
+            "coordinate_space": "minikey-ordinal-v1",
+            "complete": true,
+            "durable_coverage": false,
+            "verified_steps": "0x0000000000000000000000000000000000000000000000000000000000000065",
+            "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000065",
+            "matches": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "ordinal_order": "reverse",
+            "launch_count": 6,
+            "overflow_replays": 0,
+            "kernel_ms": 18.3296369,
+            "download_ms": 0.0732479999,
+            "verification_ms": 0.099135,
+            "seed_ms": 0,
+            "wall_ms": 210.244525
+          }
+        ],
+        "retry.ndjson": [
+          {
+            "type": "summary",
+            "complete": true,
+            "durability": "local",
+            "durable_coverage": true,
+            "coordinate_space": "minikey-ordinal-v1",
+            "resumed_ordinals": "0x0000000000000000000000000000000000000000000000000000000000000065",
+            "computed_ordinals": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "match_observations": 0,
+            "batches": 0,
+            "overflow_replays": 0,
+            "checkpoints": 0,
+            "checkpoint_ms": 0,
+            "metrics_version": 2,
+            "device": 0,
+            "uuid": "30646366333934386337333264313231",
+            "mode": "minikeys",
+            "checkpoint_seconds": 10,
+            "bsgs_group_size": 0,
+            "verified_device_steps": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "kernel_ms": 0,
+            "download_ms": 0,
+            "seed_ms": 0,
+            "verification_ms": 0,
+            "revalidation_ms": 0,
+            "executor_wall_ms": 0,
+            "replay_kernel_ms": 0,
+            "download_bytes": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "peak_device_allocation_bytes": 0,
+            "peak_pinned_allocation_bytes": 0,
+            "preparation_ms": 0,
+            "executor_setup_ms": 0,
+            "table_upload_ms": 0,
+            "wall_ms": 190.613846,
+            "bsgs_groups": [],
+            "ordinal_order": "forward"
+          }
+        ]
+      },
+      "exit_code": 0,
+      "stderr": ""
+    }
+  },
+  "cuda": {
+    "examples": {
+      "passed": true,
+      "backend": "cuda",
+      "binary_sha256": "727b2a5ec97d3a9e0b86e23a18e9cbb4b6c28cf0cdb5e468f8383461468380f5",
+      "document_sha256": "3017cf87fc3970db06b98cbec8e9a093137098706000c2baa1ad6de23c1ad3cc",
+      "artifacts": {
+        "results.json": {
+          "results": [
+            {
+              "id": "1",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "coordinate_space": "minikey-ordinal-v1",
+              "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f145",
+              "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7NzrRy",
+              "scalar": "0x4c7a9640c72dc2099f23715d0c8a0d8a35f8906e3cab61dd3f78b67bf887c9ab",
+              "target": 1,
+              "target_bytes": "1e027f6ab65fa911f558ca2dde3e9d073acb02c0d5c6"
+            }
+          ],
+          "next_after": "1"
+        },
+        "check.json": {
+          "integrity": "ok"
+        },
+        "durable.ndjson": [
+          {
+            "type": "checkpoint",
+            "durability": "local",
+            "durable_results": true,
+            "durable_coverage": true,
+            "coordinate_space": "minikey-ordinal-v1",
+            "intervals": [
+              {
+                "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f0e1",
+                "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f0f2"
+              },
+              {
+                "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f135",
+                "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f146"
+              }
+            ],
+            "match_observations": 1,
+            "transaction_ms": 0.605369
+          },
+          {
+            "type": "checkpoint",
+            "durability": "local",
+            "durable_results": true,
+            "durable_coverage": true,
+            "coordinate_space": "minikey-ordinal-v1",
+            "intervals": [
+              {
+                "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f0f2",
+                "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f135"
+              }
+            ],
+            "match_observations": 0,
+            "transaction_ms": 0.538609
+          },
+          {
+            "type": "summary",
+            "complete": true,
+            "durability": "local",
+            "durable_coverage": true,
+            "coordinate_space": "minikey-ordinal-v1",
+            "resumed_ordinals": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "computed_ordinals": "0x0000000000000000000000000000000000000000000000000000000000000065",
+            "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000065",
+            "match_observations": 1,
+            "batches": 6,
+            "overflow_replays": 0,
+            "checkpoints": 2,
+            "checkpoint_ms": 1.143978,
+            "metrics_version": 2,
+            "device": 0,
+            "uuid": "9fdcd9f2c45469a881b044d5f5e92bb8",
+            "mode": "minikeys",
+            "checkpoint_seconds": 10,
+            "bsgs_group_size": 0,
+            "verified_device_steps": "0x0000000000000000000000000000000000000000000000000000000000000065",
+            "kernel_ms": 5.31155199558,
+            "download_ms": 0.0731199998409,
+            "seed_ms": 0,
+            "verification_ms": 0.085618,
+            "revalidation_ms": 0.059776,
+            "executor_wall_ms": 5.572967,
+            "replay_kernel_ms": 0,
+            "download_bytes": "0x0000000000000000000000000000000000000000000000000000000000000db0",
+            "peak_device_allocation_bytes": 628,
+            "peak_pinned_allocation_bytes": 584,
+            "preparation_ms": 2748.034151,
+            "executor_setup_ms": 1.000787,
+            "table_upload_ms": 0,
+            "wall_ms": 2755.635378,
+            "bsgs_groups": [],
+            "ordinal_order": "both-ends"
+          }
+        ],
+        "project.json": {
+          "project": "987a7eb1-dfd3-4e4a-b048-92eef368189e"
+        },
+        "volatile.ndjson": [
+          {
+            "type": "start",
+            "backend": "cuda",
+            "mode": "minikeys",
+            "coordinate_space": "minikey-ordinal-v1",
+            "device": 0,
+            "ordinal_order": "both-ends",
+            "uuid": "9fdcd9f2c45469a881b044d5f5e92bb8",
+            "target_count": 2,
+            "target_digest": "18d214a92748290fc13bf555f3ebd931b478581487ee804f1fd8f5ea2505b021",
+            "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f0e1",
+            "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f146",
+            "kernel": "direct",
+            "durable_coverage": false,
+            "preparation_ms": 2836.10031
+          },
+          {
+            "type": "batch",
+            "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f0e1",
+            "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f0f2",
+            "overflow": false,
+            "verified_steps": 17,
+            "device_steps": 17,
+            "candidate_count": 0,
+            "kernel_ms": 1.25935996,
+            "download_ms": 0.0119679999,
+            "verification_ms": 0.002054,
+            "seed_ms": 0,
+            "wall_ms": 1.306846,
+            "device_allocation_bytes": 628,
+            "pinned_allocation_bytes": 584,
+            "download_bytes": 584,
+            "matches": []
+          },
+          {
+            "type": "batch",
+            "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f135",
+            "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f146",
+            "overflow": false,
+            "verified_steps": 17,
+            "device_steps": 17,
+            "candidate_count": 1,
+            "kernel_ms": 2.1563201,
+            "download_ms": 0.0140800001,
+            "verification_ms": 0.080637,
+            "seed_ms": 0,
+            "wall_ms": 2.265922,
+            "device_allocation_bytes": 628,
+            "pinned_allocation_bytes": 584,
+            "download_bytes": 584,
+            "matches": [
+              {
+                "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f145",
+                "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7NzrRy",
+                "scalar": "0x4c7a9640c72dc2099f23715d0c8a0d8a35f8906e3cab61dd3f78b67bf887c9ab",
+                "hash160": "7f6ab65fa911f558ca2dde3e9d073acb02c0d5c6",
+                "encoding": "uncompressed",
+                "target": 1
+              }
+            ]
+          },
+          {
+            "type": "batch",
+            "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f0f2",
+            "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f103",
+            "overflow": false,
+            "verified_steps": 17,
+            "device_steps": 17,
+            "candidate_count": 0,
+            "kernel_ms": 0.0190399997,
+            "download_ms": 0.0108479997,
+            "verification_ms": 0.001478,
+            "seed_ms": 0,
+            "wall_ms": 0.044813,
+            "device_allocation_bytes": 628,
+            "pinned_allocation_bytes": 584,
+            "download_bytes": 584,
+            "matches": []
+          },
+          {
+            "type": "batch",
+            "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f124",
+            "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f135",
+            "overflow": false,
+            "verified_steps": 17,
+            "device_steps": 17,
+            "candidate_count": 0,
+            "kernel_ms": 0.018592,
+            "download_ms": 0.0114559997,
+            "verification_ms": 0.001458,
+            "seed_ms": 0,
+            "wall_ms": 0.044846,
+            "device_allocation_bytes": 628,
+            "pinned_allocation_bytes": 584,
+            "download_bytes": 584,
+            "matches": []
+          },
+          {
+            "type": "batch",
+            "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f103",
+            "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f114",
+            "overflow": false,
+            "verified_steps": 17,
+            "device_steps": 17,
+            "candidate_count": 0,
+            "kernel_ms": 0.0167999994,
+            "download_ms": 0.0126080001,
+            "verification_ms": 0.001477,
+            "seed_ms": 0,
+            "wall_ms": 0.044175,
+            "device_allocation_bytes": 628,
+            "pinned_allocation_bytes": 584,
+            "download_bytes": 584,
+            "matches": []
+          },
+          {
+            "type": "batch",
+            "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f114",
+            "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f124",
+            "overflow": false,
+            "verified_steps": 16,
+            "device_steps": 16,
+            "candidate_count": 0,
+            "kernel_ms": 2.16531205,
+            "download_ms": 0.00848000031,
+            "verification_ms": 0.001458,
+            "seed_ms": 0,
+            "wall_ms": 2.188433,
+            "device_allocation_bytes": 628,
+            "pinned_allocation_bytes": 584,
+            "download_bytes": 584,
+            "matches": []
+          },
+          {
+            "type": "summary",
+            "coordinate_space": "minikey-ordinal-v1",
+            "complete": true,
+            "durable_coverage": false,
+            "verified_steps": "0x0000000000000000000000000000000000000000000000000000000000000065",
+            "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000065",
+            "matches": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "ordinal_order": "both-ends",
+            "launch_count": 6,
+            "overflow_replays": 0,
+            "kernel_ms": 5.6354241,
+            "download_ms": 0.0694399998,
+            "verification_ms": 0.088562,
+            "seed_ms": 0,
+            "wall_ms": 2843.16023
+          }
+        ],
+        "inspect.json": {
+          "coordinate_space": "minikey-ordinal-v1",
+          "length": 30,
+          "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f145",
+          "valid": true,
+          "scalar": "0x4c7a9640c72dc2099f23715d0c8a0d8a35f8906e3cab61dd3f78b67bf887c9ab",
+          "space_end_exclusive": "0x0000000000000000000003af380ba0846bd100f8699786d516914981a0000001"
+        },
+        "retry.ndjson": [
+          {
+            "type": "summary",
+            "complete": true,
+            "durability": "local",
+            "durable_coverage": true,
+            "coordinate_space": "minikey-ordinal-v1",
+            "resumed_ordinals": "0x0000000000000000000000000000000000000000000000000000000000000065",
+            "computed_ordinals": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "match_observations": 0,
+            "batches": 0,
+            "overflow_replays": 0,
+            "checkpoints": 0,
+            "checkpoint_ms": 0,
+            "metrics_version": 2,
+            "device": 0,
+            "uuid": "9fdcd9f2c45469a881b044d5f5e92bb8",
+            "mode": "minikeys",
+            "checkpoint_seconds": 10,
+            "bsgs_group_size": 0,
+            "verified_device_steps": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "kernel_ms": 0,
+            "download_ms": 0,
+            "seed_ms": 0,
+            "verification_ms": 0,
+            "revalidation_ms": 0,
+            "executor_wall_ms": 0,
+            "replay_kernel_ms": 0,
+            "download_bytes": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "peak_device_allocation_bytes": 0,
+            "peak_pinned_allocation_bytes": 0,
+            "preparation_ms": 0,
+            "executor_setup_ms": 0,
+            "table_upload_ms": 0,
+            "wall_ms": 2761.519293,
+            "bsgs_groups": [],
+            "ordinal_order": "reverse"
+          }
+        ],
+        "job.json": {
+          "project": "987a7eb1-dfd3-4e4a-b048-92eef368189e",
+          "job": "28259f6b21c480b450b07d5e14caddeffe4dabab128b1303c133906d9047e7c3",
+          "target_digest": "18d214a92748290fc13bf555f3ebd931b478581487ee804f1fd8f5ea2505b021",
+          "algorithm_digest": "167ac6e063d6a3fbc38d46bd70629a3f27f07c7148b1efd1b4bd6dd5af74ab8d"
+        },
+        "grant.json": {
+          "assignments": [
+            {
+              "project": "987a7eb1-dfd3-4e4a-b048-92eef368189e",
+              "job": "28259f6b21c480b450b07d5e14caddeffe4dabab128b1303c133906d9047e7c3",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f0e1",
+              "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f146",
+              "owner": "example",
+              "generation": "1",
+              "expires_unix": 1793469385,
+              "grant": "v1:987a7eb1-dfd3-4e4a-b048-92eef368189e:28259f6b21c480b450b07d5e14caddeffe4dabab128b1303c133906d9047e7c3:example:21554a9b7f6971ee3a39c3ced92e01d3:1:1793469385:0x0000000000000000000000000000000000000000000000000000000000000000"
+            }
+          ]
+        }
+      },
+      "exit_code": 0,
+      "stderr": ""
+    },
+    "reverse_examples": {
+      "passed": true,
+      "backend": "cuda",
+      "binary_sha256": "727b2a5ec97d3a9e0b86e23a18e9cbb4b6c28cf0cdb5e468f8383461468380f5",
+      "document_sha256": "194a218a8f8e47d65cab58299f088bc1f2ff2a8e4c6b406f7fbd3ee3f7c980be",
+      "artifacts": {
+        "results.json": {
+          "results": [
+            {
+              "id": "1",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "coordinate_space": "minikey-ordinal-v1",
+              "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f145",
+              "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7NzrRy",
+              "scalar": "0x4c7a9640c72dc2099f23715d0c8a0d8a35f8906e3cab61dd3f78b67bf887c9ab",
+              "target": 1,
+              "target_bytes": "1e027f6ab65fa911f558ca2dde3e9d073acb02c0d5c6"
+            }
+          ],
+          "next_after": "1"
+        },
+        "check.json": {
+          "integrity": "ok"
+        },
+        "durable.ndjson": [
+          {
+            "type": "checkpoint",
+            "durability": "local",
+            "durable_results": true,
+            "durable_coverage": true,
+            "coordinate_space": "minikey-ordinal-v1",
+            "intervals": [
+              {
+                "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f135",
+                "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f146"
+              }
+            ],
+            "match_observations": 1,
+            "transaction_ms": 0.62709
+          },
+          {
+            "type": "checkpoint",
+            "durability": "local",
+            "durable_results": true,
+            "durable_coverage": true,
+            "coordinate_space": "minikey-ordinal-v1",
+            "intervals": [
+              {
+                "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f0e1",
+                "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f135"
+              }
+            ],
+            "match_observations": 0,
+            "transaction_ms": 0.52822
+          },
+          {
+            "type": "summary",
+            "complete": true,
+            "durability": "local",
+            "durable_coverage": true,
+            "coordinate_space": "minikey-ordinal-v1",
+            "resumed_ordinals": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "computed_ordinals": "0x0000000000000000000000000000000000000000000000000000000000000065",
+            "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000065",
+            "match_observations": 1,
+            "batches": 6,
+            "overflow_replays": 0,
+            "checkpoints": 2,
+            "checkpoint_ms": 1.15531,
+            "metrics_version": 2,
+            "device": 0,
+            "uuid": "9fdcd9f2c45469a881b044d5f5e92bb8",
+            "mode": "minikeys",
+            "checkpoint_seconds": 10,
+            "bsgs_group_size": 0,
+            "verified_device_steps": "0x0000000000000000000000000000000000000000000000000000000000000065",
+            "kernel_ms": 5.29894379154,
+            "download_ms": 0.0779839996248,
+            "seed_ms": 0,
+            "verification_ms": 0.089129,
+            "revalidation_ms": 0.060452,
+            "executor_wall_ms": 5.574111,
+            "replay_kernel_ms": 0,
+            "download_bytes": "0x0000000000000000000000000000000000000000000000000000000000000db0",
+            "peak_device_allocation_bytes": 628,
+            "peak_pinned_allocation_bytes": 584,
+            "preparation_ms": 2744.609989,
+            "executor_setup_ms": 0.998183,
+            "table_upload_ms": 0,
+            "wall_ms": 2752.164343,
+            "bsgs_groups": [],
+            "ordinal_order": "reverse"
+          }
+        ],
+        "project.json": {
+          "project": "fd4269d9-ea4f-401e-92c6-bce394846765"
+        },
+        "volatile.ndjson": [
+          {
+            "type": "start",
+            "backend": "cuda",
+            "mode": "minikeys",
+            "coordinate_space": "minikey-ordinal-v1",
+            "device": 0,
+            "ordinal_order": "reverse",
+            "uuid": "9fdcd9f2c45469a881b044d5f5e92bb8",
+            "target_count": 2,
+            "target_digest": "18d214a92748290fc13bf555f3ebd931b478581487ee804f1fd8f5ea2505b021",
+            "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f0e1",
+            "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f146",
+            "kernel": "direct",
+            "durable_coverage": false,
+            "preparation_ms": 2852.19262
+          },
+          {
+            "type": "batch",
+            "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f135",
+            "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f146",
+            "overflow": false,
+            "verified_steps": 17,
+            "device_steps": 17,
+            "candidate_count": 1,
+            "kernel_ms": 3.39587212,
+            "download_ms": 0.0127680004,
+            "verification_ms": 0.084175,
+            "seed_ms": 0,
+            "wall_ms": 3.529632,
+            "device_allocation_bytes": 628,
+            "pinned_allocation_bytes": 584,
+            "download_bytes": 584,
+            "matches": [
+              {
+                "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f145",
+                "minikey": "S6c56bnXQiBjk9mqSYE7ykVQ7NzrRy",
+                "scalar": "0x4c7a9640c72dc2099f23715d0c8a0d8a35f8906e3cab61dd3f78b67bf887c9ab",
+                "hash160": "7f6ab65fa911f558ca2dde3e9d073acb02c0d5c6",
+                "encoding": "uncompressed",
+                "target": 1
+              }
+            ]
+          },
+          {
+            "type": "batch",
+            "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f124",
+            "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f135",
+            "overflow": false,
+            "verified_steps": 17,
+            "device_steps": 17,
+            "candidate_count": 0,
+            "kernel_ms": 0.0225280002,
+            "download_ms": 0.0115839997,
+            "verification_ms": 0.001725,
+            "seed_ms": 0,
+            "wall_ms": 0.051048,
+            "device_allocation_bytes": 628,
+            "pinned_allocation_bytes": 584,
+            "download_bytes": 584,
+            "matches": []
+          },
+          {
+            "type": "batch",
+            "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f113",
+            "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f124",
+            "overflow": false,
+            "verified_steps": 17,
+            "device_steps": 17,
+            "candidate_count": 0,
+            "kernel_ms": 2.16799998,
+            "download_ms": 0.00809600018,
+            "verification_ms": 0.001637,
+            "seed_ms": 0,
+            "wall_ms": 2.191176,
+            "device_allocation_bytes": 628,
+            "pinned_allocation_bytes": 584,
+            "download_bytes": 584,
+            "matches": []
+          },
+          {
+            "type": "batch",
+            "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f102",
+            "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f113",
+            "overflow": false,
+            "verified_steps": 17,
+            "device_steps": 17,
+            "candidate_count": 0,
+            "kernel_ms": 0.0183039997,
+            "download_ms": 0.00969600026,
+            "verification_ms": 0.001633,
+            "seed_ms": 0,
+            "wall_ms": 0.042573,
+            "device_allocation_bytes": 628,
+            "pinned_allocation_bytes": 584,
+            "download_bytes": 584,
+            "matches": []
+          },
+          {
+            "type": "batch",
+            "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f0f1",
+            "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f102",
+            "overflow": false,
+            "verified_steps": 17,
+            "device_steps": 17,
+            "candidate_count": 0,
+            "kernel_ms": 0.0167679992,
+            "download_ms": 0.0121600004,
+            "verification_ms": 0.001635,
+            "seed_ms": 0,
+            "wall_ms": 0.043911,
+            "device_allocation_bytes": 628,
+            "pinned_allocation_bytes": 584,
+            "download_bytes": 584,
+            "matches": []
+          },
+          {
+            "type": "batch",
+            "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f0e1",
+            "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f0f1",
+            "overflow": false,
+            "verified_steps": 16,
+            "device_steps": 16,
+            "candidate_count": 0,
+            "kernel_ms": 0.0165439993,
+            "download_ms": 0.0114240004,
+            "verification_ms": 0.001631,
+            "seed_ms": 0,
+            "wall_ms": 0.042584,
+            "device_allocation_bytes": 628,
+            "pinned_allocation_bytes": 584,
+            "download_bytes": 584,
+            "matches": []
+          },
+          {
+            "type": "summary",
+            "coordinate_space": "minikey-ordinal-v1",
+            "complete": true,
+            "durable_coverage": false,
+            "verified_steps": "0x0000000000000000000000000000000000000000000000000000000000000065",
+            "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000065",
+            "matches": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "ordinal_order": "reverse",
+            "launch_count": 6,
+            "overflow_replays": 0,
+            "kernel_ms": 5.6380161,
+            "download_ms": 0.0657280013,
+            "verification_ms": 0.092436,
+            "seed_ms": 0,
+            "wall_ms": 2858.23825
+          }
+        ],
+        "inspect.json": {
+          "coordinate_space": "minikey-ordinal-v1",
+          "length": 30,
+          "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f145",
+          "valid": true,
+          "scalar": "0x4c7a9640c72dc2099f23715d0c8a0d8a35f8906e3cab61dd3f78b67bf887c9ab",
+          "space_end_exclusive": "0x0000000000000000000003af380ba0846bd100f8699786d516914981a0000001"
+        },
+        "retry.ndjson": [
+          {
+            "type": "summary",
+            "complete": true,
+            "durability": "local",
+            "durable_coverage": true,
+            "coordinate_space": "minikey-ordinal-v1",
+            "resumed_ordinals": "0x0000000000000000000000000000000000000000000000000000000000000065",
+            "computed_ordinals": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "match_observations": 0,
+            "batches": 0,
+            "overflow_replays": 0,
+            "checkpoints": 0,
+            "checkpoint_ms": 0,
+            "metrics_version": 2,
+            "device": 0,
+            "uuid": "9fdcd9f2c45469a881b044d5f5e92bb8",
+            "mode": "minikeys",
+            "checkpoint_seconds": 10,
+            "bsgs_group_size": 0,
+            "verified_device_steps": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "kernel_ms": 0,
+            "download_ms": 0,
+            "seed_ms": 0,
+            "verification_ms": 0,
+            "revalidation_ms": 0,
+            "executor_wall_ms": 0,
+            "replay_kernel_ms": 0,
+            "download_bytes": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "peak_device_allocation_bytes": 0,
+            "peak_pinned_allocation_bytes": 0,
+            "preparation_ms": 0,
+            "executor_setup_ms": 0,
+            "table_upload_ms": 0,
+            "wall_ms": 2755.396351,
+            "bsgs_groups": [],
+            "ordinal_order": "forward"
+          }
+        ],
+        "job.json": {
+          "project": "fd4269d9-ea4f-401e-92c6-bce394846765",
+          "job": "28259f6b21c480b450b07d5e14caddeffe4dabab128b1303c133906d9047e7c3",
+          "target_digest": "18d214a92748290fc13bf555f3ebd931b478581487ee804f1fd8f5ea2505b021",
+          "algorithm_digest": "167ac6e063d6a3fbc38d46bd70629a3f27f07c7148b1efd1b4bd6dd5af74ab8d"
+        },
+        "grant.json": {
+          "assignments": [
+            {
+              "project": "fd4269d9-ea4f-401e-92c6-bce394846765",
+              "job": "28259f6b21c480b450b07d5e14caddeffe4dabab128b1303c133906d9047e7c3",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f0e1",
+              "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f146",
+              "owner": "example",
+              "generation": "1",
+              "expires_unix": 1793469112,
+              "grant": "v1:fd4269d9-ea4f-401e-92c6-bce394846765:28259f6b21c480b450b07d5e14caddeffe4dabab128b1303c133906d9047e7c3:example:0eb6e094e7aa92ba3b256302fb591afa:1:1793469112:0x0000000000000000000000000000000000000000000000000000000000000000"
+            }
+          ]
+        }
+      },
+      "exit_code": 0,
+      "stderr": ""
+    }
+  },
+  "cpu": {
+    "passed": true,
+    "backend": "cpu",
+    "binary_sha256": "68ada502128d9d469a55422f54f68836e7371e4fa8573be5268d78b5467b123a",
+    "document_sha256": "3017cf87fc3970db06b98cbec8e9a093137098706000c2baa1ad6de23c1ad3cc",
+    "artifacts": {
+      "grant.json": {
+        "assignments": [
+          {
+            "project": "1b799092-b943-499a-82ab-f5420ebd1567",
+            "job": "28259f6b21c480b450b07d5e14caddeffe4dabab128b1303c133906d9047e7c3",
+            "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "begin": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f0e1",
+            "end_exclusive": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f146",
+            "owner": "example",
+            "generation": "1",
+            "expires_unix": 1793468589,
+            "grant": "v1:1b799092-b943-499a-82ab-f5420ebd1567:28259f6b21c480b450b07d5e14caddeffe4dabab128b1303c133906d9047e7c3:example:bc9d2be455bbb1dbf151ea137b15d63c:1:1793468589:0x0000000000000000000000000000000000000000000000000000000000000000"
+          }
+        ]
+      },
+      "job.json": {
+        "project": "1b799092-b943-499a-82ab-f5420ebd1567",
+        "job": "28259f6b21c480b450b07d5e14caddeffe4dabab128b1303c133906d9047e7c3",
+        "target_digest": "18d214a92748290fc13bf555f3ebd931b478581487ee804f1fd8f5ea2505b021",
+        "algorithm_digest": "167ac6e063d6a3fbc38d46bd70629a3f27f07c7148b1efd1b4bd6dd5af74ab8d"
+      },
+      "project.json": {
+        "project": "1b799092-b943-499a-82ab-f5420ebd1567"
+      },
+      "inspect.json": {
+        "coordinate_space": "minikey-ordinal-v1",
+        "length": 30,
+        "ordinal": "0x00000000000000000000005b2532071db1f29d1effc3478ac39b6a3f75b7f145",
+        "valid": true,
+        "scalar": "0x4c7a9640c72dc2099f23715d0c8a0d8a35f8906e3cab61dd3f78b67bf887c9ab",
+        "space_end_exclusive": "0x0000000000000000000003af380ba0846bd100f8699786d516914981a0000001"
+      }
+    },
+    "exit_code": 0,
+    "stderr": ""
+  }
+}
