@@ -72,6 +72,8 @@ struct Prepared {
         const auto raw=wire::unhex(inputs["targets"].get<std::string>());
         if(raw.size()>host_memory/4)throw std::runtime_error("target preparation exceeds host memory budget");
         const auto mode=wire::mode(inputs["mode"].get<std::string>());
+        if(mode!=Mode::Bsgs && options.count("tile-order"))
+            throw std::invalid_argument("tile-order applies only to BSGS");
         if(raw.empty()||raw.size()%target_width(mode))throw std::runtime_error("invalid device target width");
         if(mode==Mode::XPoint){
             std::vector<core::XPointBytes> values(raw.size()/32);
@@ -127,6 +129,11 @@ int run_device(const Options& args){
     const auto once=option(args,"once","no"),rebind=option(args,"rebind","no");
     if((once!="yes"&&once!="no")||(rebind!="yes"&&rebind!="no"))throw std::invalid_argument("once/rebind require yes or no");
     CheckpointOptions limits;limits.concurrent_blocks=true;limits.work_unit_seconds=180;
+    if(args.count("tile-order")){
+        const auto order=option(args,"tile-order");
+        if(order!="forward" && order!="reverse")throw std::invalid_argument("tile-order must be forward or reverse");
+        limits.bsgs_reverse_tiles=order=="reverse";
+    }
     limits.xpoint_steps=number(args,"batch-size",1048576,1048576);
     limits.target_batch=uint32_t(number(args,"target-batch",64,64));
     limits.giant_steps=number(args,"giant-batch",16384,1048576/limits.target_batch);
@@ -257,6 +264,7 @@ int run_device(const Options& args){
                 {"table_upload_ms",prepared.b_executor?prepared.b_executor->table_upload_ms():0}};
             if(prepared.stride_mapping)finished["coordinate_space"]=prepared.stride_mapping->coordinate_space();
             if(prepared.m_targets)finished["coordinate_space"]="minikey-ordinal-v1";
+            if(prepared.b_targets)finished["tile_order"]=limits.bsgs_reverse_tiles.value_or(false)?"reverse":"forward";
             emit(std::move(finished));
             if(!result.complete)break;
         }catch(const ExecutionBlocked& blocked){

@@ -267,3 +267,22 @@ if(KEYHUNT_TEST_APACHE_ROOT AND TARGET keyhunt-worker)
         endif()
     endforeach()
 endif()
+
+add_executable(coordinator_bsgs_reverse_test tests/coordinator/bsgs_reverse.cpp)
+target_include_directories(coordinator_bsgs_reverse_test PRIVATE src/storage src/coordinator)
+target_link_libraries(coordinator_bsgs_reverse_test PRIVATE keyhunt_coordination)
+keyhunt_configure_target(coordinator_bsgs_reverse_test)
+add_test(NAME coordinator_bsgs_reverse COMMAND coordinator_bsgs_reverse_test)
+set_tests_properties(coordinator_bsgs_reverse PROPERTIES TIMEOUT 180 LABELS "cpu;coordinator;bsgs;reverse;recovery")
+
+if(KEYHUNT_TEST_APACHE_ROOT AND TARGET keyhunt-worker)
+    add_test(NAME coordinator_bsgs_reverse_cli COMMAND ${Python3_EXECUTABLE}
+        ${PROJECT_SOURCE_DIR}/tests/coordinator/bsgs_reverse_cli.py
+        --coordinator $<TARGET_FILE:keyhunt-coordinator> --worker $<TARGET_FILE:keyhunt-worker>
+        --keyhunt $<TARGET_FILE:keyhunt> --oracle $<TARGET_FILE:secp256k1_oracle>
+        --apache-root ${KEYHUNT_TEST_APACHE_ROOT} --report ${CMAKE_CURRENT_BINARY_DIR}/coordinator-bsgs-reverse-cli.json ${coordinator_worker_options})
+    set_tests_properties(coordinator_bsgs_reverse_cli PROPERTIES TIMEOUT 300 LABELS "cpu;coordinator;bsgs;reverse;integration;recovery")
+    if(KEYHUNT_ENABLE_GPU)
+        set_tests_properties(coordinator_bsgs_reverse_cli PROPERTIES LABELS "${KEYHUNT_GPU_BACKEND};hardware;coordinator;bsgs;reverse;integration;recovery" RESOURCE_LOCK gpu_device)
+    endif()
+endif()

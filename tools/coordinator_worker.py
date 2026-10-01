@@ -142,6 +142,7 @@ def main():
                         help="allow a stopped queue to move to a different UUID")
     parser.add_argument("--stall-seconds", type=int, default=300)
     parser.add_argument("--kernel", choices=("direct", "stepped", "glv"), help="scalar search also accepts glv; override the mode default: direct for minikeys, stepped for scalar search")
+    parser.add_argument("--tile-order", choices=("forward", "reverse"), help="BSGS only: choose tiles within each grant; saved scalar coverage is unchanged")
     parser.add_argument("--group-size", choices=("auto", "1", "8"), default="auto")
     parser.add_argument("--batch-size", type=int, default=1048576)
     parser.add_argument("--giant-batch", type=int, default=16384)
@@ -277,6 +278,8 @@ def main():
                         "--target-batch", args.target_batch, "--host-memory", per_device_memory)
         if args.kernel:
             words += ["--kernel", args.kernel]
+        if args.tile_order:
+            words += ["--tile-order", args.tile_order]
         if args.table:
             words += ["--table", str(args.table.resolve())]
         device.log = private_log(root / ("execution-" + device.queue + ".log"))
