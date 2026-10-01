@@ -28,7 +28,8 @@ semantic version 1 for unit stride, mode byte (1=xpoint, 2=BSGS, 3=HASH160, 4=Et
 32-byte table checksum. Xpoint, HASH160, Ethereum, vanity and minikeys use zero `m` and checksum. Semantics are secp256k1,
 stride one for version 1, exhaustive all-target coverage. Nonunit scalar strides
 use version 2 with an additional 96 bytes for the original range and stride, as
-described below. BSGS binds the validated C10 cache
+described below. Reverse traversal uses version 3 with the same 146-byte layout
+and permits stride one ([reverse contracts](C23_REVERSE.md)). BSGS binds the validated C10 cache
 including its table size and checksum. Changing `m` or rebuilding a differently
 encoded cache requires a new job; incompatible progress is never silently reused.
 
@@ -293,7 +294,7 @@ printf '%s\n' 0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798
 
 | Action | Options |
 | --- | --- |
-| `create` | Required `--project`, `--mode xpoint\|bsgs\|hash160\|address\|ethereum\|vanity\|minikeys`, `--range`, `--block-width`, `--targets`; BSGS requires `--table` and accepts `--host-memory`; scalar families accept `--stride HEX` |
+| `create` | Required `--project`, `--mode xpoint\|bsgs\|hash160\|address\|ethereum\|vanity\|minikeys`, `--range`, `--block-width`, `--targets`; BSGS requires `--table` and accepts `--host-memory`; scalar families accept `--stride HEX` and `--order forward\|reverse` |
 | `run`, common | Required `--backend hip\|cuda`, `--grant`, `--targets`; optional `--device` (0), `--candidate-capacity` (1024), `--checkpoint-seconds 0..60` (10) |
 | `run`, xpoint | `--batch-size 1..1048576` (1048576), `--kernel stepped\|direct` (stepped); capacity 1..1048576 |
 | `run`, BSGS | Required `--table`; `--giant-batch` (16384), `--target-batch 1..64` (64), product at most 1048576; capacity 1..65536; `--group-size auto\|1\|8`; `--host-memory` (1073741824 bytes), `--reserve-bytes` (67108864 bytes) |
@@ -474,3 +475,19 @@ integers after the existing header. Its manifest root must be exactly `[1,N+1)`.
 Schema 7 and receipt encoding are unchanged. `--stride 1` retains the old job
 identity. BSGS and minikey jobs reject this option. See [contracts](C23_STRIDES.md)
 and [executable examples](GPU_QUICKSTART.md).
+
+## Exact reverse traversal
+
+Create scalar-family jobs with `--order reverse`, optionally with `--stride HEX`.
+Version 3 binds reverse order, original scalar bounds and positive stride. For
+N candidates, index j maps to `A+(N-j)*S`; coverage advances through `[1,N+1)`
+while scalars decrease. This applies at stride one too. The first scalar is the
+last on-lattice value below the exclusive end. Runs recover order automatically;
+an explicit conflicting order is rejected. Changing order requires a new job.
+
+Public results show `candidate_index`, actual `scalar` and
+`coordinate_space:"scalar-reverse-index-v1"`. Summaries count
+`computed_candidates`/`resumed_candidates`. Generic grant/state intervals retain
+their existing format and inherit the immutable mapping. Version-1/2 forward job
+identities, schema 7, receipt encoding and ownership rules remain unchanged.
+See [reverse contracts and recovery](C23_REVERSE.md).

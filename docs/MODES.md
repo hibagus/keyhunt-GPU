@@ -9,7 +9,7 @@
 | Exact `hash160` / Bitcoin P2PKH `address --backend …` | Explicitly rejected | Validated | Validated |
 | Exact `ethereum --backend …` | Explicitly rejected | Validated | Validated |
 | Exact `vanity --backend …` | Explicitly rejected | Validated | Validated |
-| Exact scalar `--stride HEX` (xpoint/HASH160/address/Ethereum/vanity) | Explicitly rejected; CPU job preparation supported | Validated | Validated |
+| Exact scalar `--stride HEX` and `--order forward\|reverse` (xpoint/HASH160/address/Ethereum/vanity) | Explicitly rejected; CPU job preparation supported | Validated | Validated |
 | Exact `minikeys --backend … --length 22\|30` | Explicitly rejected; CPU inspect supported | Validated | Validated |
 | `bsgs-table build` / `inspect`, state, job creation and result inspection | Supported | CPU operations | CPU operations |
 | `checkpoint run --backend …` | Explicitly rejected | Validated durable xpoint/BSGS/HASH160/Ethereum/vanity/minikeys | Validated durable xpoint/BSGS/HASH160/Ethereum/vanity/minikeys |
@@ -21,7 +21,7 @@ partition limits. [C23's first family](C23_HASH160.md) adds exact raw HASH160 an
 Bitcoin mainnet P2PKH inputs with explicit public-key encoding identity.
 [Ethereum](C23_ETHEREUM_VALIDATION.md) adds Keccak addresses;
 [vanity](C23_VANITY_VALIDATION.md) adds exact case-sensitive Bitcoin P2PKH prefixes.
-[Minikeys 22/30](C23_MINIKEYS_VALIDATION.md) adds exact candidate ordinals and recovery. [Positive strides](C23_STRIDES.md) add exact scalar progressions with candidate-index recovery. Endomorphism and alternative mappings require separate parity gates. C22 adds
+[Minikeys 22/30](C23_MINIKEYS_VALIDATION.md) adds exact candidate ordinals and recovery. [Positive strides](C23_STRIDES.md) add exact scalar progressions with candidate-index recovery. [Reverse traversal](C23_REVERSE_VALIDATION.md) covers the same candidates in descending order with exact recovery. Endomorphism and other mappings require separate parity gates. C22 adds
 [manual offline assignment files](OFFLINE_ASSIGNMENTS.md) for disconnected workers
 and connected couriers. HTTPS workers also retain valid leases and a durable
 outbox between scheduled contacts.
@@ -84,7 +84,7 @@ Bitcoin address check. C09 implements the separate `xpoint --backend hip`
 subcommand with full 32-byte targets, exact half-open ranges and CPU-verified
 results. Native `--stride HEX` visits exactly `begin + i*stride < end`; nonunit
 strides checkpoint candidate indices. Legacy `-I` and endomorphism flags retain
-their separate CPU behavior. See [stride contracts](C23_STRIDES.md).
+their separate CPU behavior. `--order reverse` visits that same finite set from last to first and always checkpoints candidate indices, including stride one. BSGS and minikey enumeration reject this option. See [stride contracts](C23_STRIDES.md) and [reverse contracts](C23_REVERSE.md).
 
 ## BSGS
 

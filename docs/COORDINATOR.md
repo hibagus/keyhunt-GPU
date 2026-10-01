@@ -115,10 +115,12 @@ renewal remain outside this localhost gate.
 ## S04a: atomic machine synchronization
 
 `POST /api/v1/sync` accepts protocol 1. Current workers send the exact capability
-list `["checkpoint-v1", "offline-lease-v1", "hash160-v1", "ethereum-v1", "vanity-v1", "minikeys-v1", "scalar-stride-v1"]`.
+list `["checkpoint-v1", "offline-lease-v1", "hash160-v1", "ethereum-v1", "vanity-v1", "minikeys-v1", "scalar-stride-v1", "scalar-reverse-v1"]`.
 Updated coordinators also accept the older two-element list for xpoint/BSGS and
 the three-element list for those modes plus HASH160, and the four-element list
-that also supports Ethereum, the five-element list adding vanity, and the six-element list adding minikeys. HASH160, Ethereum, vanity and minikey jobs
+that also supports Ethereum, the five-element list adding vanity, the six-element
+list adding minikeys, and the seven-element list adding forward scalar strides.
+HASH160, Ethereum, vanity, minikey, strided and reverse jobs
 require their respective capability before reservation, renewal, update or receipt replay;
 incompatible requests receive HTTP 426. Deploy the updated coordinator before
 updated workers. Unknown capabilities and wire modes fail explicitly. A request
@@ -470,3 +472,19 @@ device. The prepared executor retains the immutable SG cache across grants;
 Owner-only result views show candidate index and actual scalar separately. See
 [stride contracts](C23_STRIDES.md). Explicit candidate block widths are supported;
 existing xpoint/BSGS calibration does not calibrate strided jobs.
+
+## C23 reverse scalar jobs
+
+Version-3 scalar configurations use the same 146 bytes as version 2; version 3
+implies reverse order and allows stride one. Job bounds are candidate indices
+`[1,N+1)`; the configuration binds original A, B and S. Results expose both
+`candidate_index` and actual `scalar`, labelled `scalar-reverse-index-v1`.
+Changing order changes job identity; a forward receipt cannot certify reverse
+coverage. Receipt bytes and protocol/schema versions remain unchanged.
+
+The eighth capability `scalar-reverse-v1` is required before allocation, renewal,
+updates or cached replies for reverse jobs. Previous two-through-seven capability
+sets retain their supported forward jobs. Fresh owned-device self-tests exercise
+both kernels and both directions. Prepared executors retain signed point steps
+across grants and reject direction mismatches. HTTPS and courier-file transport
+share this binding; see [reverse acceptance](C23_REVERSE_VALIDATION.md).

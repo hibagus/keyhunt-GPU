@@ -1,6 +1,7 @@
 # C23: exact reverse scalar traversal
 
-Status: implementation in progress. This slice covers xpoint, Bitcoin
+Status: complete on the recorded MI300X/H200 stacks; see [acceptance and evidence](C23_REVERSE_VALIDATION.md).
+This slice covers xpoint, Bitcoin
 HASH160/P2PKH, Ethereum and Bitcoin vanity, with unit or positive nonunit strides.
 BSGS/minikey traversal and endomorphism remain separate mappings.
 
@@ -11,6 +12,16 @@ forward search, in reverse order. With `N=1+floor((B-A-1)/S)`, candidate index
 `j` in `[1,N+1)` maps to `A+(N-j)*S`. The first scalar is the last **on-lattice**
 scalar below B, which is not necessarily B-1. Bounds and stride are hexadecimal;
 `1<=A<B<=n` and `1<=S<n` remain required. No subtraction wraps modulo n.
+
+For example, `--range 65:80 --stride 7` has four candidates. The exclusive
+end `0x80` leaves a short tail after `0x7a`; reversing does not change that lattice.
+
+| Candidate index | Forward scalar | Reverse scalar |
+| --- | --- | --- |
+| 1 | `0x65` | `0x7a` |
+| 2 | `0x6c` | `0x73` |
+| 3 | `0x73` | `0x6c` |
+| 4 | `0x7a` | `0x65` |
 
 Reverse work always uses one-based candidate-index coverage, even at stride one.
 Blocks, batch intervals, receipts, saved complements and result coordinates use
@@ -54,7 +65,7 @@ targets, both kernels and all four families. Durable tests must cover mismatched
 order, overflow, kill/restart, pause, changed visibility and exact local/server
 relations. CPU/sanitizer and real HIP/CUDA validation are required before marking
 this slice complete. Findings, source phases, binary hashes and raw evidence
-will be recorded under docs/. This slice makes no throughput or scaling claim.
+are recorded in the acceptance artifacts under docs/. This slice makes no throughput or scaling claim.
 
 ## GPU implementation evidence
 
@@ -64,7 +75,7 @@ origins/steps, curve-order boundaries, no-hit and overlapping targets, overflow
 replay and maximum-size batches. Portable/native subtraction passed 2,509 integer
 oracle vectors. Executor checks reject direction/stride mismatches and accept a
 changed origin with a fresh seed. The 104-case forward-stride regression also
-passed. CUDA and durable/worker gates remain pending at this source phase.
+passed. CUDA and final durable/worker gates are recorded in the acceptance evidence.
 
 ## Durable implementation evidence
 
@@ -74,7 +85,7 @@ explicit mismatch before execution. Results and summaries label reverse indices
 and report actual scalars separately. BSGS/minikey jobs reject scalar order flags.
 The 12-test CPU storage gate passed, covering malformed bindings, changed order,
 lost acknowledgements, dense overflow/replay, pause, backup and completed retries.
-Real HIP checkpoint and changed-visibility pause checks are running at this phase.
+Real HIP/CUDA checkpoint and changed-visibility pause gates also passed.
 
 ## Coordinator implementation evidence
 
@@ -84,5 +95,5 @@ supported. Persistent GPU owners bind stride and direction from validated work,
 and fresh per-device self-tests exercise both orders and both kernels.
 Seven CPU coordinator gates passed, including four-family reverse import,
 capability downgrades, exact public results and lost-upload acknowledgement replay.
-The live transport fixture covers unit-stride reverse over HTTPS and wide-stride
-reverse with the server stopped during courier-file execution.
+The live transport fixture passed on HIP/CUDA. It covers unit-stride reverse over
+HTTPS and wide-stride reverse with the server stopped during courier-file execution.

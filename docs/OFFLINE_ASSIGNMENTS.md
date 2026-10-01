@@ -333,3 +333,13 @@ public results show `candidate_index`, actual `scalar` and
 `coordinate_space:"scalar-stride-index-v1"`. Offline replay, lease deadlines and
 acknowledgment rules remain the same. See [contracts](C23_STRIDES.md) and the
 recorded acceptance linked there. These jobs use explicit candidate block widths.
+
+## C23 reverse scalar traversal
+
+Both transports also carry version-3 reverse configurations, including stride
+one. Update coordinator and worker for `scalar-reverse-v1`. Original bounds,
+positive stride and order bind job identity. Candidate-index coverage increases
+while private scalars descend; public results label `scalar-reverse-index-v1`
+and show both coordinates. The existing courier digest checks, acknowledgements,
+offline leases, bounded outbox and quarantine rules continue to apply.
+See [reverse contracts](C23_REVERSE.md) and [HIP/CUDA evidence](C23_REVERSE_VALIDATION.md).

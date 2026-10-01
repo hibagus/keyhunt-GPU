@@ -173,3 +173,13 @@ stride bind job and execution identity; CPU verification maps indices before
 checking targets. Stride one retains consecutive-scalar identities and records.
 See [contracts and compatibility](C23_STRIDES.md). This does not adopt legacy `-I`
 loop behavior, endomorphism or random traversal as exact coverage.
+
+## Reverse scalar order
+
+For the scalar families, `--order reverse` reverses the exact forward lattice:
+`N=1+floor((B-A-1)/S)` and `scalar(j)=A+(N-j)*S`, for `j` in `[1,N+1)`.
+Bounds and positive stride remain unchanged. A short tail does not shift the
+lattice to `B-1`. Candidate indices advance even as actual scalars decrease;
+this also applies to stride one. Blocks, complements and receipts use indices.
+Direct subtraction cannot wrap; only stepped point-cache arithmetic is modular.
+See [reverse contracts](C23_REVERSE.md) and [validation](C23_REVERSE_VALIDATION.md).
