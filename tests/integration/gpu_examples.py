@@ -35,12 +35,13 @@ def validate(artifacts, hardware, device):
 
     require(one('table-inspect')['m'] == 257, 'wrong baby-table size')
     require(one('preflight')['integrity'] == 'ok', 'preflight audit failed')
-    for mode, width in [('xpoint', 256), ('bsgs', 65536), ('hash160', 256), ('ethereum', 256), ('vanity', 256), ('minikeys22',256), ('minikeys30',256)]:
+    for mode, width in [('xpoint', 256), ('bsgs', 65536), ('hash160', 256), ('ethereum', 256), ('vanity', 256), ('minikeys22',256), ('minikeys30',256),('stride-xpoint',256),('stride-hash160',256),('stride-ethereum',256),('stride-vanity',256)]:
+        strided=mode.startswith('stride-');family=mode.removeprefix('stride-')
         mini=public_fixture(int(mode[-2:])) if mode.startswith('minikeys') else None
         first=mini['ordinal'] if mini else 1
         private=mini['scalar'] if mini else 1
-        computed='computed_ordinals' if mini else 'computed_scalars'
-        resumed='resumed_ordinals' if mini else 'resumed_scalars'
+        computed='computed_candidates' if strided else 'computed_ordinals' if mini else 'computed_scalars'
+        resumed='resumed_candidates' if strided else 'resumed_ordinals' if mini else 'resumed_scalars'
         if mini:
             require(int(one(mode+'-inspect')['ordinal'],16)==first, 'wrong inspected ordinal')
         job = one(mode + '-job')
@@ -72,7 +73,7 @@ def validate(artifacts, hardware, device):
                 require(begin == cursor and end > begin, 'noncontiguous volatile coverage')
                 cursor = end
         require(cursor == first + width, 'wrong volatile endpoint')
-        expected_count = 3 if mode == 'vanity' else 2 if mini or mode == 'hash160' else 1
+        expected_count = 3 if family == 'vanity' else 2 if mini or family == 'hash160' else 1
         require(len(matches) == expected_count and all(int(m['scalar'], 16) == private for m in matches),
                 'wrong volatile match set')
         durable = artifacts[mode + '-durable.ndjson'][-1]
@@ -85,6 +86,11 @@ def validate(artifacts, hardware, device):
         results = one(mode + '-results')['results']
         require(len(results) == expected_count and all(int(r['scalar'], 16) == private for r in results),
                 'wrong durable match set')
+        if strided:
+            require(all(int(r['candidate_index'],16)==1 for r in matches+results), 'wrong stride index')
+            require(all(r['coordinate_space']=='scalar-stride-index-v1' for r in
+                [artifacts[mode+'.ndjson'][0],summary,durable,retry]+results), 'missing stride coordinate label')
+            require({r['target_bytes'] for r in results}=={r['target_bytes'] for r in one(family+'-results')['results']}, 'stride target relation mismatch')
         if mini:
             require(all(int(r['ordinal'],16)==first and r['minikey']==mini['minikey']
                 for r in matches+results), 'minikey coordinates confused')
@@ -106,6 +112,11 @@ def validate(artifacts, hardware, device):
                 [m for r in hashed[1:-1] for m in r.get('matches', [])], 'address/hash matches differ')
         require(address[-1]['complete'] and int(address[-1]['verified_steps'], 16) == 256,
                 'address search incomplete')
+        strided_address=artifacts['stride-address.ndjson'];strided_hash=artifacts['stride-hash160.ndjson']
+        require(strided_address[0]['target_digest']==strided_hash[0]['target_digest'], 'strided address/hash identity differs')
+        require([m for r in strided_address[1:-1] for m in r.get('matches',[])]==
+                [m for r in strided_hash[1:-1] for m in r.get('matches',[])], 'strided address/hash relations differ')
+        require(strided_address[-1]['complete'] and int(strided_address[-1]['verified_steps'],16)==256, 'strided address incomplete')
         expected = {'01751e76e8199196d454941c45d1b3a323f1433bd6', '0291b24bf9f5288532960ac687abb035127b1d28a5'}
         require({r['target_bytes'] for r in one('hash160-results')['results']} == expected,
                 'durable encoding relation differs from public fixture')
