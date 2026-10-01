@@ -1,6 +1,6 @@
 # C23: dance scalar batches
 
-Status: implemented; hardware acceptance is in progress.
+Status: implemented. Acceptance requirements are listed below.
 
 `--batch-order dance` applies to xpoint, Bitcoin address/HASH160, Ethereum and
 Bitcoin vanity, through native searches, checkpoint run, worker run-device and
