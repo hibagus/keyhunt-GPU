@@ -518,3 +518,20 @@ remain valid for their original jobs. Upgrade the coordinator before enrolling
 new workers. Workers self-test the mapping on their owned ordinal, retain all
 six stepped caches across grants, and stop batches at variant boundaries.
 See [contracts](C23_ORBITS.md) and [acceptance](C23_ORBITS_VALIDATION.md).
+
+
+## C23 reverse BSGS tile execution
+
+Pass `--tile-order reverse` to `tools/coordinator_worker.py` or `keyhunt-worker
+run-device` for BSGS queues. The default is forward. Each grant visits its highest
+uncovered scalar tile first; block claim policy still decides which grant is
+assigned. A heterogeneous queue containing scalar or minikey jobs rejects an
+explicit tile-order override when it reaches those jobs.
+
+Tile order is execution policy: configuration version 1, protocol, schema 7 and
+the capability list are unchanged. Older BSGS workers can still process the same
+jobs forward. Recovered coverage can contain disjoint intervals; either order
+uses their exact complement. Results stay in actual scalar coordinates. Prepared
+targets and baby tables survive grant handoff; `grant-finish` reports `tile_order`.
+HTTPS and disconnected file transports use the same runner. See
+[contract, recovery limits and example](C23_BSGS_REVERSE.md).

@@ -71,3 +71,16 @@ set_tests_properties(bsgs_reverse_search_cli PROPERTIES TIMEOUT 600 LABELS "cpu;
 if(KEYHUNT_ENABLE_GPU)
     set_tests_properties(bsgs_reverse_search_cli PROPERTIES LABELS "${KEYHUNT_GPU_BACKEND};hardware;bsgs;reverse;oracle" RESOURCE_LOCK gpu_device)
 endif()
+
+set(bsgs_reverse_example_backend cpu)
+if(KEYHUNT_ENABLE_GPU)
+    set(bsgs_reverse_example_backend ${KEYHUNT_GPU_BACKEND})
+endif()
+add_test(NAME bsgs_reverse_documented_example COMMAND "${Python3_EXECUTABLE}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/bsgs_reverse_examples.py"
+    --binary $<TARGET_FILE:keyhunt> --backend ${bsgs_reverse_example_backend}
+    --report "${CMAKE_CURRENT_BINARY_DIR}/bsgs-reverse-documented-example.json")
+set_tests_properties(bsgs_reverse_documented_example PROPERTIES TIMEOUT 150 LABELS "cpu;bsgs;reverse;examples")
+if(KEYHUNT_ENABLE_GPU)
+    set_tests_properties(bsgs_reverse_documented_example PROPERTIES LABELS "${KEYHUNT_GPU_BACKEND};hardware;bsgs;reverse;examples" RESOURCE_LOCK gpu_device)
+endif()

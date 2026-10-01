@@ -22,7 +22,7 @@ partition limits. [C23's first family](C23_HASH160.md) adds exact raw HASH160 an
 Bitcoin mainnet P2PKH inputs with explicit public-key encoding identity.
 [Ethereum](C23_ETHEREUM_VALIDATION.md) adds Keccak addresses;
 [vanity](C23_VANITY_VALIDATION.md) adds exact case-sensitive Bitcoin P2PKH prefixes.
-[Minikeys 22/30](C23_MINIKEYS_VALIDATION.md) adds exact candidate ordinals and recovery. [Positive strides](C23_STRIDES.md) add exact scalar progressions with candidate-index recovery. [Reverse traversal](C23_REVERSE_VALIDATION.md) covers the same candidates in descending order with exact recovery. [Six-member orbit expansion](C23_ORBITS.md) adds explicit derived candidates; other mappings require separate parity gates. C22 adds
+[Minikeys 22/30](C23_MINIKEYS_VALIDATION.md) adds exact candidate ordinals and recovery. [Positive strides](C23_STRIDES.md) add exact scalar progressions with candidate-index recovery. [Reverse traversal](C23_REVERSE_VALIDATION.md) covers the same candidates in descending order with exact recovery. [Six-member orbit expansion](C23_ORBITS.md) adds explicit derived candidates; [reverse BSGS tiles](C23_BSGS_REVERSE.md) preserve exact scalar coverage; other mappings require separate parity gates. C22 adds
 [manual offline assignment files](OFFLINE_ASSIGNMENTS.md) for disconnected workers
 and connected couriers. HTTPS workers also retain valid leases and a durable
 outbox between scheduled contacts.
@@ -93,6 +93,12 @@ C10 adds separate [portable table preparation and HIP lookup validation](BSGS_TA
 commands. C11 adds [bounded HIP BSGS range search](HIP_BSGS.md), with exact tails,
 all-target completion and CPU verification. The legacy commands below continue
 using their original CPU caches.
+
+C23 adds native/checkpoint/worker `--tile-order forward|reverse` for BSGS.
+Reverse selects the highest uncovered scalar tile in each grant. It preserves
+job identity and exact scalar receipts, so a restart may change direction.
+Scalar `--order` and coordinator block claim policies remain separate options.
+See [contract and example](C23_BSGS_REVERSE.md).
 
 Baby-step giant-step search takes full public-key targets and trades table
 memory for search work. `-n` must have an exact square root divisible by 1024;

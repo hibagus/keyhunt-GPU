@@ -27,7 +27,8 @@ are hashed with the `bsgs-targets-v1` domain tag, fixing canonical target IDs.
 digest and table checksum. A batch permits at most 64 targets and 1,048,576
 *target giant steps* (`giants * target_count`). The table size remains fixed
 across batches. `bsgs_tile` clips a checked `m * max_giants` width before adding
-it to the start, avoiding overflow at the order endpoint. This separate BSGS
+it to the start, or subtracting it from the end for reverse traversal, avoiding
+overflow at the order endpoint. This separate BSGS
 plan does not reuse the scheduler's `DirectXPointV1` scalar mapping.
 
 The owner must finish every target subset before crediting a tile once. A match
@@ -35,6 +36,11 @@ does not imply that other targets or the rest of the interval have been searched
 The ordinary C11 command emits volatile receipts. The separate C13
 [checkpoint commands](CHECKPOINTS.md) provide verified durable execution using
 the same HIP kernels and the C12 local journal.
+
+C23 adds execution-only `--tile-order forward|reverse` to HIP/CUDA native searches,
+checkpoint runs and workers. Reverse selects scalar tiles from the upper end;
+GPU arithmetic inside each tile remains forward. It can change on restart without
+changing job identity. See [contract and example](C23_BSGS_REVERSE.md).
 
 ## Initial host validation
 
@@ -66,6 +72,7 @@ stop-on-match behavior. Only finite full public keys are accepted as BSGS target
 | `--target-batch` | 64 | Maximum targets per launch, 1..64; product with giant batch at most 1048576 |
 | `--candidate-capacity` | 1024 | Bounded records, 1..65536; overflow requires replay |
 | `--group-size` | auto | Automatic selection or explicit 1/8 giants per lane |
+| `--tile-order` | forward | `forward` selects the lowest remaining tile; `reverse` selects the highest |
 | `--host-memory` | 1073741824 | Checked table decode/preparation/search buffer budget in bytes |
 | `--reserve-bytes` | 67108864 | Keep this many currently free bytes unused on the selected HIP device |
 | `--device` | 0 | Ordinal within the runtime's current visible logical devices |
@@ -73,7 +80,7 @@ stop-on-match behavior. Only finite full public keys are accepted as BSGS target
 The NDJSON stream contains:
 
 - `start`: exact interval, canonical target digest/count, table checksum/m,
-  device UUID, requested group policy (`0` means auto), preparation/upload time.
+  device UUID, requested group policy (`0` means auto), `tile_order`, preparation/upload time.
 - `batch`: a target subset over the tile, actual dispatched group, device and
   verified **target giant steps**, candidate count, tail rejections, CPU-verified
   matches and timings/allocation sizes. Overflow emits no consumable matches and
@@ -81,7 +88,8 @@ The NDJSON stream contains:
 - `tile`: emitted only after every target subset completed, with the scalar
   interval credited once and `durable_coverage: false`.
 - `summary`: emitted after the whole requested interval completed. Scalar-range
-  coverage, target giant steps and replayed device steps are separate counters.
+  coverage, target giant steps and replayed device steps are separate counters;
+  `tile_order` reports the selected traversal.
 
 Target IDs refer to the sorted canonical uncompressed point set. Batch matches
 are sorted by scalar; the entire stream follows target-subset order within each
