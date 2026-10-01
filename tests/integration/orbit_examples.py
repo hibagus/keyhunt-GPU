@@ -28,7 +28,10 @@ with tempfile.TemporaryDirectory(prefix='kh-orbit-docs-',dir='/var/tmp') as temp
         if a.backend!='cpu':
             n=int('fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141',16)
             wanted={(3,1,0,1),(6,1,1,n-1)}
-            matches=[m for row in data['volatile.ndjson'] for m in row.get('matches',[])]
+            # Summary 'matches' is a hexadecimal count; only batch rows carry relations.
+            batches=[row for row in data['volatile.ndjson'] if row['type']=='batch']
+            matches=[m for row in batches for m in row['matches']]
+            assert [(int(r['begin'],16),int(r['end_exclusive'],16)) for r in batches]==[(i,i+3) for i in range(1,19,3)]
             for rows in (matches,data['results.json']['results']):
                 assert len(rows)==2 and {(int(r['candidate_index'],16),int(r['seed_scalar'],16),r['orbit_variant'],int(r['scalar'],16)) for r in rows}==wanted
             for name in ('volatile','durable','retry'):
