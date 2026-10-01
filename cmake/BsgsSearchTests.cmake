@@ -54,3 +54,20 @@ if(KEYHUNT_ENABLE_GPU)
         --oracle $<TARGET_FILE:secp256k1_oracle> --report "${CMAKE_CURRENT_BINARY_DIR}/bsgs-cli-grouped-results.json" --hardware --backend ${KEYHUNT_GPU_BACKEND} --group 8)
     set_tests_properties(bsgs_cli_grouped PROPERTIES TIMEOUT ${bsgs_cli_timeout} LABELS "${KEYHUNT_GPU_BACKEND};hardware;bsgs;oracle" RESOURCE_LOCK gpu_device)
 endif()
+
+add_executable(bsgs_tile_probe tests/unit/bsgs_tile_probe.cpp)
+target_link_libraries(bsgs_tile_probe PRIVATE keyhunt_core)
+keyhunt_configure_target(bsgs_tile_probe)
+add_test(NAME bsgs_reverse_tile_oracle COMMAND "${Python3_EXECUTABLE}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests/oracle/bsgs_tiles.py" --binary $<TARGET_FILE:bsgs_tile_probe>
+    --report "${CMAKE_CURRENT_BINARY_DIR}/bsgs-reverse-tile-oracle.json")
+set_tests_properties(bsgs_reverse_tile_oracle PROPERTIES TIMEOUT 180 LABELS "cpu;bsgs;reverse;oracle")
+
+add_test(NAME bsgs_reverse_search_cli COMMAND "${Python3_EXECUTABLE}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/bsgs_reverse_cli.py" --binary $<TARGET_FILE:keyhunt>
+    --oracle $<TARGET_FILE:secp256k1_oracle> --suite search
+    --report "${CMAKE_CURRENT_BINARY_DIR}/bsgs-reverse-search-cli.json" ${bsgs_search_args})
+set_tests_properties(bsgs_reverse_search_cli PROPERTIES TIMEOUT 600 LABELS "cpu;bsgs;reverse;oracle")
+if(KEYHUNT_ENABLE_GPU)
+    set_tests_properties(bsgs_reverse_search_cli PROPERTIES LABELS "${KEYHUNT_GPU_BACKEND};hardware;bsgs;reverse;oracle" RESOURCE_LOCK gpu_device)
+endif()

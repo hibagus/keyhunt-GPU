@@ -92,10 +92,12 @@ UInt256 BsgsBatch::scalar_at(uint64_t giant,uint64_t baby) const {
     if (!interval_.contains(scalar)) throw std::logic_error("BSGS reconstruction escaped interval");
     return scalar;
 }
-ScalarInterval bsgs_tile(const ScalarInterval& remaining,uint64_t m,uint64_t max_giants) {
+ScalarInterval bsgs_tile(const ScalarInterval& remaining,uint64_t m,uint64_t max_giants,bool reverse) {
     if (!m || !max_giants || max_giants>1048576) throw std::invalid_argument("invalid BSGS tile limit");
     const auto width=UInt256(m).multiply(UInt256(max_giants));
-    return ScalarInterval(remaining.begin(),remaining.begin().add(std::min(width,remaining.size())));
+    const auto span=std::min(width,remaining.size());
+    return reverse?ScalarInterval(remaining.end().subtract(span),remaining.end()):
+        ScalarInterval(remaining.begin(),remaining.begin().add(span));
 }
 std::vector<BsgsMatch> verify_bsgs(const BsgsBatch& batch,const BsgsPublicKeyTargets& targets,
     const XPointVerifier& verifier,std::vector<BsgsCandidate> candidates) {

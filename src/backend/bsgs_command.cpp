@@ -32,18 +32,21 @@ void flush_record() {
 #endif
 }
 int bsgs_command(int argc,char** argv) {
-    const char* usage="usage: keyhunt bsgs --backend hip|cuda --range START:END --targets FILE --table FILE [--device N] [--giant-batch 1..1048576] [--target-batch 1..64] [--candidate-capacity 1..65536] [--group-size auto|1|8] [--host-memory BYTES] [--reserve-bytes BYTES] (END exclusive; NDJSON output)";
+    const char* usage="usage: keyhunt bsgs --backend hip|cuda --range START:END --targets FILE --table FILE [--device N] [--giant-batch 1..1048576] [--target-batch 1..64] [--candidate-capacity 1..65536] [--group-size auto|1|8] [--tile-order forward|reverse] [--host-memory BYTES] [--reserve-bytes BYTES] (END exclusive; NDJSON output)";
     std::map<std::string,std::string> args;
     for(int i=2;i<argc;i+=2) {
         if(i+1==argc) throw std::invalid_argument(usage);
         const std::string key=argv[i];
         if(key!="--backend" && key!="--range" && key!="--targets" && key!="--table" && key!="--device" &&
            key!="--giant-batch" && key!="--target-batch" && key!="--candidate-capacity" && key!="--group-size" &&
-           key!="--host-memory" && key!="--reserve-bytes") throw std::invalid_argument(usage);
+           key!="--host-memory" && key!="--reserve-bytes" && key!="--tile-order") throw std::invalid_argument(usage);
         if(!args.emplace(key,argv[i+1]).second) throw std::invalid_argument("duplicate BSGS option: "+key);
     }
     if((args["--backend"]!="hip" && args["--backend"]!="cuda") || args["--range"].empty() || args["--targets"].empty() || args["--table"].empty())
         throw std::invalid_argument(usage);
+    const auto tile_order=args.count("--tile-order")?args["--tile-order"]:"forward";
+    if(tile_order!="forward" && tile_order!="reverse")throw std::invalid_argument("tile-order must be forward or reverse");
+    const bool reverse_tiles=tile_order=="reverse";
     require_backend(args["--backend"]);
     const auto range=args["--range"]; const auto colon=range.find(':');
     if(colon==std::string::npos) throw std::invalid_argument(usage);
@@ -58,7 +61,7 @@ int bsgs_command(int argc,char** argv) {
     if(device>std::numeric_limits<int>::max() || !target_batch || target_batch>64 || !giants || giants>1048576/target_batch ||
        !capacity || capacity>65536 || (group!=0 && group!=1 && group!=8) || !host_memory) throw std::invalid_argument(usage);
 #ifndef KEYHUNT_HAS_GPU
-    (void)reserve;
+    (void)reserve;(void)reverse_tiles;
     discover_gpu(); // a GPU request never silently falls back to CPU
     return 2;
 #else
@@ -81,14 +84,17 @@ int bsgs_command(int argc,char** argv) {
         <<",\"uuid\":\""<<selected.device.uuid<<"\",\"m\":"<<table.memory().m
         <<",\"table_checksum\":\""<<hex(table.checksum().data(),32)<<"\",\"target_digest\":\""<<hex(targets.digest().data(),32)
         <<"\",\"target_count\":"<<targets.values().size()<<",\"begin\":\""<<interval.begin().hex()<<"\",\"end_exclusive\":\""<<interval.end().hex()
-        <<"\",\"group_size\":"<<group<<",\"durable_coverage\":false,\"preparation_ms\":"<<elapsed()
+        <<"\",\"group_size\":"<<group<<",\"tile_order\":"<<std::quoted(tile_order)<<",\"durable_coverage\":false,\"preparation_ms\":"<<elapsed()
         <<",\"table_upload_ms\":"<<executor.table_upload_ms()<<'}';
     flush_record();
-    UInt256 cursor=interval.begin(),verified_scalars,verified_steps,device_steps,match_count;
+    UInt256 cursor=reverse_tiles?interval.end():interval.begin(),verified_scalars,verified_steps,device_steps,match_count;
     uint64_t launches=0,overflows=0,tiles=0;
     double kernel_ms=0,download_ms=0,verification_ms=0,seed_ms=0;
-    while(cursor<interval.end()) {
-        const auto tile=core::bsgs_tile(core::ScalarInterval(cursor,interval.end()),table.memory().m,giants);
+    while(reverse_tiles?cursor>interval.begin():cursor<interval.end()) {
+        // Traversal changes which scalar tile is selected, never its coordinates
+        // or the all-target completion rule used to certify that tile.
+        const auto remaining=reverse_tiles?core::ScalarInterval(interval.begin(),cursor):core::ScalarInterval(cursor,interval.end());
+        const auto tile=core::bsgs_tile(remaining,table.memory().m,giants,reverse_tiles);
         uint32_t first=0,limit=uint32_t(target_batch);
         uint64_t tile_steps=0;
         while(first<targets.values().size()) {
@@ -127,12 +133,12 @@ int bsgs_command(int argc,char** argv) {
         std::cout<<"{\"type\":\"tile\",\"begin\":\""<<tile.begin().hex()<<"\",\"end_exclusive\":\""<<tile.end().hex()
             <<"\",\"targets_completed\":"<<first<<",\"verified_target_steps\":"<<tile_steps<<",\"durable_coverage\":false}";
         flush_record();
-        cursor=tile.end(); verified_scalars=verified_scalars.add(tile.size()); ++tiles;
+        cursor=reverse_tiles?tile.begin():tile.end(); verified_scalars=verified_scalars.add(tile.size()); ++tiles;
     }
     if(verified_scalars!=interval.size()) throw std::logic_error("BSGS interval incomplete");
     std::cout<<"{\"type\":\"summary\",\"complete\":true,\"durable_coverage\":false,\"verified_scalars\":\""<<verified_scalars.hex()
         <<"\",\"verified_target_steps\":\""<<verified_steps.hex()<<"\",\"device_steps\":\""<<device_steps.hex()
-        <<"\",\"matches\":\""<<match_count.hex()<<"\",\"launch_count\":"<<launches<<",\"overflow_replays\":"<<overflows<<",\"tiles\":"<<tiles
+        <<"\",\"matches\":\""<<match_count.hex()<<"\",\"launch_count\":"<<launches<<",\"overflow_replays\":"<<overflows<<",\"tile_order\":"<<std::quoted(tile_order)<<",\"tiles\":"<<tiles
         <<",\"kernel_ms\":"<<kernel_ms<<",\"download_ms\":"<<download_ms<<",\"verification_ms\":"<<verification_ms
         <<",\"seed_ms\":"<<seed_ms<<",\"wall_ms\":"<<elapsed()<<'}';
     flush_record(); return 0;

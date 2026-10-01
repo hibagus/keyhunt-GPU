@@ -45,7 +45,8 @@ private:
 };
 // Choose the next exact tile without overflowing near n. Products are checked
 // UInt256 integers; no absolute scalar, endpoint or m*i product is truncated.
-ScalarInterval bsgs_tile(const ScalarInterval& remaining,uint64_t m,uint64_t max_giants);
+// Reverse selects the highest remaining tile; arithmetic inside it is unchanged.
+ScalarInterval bsgs_tile(const ScalarInterval& remaining,uint64_t m,uint64_t max_giants,bool reverse=false);
 std::vector<BsgsMatch> verify_bsgs(const BsgsBatch& batch,const BsgsPublicKeyTargets& targets,
     const XPointVerifier& verifier,std::vector<BsgsCandidate> candidates);
 } // namespace keyhunt::core
