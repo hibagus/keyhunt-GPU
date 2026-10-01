@@ -437,3 +437,30 @@ samples. Timing trials are opt-in; CPU CTest runs the benchmark acceptance check
 Use the `cuda-h200` configure/build/test presets and explicit `--backend cuda`.
 The [CUDA guide](CUDA_BACKEND.md) documents toolkit discovery, shared execution
 contracts and H200 validation. HIP and CUDA are separate native builds.
+
+
+## Optional GLV scalar kernels
+
+GLV uses portable 32-bit limb arithmetic on both GPU backends. No new dependency,
+architecture requirement or build flag is needed. `--kernel glv` selects it for
+xpoint, HASH160/P2PKH, Ethereum and vanity; `stepped` stays the default.
+See [the exact-range contract](C23_GLV.md).
+
+```sh
+ctest --test-dir build/hip-release --output-on-failure -R glv
+python3 tools/profile_glv.py --benchmark build/hip-release/hip_glv_benchmark \
+  --keyhunt build/hip-release/keyhunt --backend hip --device 0 \
+  --output /var/tmp/keyhunt-glv-hip.json
+# On an otherwise idle NVIDIA device:
+python3 tools/profile_glv.py --benchmark build/cuda-h200/cuda_glv_benchmark \
+  --keyhunt build/cuda-h200/keyhunt --backend cuda --device 0 \
+  --output /var/tmp/keyhunt-glv-cuda.json
+```
+
+The paired benchmark rotates direct/GLV/stepped execution order, discards two
+warmup rounds and saves nine measured rounds for each of five scalar regions
+and four families. Each sample checks coverage and exact boundary matches;
+HASH160 and vanity exercise both encodings. Reports include raw event/wall
+samples, allocation sizes, preparation, device inventory and binary hashes.
+This measures one device with volatile unit-stride coverage. Correctness tests
+cover other mappings; these timings make no durable or fleet throughput claim.

@@ -78,3 +78,14 @@ and deliver the independently expected local/server relations. Schema, search
 configuration and capability bytes are unchanged. BSGS device owners now reject
 an explicit scalar kernel override instead of silently ignoring it; minikeys
 still rejects every kernel except direct.
+
+## Measurement decision
+
+The paired MI300X run uses 65,536 candidates in each of five scalar regions and
+four families, with two warmup rounds and nine measured rounds per kernel.
+Dense 256-bit inputs show GLV kernel-event speedups of 1.39–1.47x over direct;
+sparse high-bit inputs are slower than direct. Stepped remains faster on the
+dense region for every family. Near-order inputs decompose into small signed
+components and behave differently. This supports keeping GLV opt-in, with no
+default change or blanket speed claim. The reproducible benchmark and raw
+measurements are part of acceptance evidence.
