@@ -4,14 +4,16 @@ import argparse,hashlib,json,subprocess,sys,tempfile
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'oracle'))
 from model import N
+from scalar_batches import Planner
 from oracle_selftest import check_source,run as oracle_run
 from stride import targets,relations
 L=int('5363ad4cc05c30e0a5261c028812645a122e22ea20816678df02967c1b23bd72',16)
 p=argparse.ArgumentParser()
 for name in ('binary','oracle','report'):p.add_argument('--'+name,type=Path,required=True)
 p.add_argument('--hardware',action='store_true');p.add_argument('--backend',default='hip',choices=('hip','cuda'))
+p.add_argument('--batch-order',choices=('forward','both-ends'),default='forward')
 p.add_argument('--order',choices=('forward','reverse'),default='forward');a=p.parse_args();binary=str(a.binary.resolve())
-report=dict(passed=False,order=a.order,hardware=a.hardware,cases=[],rejections=0,oracle_commit=check_source(),binary_sha256=hashlib.sha256(a.binary.read_bytes()).hexdigest())
+report=dict(batch_order=a.batch_order,passed=False,order=a.order,hardware=a.hardware,cases=[],rejections=0,oracle_commit=check_source(),binary_sha256=hashlib.sha256(a.binary.read_bytes()).hexdigest())
 def run(words,ok=True):
  r=subprocess.run([binary,*map(str,words)],capture_output=True,text=True,timeout=180)
  assert (r.returncode==0)==ok,(words,r.stdout[-1000:],r.stderr)
@@ -33,31 +35,40 @@ with tempfile.TemporaryDirectory(prefix='kh-orbit-cli-') as temporary:
   public=oracle_run(a.oracle,[f'pub {row[3]:064x}' for row in indexed])
   negative=oracle_run(a.oracle,['pub '+f'{1:064x}']) if name=='miss' else public
   lines,canonical=targets(mode,negative,overlap=overflow and mode=='vanity');file=root/'targets.txt';file.write_text('\n'.join(lines))
-  bound=2*len({len(line) for line in lines}) if mode=='vanity' else 2 if mode=='hash160' else 1
+  bound=2*len({len(line) for line in lines}) if mode=='vanity' else 2 if mode in ('hash160','address') else 1
   words=[mode,'--backend',a.backend,'--range',f'{begin:x}:{end:x}','--stride',f'{step:x}','--order',a.order,
          '--endomorphism','orbit','--targets',file,'--kernel',kernel,'--device',device,'--batch-size','1048576',
          '--candidate-capacity',bound if overflow else 4096]
+  maximum=1048576 if a.batch_order=='forward' or count>=1048576 else 17
+  words[words.index('--batch-size')+1]=maximum
+  words+=['--batch-order',a.batch_order]
   if not a.hardware:
    assert 'not built' in run(words,False).stderr;return
   rows=run(words);start,summary=rows[0],rows[-1]
+  assert start['batch_order']==summary['batch_order']==a.batch_order
   assert start['kernel']==kernel and start['endomorphism']=='orbit' and int(start['seed_count'],16)==count
   assert start['coordinate_space']==summary['coordinate_space']=='scalar-orbit-index-v1'
   assert int(start['begin'],16)==1 and int(start['end_exclusive'],16)==6*count+1
-  cursor=1;found=[];replayed=0;batches=0
+  model=Planner([(1,6*count+1)],a.batch_order,count);limit=maximum;found=[];replayed=0;batches=0
   for row in rows[1:-1]:
    assert row['type']=='batch';batches+=1
-   if row['overflow']:assert not row['verified_steps'] and not row['matches'];replayed+=1;continue
    low,high=int(row['begin'],16),int(row['end_exclusive'],16)
-   assert low==cursor and row['verified_steps']==row['device_steps']==high-low
+   assert (low,high)==model.plan(maximum,limit)[:2]
+   if row['overflow']:
+    limit=min((bound if overflow else 4096)//bound,(high-low)//2)
+    assert not row['verified_steps'] and not row['matches'];replayed+=1;continue
+   low,high=int(row['begin'],16),int(row['end_exclusive'],16)
+   assert row['verified_steps']==row['device_steps']==high-low
    assert (low-1)//count==(high-2)//count # no admitted batch crosses a variant
-   cursor=high
+   model.accept()
+   if row['candidate_count']<=(bound if overflow else 4096)//2:limit=min(maximum,2*limit)
    found.extend((int(m['candidate_index'],16),int(m['seed_scalar'],16),m['orbit_variant'],int(m['scalar'],16),m['target']) for m in row['matches'])
   wanted={(i,seed,v,k,t) for (i,seed,v,k),pub in zip(indexed,public) for t in relations(mode,pub,canonical)}
   assert len(found)==len(wanted) and set(found)==wanted,(mode,kernel,name,len(found),len(wanted))
-  assert cursor==6*count+1 and summary['complete'] and int(summary['verified_steps'],16)==6*count
+  assert not model.gaps and summary['complete'] and int(summary['verified_steps'],16)==6*count
   if overflow:assert replayed>0
   report['cases'].append(dict(mode=mode,kernel=kernel,name=name,device=device,seeds=count,relations=len(wanted),batches=batches,summary=summary))
- for mode in ('xpoint','hash160','ethereum','vanity'):
+ for mode in (('xpoint','hash160','address','ethereum','vanity') if a.batch_order=='both-ends' else ('xpoint','hash160','ethereum','vanity')):
   for kernel in ('direct','glv','stepped'):
    for case in cases:exercise(mode,kernel,*case)
   if a.hardware and a.order=='forward':exercise(mode,'stepped','maximum-tail',1<<128,(1<<128)+1048577,1)

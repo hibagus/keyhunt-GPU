@@ -5,9 +5,10 @@ from ethereum import address as ethereum_address
 def targets(mode,public,overlap=False):
     if mode=='xpoint':
         lines={p[2:66] for p in public};canonical=sorted(lines)
-    elif mode=='hash160':
+    elif mode in ('hash160','address'):
         lines={hash160(p,tag) for p in public for tag in (1,2)}
         canonical=sorted(f'{tag:02x}'+v for v in lines for tag in (1,2))
+        if mode=='address':lines={address(v) for v in lines}
     elif mode=='ethereum':
         lines={ethereum_address(p) for p in public};canonical=sorted(lines)
     else:
@@ -18,7 +19,7 @@ def targets(mode,public,overlap=False):
 
 def relations(mode,public,canonical):
     if mode=='xpoint':wanted=[public[2:66]]
-    elif mode=='hash160':wanted=[f'{tag:02x}'+hash160(public,tag) for tag in (1,2)]
+    elif mode in ('hash160','address'):wanted=[f'{tag:02x}'+hash160(public,tag) for tag in (1,2)]
     elif mode=='ethereum':wanted=[ethereum_address(public)]
     else:
         wanted=[]
