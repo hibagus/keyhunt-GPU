@@ -2,11 +2,19 @@
 U64=(1<<64)-1
 class Planner:
     def __init__(self,gaps,order='both-ends',seeds=None):
-        self.gaps=list(gaps);self.owners=[];self.high=False;self.order=order;self.seeds=seeds
+        self.gaps=list(gaps);self.owners=[];self.high=False;self.phase=0;self.order=order;self.seeds=seeds
+        self.pivot=(gaps[0][0]+gaps[-1][1])//2 if gaps and order=='dance' else None
+        if self.pivot is not None:
+            self.gaps=[part for lo,hi in gaps for part in
+                       ([(lo,self.pivot),(self.pivot,hi)] if lo<self.pivot<hi else [(lo,hi)])]
     def plan(self,work,batch):
         assert work>0 and batch>0
         if not self.gaps:return None
-        low,high=self.gaps[-1 if self.high else 0];at=high-1 if self.high else low
+        self.high=self.phase==1
+        low,high=self.gaps[-1 if self.high else 0]
+        if self.order=='dance' and self.phase==2:
+            low,high=next(((lo,hi) for lo,hi in self.gaps if lo>=self.pivot),self.gaps[0])
+        at=high-1 if self.high else low
         owner=next((o for o in self.owners if o[0]<=at<o[1]),None);starts=owner is None
         if starts:
             # Find the free region without splitting gaps at owner boundaries.
@@ -29,4 +37,5 @@ class Planner:
         self.gaps=[part for lo,hi in self.gaps for part in
                    ([(lo,hi)] if right<=lo or left>=hi else [(lo,left),(right,hi)]) if part[0]<part[1]]
         if finishes:self.owners.remove(owner)
-        if self.order=='both-ends':self.high=not self.high
+        if self.order=='both-ends':self.phase=(self.phase+1)%2
+        elif self.order=='dance':self.phase=(self.phase+1)%3

@@ -6,7 +6,7 @@
 
 namespace keyhunt::scheduler {
 // Execution policy over existing receipt coordinates; never a scalar mapping.
-enum class ScalarBatchOrder { Forward, BothEnds };
+enum class ScalarBatchOrder { Forward, BothEnds, Dance };
 ScalarBatchOrder parse_scalar_batch_order(const std::string&);
 const char* scalar_batch_order_name(ScalarBatchOrder);
 struct ScalarPlannedBatch { KernelBatch batch; bool starts_work, finishes_work; };
@@ -22,7 +22,9 @@ private:
     core::UInt256 block_;
     ExecutionIdentity identity_;
     ScalarBatchOrder order_;
+    unsigned phase_=0;
     bool high_=false;
+    std::optional<core::UInt256> pivot_;
     std::map<core::UInt256,Remaining> remaining_;
     std::optional<ScalarPlannedBatch> pending_;
     core::UInt256 selected_;

@@ -38,7 +38,7 @@ void flush_record() {
 #endif
 }
 int xpoint_command(int argc, char** argv) {
-    const char* usage = "usage: keyhunt xpoint --backend hip|cuda --range START:END --targets FILE [--device N] [--batch-size 1..1048576] [--candidate-capacity 1..1048576] [--kernel stepped|direct|glv] [--stride HEX] [--order forward|reverse] [--batch-order forward|both-ends] [--endomorphism none|orbit] (END is exclusive; NDJSON output)";
+    const char* usage = "usage: keyhunt xpoint --backend hip|cuda --range START:END --targets FILE [--device N] [--batch-size 1..1048576] [--candidate-capacity 1..1048576] [--kernel stepped|direct|glv] [--stride HEX] [--order forward|reverse] [--batch-order forward|both-ends|dance] [--endomorphism none|orbit] (END is exclusive; NDJSON output)";
     std::map<std::string,std::string> args;
     for (int i=2;i<argc;i+=2) {
         if (i+1 == argc) throw std::invalid_argument(usage);

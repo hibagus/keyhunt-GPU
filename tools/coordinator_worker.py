@@ -143,7 +143,7 @@ def main():
                         help="allow a stopped queue to move to a different UUID")
     parser.add_argument("--stall-seconds", type=int, default=300)
     parser.add_argument("--kernel", choices=("direct", "stepped", "glv"), help="scalar search also accepts glv; override the mode default: direct for minikeys, stepped for scalar search")
-    parser.add_argument("--batch-order", choices=("forward", "both-ends"), help="Scalar families only: choose batches within each grant")
+    parser.add_argument("--batch-order", choices=("forward", "both-ends", "dance"), help="Scalar families only: choose batches within each grant")
     parser.add_argument("--ordinal-order", choices=("forward", "reverse", "both-ends", "dance", "random-window"), help="Minikeys only: choose ordinal execution order within each grant")
     parser.add_argument("--ordinal-seed", help="minikey random-window only: hexadecimal 256-bit seed (default zero)")
     parser.add_argument("--ordinal-window", type=int, help="minikey random-window only: shuffle 1..256 ordinal tiles (default 64)")

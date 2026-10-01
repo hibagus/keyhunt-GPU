@@ -388,7 +388,7 @@ CheckpointSummary CheckpointRun::Impl::scalar(Journal& journal,const Grant& gran
     }else{
         scheduler::ScalarBatchPlanner planner(grid,grant.block,state.remaining,identity,
             o.scalar_batch_order.value_or(scheduler::ScalarBatchOrder::Forward));
-        // Two fronts may own different units or meet inside one. Charge only
+        // Up to three fronts can own different units or meet inside one. Charge only
         // each owner's execution/replay time, excluding pauses and the other side.
         std::map<UInt256,uint64_t> active_work;
         for(;;){

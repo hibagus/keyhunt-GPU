@@ -8,12 +8,14 @@ using core::ScalarInterval;
 ScalarBatchOrder parse_scalar_batch_order(const std::string& value) {
     if(value=="forward")return ScalarBatchOrder::Forward;
     if(value=="both-ends")return ScalarBatchOrder::BothEnds;
-    throw std::invalid_argument("batch-order must be forward or both-ends");
+    if(value=="dance")return ScalarBatchOrder::Dance;
+    throw std::invalid_argument("batch-order must be forward, both-ends or dance");
 }
 const char* scalar_batch_order_name(ScalarBatchOrder order) {
     switch(order) {
     case ScalarBatchOrder::Forward:return "forward";
     case ScalarBatchOrder::BothEnds:return "both-ends";
+    case ScalarBatchOrder::Dance:return "dance";
     }
     throw std::invalid_argument("invalid scalar batch order");
 }
@@ -32,13 +34,33 @@ ScalarBatchPlanner::ScalarBatchPlanner(BlockGrid grid,UInt256 block,
     for(size_t i=0;i<gaps.size();++i) {
         if(!parent.contains(gaps[i]) || (i && gaps[i-1].end()>gaps[i].begin()))
             throw std::invalid_argument("scalar gaps must be sorted, disjoint and inside the block");
-        remaining_.emplace(gaps[i].begin(),Remaining{gaps[i],std::nullopt});
+    }
+    if(order_==ScalarBatchOrder::Dance && !gaps.empty()) {
+        // Fix the midpoint once over the missing envelope. Subtract first so
+        // even a near-256-bit endpoint cannot overflow while finding its half.
+        const auto low=gaps.front().begin();
+        pivot_=low.add(gaps.back().end().subtract(low).divmod(UInt256(2)).first);
+    }
+    for(const auto& gap:gaps) {
+        // Splitting before reservations makes the middle phase an endpoint
+        // lookup, and prevents any owner or batch from crossing the pivot.
+        if(pivot_ && gap.begin()<*pivot_ && *pivot_<gap.end()) {
+            remaining_.emplace(gap.begin(),Remaining{{gap.begin(),*pivot_},std::nullopt});
+            remaining_.emplace(*pivot_,Remaining{{*pivot_,gap.end()},std::nullopt});
+        } else remaining_.emplace(gap.begin(),Remaining{gap,std::nullopt});
     }
 }
 std::optional<ScalarPlannedBatch> ScalarBatchPlanner::plan(const UInt256& work_span,uint64_t max_steps) {
     if(work_span.is_zero() || !max_steps)throw std::invalid_argument("scalar work and batch bounds must be positive");
     if(remaining_.empty())return std::nullopt;
+    high_=phase_==1;
     auto chosen=high_?std::prev(remaining_.end()):remaining_.begin();
+    if(order_==ScalarBatchOrder::Dance && phase_==2) {
+        // The upper half may be exhausted, or the pivot may lie in a saved
+        // hole. Choose its next live endpoint, then fall back to global low.
+        chosen=remaining_.lower_bound(*pivot_);
+        if(chosen==remaining_.end())chosen=remaining_.begin();
+    }
     const bool starts=!chosen->second.work;
     if(starts) {
         const auto gap=chosen->second.interval;
@@ -52,7 +74,7 @@ std::optional<ScalarPlannedBatch> ScalarBatchPlanner::plan(const UInt256& work_s
         }
         chosen=remaining_.emplace(work.begin(),Remaining{work,work}).first;
     }
-    // Preserve the original owner while either front consumes its middle.
+    // Preserve the original owner when two of the fronts meet inside it.
     const auto active=chosen->second.interval,reserved=*chosen->second.work;
     const auto work=*WorkUnit::plan(grid_,block_,reserved.begin(),reserved.size().to_uint64(),identity_);
     const auto steps=std::min(UInt256(max_steps),active.size());
@@ -80,7 +102,8 @@ void ScalarBatchPlanner::accept() {
         remaining_.emplace(rest.begin(),Remaining{rest,entry.work});
     }
     // Only accepted coverage advances the phase; overflow retries this endpoint.
-    if(order_==ScalarBatchOrder::BothEnds)high_=!high_;
+    if(order_==ScalarBatchOrder::BothEnds)phase_=(phase_+1)%2;
+    else if(order_==ScalarBatchOrder::Dance)phase_=(phase_+1)%3;
     pending_.reset();
 }
 } // namespace keyhunt::scheduler

@@ -28,11 +28,11 @@ def add(lo,hi,step,reverse,orbit,order,works,batches,accepts,gaps=None,limit=204
         l,h,wl,wh,start,finish=selected
         out.append(':'.join([*(f'0x{v:064x}' for v in (l,h,wl,wh)),str(start),str(finish),
                              f'0x{scalar(l):064x}',f'0x{scalar(h-1):064x}',str((l-1)//n if orbit else 0)]))
-        max_owners=max(max_owners,len(model.owners));assert len(model.owners)<=2
+        max_owners=max(max_owners,len(model.owners));assert len(model.owners)<=(3 if order=='dance' else 2)
         if accepts[i%len(accepts)]:model.accept()
         else:retries+=1
     cases.append((row,'ok'+(' '+' '.join(out) if out else '')))
-for order in ('forward','both-ends'):
+for order in ('forward','both-ends','dance'):
  for reverse,orbit,step in [(False,False,1),(False,False,7),(True,False,1),(True,False,7),(False,True,7),(True,True,1)]:
   for count in range(1,30):
    for works,batches,accepts in [([5],[3],[1]),([1,31,7],[19,1,3],[0,0,1,1]),([100],[11,1,17],[1,0,1])]:
@@ -45,6 +45,11 @@ for order in ('forward','both-ends'):
   add(1,N//6 if orbit else N,step,reverse,orbit,order,[1<<200],[(1<<64)-1,1048576,1],[0,1,1],limit=30)
   add(N-100,N,step,reverse,orbit,order,[17],[11],[1])
   add(101,138,step,reverse,orbit,order,[7],[3],[1],[])
+# Pin midpoint-in-hole, midpoint-at-edge, odd/even envelopes and upper-half
+# exhaustion with owners much larger than batches. A retry cannot change phase.
+for gaps in ([(1,10),(40,51)],[(1,26),(40,51)],[(1,10),(26,51)],
+             [(1,50),(100,102)],[(1,2)],[(1,3)],[(1,102)]):
+    add(1,102,1,False,False,'dance',[1<<200],[1,3,2],[0,1,1],gaps)
 # Deliberate malformed inputs: enum, zero limits, overlapping/unsorted/outside gaps.
 base='65 100 1 0 0 both-ends 5 3 1 10 '
 for suffix in ('64:70','65:101','70:80,65:70','65:80,70:90'):
