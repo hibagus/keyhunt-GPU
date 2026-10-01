@@ -9,26 +9,32 @@ template<class Executor,class Targets,class Relation>
 void stride_self_test(int ordinal,const Targets& targets,scheduler::WorkAlgorithm family,
                       const core::XPointVerifier& verifier,Relation relation){
     using core::UInt256;
-    for(bool reverse:{false,true}){
-        const core::ScalarStride mapping({UInt256(1),UInt256(34)},UInt256(8),reverse);
-        scheduler::ExecutionIdentity identity;identity.algorithm=scheduler::strided_algorithm(family,reverse);
+    for(bool orbit:{false,true})for(bool reverse:{false,true}){
+        const core::ScalarStride mapping({UInt256(1),UInt256(34)},UInt256(8),reverse,orbit);
+        scheduler::ExecutionIdentity identity;identity.algorithm=scheduler::strided_algorithm(family,reverse,orbit);
         identity.stride_mapping=mapping;identity.target_digest=targets.digest();identity.assignment_id[0]=1;
         identity.assignment_generation=identity.executor_generation=1;
-        const scheduler::BlockGrid grid(mapping.indices(),UInt256(5));
-        const auto work=*scheduler::WorkUnit::plan(grid,UInt256(),UInt256(1),5,identity);
-        const auto batch=*scheduler::KernelBatch::plan(work,UInt256(1),5);
-        std::set<std::pair<UInt256,uint32_t>> expected;
-        for(unsigned i=0;i<5;++i){const auto pub=verifier.derive(UInt256(1+8*(reverse?4-i:i)));
-            for(uint32_t t=0;t<targets.values().size();++t)if(relation(pub,targets.values()[t]))expected.emplace(UInt256(i+1),t);
-        }
-        // Fresh direct and stepped execution checks both orders and the signed SG cache
-        // preparation on the one ordinal owned by this worker process.
+        const scheduler::BlockGrid grid(mapping.indices(),mapping.indices().size());
         for(auto kernel:{backend::XPointKernel::Direct,backend::XPointKernel::Stepped,backend::XPointKernel::Glv}){
-            backend::XPointOptions options;options.stride=UInt256(8);options.reverse=reverse;options.max_steps=5;options.candidate_capacity=128;options.kernel=kernel;
-            Executor gpu(ordinal,targets,verifier,options);const auto ticket=gpu.submit(batch);gpu.drain();const auto result=gpu.take(ticket);
-            std::set<std::pair<UInt256,uint32_t>> found;for(const auto& match:result.matches)found.emplace(match.scalar,match.target);
-            if(result.overflow||result.verified_steps!=5||found!=expected||result.matches.size()!=expected.size())
-                throw std::runtime_error("GPU scalar stride runtime self-test failed");
+            backend::XPointOptions options;options.stride=UInt256(8);options.reverse=reverse;options.orbit=orbit;
+            options.max_steps=5;options.candidate_capacity=128;options.kernel=kernel;
+            Executor gpu(ordinal,targets,verifier,options);
+            for(unsigned variant=0;variant<(orbit?6U:1U);++variant){
+                const auto begin=UInt256(1+5*variant);
+                const auto work=*scheduler::WorkUnit::plan(grid,UInt256(),begin,5,identity);
+                const auto batch=*scheduler::KernelBatch::plan(work,begin,5);
+                std::set<std::pair<UInt256,uint32_t>> expected;
+                for(unsigned i=0;i<5;++i){
+                    const auto seed=UInt256(1+8*(reverse?4-i:i));
+                    const auto pub=verifier.derive(core::scalar_orbit(seed,variant));
+                    for(uint32_t t=0;t<targets.values().size();++t)
+                        if(relation(pub,targets.values()[t]))expected.emplace(begin.add(UInt256(i)),t);
+                }
+                const auto ticket=gpu.submit(batch);gpu.drain();const auto result=gpu.take(ticket);
+                std::set<std::pair<UInt256,uint32_t>> found;for(const auto& match:result.matches)found.emplace(match.scalar,match.target);
+                if(result.overflow||result.verified_steps!=5||found!=expected||result.matches.size()!=expected.size())
+                    throw std::runtime_error("GPU scalar mapping runtime self-test failed");
+            }
         }
     }
 }

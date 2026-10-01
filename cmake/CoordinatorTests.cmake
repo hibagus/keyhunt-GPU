@@ -245,3 +245,25 @@ if(KEYHUNT_TEST_APACHE_ROOT AND TARGET keyhunt-worker)
         endif()
     endforeach()
 endif()
+
+add_executable(coordinator_orbits_test tests/coordinator/orbits.cpp)
+target_include_directories(coordinator_orbits_test PRIVATE src/storage src/coordinator)
+target_link_libraries(coordinator_orbits_test PRIVATE keyhunt_coordination)
+keyhunt_configure_target(coordinator_orbits_test)
+add_test(NAME coordinator_orbits COMMAND coordinator_orbits_test)
+set_tests_properties(coordinator_orbits PROPERTIES TIMEOUT 180 LABELS "cpu;coordinator;orbit;recovery")
+
+if(KEYHUNT_TEST_APACHE_ROOT AND TARGET keyhunt-worker)
+    foreach(order forward reverse)
+        add_test(NAME coordinator_orbit_${order}_cli COMMAND ${Python3_EXECUTABLE}
+            ${PROJECT_SOURCE_DIR}/tests/coordinator/strides_cli.py
+            --coordinator $<TARGET_FILE:keyhunt-coordinator> --worker $<TARGET_FILE:keyhunt-worker>
+            --keyhunt $<TARGET_FILE:keyhunt> --oracle $<TARGET_FILE:secp256k1_oracle>
+            --apache-root ${KEYHUNT_TEST_APACHE_ROOT} --order ${order} --orbit
+            --report ${CMAKE_CURRENT_BINARY_DIR}/coordinator-orbit-${order}-cli.json ${coordinator_worker_options})
+        set_tests_properties(coordinator_orbit_${order}_cli PROPERTIES TIMEOUT 600 LABELS "cpu;coordinator;orbit;integration;recovery")
+        if(KEYHUNT_ENABLE_GPU)
+            set_tests_properties(coordinator_orbit_${order}_cli PROPERTIES LABELS "${KEYHUNT_GPU_BACKEND};hardware;coordinator;orbit;integration;recovery" RESOURCE_LOCK gpu_device)
+        endif()
+    endforeach()
+endif()

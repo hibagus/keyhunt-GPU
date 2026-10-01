@@ -89,7 +89,8 @@ struct Repository::Impl {
         fields(body, {"protocol", "capabilities", "instance", "request", "jobs", "updates", "returns"});
         // Preserve the previously shipped capability sets. Each new family
         // must be advertised before a worker can acquire or renew its grants.
-        const bool reverse_capable=body["capabilities"]==Json({"checkpoint-v1","offline-lease-v1","hash160-v1","ethereum-v1","vanity-v1","minikeys-v1","scalar-stride-v1","scalar-reverse-v1"});
+        const bool orbit_capable=body["capabilities"]==Json({"checkpoint-v1","offline-lease-v1","hash160-v1","ethereum-v1","vanity-v1","minikeys-v1","scalar-stride-v1","scalar-reverse-v1","scalar-orbit-v1"});
+        const bool reverse_capable=orbit_capable || body["capabilities"]==Json({"checkpoint-v1","offline-lease-v1","hash160-v1","ethereum-v1","vanity-v1","minikeys-v1","scalar-stride-v1","scalar-reverse-v1"});
         const bool stride_capable=reverse_capable || body["capabilities"]==Json({"checkpoint-v1","offline-lease-v1","hash160-v1","ethereum-v1","vanity-v1","minikeys-v1","scalar-stride-v1"});
         const bool minikeys_capable=stride_capable || body["capabilities"]==Json({"checkpoint-v1","offline-lease-v1","hash160-v1","ethereum-v1","vanity-v1","minikeys-v1"});
         const bool vanity_capable=minikeys_capable || body["capabilities"]==Json({"checkpoint-v1","offline-lease-v1","hash160-v1","ethereum-v1","vanity-v1"});
@@ -116,6 +117,8 @@ struct Repository::Impl {
             // Reject incompatible jobs before cached receipts or any reservation,
             // checkpoint mutation or lease renewal can change durable state.
             const auto mapping=journal.stride_mapping(scope);
+            if(mapping && mapping->orbit() && !orbit_capable)
+                throw Error(426,"orbit jobs require scalar-orbit-v1 worker capability");
             if(mapping && mapping->reverse() && !reverse_capable)
                 throw Error(426,"reverse jobs require scalar-reverse-v1 worker capability");
             if(mapping && !stride_capable)
@@ -483,6 +486,10 @@ Json Repository::request(const Certificate& cert,const std::string& method,const
                     if(mapping){
                         result["candidate_index"]=row.scalar.hex();result["scalar"]=mapping->scalar(row.scalar).hex();
                         result["coordinate_space"]=mapping->coordinate_space();
+                        if(mapping->orbit()){
+                            result["seed_scalar"]=mapping->seed(row.scalar).hex();
+                            result["orbit_variant"]=mapping->variant(row.scalar);
+                        }
                     }
                     if(mode==Mode::Minikeys){
                         // Receipts retain ordinal coordinates. Public result views

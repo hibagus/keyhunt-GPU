@@ -39,9 +39,9 @@ int main(){try{
         worker.configure({{"endpoint","https://test.invalid"},{"ca","/private/ca"},{"certificate","/private/certificate"},{"key","/private/key"},{"jobs",jobs}});
         Json request;
         const auto transport=[&](const Json& sent){
-            require(sent["capabilities"].back()=="scalar-reverse-v1","worker omitted stride capability");
+            require(sent["capabilities"].back()=="scalar-orbit-v1","worker omitted stride capability");
             // Exercise the previously shipped seven-capability forward worker.
-            request=sent;request["capabilities"].erase(request["capabilities"].end()-1);
+            request=sent;request["capabilities"].erase(request["capabilities"].begin()+7,request["capabilities"].end());
             return Json{{"ok",true},{"server_time",now},{"value",repo.request(cert,"POST","/api/v1/sync",request)},{"controls",repo.control_snapshot(cert,request)}};
         };
         rejects([&]{worker.synchronize([&](const Json& sent){auto response=transport(sent);
@@ -69,7 +69,7 @@ int main(){try{
         const auto rows=repo.request(cert,"GET",path+"/results");require(rows.size()==input.count(),"server lost mapped relations");
         for(const auto& row:rows)require(row["candidate_index"]==UInt256(1).hex()&&row["scalar"]==UInt256(101).hex()&&
             row["coordinate_space"]=="scalar-stride-index-v1","public result confused index and scalar");
-        auto stale=pending;stale["capabilities"].erase(stale["capabilities"].end()-2,stale["capabilities"].end());
+        auto stale=pending;stale["capabilities"].erase(stale["capabilities"].begin()+6,stale["capabilities"].end());
         denied(426,[&]{repo.request(cert,"POST","/api/v1/sync",stale);});
         worker.synchronize([&](const Json& sent){require(sent==pending,"pending request changed");return transport(sent);},true);
         require(worker.status()["outbox_bytes"]==0&&!worker.next("gpu0"),"acknowledged outbox retained");

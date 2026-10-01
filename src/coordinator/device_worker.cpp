@@ -188,7 +188,7 @@ int run_device(const Options& args){
             if(prepared.x_targets){
                 result=CheckpointRun::xpoint(worker.journal(),*grant,*prepared.x_targets,prepared.verifier,[&](const auto& batch){
                     if(!prepared.x_executor){
-                        XPointOptions gpu;gpu.stride=batch.scalar_stride();gpu.reverse=batch.scalar_reverse();gpu.max_steps=limits.xpoint_steps;
+                        XPointOptions gpu;gpu.stride=batch.scalar_stride();gpu.reverse=batch.scalar_reverse();gpu.orbit=batch.scalar_orbit();gpu.max_steps=limits.xpoint_steps;
                         gpu.kernel=scalar_search_kernel(kernel);
                         prepared.x_executor=std::make_unique<GpuXPointExecutor>(ordinal,*prepared.x_targets,prepared.verifier,gpu);++prepared.setups;
                     }
@@ -198,7 +198,7 @@ int run_device(const Options& args){
             }else if(prepared.h_targets){
                 result=CheckpointRun::hash160(worker.journal(),*grant,*prepared.h_targets,prepared.verifier,[&](const auto& batch){
                     if(!prepared.h_executor){
-                        Hash160Options gpu;gpu.stride=batch.scalar_stride();gpu.reverse=batch.scalar_reverse();gpu.max_steps=limits.xpoint_steps;
+                        Hash160Options gpu;gpu.stride=batch.scalar_stride();gpu.reverse=batch.scalar_reverse();gpu.orbit=batch.scalar_orbit();gpu.max_steps=limits.xpoint_steps;
                         gpu.kernel=scalar_search_kernel(kernel);
                         prepared.h_executor=std::make_unique<GpuHash160Executor>(ordinal,*prepared.h_targets,prepared.verifier,gpu);++prepared.setups;
                     }
@@ -217,7 +217,7 @@ int run_device(const Options& args){
             }else if(prepared.v_targets){
                 result=CheckpointRun::vanity(worker.journal(),*grant,*prepared.v_targets,prepared.verifier,[&](const auto& batch){
                     if(!prepared.v_executor){
-                        VanityOptions gpu;gpu.stride=batch.scalar_stride();gpu.reverse=batch.scalar_reverse();gpu.max_steps=limits.xpoint_steps;
+                        VanityOptions gpu;gpu.stride=batch.scalar_stride();gpu.reverse=batch.scalar_reverse();gpu.orbit=batch.scalar_orbit();gpu.max_steps=limits.xpoint_steps;
                         gpu.kernel=scalar_search_kernel(kernel);
                         prepared.v_executor=std::make_unique<GpuVanityExecutor>(ordinal,*prepared.v_targets,prepared.verifier,gpu);++prepared.setups;
                     }
@@ -227,7 +227,7 @@ int run_device(const Options& args){
             }else if(prepared.e_targets){
                 result=CheckpointRun::ethereum(worker.journal(),*grant,*prepared.e_targets,prepared.verifier,[&](const auto& batch){
                     if(!prepared.e_executor){
-                        EthereumOptions gpu;gpu.stride=batch.scalar_stride();gpu.reverse=batch.scalar_reverse();gpu.max_steps=limits.xpoint_steps;
+                        EthereumOptions gpu;gpu.stride=batch.scalar_stride();gpu.reverse=batch.scalar_reverse();gpu.orbit=batch.scalar_orbit();gpu.max_steps=limits.xpoint_steps;
                         gpu.kernel=scalar_search_kernel(kernel);
                         prepared.e_executor=std::make_unique<GpuEthereumExecutor>(ordinal,*prepared.e_targets,prepared.verifier,gpu);++prepared.setups;
                     }

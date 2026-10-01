@@ -10,16 +10,16 @@ int main(){try{
         const auto leaf=pem(1,now-60,now+90*86400);const auto cert=certificate(leaf);
         const auto client=repo.admin({{"operation","bootstrap"},{"name","owner"},{"certificate",leaf}});
         const auto project=repo.admin({{"operation","project-create"},{"name","strides"},{"owner",client["client"]}})["project"].get<std::string>();
-        core::XPointVerifier verifier;const auto pub=verifier.derive(UInt256(101));core::XPointBytes x{};std::copy_n(pub.begin()+1,32,x.begin());
+        core::XPointVerifier verifier;const auto pub=verifier.derive(core::scalar_orbit(UInt256(101),4));core::XPointBytes x{};std::copy_n(pub.begin()+1,32,x.begin());
         const core::XPointTargets xt({x});const core::Hash160Targets ht({core::hash160_target(pub,1),core::hash160_target(pub,2)});
         const core::EthereumTargets et({core::ethereum_target(pub)});
         const core::VanityTargets vt({core::vanity_target(core::bitcoin_address(pub,1),1),core::vanity_target(core::bitcoin_address(pub,2),2)});
-        const core::ScalarStride mapping({UInt256(101),UInt256(339)},UInt256(7),true);
+        const core::ScalarStride mapping({UInt256(101),UInt256(339)},UInt256(7),true,true);
         const auto input=with_stride(mode==Mode::XPoint?binding(xt):mode==Mode::Hash160?binding(ht):mode==Mode::Ethereum?binding(et):binding(vt),mapping);
-        const Json body{{"mode",mode_name(mode)},{"begin",UInt256(1).hex()},{"end_exclusive",UInt256(35).hex()},
-            {"block_width",UInt256(17).hex()},{"configuration",wire::hex(input.configuration)},{"targets",wire::hex(input.targets)}};
+        const Json body{{"mode",mode_name(mode)},{"begin",UInt256(1).hex()},{"end_exclusive",UInt256(205).hex()},
+            {"block_width",UInt256(103).hex()},{"configuration",wire::hex(input.configuration)},{"targets",wire::hex(input.targets)}};
         const auto job=repo.request(cert,"POST","/api/v1/projects/"+project+"/jobs",body);
-        auto invalid=body;invalid["end_exclusive"]=UInt256(36).hex();
+        auto invalid=body;invalid["end_exclusive"]=UInt256(206).hex();
         denied(400,[&]{repo.request(cert,"POST","/api/v1/projects/"+project+"/jobs",invalid);});
         for(unsigned fault=0;fault<3;++fault){auto config=input.configuration;
             if(fault==0)config[8]=1;
@@ -30,9 +30,9 @@ int main(){try{
         }
         const auto path="/api/v1/projects/"+project+"/jobs/"+job["job"].get<std::string>();
         const Json jobs={{{"project",project},{"job",job["job"]},{"devices",{"gpu0"}},{"spares",1},{"policy","sequential"}}};
-        Json old{{"protocol",1},{"capabilities",{"checkpoint-v1","offline-lease-v1","hash160-v1","ethereum-v1","vanity-v1","minikeys-v1","scalar-stride-v1"}},
+        Json old{{"protocol",1},{"capabilities",{"checkpoint-v1","offline-lease-v1","hash160-v1","ethereum-v1","vanity-v1","minikeys-v1","scalar-stride-v1","scalar-reverse-v1"}},
             {"instance","old-worker"},{"request","old-request"},{"jobs",jobs},{"updates",Json::array()},{"returns",Json::array()}};
-        for(unsigned count=7;count>=2;--count){old["capabilities"].erase(old["capabilities"].begin()+count,old["capabilities"].end());
+        for(unsigned count=8;count>=2;--count){old["capabilities"].erase(old["capabilities"].begin()+count,old["capabilities"].end());
             denied(426,[&]{repo.request(cert,"POST","/api/v1/sync",old);});
             require(repo.request(cert,"GET",path+"/status")["assignments"]==0,"old worker reserved candidate-index work");}
         Worker worker(local.path.string(),[&]{return now;},[&]{return monotonic;});
@@ -45,34 +45,40 @@ int main(){try{
         rejects([&]{worker.synchronize([&](const Json& sent){auto response=transport(sent);
             auto config=input.configuration;config.back()=8;response["value"]["jobs"][0]["configuration"]=wire::hex(config);return response;});});
         require(!worker.next("gpu0"),"altered remote mapping imported");worker.synchronize(transport,true);
-        auto downgrade=request;downgrade["capabilities"].erase(downgrade["capabilities"].begin()+7,downgrade["capabilities"].end());
+        auto downgrade=request;downgrade["capabilities"].erase(downgrade["capabilities"].begin()+8,downgrade["capabilities"].end());
         denied(426,[&]{repo.request(cert,"POST","/api/v1/sync",downgrade);});
         unsigned completed=0;
         while(auto grant=worker.next("gpu0")){
             require(worker.journal().stride_mapping(grant->scope)==input.stride_mapping,"worker lost mapping");
             CheckpointOptions options;options.xpoint_steps=5;options.checkpoint_seconds=0;
             const auto runner=[&](const auto& batch){backend::XPointResult result{batch,{}};result.device_steps=result.verified_steps=batch.step_count();
-                if(batch.interval().contains(UInt256(34)))for(uint32_t t=0;t<input.count();++t)result.matches.push_back({UInt256(34),t});
+                // Enumerate actual valid receipts across both sides of the variant boundary.
+                for(uint64_t i=0;i<batch.step_count();++i)for(uint32_t t=0;t<input.count();++t){
+                    try{input.verify(verifier,batch.coordinate_at(i),t);result.matches.push_back({batch.coordinate_at(i),t});}
+                    catch(const std::runtime_error&){}
+                }
                 result.candidate_count=result.matches.size();return result;};
             CheckpointSummary result;
             if(mode==Mode::XPoint)result=CheckpointRun::xpoint(worker.journal(),*grant,xt,verifier,runner,options);
             if(mode==Mode::Hash160)result=CheckpointRun::hash160(worker.journal(),*grant,ht,verifier,runner,options);
             if(mode==Mode::Ethereum)result=CheckpointRun::ethereum(worker.journal(),*grant,et,verifier,runner,options);
             if(mode==Mode::Vanity)result=CheckpointRun::vanity(worker.journal(),*grant,vt,verifier,runner,options);
-            require(result.complete&&result.computed_scalars==UInt256(17),"candidate grant incomplete");++completed;
+            require(result.complete&&result.computed_scalars==grant->interval.size(),"candidate grant incomplete");++completed;
         }
         require(completed==2&&repo.request(cert,"GET",path+"/results").empty(),"offline reservation/coverage mismatch");
         Json pending;
         rejects([&]{worker.synchronize([&](const Json& sent)->Json{pending=sent;transport(sent);throw std::runtime_error("lost upload reply");},true);});
-        const auto rows=repo.request(cert,"GET",path+"/results");require(rows.size()==input.count(),"server lost mapped relations");
-        for(const auto& row:rows)require(row["candidate_index"]==UInt256(34).hex()&&row["scalar"]==UInt256(101).hex()&&
-            row["coordinate_space"]=="scalar-reverse-index-v1","public result confused index and scalar");
-        auto stale=pending;stale["capabilities"].erase(stale["capabilities"].begin()+7,stale["capabilities"].end());
+        const auto rows=repo.request(cert,"GET",path+"/results");require(rows.size()==(mode==Mode::XPoint?2:input.count()),"server lost mapped relations");
+        for(const auto& row:rows){const auto index=UInt256::from_hex(row["candidate_index"].get<std::string>());
+            require((index==UInt256(170)||index==UInt256(204))&&row["scalar"]==mapping.scalar(index).hex()&&
+                row["seed_scalar"]==UInt256(101).hex()&&row["orbit_variant"]==mapping.variant(index)&&
+                row["coordinate_space"]=="scalar-orbit-index-v1","public result confused index and scalar");}
+        auto stale=pending;stale["capabilities"].erase(stale["capabilities"].begin()+8,stale["capabilities"].end());
         denied(426,[&]{repo.request(cert,"POST","/api/v1/sync",stale);});
         worker.synchronize([&](const Json& sent){require(sent==pending,"pending request changed");return transport(sent);},true);
         require(worker.status()["outbox_bytes"]==0&&!worker.next("gpu0"),"acknowledged outbox retained");
         require(repo.request(cert,"GET",path+"/results")==rows,"retry duplicated mapped results");
         worker.journal().check();repo.admin({{"operation","check"}});
     }
-    std::cout<<"Four-family reverse capability fencing, canonical import and durable upload retry passed\n";
+    std::cout<<"Four-family orbit capability fencing, canonical import and durable upload retry passed\n";
 }catch(const std::exception& e){std::cerr<<e.what()<<'\n';return 1;}}
