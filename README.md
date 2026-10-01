@@ -6,11 +6,12 @@ A staged redesign of keyhunt for AMD HIP and NVIDIA CUDA, with reproducible
 correctness checks, resumable searches, and coordinated work across machines.
 
 **Current status:** native HIP (MI300X) and CUDA (H200) support exact bounded
-xpoint/BSGS/Bitcoin HASH160/Ethereum/vanity searches, CPU-verified matches, durable checkpoints
+xpoint/BSGS/Bitcoin HASH160/Ethereum/vanity/minikey searches, CPU-verified matches, durable checkpoints
 and pause/resume. C20 validates concurrent xpoint/BSGS workers across eight GPUs
 on each host; [C23](docs/C23_VALIDATION.md) adds Bitcoin/HASH160 execution and recovery;
 [the Ethereum family](docs/C23_ETHEREUM_VALIDATION.md) adds Keccak parity and recovery;
-[vanity](docs/C23_VANITY_VALIDATION.md) adds exact P2PKH prefixes and recovery.
+[vanity](docs/C23_VANITY_VALIDATION.md) adds exact P2PKH prefixes and recovery;
+[minikeys](docs/C23_MINIKEYS_VALIDATION.md) adds 22/30-character ordinal search and recovery.
 Authenticated coordination adds mTLS, project roles, an offline outbox and fenced
 recovery, plus [manual offline file exchange](docs/OFFLINE_ASSIGNMENTS.md). Its
 deployment gate is isolated localhost. Other search modes retain
@@ -29,7 +30,7 @@ the characterized CPU implementation. See the [mode matrix](docs/MODES.md).
 | AMD HIP / MI300X | Validated on gfx942, eight SPX/NPS1 devices; C19 carry intrinsics opt-in; [tested stack and partition limits](docs/BUILD.md#validated-gpu-builds) |
 | NVIDIA CUDA / H200 | Validated native sm_90 backend and concurrent C20 execution on eight H200s; MIG unvalidated; [build and evidence](docs/CUDA_BACKEND.md) |
 | Local state | C12 project-scoped SQLite journal, sparse allocation, fenced assignments and sealed backups; [operations guide](docs/STORAGE.md) |
-| Durable GPU searches | C13/C18 verified local checkpoints and replay for HIP/CUDA xpoint, BSGS, HASH160, Ethereum and vanity; [commands and recovery](docs/CHECKPOINTS.md), [CUDA usage](docs/CUDA_BACKEND.md) |
+| Durable GPU searches | C13/C18 verified local checkpoints and replay for HIP/CUDA xpoint, BSGS, HASH160, Ethereum, vanity and minikeys; [commands and recovery](docs/CHECKPOINTS.md), [CUDA usage](docs/CUDA_BACKEND.md) |
 | Pause/resume | C14 local commands, graceful signals, exact restart and live inspection; [operations guide](docs/PAUSE_RESUME.md) |
 | Distributed blocks | C15 authenticated coordination and supervised workers; [localhost setup](docs/COORDINATOR.md#s06-isolated-localhost-operation). [C20 concurrent HIP/CUDA execution](docs/MULTI_GPU.md) is validated on eight MI300X and eight H200 GPUs |
 
@@ -147,8 +148,8 @@ provides reproducible worker enrollment and execution. Local completion and
 server acknowledgment are separate states. HTTPS workers sync every two hours;
 [offline workers](docs/OFFLINE_ASSIGNMENTS.md) use `file-export`, `file-relay` and
 `file-import`, with enrolled credentials held by a connected courier. C23's
-Bitcoin/HASH160, Ethereum and vanity families are validated; minikeys and other
-families remain pending.
+Bitcoin/HASH160, Ethereum, vanity and 22/30-character minikey families are validated;
+other mappings require separate parity gates.
 
 ## Roadmap
 
@@ -174,7 +175,7 @@ families remain pending.
 - [x] C20: [concurrent HIP/CUDA scheduling, balancing and recovery](docs/MULTI_GPU.md); [H200 acceptance](docs/C20_CUDA_VALIDATION.md).
 - [x] C21: [validated GPU build/operations guides and executable quickstarts](docs/C21_VALIDATION.md).
 - [x] C22: [offline assignment export, trusted courier exchange and reconciliation](docs/C22_VALIDATION.md).
-- [ ] C23: [Bitcoin P2PKH/HASH160](docs/C23_VALIDATION.md), [Ethereum](docs/C23_ETHEREUM_VALIDATION.md) and [vanity](docs/C23_VANITY_VALIDATION.md) complete; minikeys and other families pending.
+- [ ] C23: [Bitcoin P2PKH/HASH160](docs/C23_VALIDATION.md), [Ethereum](docs/C23_ETHEREUM_VALIDATION.md), [vanity](docs/C23_VANITY_VALIDATION.md) and [minikeys 22/30](docs/C23_MINIKEYS_VALIDATION.md) complete; other mappings pending.
 
 See [implementation status](docs/IMPLEMENTATION_STATUS.md) for evidence and
 [acceptance gates](docs/GPU_REDESIGN_PLAN.md#10-commit-sized-implementation-sequence)

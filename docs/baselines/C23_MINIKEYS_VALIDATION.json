@@ -1,0 +1,678 @@
+{
+  "milestone": "C23 minikey 22/30 family",
+  "recorded_utc": "2026-10-01T04:54:18.787274+00:00",
+  "passed": true,
+  "whole_c23_complete": false,
+  "pending_families": [
+    "other candidate mappings outside the agreed 22/30 SHA-256 minikey scope"
+  ],
+  "scope": "Native HIP/CUDA exact minikey candidate ordinals, both public-key encodings, durable recovery and authenticated/offline workers",
+  "source_commit": "0361b2d4c55799fa0d31f0f9f22c841958818756",
+  "source_phases": {
+    "algorithms": "503ff73a2a178f06996ec41ec05d0694317d3229",
+    "storage": "ce2d7a601520f603931b3d6a68b9285e864d20b4",
+    "workers": "2beda4c8a54004c8884487ac4fa345d276bbaff4",
+    "api_boundary": "0361b2d4c55799fa0d31f0f9f22c841958818756",
+    "examples": "1efb7d3e662aab62979a62c63a31c1a6b38977eb"
+  },
+  "production_last_changed_commit": "0361b2d4c55799fa0d31f0f9f22c841958818756",
+  "schema_version": 7,
+  "schema_migrations_changed": false,
+  "checks": {
+    "asan_ubsan": {
+      "passed": 36,
+      "failed": 0,
+      "log": "local/keyhunt-minikey-asan-tests.log",
+      "source_phase": "2beda4c8a54004c8884487ac4fa345d276bbaff4"
+    },
+    "hip_algorithms": {
+      "passed": 6,
+      "failed": 0,
+      "log": "hip/algorithms.log",
+      "source_phase": "503ff73a2a178f06996ec41ec05d0694317d3229"
+    },
+    "cuda_algorithms": {
+      "passed": 6,
+      "failed": 0,
+      "log": "cuda/keyhunt-minikey-cuda-algorithms.log",
+      "source_phase": "503ff73a2a178f06996ec41ec05d0694317d3229"
+    },
+    "hip_recovery_regression": {
+      "passed": 18,
+      "failed": 0,
+      "log": "hip/keyhunt-minikey-hip-final-tests.log",
+      "source_phase": "2beda4c8a54004c8884487ac4fa345d276bbaff4"
+    },
+    "cuda_recovery_regression": {
+      "passed": 19,
+      "failed": 0,
+      "log": "cuda/keyhunt-minikey-cuda-final-tests.log",
+      "source_phase": "2beda4c8a54004c8884487ac4fa345d276bbaff4"
+    },
+    "cpu_offline_corrected": {
+      "passed": 1,
+      "failed": 0,
+      "log": "local/keyhunt-minikey-cpu-offline-recheck.log",
+      "source_phase": "2beda4c8a54004c8884487ac4fa345d276bbaff4"
+    },
+    "cpu_api_boundary": {
+      "passed": 1,
+      "failed": 0,
+      "log": "local/keyhunt-minikey-cpu-boundary-tests.log",
+      "source_phase": "0361b2d4c55799fa0d31f0f9f22c841958818756"
+    },
+    "asan_api_boundary": {
+      "passed": 1,
+      "failed": 0,
+      "log": "local/keyhunt-minikey-asan-boundary-tests.log",
+      "source_phase": "0361b2d4c55799fa0d31f0f9f22c841958818756"
+    },
+    "hip_api_boundary": {
+      "passed": 1,
+      "failed": 0,
+      "log": "hip/keyhunt-minikey-hip-boundary-tests.log",
+      "source_phase": "0361b2d4c55799fa0d31f0f9f22c841958818756"
+    },
+    "cuda_api_boundary": {
+      "passed": 1,
+      "failed": 0,
+      "log": "cuda/keyhunt-minikey-cuda-boundary-tests.log",
+      "source_phase": "0361b2d4c55799fa0d31f0f9f22c841958818756"
+    },
+    "cpu_release": {
+      "passed_after_correction": 73,
+      "initial_passed": 72,
+      "initial_failed": [
+        "coordinator_offline_cli"
+      ],
+      "log": "local/keyhunt-minikey-cpu-tests.log",
+      "correction_log": "local/keyhunt-minikey-cpu-offline-recheck.log",
+      "source_phase": "2beda4c8a54004c8884487ac4fa345d276bbaff4"
+    }
+  },
+  "mapping_sha_vectors_per_backend": 1781,
+  "search_cases_per_backend": 70,
+  "rejections_per_backend": 32,
+  "native_fault_boundaries_per_backend": 29,
+  "lengths": [
+    22,
+    30
+  ],
+  "max_batch_ordinals_per_length": 1048576,
+  "admitted_in_max_batch": {
+    "22": 4193,
+    "30": 4261
+  },
+  "source_sha256": {
+    "CMakeLists.txt": "741372d56284eb5fdf21427b9b8563d096bff83b3d09842288a58f07b8b688b0",
+    "cmake/CoordinatorTests.cmake": "dab977331a7e57201d48a0d11c80a8a848dd13b7698657d482be8179a73aefbd",
+    "cmake/MinikeyTests.cmake": "07d93d695d887f039ab84560f5ef56fbf423891a6f22e6bbfa5f464b7fd6cbf6",
+    "cmake/StorageTests.cmake": "c9f1f3aac5f949034fd66f26ebaad86a2cb8a45bfb864d4b929a84c80dd630e9",
+    "include/keyhunt/backend/gpu_minikeys.h": "89c6bc5ffda88466d9852eb16f77b67273d6186a44baa969223da4acd5c82ad3",
+    "include/keyhunt/core/minikey_search.h": "8fb6c84d71cda9308fc78b435c396e8b6299b6a45b73487a9a294c621681b0a2",
+    "include/keyhunt/scheduler/work_unit.h": "5663388706027cd8c91b18b01cde78668eca129094ba74d74d30bf7d9fce5ebe",
+    "include/keyhunt/storage/checkpoint.h": "1fcd8ff3f418cada91e33287df1ffd9aae25eae83177d1017c9ac5b1e60e6e1e",
+    "include/keyhunt/storage/journal.h": "4cf8c21ad768519a4dfac6d0d8a97af7edc29c814402987096569775258e8a5c",
+    "kernels/common/minikey.h": "d24f20c6bab8e042812d781cc805e057e354a25fe78caf286d442ea214380fd0",
+    "kernels/search/minikeys.h": "bdefc1d9a4bcb016de215f326b86ad2d9e99c0566db04d2480e12ec0878cddf8",
+    "src/backend/checkpoint_command.cpp": "49464f47c49ddef3be1f2c81fe7687c4717729424da6b1cc2fe3ea4fd3dcb377",
+    "src/backend/commands.cpp": "166d3a1bf5a8330c3b19fbf200638c8aa4b8159bd36fd33a845cf01ffda9c72d",
+    "src/backend/gpu/minikeys.cpp": "a8623f117978640d16c0516e9ea93714ed95645dc5c97714441f6d4298aa04d3",
+    "src/backend/gpu/runtime.h": "663fb1842ba7c39e4e0fe81c1df7e1c7e6fe04a3f84a3511a7bf97a33f8aaa07",
+    "src/backend/minikeys_command.cpp": "50c040d53441af26df3fba7a0838a4daa7f7a847a9cc035610a64d5a31d5f1c4",
+    "src/coordinator/device_worker.cpp": "ac83ad847990422af918d70ce61b5bb9e21984c8d9a74dd68b8fe57bb5315c96",
+    "src/coordinator/protocol.h": "7c45d76c8c1fe1575d579819786d68ca0f85c2e0e437a0d0038f4f2990677042",
+    "src/coordinator/repository.cpp": "bc850d7e7722a3a2a2462f1cb4fb6a77c3efddef008476e3aa86c965398441e8",
+    "src/coordinator/self_test.cpp": "c0769524189a5117cd8483d529986dc94ad4d25e5e842edc77b0f36df08e0af0",
+    "src/coordinator/worker.cpp": "a953260c0b89a51776ac788110fcafac56c7770101dc2927562de95be2978a16",
+    "src/core/minikey_search.cpp": "6186e834972063d0c12dfa5854045b2b1e3f079f0d6f5c6b38944bdb8da5a1c1",
+    "src/scheduler/work_unit.cpp": "7a2256000d1308740618ac6be194924934cb5739c5f5d11889e405300312567e",
+    "src/storage/checkpoint.cpp": "507b7849c9233a76346b2af059cf546510d5675ebfb217bae540e33d49eaacd2",
+    "src/storage/checkpoint_data.cpp": "9ecca21923e10407971efc5bdb22fff88a7e33f37e1cf8e62bb51451f74f1bd6",
+    "src/storage/checkpoint_data.h": "ff7f0264a4812bc495fe6ae6e57655111eef321cf42f78988edf4b4b84ab9755",
+    "src/storage/journal.cpp": "2464a3496c845e50e3270453ce86cdd1e2232814818b7f40040e1c23de8c92d4",
+    "tests/coordinator/ethereum.cpp": "12ef4944a10aa620408b912596f10f52d42cb2b6f27b117aae840eac2b987c1e",
+    "tests/coordinator/hash160.cpp": "93e01481899d0a8b0d6d9fc5da8406d905a839d0a5214a34da74edd7c3ae23d1",
+    "tests/coordinator/https_worker.py": "9ac19c88992964cac11fb8f5016cd402ddce36d69c576e067468e382ff76442d",
+    "tests/coordinator/minikeys.cpp": "8daad9bf92749edab8f918b66330063b04a9c492d9f414b3619165474cb147d6",
+    "tests/coordinator/offline_cli.py": "b8487c8aec5454e096ed6df5d4a97535395b687cc8cd6eb653afa86fa6402f41",
+    "tests/coordinator/vanity.cpp": "3a5e93efeca27275c7b982c491f433158e6a86ec017c5384a11140beeb45d269",
+    "tests/gpu/minikey_oracle.py": "4f8ee237bccafa361fbf371de7f382b73b288ee7fbee7ac4e3e987612c83a8d6",
+    "tests/gpu/minikey_probe.cpp": "6c9b72ee077c79457d27767317508e7ab678949ed45e207b6ad20f04eea4b5d1",
+    "tests/gpu/minikey_probe.hip": "7a087b02618b1fdf788dea55a007d45f935984b809af410089f83d2712492d27",
+    "tests/gpu/minikeys_executor.cpp": "6f64ef9fa3f2a32a4cda1b2b7998fbca33a8bc69adc7bddc01664aa207fc5b80",
+    "tests/gpu/minikeys_failures.hip": "9308c1b8ac130c66490315efcdeb0cc5989a13a37fe5574616a66cbf0a4f58dd",
+    "tests/integration/checkpoint_pause_hip.py": "9cd6bd6f4df30e124a99205910b213bad0af1b2e34220eee3f5664ded4c9bad6",
+    "tests/integration/gpu_examples.py": "62dc09166001f83310a81c6627b64fcf41389c5f91a5e530e525b9d9d6e6f178",
+    "tests/integration/minikey_checkpoint_cli.py": "187e0ac8d8bdb999720eececdb43df217ce857d803bf698af0e4b8ba41919c94",
+    "tests/integration/minikeys_cli.py": "725aa95cda4078977ff5f3261ce2971f23436e2c1f9606a0314481084ee71be9",
+    "tests/oracle/minikey.py": "61daeabdb026a0b10d14483791dd9599c909d769e59aa0e096b27263e8349918",
+    "tests/storage/minikey_checkpoint.cpp": "5ecf109f9de83baec8850c8e23dc6c5757087e1013e87a8254219d0370ecc5bd",
+    "tests/unit/minikey_search.cpp": "55718a75b4060e60cef396aec8d2dae273481a42d52381cc92b2447467ad736f",
+    "tools/coordinator_worker.py": "b21a3963f66774761e8e2b7cee5ad44ca607a4984cabceaebde0c35ccde32edc"
+  },
+  "final_binaries_sha256": {
+    "/home/bagus/keyhunt-GPU/build/coordinator-release": {
+      "keyhunt": "d97cb9a7d72b9a86e1fe8ef2936247d8aa383b032808b094d535e19b831b154d",
+      "keyhunt-worker": "34fef9e7a88221c91086f93a437f75e7989eaa6910baf81919ad1297a0aa2dc0",
+      "keyhunt-coordinator": "04a72e27a3209fdef7466b9ce8bcb2c91f1ff24f9e3090abe44f765c390c971d"
+    },
+    "/home/bagus/keyhunt-GPU/build/coordinator-sanitizers": {
+      "keyhunt": "4150396b107f06a4ff68611e69303416edabbe107189cd4255fa27a7511bfd5b",
+      "keyhunt-worker": "77f6b0a5e3e38f9d2861f9259dd1b699cd05d2d00b6d37ef27809421b4d1cda4",
+      "keyhunt-coordinator": "c3eceea5dd7bfb163a633be0eca2a83f3ddffb472e74a2fa38e28471a3ab39f0"
+    },
+    "/home/bagus/keyhunt-GPU/build/hip-release": {
+      "keyhunt": "e168f327d43740573b7564fbb0aac91a8eb4c5adcf5d54ca1971b3d3f06c1b37",
+      "keyhunt-worker": "56f6dcd1d73d4877428af9b0a109e63a66095ca8b86e219baeada1c6f162a957",
+      "keyhunt-coordinator": "04a72e27a3209fdef7466b9ce8bcb2c91f1ff24f9e3090abe44f765c390c971d"
+    },
+    "cuda": {
+      "/var/tmp/keyhunt-c23/build": {
+        "keyhunt": "5db96f5a7597d174517a69bb95e14bb5a4f1ab961ac7f832235cbc75948865b9",
+        "keyhunt-worker": "9ba414cbb67069bd65e6d1d1b7028b7e2ccc5e0f8234c2a6f03439be68f563e4",
+        "keyhunt-coordinator": "468fbbdb72ac3c89b65060afb78f8571a73490aaa1f6f7626e4d94fc872bbae7"
+      }
+    }
+  },
+  "hardware": {
+    "hip": {
+      "backend": "hip",
+      "runtime_version": 71526333,
+      "driver_version": 71526333,
+      "devices": [
+        {
+          "ordinal": 0,
+          "name": "AMD Instinct MI300X",
+          "architecture": "gfx942:sramecc+:xnack-",
+          "uuid": "30646366333934386337333264313231",
+          "pci_bus_id": "0000:1b:00.0",
+          "physical_id": "0dcf3948c732d121",
+          "physical_id_source": "sysfs.unique_id",
+          "compute_partition": "SPX",
+          "memory_partition": "NPS1",
+          "memory_allocation_mode": "CAPPING",
+          "numa_node": 0,
+          "compute_units": 304,
+          "warp_size": 64,
+          "property_memory_bytes": 206141652992,
+          "total_memory_bytes": 206141652992,
+          "free_memory_bytes": 205533478912,
+          "warnings": []
+        },
+        {
+          "ordinal": 1,
+          "name": "AMD Instinct MI300X",
+          "architecture": "gfx942:sramecc+:xnack-",
+          "uuid": "30393337633864376335303031303365",
+          "pci_bus_id": "0000:3d:00.0",
+          "physical_id": "0937c8d7c500103e",
+          "physical_id_source": "sysfs.unique_id",
+          "compute_partition": "SPX",
+          "memory_partition": "NPS1",
+          "memory_allocation_mode": "CAPPING",
+          "numa_node": 0,
+          "compute_units": 304,
+          "warp_size": 64,
+          "property_memory_bytes": 206141652992,
+          "total_memory_bytes": 206141652992,
+          "free_memory_bytes": 205533478912,
+          "warnings": []
+        },
+        {
+          "ordinal": 2,
+          "name": "AMD Instinct MI300X",
+          "architecture": "gfx942:sramecc+:xnack-",
+          "uuid": "34616433376163376162633937306666",
+          "pci_bus_id": "0000:4e:00.0",
+          "physical_id": "4ad37ac7abc970ff",
+          "physical_id_source": "sysfs.unique_id",
+          "compute_partition": "SPX",
+          "memory_partition": "NPS1",
+          "memory_allocation_mode": "CAPPING",
+          "numa_node": 0,
+          "compute_units": 304,
+          "warp_size": 64,
+          "property_memory_bytes": 206141652992,
+          "total_memory_bytes": 206141652992,
+          "free_memory_bytes": 205533478912,
+          "warnings": []
+        },
+        {
+          "ordinal": 3,
+          "name": "AMD Instinct MI300X",
+          "architecture": "gfx942:sramecc+:xnack-",
+          "uuid": "64636438643565303832323137646663",
+          "pci_bus_id": "0000:5f:00.0",
+          "physical_id": "dcd8d5e082217dfc",
+          "physical_id_source": "sysfs.unique_id",
+          "compute_partition": "SPX",
+          "memory_partition": "NPS1",
+          "memory_allocation_mode": "CAPPING",
+          "numa_node": 0,
+          "compute_units": 304,
+          "warp_size": 64,
+          "property_memory_bytes": 206141652992,
+          "total_memory_bytes": 206141652992,
+          "free_memory_bytes": 205533478912,
+          "warnings": []
+        },
+        {
+          "ordinal": 4,
+          "name": "AMD Instinct MI300X",
+          "architecture": "gfx942:sramecc+:xnack-",
+          "uuid": "63613033303464653334643962636639",
+          "pci_bus_id": "0000:9d:00.0",
+          "physical_id": "ca0304de34d9bcf9",
+          "physical_id_source": "sysfs.unique_id",
+          "compute_partition": "SPX",
+          "memory_partition": "NPS1",
+          "memory_allocation_mode": "CAPPING",
+          "numa_node": 1,
+          "compute_units": 304,
+          "warp_size": 64,
+          "property_memory_bytes": 206141652992,
+          "total_memory_bytes": 206141652992,
+          "free_memory_bytes": 205533478912,
+          "warnings": []
+        },
+        {
+          "ordinal": 5,
+          "name": "AMD Instinct MI300X",
+          "architecture": "gfx942:sramecc+:xnack-",
+          "uuid": "66366665356431386461333065623431",
+          "pci_bus_id": "0000:bd:00.0",
+          "physical_id": "f6fe5d18da30eb41",
+          "physical_id_source": "sysfs.unique_id",
+          "compute_partition": "SPX",
+          "memory_partition": "NPS1",
+          "memory_allocation_mode": "CAPPING",
+          "numa_node": 1,
+          "compute_units": 304,
+          "warp_size": 64,
+          "property_memory_bytes": 206141652992,
+          "total_memory_bytes": 206141652992,
+          "free_memory_bytes": 205533478912,
+          "warnings": []
+        },
+        {
+          "ordinal": 6,
+          "name": "AMD Instinct MI300X",
+          "architecture": "gfx942:sramecc+:xnack-",
+          "uuid": "32333266393737383136343134663766",
+          "pci_bus_id": "0000:cd:00.0",
+          "physical_id": "232f977816414f7f",
+          "physical_id_source": "sysfs.unique_id",
+          "compute_partition": "SPX",
+          "memory_partition": "NPS1",
+          "memory_allocation_mode": "CAPPING",
+          "numa_node": 1,
+          "compute_units": 304,
+          "warp_size": 64,
+          "property_memory_bytes": 206141652992,
+          "total_memory_bytes": 206141652992,
+          "free_memory_bytes": 205533478912,
+          "warnings": []
+        },
+        {
+          "ordinal": 7,
+          "name": "AMD Instinct MI300X",
+          "architecture": "gfx942:sramecc+:xnack-",
+          "uuid": "37386338613437353837623036353233",
+          "pci_bus_id": "0000:dd:00.0",
+          "physical_id": "78c8a47587b06523",
+          "physical_id_source": "sysfs.unique_id",
+          "compute_partition": "SPX",
+          "memory_partition": "NPS1",
+          "memory_allocation_mode": "CAPPING",
+          "numa_node": 1,
+          "compute_units": 304,
+          "warp_size": 64,
+          "property_memory_bytes": 206141652992,
+          "total_memory_bytes": 206141652992,
+          "free_memory_bytes": 205533478912,
+          "warnings": []
+        }
+      ]
+    },
+    "cuda": {
+      "backend": "cuda",
+      "runtime_version": 13030,
+      "driver_version": 13030,
+      "devices": [
+        {
+          "ordinal": 0,
+          "name": "NVIDIA H200",
+          "architecture": "sm_90",
+          "uuid": "9fdcd9f2c45469a881b044d5f5e92bb8",
+          "pci_bus_id": "0000:1b:00.0",
+          "physical_id": "",
+          "physical_id_source": "",
+          "compute_partition": "",
+          "memory_partition": "",
+          "memory_allocation_mode": "",
+          "numa_node": 0,
+          "compute_units": 132,
+          "warp_size": 32,
+          "property_memory_bytes": 150101688320,
+          "total_memory_bytes": 150101688320,
+          "free_memory_bytes": 149545025536,
+          "warnings": [
+            "physical package identity unavailable",
+            "partition metadata unavailable"
+          ]
+        },
+        {
+          "ordinal": 1,
+          "name": "NVIDIA H200",
+          "architecture": "sm_90",
+          "uuid": "35e9b3332fcc91c7740d9dada8981391",
+          "pci_bus_id": "0000:3c:00.0",
+          "physical_id": "",
+          "physical_id_source": "",
+          "compute_partition": "",
+          "memory_partition": "",
+          "memory_allocation_mode": "",
+          "numa_node": 0,
+          "compute_units": 132,
+          "warp_size": 32,
+          "property_memory_bytes": 150101688320,
+          "total_memory_bytes": 150101688320,
+          "free_memory_bytes": 149545025536,
+          "warnings": [
+            "physical package identity unavailable",
+            "partition metadata unavailable"
+          ]
+        },
+        {
+          "ordinal": 2,
+          "name": "NVIDIA H200",
+          "architecture": "sm_90",
+          "uuid": "b9015ed612d65c7141653ab970cc5d89",
+          "pci_bus_id": "0000:4b:00.0",
+          "physical_id": "",
+          "physical_id_source": "",
+          "compute_partition": "",
+          "memory_partition": "",
+          "memory_allocation_mode": "",
+          "numa_node": 0,
+          "compute_units": 132,
+          "warp_size": 32,
+          "property_memory_bytes": 150101688320,
+          "total_memory_bytes": 150101688320,
+          "free_memory_bytes": 149545025536,
+          "warnings": [
+            "physical package identity unavailable",
+            "partition metadata unavailable"
+          ]
+        },
+        {
+          "ordinal": 3,
+          "name": "NVIDIA H200",
+          "architecture": "sm_90",
+          "uuid": "139f1dc5c1d8dd058d4c9b2ef33c966c",
+          "pci_bus_id": "0000:5c:00.0",
+          "physical_id": "",
+          "physical_id_source": "",
+          "compute_partition": "",
+          "memory_partition": "",
+          "memory_allocation_mode": "",
+          "numa_node": 0,
+          "compute_units": 132,
+          "warp_size": 32,
+          "property_memory_bytes": 150101688320,
+          "total_memory_bytes": 150101688320,
+          "free_memory_bytes": 149545025536,
+          "warnings": [
+            "physical package identity unavailable",
+            "partition metadata unavailable"
+          ]
+        },
+        {
+          "ordinal": 4,
+          "name": "NVIDIA H200",
+          "architecture": "sm_90",
+          "uuid": "8793d79f350ec5010a954ce29deee8a0",
+          "pci_bus_id": "0000:9a:00.0",
+          "physical_id": "",
+          "physical_id_source": "",
+          "compute_partition": "",
+          "memory_partition": "",
+          "memory_allocation_mode": "",
+          "numa_node": 1,
+          "compute_units": 132,
+          "warp_size": 32,
+          "property_memory_bytes": 150101688320,
+          "total_memory_bytes": 150101688320,
+          "free_memory_bytes": 149545025536,
+          "warnings": [
+            "physical package identity unavailable",
+            "partition metadata unavailable"
+          ]
+        },
+        {
+          "ordinal": 5,
+          "name": "NVIDIA H200",
+          "architecture": "sm_90",
+          "uuid": "0be674d0f3a86c060cebfb936d2e1cc0",
+          "pci_bus_id": "0000:bb:00.0",
+          "physical_id": "",
+          "physical_id_source": "",
+          "compute_partition": "",
+          "memory_partition": "",
+          "memory_allocation_mode": "",
+          "numa_node": 1,
+          "compute_units": 132,
+          "warp_size": 32,
+          "property_memory_bytes": 150101688320,
+          "total_memory_bytes": 150101688320,
+          "free_memory_bytes": 149545025536,
+          "warnings": [
+            "physical package identity unavailable",
+            "partition metadata unavailable"
+          ]
+        },
+        {
+          "ordinal": 6,
+          "name": "NVIDIA H200",
+          "architecture": "sm_90",
+          "uuid": "77df1e71e8323ccdd09eaa03ab3a2d7d",
+          "pci_bus_id": "0000:cd:00.0",
+          "physical_id": "",
+          "physical_id_source": "",
+          "compute_partition": "",
+          "memory_partition": "",
+          "memory_allocation_mode": "",
+          "numa_node": 1,
+          "compute_units": 132,
+          "warp_size": 32,
+          "property_memory_bytes": 150101688320,
+          "total_memory_bytes": 150101688320,
+          "free_memory_bytes": 149545025536,
+          "warnings": [
+            "physical package identity unavailable",
+            "partition metadata unavailable"
+          ]
+        },
+        {
+          "ordinal": 7,
+          "name": "NVIDIA H200",
+          "architecture": "sm_90",
+          "uuid": "ab387e304af7aaf1ece8575af15045ba",
+          "pci_bus_id": "0000:dc:00.0",
+          "physical_id": "",
+          "physical_id_source": "",
+          "compute_partition": "",
+          "memory_partition": "",
+          "memory_allocation_mode": "",
+          "numa_node": 1,
+          "compute_units": 132,
+          "warp_size": 32,
+          "property_memory_bytes": 150101688320,
+          "total_memory_bytes": 150101688320,
+          "free_memory_bytes": 149545025536,
+          "warnings": [
+            "physical package identity unavailable",
+            "partition metadata unavailable"
+          ]
+        }
+      ]
+    }
+  },
+  "local_final_metadata": {
+    "source_commit": "0361b2d4c55799fa0d31f0f9f22c841958818756",
+    "platform": "Linux-5.15.0-191-generic-x86_64-with-glibc2.35",
+    "binaries": {
+      "/home/bagus/keyhunt-GPU/build/coordinator-release": {
+        "keyhunt": "d97cb9a7d72b9a86e1fe8ef2936247d8aa383b032808b094d535e19b831b154d",
+        "keyhunt-worker": "34fef9e7a88221c91086f93a437f75e7989eaa6910baf81919ad1297a0aa2dc0",
+        "keyhunt-coordinator": "04a72e27a3209fdef7466b9ce8bcb2c91f1ff24f9e3090abe44f765c390c971d"
+      },
+      "/home/bagus/keyhunt-GPU/build/coordinator-sanitizers": {
+        "keyhunt": "4150396b107f06a4ff68611e69303416edabbe107189cd4255fa27a7511bfd5b",
+        "keyhunt-worker": "77f6b0a5e3e38f9d2861f9259dd1b699cd05d2d00b6d37ef27809421b4d1cda4",
+        "keyhunt-coordinator": "c3eceea5dd7bfb163a633be0eca2a83f3ddffb472e74a2fa38e28471a3ab39f0"
+      },
+      "/home/bagus/keyhunt-GPU/build/hip-release": {
+        "keyhunt": "e168f327d43740573b7564fbb0aac91a8eb4c5adcf5d54ca1971b3d3f06c1b37",
+        "keyhunt-worker": "56f6dcd1d73d4877428af9b0a109e63a66095ca8b86e219baeada1c6f162a957",
+        "keyhunt-coordinator": "04a72e27a3209fdef7466b9ce8bcb2c91f1ff24f9e3090abe44f765c390c971d"
+      }
+    },
+    "build_configuration": {
+      "/home/bagus/keyhunt-GPU/build/coordinator-release": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_CXX_COMPILER": "/usr/bin/c++",
+        "KEYHUNT_ENABLE_COORDINATOR": "ON",
+        "KEYHUNT_ENABLE_CUDA": "OFF",
+        "KEYHUNT_ENABLE_HIP": "OFF",
+        "KEYHUNT_ENABLE_HTTPS_WORKER": "ON",
+        "KEYHUNT_ENABLE_LTO": "ON",
+        "KEYHUNT_ENABLE_SANITIZERS": "OFF",
+        "KEYHUNT_GFX942_CARRY": "OFF"
+      },
+      "/home/bagus/keyhunt-GPU/build/coordinator-sanitizers": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_CXX_COMPILER": "/usr/bin/c++",
+        "KEYHUNT_ENABLE_COORDINATOR": "ON",
+        "KEYHUNT_ENABLE_CUDA": "OFF",
+        "KEYHUNT_ENABLE_HIP": "OFF",
+        "KEYHUNT_ENABLE_HTTPS_WORKER": "ON",
+        "KEYHUNT_ENABLE_LTO": "OFF",
+        "KEYHUNT_ENABLE_SANITIZERS": "ON",
+        "KEYHUNT_GFX942_CARRY": "OFF"
+      },
+      "/home/bagus/keyhunt-GPU/build/hip-release": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_CXX_COMPILER": "/usr/bin/c++",
+        "CMAKE_HIP_ARCHITECTURES": "gfx942",
+        "CMAKE_HIP_COMPILER": "/opt/rocm/core-10.0/lib/llvm/bin/clang++",
+        "KEYHUNT_ENABLE_COORDINATOR": "ON",
+        "KEYHUNT_ENABLE_CUDA": "OFF",
+        "KEYHUNT_ENABLE_HIP": "ON",
+        "KEYHUNT_ENABLE_HTTPS_WORKER": "ON",
+        "KEYHUNT_ENABLE_LTO": "ON",
+        "KEYHUNT_ENABLE_SANITIZERS": "OFF",
+        "KEYHUNT_GFX942_CARRY": "ON"
+      }
+    }
+  },
+  "cuda_final_metadata": {
+    "source_commit": "0361b2d4c55799fa0d31f0f9f22c841958818756",
+    "platform": "Linux-5.15.0-194-generic-x86_64-with-glibc2.35",
+    "binaries": {
+      "/var/tmp/keyhunt-c23/build": {
+        "keyhunt": "5db96f5a7597d174517a69bb95e14bb5a4f1ab961ac7f832235cbc75948865b9",
+        "keyhunt-worker": "9ba414cbb67069bd65e6d1d1b7028b7e2ccc5e0f8234c2a6f03439be68f563e4",
+        "keyhunt-coordinator": "468fbbdb72ac3c89b65060afb78f8571a73490aaa1f6f7626e4d94fc872bbae7"
+      }
+    },
+    "build_configuration": {
+      "/var/tmp/keyhunt-c23/build": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_CUDA_ARCHITECTURES": "90",
+        "CMAKE_CUDA_COMPILER": "/usr/local/cuda/bin/nvcc",
+        "CMAKE_CXX_COMPILER": "/usr/bin/c++",
+        "KEYHUNT_ENABLE_COORDINATOR": "ON",
+        "KEYHUNT_ENABLE_CUDA": "ON",
+        "KEYHUNT_ENABLE_HIP": "OFF",
+        "KEYHUNT_ENABLE_HTTPS_WORKER": "ON",
+        "KEYHUNT_ENABLE_LTO": "ON",
+        "KEYHUNT_ENABLE_SANITIZERS": "OFF",
+        "KEYHUNT_GFX942_CARRY": "OFF"
+      }
+    }
+  },
+  "artifacts_sha256": {
+    "docs/baselines/C23_MINIKEYS_ALGORITHMS.json": "e94c1e0970c30fff8c1dc3e68234d4b705e2f2779a432002ade1670243bff719",
+    "docs/baselines/C23_MINIKEYS_RECOVERY.json": "bc1fefeed6071116644461a052c001dde33f14168a0d460ffaffc09ea5e779a1",
+    "docs/baselines/C23_MINIKEYS_OFFLINE.json": "152837f856d63684abd9697630d4a84024844ac8dba9fd5f2647ec6e65368144",
+    "docs/baselines/C23_MINIKEYS_EXAMPLES.json": "67c7d9528533826251e56df92992da65d1f16d8c6b76249fe0932513bb8f36c6",
+    "docs/baselines/C23_MINIKEYS_LOGS.tar.gz": "040c9b66d2064332456c364bb3ea203bd46d8aa0712514930cab2a3864d4c291"
+  },
+  "raw_files_sha256": {
+    "cuda/checkpoint-cli-results.json": "5a22aa8729b38feb9445135788d4c3892b39033bb913addd3687c79b58721f8e",
+    "cuda/checkpoint-minikeys-cli.json": "60fdfd71d9134a3f3b8efba2c856768bb7fdc232324a486a999c086de39839f7",
+    "cuda/checkpoint-minikeys-pause-cuda.json": "5cf63e3b24e9dadcceee0bfab14da0a529a05fde367626683d2174b85cc998ad",
+    "cuda/coordinator-offline-cli.json": "d32de2dd9e9bd9d527adb6433861bfd343d4e31a99f89c3d58737277f28448b7",
+    "cuda/cuda-minikey-oracle.json": "3e03128e3f2d3c45b1c49ff1056f72803a80b74fa0de1b06693248e36a050964",
+    "cuda/keyhunt-minikey-cuda-algorithms.log": "ec3905cb8e6288adbc84b26936ff02eb7587ea4110c32fc5be1cd98c88599f21",
+    "cuda/keyhunt-minikey-cuda-boundary-build.log": "7bcc62acdba163a46b27c9c801e859ab438ffbc619cafe4eafaae3c7520ce35a",
+    "cuda/keyhunt-minikey-cuda-boundary-tests.log": "f6ac409ac2c115be33cfca36314931536395c31d7436fbe57b5ca807ad288010",
+    "cuda/keyhunt-minikey-cuda-build.log": "6d4e196df4f128b17a8aacf01d4e5ee02d4dc4f5b45208fc5fde32af507b7ab6",
+    "cuda/keyhunt-minikey-cuda-configure.log": "0ef20166c5a69ddf95865a61d7ec86547c61bd000ffe83f5143bff0dd960d37b",
+    "cuda/keyhunt-minikey-cuda-final-build.log": "567b8a5fbe4568d24187810c75bafc65cbb22192e9b92a73b1c5d969c2103042",
+    "cuda/keyhunt-minikey-cuda-final-configure.log": "0ef20166c5a69ddf95865a61d7ec86547c61bd000ffe83f5143bff0dd960d37b",
+    "cuda/keyhunt-minikey-cuda-final-metadata.json": "4b391300d9252bc46897a2150baefd7c28c41c02d608d10165723a1b5327f596",
+    "cuda/keyhunt-minikey-cuda-final-tests.log": "cb0f4faedfd09c981fb6dca2236fb04fdbf0f9f3e16f93d630757d7e249222bf",
+    "cuda/keyhunt-minikey-examples-cuda.json": "eaa0da5979e02505d76bd27c260738f9a186f17dce9bae77f6d13ad7a425c3e6",
+    "cuda/keyhunt-minikey-examples-cuda.log": "8c74ddcb867a756e658490fb64e9c6aa2b2fbc07b9e975b4624ec677a532c463",
+    "cuda/minikeys-cli-results.json": "66b6ec6495dc40313fe44b9ef788e09c36b0e9a1fdc99997144d78015c3070b2",
+    "hip/algorithms.log": "9a4143c538c76362da382590855dfdd0fe9631e735c704efda9297fae5931512",
+    "hip/checkpoint-cli-results.json": "dc66db5a4592e655f8d6a0887e68fba545330b3e5fc96654e4b5368bc6e8fb78",
+    "hip/checkpoint-minikeys-cli.json": "20b5e713ae676599fb3e9b2414c8369a554d5d3aae17d31e19ca420c515717ee",
+    "hip/checkpoint-minikeys-pause-hip.json": "db1de61d1b190ee10dad2d35548ad9a8fbec76a4ad772e5d3d9a47cc909fcccf",
+    "hip/coordinator-offline-cli.json": "f6c5cdb6ef5ef1eab0b1ec54ec62168f75ba6bbc02435ea52b89332ced861284",
+    "hip/hip-minikey-oracle.json": "3e03128e3f2d3c45b1c49ff1056f72803a80b74fa0de1b06693248e36a050964",
+    "hip/keyhunt-minikey-examples-hip.json": "621da0261fee654b7bf908e4b727d535ec4632436c5129c56e547711d0ac4ffe",
+    "hip/keyhunt-minikey-examples-hip.log": "078ab32f809a01dd6912d412312c13fa17712f4828539eada1bfa661cb14544d",
+    "hip/keyhunt-minikey-hip-boundary-build.log": "a7f7f2e979f36e2183278e998883a870c4c3fa2dc6ffad9ccd6d4acf9fd1ae0f",
+    "hip/keyhunt-minikey-hip-boundary-tests.log": "00207fa2ea213ecebf3f4a42c34f47a01ac0f5820a1c5c0b43f6d1e34beb1134",
+    "hip/keyhunt-minikey-hip-final-build.log": "621ea1484e6f3d0337ae5bf9a3bd7efe8d8d97f1be0e2af02b6f679a6d1b7491",
+    "hip/keyhunt-minikey-hip-final-configure.log": "0ad38179821e35c759ce78da6833c18087479ce57d3882e3485c90cb7f944896",
+    "hip/keyhunt-minikey-hip-final-tests.log": "92735999b8bd9d12b9c0b295845bcce14f2e6cab1c2ac94f8c4af1bd7699364f",
+    "hip/minikeys-cli-results.json": "6b39234ccba46c2f1d60cb7ed1be4e0a20b7e4cb41a8776acb5415317b76f579",
+    "hip/portable-minikey-oracle.json": "3e03128e3f2d3c45b1c49ff1056f72803a80b74fa0de1b06693248e36a050964",
+    "local/evidence-generator.py": "b32e65d711cddfc704511827bda8d21afdd0f169f84e9059cf205ee25face519",
+    "local/final-metadata.json": "0bc543015bee3c3d0c2bed19103c75e513bd40d7af9ffbee48e3f7dec5688e11",
+    "local/keyhunt-minikey-asan-boundary-build.log": "204d92d842295f403a08c1a3c676c2eb08bf126611dbb149b5f0ff550d4953e5",
+    "local/keyhunt-minikey-asan-boundary-tests.log": "0cbab645c85e17881cbe19c50b53d8ab33da2ec71686b3dad7497c708a3bde66",
+    "local/keyhunt-minikey-asan-build.log": "4fd33c3d6b21051a702acd17d43f71aabe561f8e06a7f1942ac6b3229d3715a0",
+    "local/keyhunt-minikey-asan-tests.log": "f97700da6b299a23b3253492f6eb73ac92364bcb9bcac36020f6be89a28ef96a",
+    "local/keyhunt-minikey-cpu-boundary-build.log": "f807b7f9913d007113cd3cf7ad64549e34b39010ca2bbe2f0694add5e0333ece",
+    "local/keyhunt-minikey-cpu-boundary-tests.log": "5ddc05cbe6ae79fd636a9b20e9e75e9de5c84c106488c86f78b4a73092c608f2",
+    "local/keyhunt-minikey-cpu-build.log": "8ec8ada6979ca18c34bb6f743ab2baaa4668cb5388d1ac20db69454832c7d988",
+    "local/keyhunt-minikey-cpu-offline-recheck.log": "85968748b3dbc0bfa7f76385a01b7ef068387689ade57c3b586ed2bab3130a2d",
+    "local/keyhunt-minikey-cpu-tests.log": "949af2583324393c00905b3afe58c60ec5f294272080e78388b79a344921d9fa",
+    "local/keyhunt-minikey-examples-cpu.json": "b0516c073544328b1ba4708d839ef9d468efdb31b33b9a352b01d0caf92becfa",
+    "local/keyhunt-minikey-examples-cpu.log": "deb109796baf306c80d6a3e7fa77f1865f053e81bb5d1c267b6ea7152f6966a9",
+    "local/metadata-generator.py": "46fa65cddfd35a9e105ab92db803c2f72f327cb1a65f739d30745703ff669934"
+  },
+  "limitations": [
+    "SHA-256 minikey lengths 22 and 30, standard Base58 suffix, Bitcoin mainnet P2PKH/HASH160 only",
+    "Legacy -m paths retain CPU behavior; length 26, PBKDF2, custom alphabets and random traversal are outside this slice",
+    "No minikey throughput, multi-device scaling, calibration, tuning, partition or MIG certification claim",
+    "Coordinator acceptance uses isolated localhost mTLS on each host; no public deployment"
+  ],
+  "findings": [
+    "One-based fixed-width Base58 ordinals cover every candidate including invalid check bytes",
+    "Internal mode-6 receipt scalar fields are ordinal coordinates; public result fields separate ordinal, text and derived scalar",
+    "Direct scalar derivation is necessary because adjacent candidate hashes are unrelated; no point-stepping or power cache applies",
+    "Canonical length/encoding/HASH160 targets preserve identity through recovery and authenticated file exchange",
+    "Minikey jobs require an explicit sixth capability before allocation, renewal, updates or cached replay",
+    "Two fixture variable collisions were corrected; the original CPU failure and successful offline rerun are retained",
+    "Out-of-domain minikey creation is explicitly HTTP 400 before persistence, covered by final focused checks",
+    "Supervisor leaves an unspecified kernel to mode defaults and rejects explicit stepped minikey execution"
+  ],
+  "evidence_policy": "Phased acceptance: source commits identify algorithm, storage, worker, example and final API-boundary content. The focused final boundary checks are separate from the earlier integrated worker gates. Embedded hashes identify each algorithm artifact, separately from final worker binaries. CPU offline fixture correction is recorded as a rerun, not hidden as an initial pass. Archive excludes credential contents and databases."
+}

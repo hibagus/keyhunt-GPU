@@ -9,9 +9,10 @@
 | Exact `hash160` / Bitcoin P2PKH `address --backend …` | Explicitly rejected | Validated | Validated |
 | Exact `ethereum --backend …` | Explicitly rejected | Validated | Validated |
 | Exact `vanity --backend …` | Explicitly rejected | Validated | Validated |
+| Exact `minikeys --backend … --length 22\|30` | Explicitly rejected; CPU inspect supported | Validated | Validated |
 | `bsgs-table build` / `inspect`, state, job creation and result inspection | Supported | CPU operations | CPU operations |
-| `checkpoint run --backend …` | Explicitly rejected | Validated durable xpoint/BSGS/HASH160/Ethereum/vanity | Validated durable xpoint/BSGS/HASH160/Ethereum/vanity |
-| Optional supervised workers | Configuration/sync/file exchange; no CPU search executor | Validated xpoint/BSGS/HASH160/Ethereum/vanity owners | Validated xpoint/BSGS/HASH160/Ethereum/vanity owners |
+| `checkpoint run --backend …` | Explicitly rejected | Validated durable xpoint/BSGS/HASH160/Ethereum/vanity/minikeys | Validated durable xpoint/BSGS/HASH160/Ethereum/vanity/minikeys |
+| Optional supervised workers | Configuration/sync/file exchange; no CPU search executor | Validated xpoint/BSGS/HASH160/Ethereum/vanity/minikeys owners | Validated xpoint/BSGS/HASH160/Ethereum/vanity/minikeys owners |
 
 The [GPU quickstart](GPU_QUICKSTART.md) includes exact ranges and public fixtures.
 The [build matrix](BUILD.md#validated-gpu-builds) identifies tested stacks and
@@ -19,7 +20,7 @@ partition limits. [C23's first family](C23_HASH160.md) adds exact raw HASH160 an
 Bitcoin mainnet P2PKH inputs with explicit public-key encoding identity.
 [Ethereum](C23_ETHEREUM_VALIDATION.md) adds Keccak addresses;
 [vanity](C23_VANITY_VALIDATION.md) adds exact case-sensitive Bitcoin P2PKH prefixes.
-Minikeys and other C23 families remain pending. C22 adds
+[Minikeys 22/30](C23_MINIKEYS_VALIDATION.md) adds exact candidate ordinals and recovery. Other mappings require separate parity gates. C22 adds
 [manual offline assignment files](OFFLINE_ASSIGNMENTS.md) for disconnected workers
 and connected couriers. HTTPS workers also retain valid leases and a durable
 outbox between scheduled contacts.
@@ -131,3 +132,18 @@ are accepted. Overlapping prefixes produce separate verified results at a scalar
 The exact half-open range is exhausted. See [contracts](C23_VANITY.md),
 [quickstart](GPU_QUICKSTART.md) and [checkpoints](CHECKPOINTS.md#bitcoin-vanity-prefix-jobs).
 Legacy `-m vanity` keeps its original CPU behavior and flags.
+
+## Native minikey candidates
+
+`minikeys --backend hip|cuda --length 22|30 --targets FILE --range BEGIN:END`
+checks a finite interval of candidate ordinals. Targets default to Bitcoin mainnet
+P2PKH addresses; `--input-format hash160` accepts raw hashes. Both public-key
+encodings are checked by default. `minikeys inspect --key TEXT` runs on the CPU
+and gives the exact ordinal for a candidate. Ordinal 1 maps to `S` followed by
+all `1`s; every checksum-rejected candidate still counts toward coverage.
+
+Only the direct kernel applies because adjacent candidates derive unrelated
+private keys. Public records expose the candidate ordinal and derived scalar
+separately. The legacy `-m minikeys` path remains unchanged. See the
+[contract](C23_MINIKEYS.md), [quickstart](GPU_QUICKSTART.md) and
+[checkpoint guide](CHECKPOINTS.md#minikey-ordinal-jobs).

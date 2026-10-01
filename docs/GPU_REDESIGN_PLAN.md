@@ -234,8 +234,8 @@ launched work, avoiding the reference's build-only integration problem.
 | Apple Silicon | Preserve useful CPU portability work selectively | Metal is outside this AMD/NVIDIA redesign |
 
 The first GPU release has a published mode matrix. Full CPU mode preservation
-does not imply that every mode is GPU-accelerated. Minikey enumeration needs its
-own ordinal-to-candidate mapping before it can share scalar-range journaling.
+does not imply that every mode is GPU-accelerated. The minikey family now has its own
+[ordinal-to-candidate mapping](C23_MINIKEYS.md) and mode-tagged exact journaling.
 
 ### Arithmetic and search invariants
 
@@ -836,7 +836,7 @@ The original CLI sketch has been superseded by tested commands:
 
 | Task | Implemented interface and guide |
 | --- | --- |
-| Finite exact GPU search | `keyhunt xpoint`, `bsgs`, `hash160`, `address`, `ethereum`, `vanity --backend hip\|cuda`; [complete examples](GPU_QUICKSTART.md) |
+| Finite exact GPU search | `keyhunt xpoint`, `bsgs`, `hash160`, `address`, `ethereum`, `vanity`, `minikeys --backend hip\|cuda`; [complete examples](GPU_QUICKSTART.md) |
 | Canonical job and local assignment | `keyhunt checkpoint create`, `keyhunt state claim`; [checkpoint guide](CHECKPOINTS.md#public-commands) |
 | Durable execution and controls | `keyhunt checkpoint run\|pause\|resume\|stop\|status`; [controls and recovery](PAUSE_RESUME.md) |
 | Authenticated coordinator | `keyhunt-coordinator serve` / `admin`; [localhost setup](COORDINATOR.md#s06-isolated-localhost-operation) |
@@ -905,7 +905,7 @@ implementation evidence in [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md).
 | C20 | `feat: schedule and balance multiple GPU devices` | C14–C17 | Completed (HIP and CUDA / localhost): calibrated immutable twelve-hour-target blocks, transactional balancing, persistent device owners, local controls, safe restart/handoff, batched sync, 1/2/4/8-GPU scaling and isolated memory/stall recovery pass; [C20 implementation and evidence](MULTI_GPU.md) |
 | C21 | `docs: publish validated GPU build and operations guides` | C14, C16, C20 | Completed: current build/mode matrices, executable HIP/CUDA searches/checkpoints, CPU CI preparation, localhost worker operations, benchmark/recovery limits and checked links; [C21 acceptance](C21_VALIDATION.md) |
 | C22 | `feat: export and reconcile offline work assignments` | C15 | Completed: trusted courier files over authenticated sync, schema-v7 receipts, reservation exclusion, duplicate imports, revocation/generation/deadline fences, incompatible manifests and exact unions; disconnected HIP/CUDA xpoint/BSGS pass; [C22 acceptance](C22_VALIDATION.md) |
-| C23 | `feat: extend GPU mode coverage` | C18, C20 | Partial: Bitcoin mainnet P2PKH/HASH160 family complete with HIP/CUDA algorithm and recovery parity; [acceptance](C23_VALIDATION.md). [Ethereum](C23_ETHEREUM_VALIDATION.md) is also complete with Keccak/encoding and recovery parity. [Vanity](C23_VANITY_VALIDATION.md) adds exact P2PKH prefix and recovery parity. Minikeys and other families remain pending, each requiring separate parity gates. |
+| C23 | `feat: extend GPU mode coverage` | C18, C20 | Partial: Bitcoin mainnet P2PKH/HASH160 family complete with HIP/CUDA algorithm and recovery parity; [acceptance](C23_VALIDATION.md). [Ethereum](C23_ETHEREUM_VALIDATION.md) is also complete with Keccak/encoding and recovery parity. [Vanity](C23_VANITY_VALIDATION.md) adds exact P2PKH prefix and recovery parity. [Minikeys 22/30](C23_MINIKEYS_VALIDATION.md) adds exact candidate ordinals, both encodings and recovery parity. Other mappings remain pending, each requiring separate parity gates. |
 
 C12 can be developed after C05 without waiting for HIP; its integration still
 requires GPU completion contracts to pass. NVIDIA validation requires access to a
