@@ -33,7 +33,7 @@ int checkpoint_command(int argc,char** argv){
     static const std::map<std::string,std::set<std::string>> allowed{
         {"create",{"project","mode","range","block-width","targets","table","host-memory","encoding","length","input-format","stride","order","endomorphism"}},
         {"run",{"backend","grant","targets","table","device","batch-size","kernel","giant-batch",
-                "target-batch","candidate-capacity","group-size","host-memory","reserve-bytes","checkpoint-seconds","encoding","input-format","length","stride","order","endomorphism","batch-order","tile-order","ordinal-order","ordinal-seed","ordinal-window","tile-seed","tile-window"}},
+                "target-batch","candidate-capacity","group-size","host-memory","reserve-bytes","checkpoint-seconds","encoding","input-format","length","stride","order","endomorphism","batch-order","batch-seed","batch-window","tile-order","ordinal-order","ordinal-seed","ordinal-window","tile-seed","tile-window"}},
         {"results",{"project","job","after","limit"}},
         {"pause",{"slot"}},{"resume",{"slot"}},{"stop",{"slot"}},{"status",{"slot"}}};
     if(argc<3)throw std::invalid_argument("usage: keyhunt checkpoint create|run|results|pause|resume|stop|status [--state-dir DIR] ...; see docs/CHECKPOINTS.md");
@@ -155,6 +155,11 @@ int checkpoint_command(int argc,char** argv){
     if(args.count("batch-order")){
         if(mode==Mode::Bsgs || mode==Mode::Minikeys)throw std::invalid_argument("batch-order applies only to scalar search families");
         options.scalar_batch_order=scheduler::parse_scalar_batch_order(required(args,"batch-order"));
+    }
+    if(args.count("batch-seed") || args.count("batch-window") || options.scalar_batch_order==scheduler::ScalarBatchOrder::RandomWindow){
+        if(mode==Mode::Bsgs || mode==Mode::Minikeys)throw std::invalid_argument("batch-seed/batch-window apply only to scalar search families");
+        options.scalar_random_window=scheduler::parse_scalar_random_window(optional(args,"batch-seed","0"),optional(args,"batch-window","64"));
+        scheduler::validate_scalar_random_window(options.scalar_batch_order.value_or(scheduler::ScalarBatchOrder::Forward),options.scalar_random_window);
     }
     if(args.count("ordinal-order")){
         if(mode!=Mode::Minikeys)throw std::invalid_argument("ordinal-order applies only to minikeys");
@@ -340,6 +345,7 @@ int checkpoint_command(int argc,char** argv){
     }
     std::cout<<']';
     if(mode!=Mode::Minikeys && mode!=Mode::Bsgs)std::cout<<",\"batch_order\":"<<quote(optional(args,"batch-order","forward"));
+    if(options.scalar_random_window)std::cout<<",\"batch_seed\":"<<quote(options.scalar_random_window->seed.hex())<<",\"batch_window\":"<<options.scalar_random_window->tiles;
     if(mode==Mode::Minikeys)std::cout<<",\"ordinal_order\":"<<quote(optional(args,"ordinal-order","forward"));
     if(mode==Mode::Bsgs)std::cout<<",\"tile_order\":"<<quote(optional(args,"tile-order","forward"));
     if(options.minikey_random_window)std::cout<<",\"ordinal_seed\":"<<quote(options.minikey_random_window->seed.hex())

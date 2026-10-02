@@ -38,13 +38,13 @@ void flush_record() {
 #endif
 }
 int ethereum_command(int argc, char** argv) {
-    const char* usage = "usage: keyhunt ethereum --backend hip|cuda --range START:END --targets FILE [--device N] [--batch-size 1..1048576] [--candidate-capacity 1..1048576] [--kernel stepped|direct|glv] [--stride HEX] [--order forward|reverse] [--batch-order forward|both-ends|dance] [--endomorphism none|orbit] (END is exclusive; NDJSON output)";
+    const char* usage = "usage: keyhunt ethereum --backend hip|cuda --range START:END --targets FILE [--device N] [--batch-size 1..1048576] [--candidate-capacity 1..1048576] [--kernel stepped|direct|glv] [--stride HEX] [--order forward|reverse] [--batch-order forward|both-ends|dance|random-window] [--batch-seed HEX] [--batch-window 1..256] [--endomorphism none|orbit] (END is exclusive; NDJSON output)";
     std::map<std::string,std::string> args;
     for (int i=2;i<argc;i+=2) {
         if (i+1 == argc) throw std::invalid_argument(usage);
         const std::string key = argv[i];
         if (key != "--backend" && key != "--range" && key != "--targets" && key != "--device" &&
-            key != "--batch-size" && key != "--candidate-capacity" && key != "--kernel" && key != "--stride" && key != "--batch-order" && key != "--order" && key != "--endomorphism") throw std::invalid_argument(usage);
+            key != "--batch-size" && key != "--candidate-capacity" && key != "--kernel" && key != "--stride" && key != "--batch-order" && key != "--batch-seed" && key != "--batch-window" && key != "--order" && key != "--endomorphism") throw std::invalid_argument(usage);
         if (!args.emplace(key,argv[i+1]).second) throw std::invalid_argument("duplicate ethereum option: "+key);
     }
     if ((args["--backend"] != "hip" && args["--backend"] != "cuda") || args["--range"].empty() || args["--targets"].empty())
@@ -61,6 +61,10 @@ int ethereum_command(int argc, char** argv) {
     if(order!="forward" && order!="reverse")throw std::invalid_argument("order must be forward or reverse");
     const bool reverse=order=="reverse";
     const auto batch_order=scheduler::parse_scalar_batch_order(args.count("--batch-order")?args["--batch-order"]:"forward");
+    std::optional<scheduler::ScalarRandomWindow> batch_random;
+    if(args.count("--batch-seed") || args.count("--batch-window") || batch_order==scheduler::ScalarBatchOrder::RandomWindow)
+        batch_random=scheduler::parse_scalar_random_window(args.count("--batch-seed")?args["--batch-seed"]:"0",args.count("--batch-window")?args["--batch-window"]:"64");
+    scheduler::validate_scalar_random_window(batch_order,batch_random);
     const auto endomorphism=args.count("--endomorphism")?args["--endomorphism"]:"none";
     if(endomorphism!="none" && endomorphism!="orbit")throw std::invalid_argument("endomorphism must be none or orbit");
     const bool orbit=endomorphism=="orbit";
@@ -104,9 +108,11 @@ int ethereum_command(int argc, char** argv) {
     if(mapping)std::cout<<",\"coordinate_space\":\""<<mapping->coordinate_space()<<"\",\"scalar_begin\":\""<<scalar_range.begin().hex()
         <<"\",\"scalar_end_exclusive\":\""<<scalar_range.end().hex()<<"\",\"stride\":\""<<stride.hex()<<'"';
     if(orbit)std::cout<<",\"endomorphism\":\"orbit\",\"seed_count\":\""<<mapping->seed_count().hex()<<'"';
-    std::cout<<",\"batch_order\":\""<<scheduler::scalar_batch_order_name(batch_order)<<"\"}";
+    std::cout<<",\"batch_order\":\""<<scheduler::scalar_batch_order_name(batch_order)<<"\"";
+    if(batch_random)std::cout<<",\"batch_seed\":\""<<batch_random->seed.hex()<<"\",\"batch_window\":"<<batch_random->tiles;
+    std::cout<<"}";
     flush_record();
-    scheduler::ScalarBatchPlanner planner(grid,UInt256(),{interval},identity,batch_order);
+    scheduler::ScalarBatchPlanner planner(grid,UInt256(),{interval},identity,batch_order,batch_random);
     UInt256 verified, attempts, match_count;
     uint64_t launches = 0, overflows = 0;
     scheduler::XPointBatchSize sizing(batch_size,uint32_t(capacity));
@@ -157,7 +163,9 @@ int ethereum_command(int argc, char** argv) {
               << ",\"kernel_ms\":" << kernel_ms << ",\"download_ms\":" << download_ms
               << ",\"verification_ms\":" << verification_ms << ",\"seed_ms\":" << seed_ms << ",\"wall_ms\":" << wall_ms ;
     if(mapping)std::cout<<",\"coordinate_space\":\""<<mapping->coordinate_space()<<'"';
-    std::cout<<",\"batch_order\":\""<<scheduler::scalar_batch_order_name(batch_order)<<"\"}";
+    std::cout<<",\"batch_order\":\""<<scheduler::scalar_batch_order_name(batch_order)<<"\"";
+    if(batch_random)std::cout<<",\"batch_seed\":\""<<batch_random->seed.hex()<<"\",\"batch_window\":"<<batch_random->tiles;
+    std::cout<<"}";
     flush_record();
     return 0;
 #endif

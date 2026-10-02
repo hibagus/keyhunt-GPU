@@ -55,8 +55,8 @@ struct Cleanup {
     ~Cleanup(){if(stop)stop();} // a throwing stop is a fatal ownership-contract violation
 };
 void validate_options(const CheckpointOptions& o,bool bsgs){
-    if(o.scalar_batch_order){
-        (void)scheduler::scalar_batch_order_name(*o.scalar_batch_order);
+    if(o.scalar_batch_order || o.scalar_random_window){
+        scheduler::validate_scalar_random_window(o.scalar_batch_order.value_or(scheduler::ScalarBatchOrder::Forward),o.scalar_random_window);
         if(bsgs)throw std::invalid_argument("batch-order applies only to scalar search families");
     }
     if(bsgs && (o.minikey_order || o.minikey_random_window))throw std::invalid_argument("ordinal-order applies only to minikeys");
@@ -308,7 +308,7 @@ CheckpointSummary CheckpointRun::ethereum(Journal& journal,const Grant& grant,co
 CheckpointSummary CheckpointRun::Impl::scalar(Journal& journal,const Grant& grant,detail::Binding input,unsigned matches_per_scalar,
     const core::XPointVerifier& verifier,const XPointRunner& run,CheckpointOptions o,CheckpointObserver observer,CheckpointCleanup cleanup,CheckpointControl control){
     validate_options(o,false);
-    if(o.scalar_batch_order && input.mode==Mode::Minikeys)throw std::invalid_argument("batch-order applies only to scalar search families");
+    if((o.scalar_batch_order || o.scalar_random_window) && input.mode==Mode::Minikeys)throw std::invalid_argument("batch-order applies only to scalar search families");
     if((o.minikey_order || o.minikey_random_window) && input.mode!=Mode::Minikeys)throw std::invalid_argument("ordinal-order applies only to minikeys");
     if(input.mode==Mode::Minikeys)core::validate_minikey_random_window(o.minikey_order.value_or(core::MinikeyOrder::Forward),o.minikey_random_window);
     const auto mapping=journal.stride_mapping(grant.scope);
@@ -387,9 +387,9 @@ CheckpointSummary CheckpointRun::Impl::scalar(Journal& journal,const Grant& gran
         }
     }else{
         scheduler::ScalarBatchPlanner planner(grid,grant.block,state.remaining,identity,
-            o.scalar_batch_order.value_or(scheduler::ScalarBatchOrder::Forward));
-        // Up to three fronts can own different units or meet inside one. Charge only
-        // each owner's execution/replay time, excluding pauses and the other side.
+            o.scalar_batch_order.value_or(scheduler::ScalarBatchOrder::Forward),o.scalar_random_window);
+        // Active owners are bounded by the policy: three for dance, W for a
+        // shuffled window. Charge only their own execution/replay time.
         std::map<UInt256,uint64_t> active_work;
         for(;;){
             if(!state.boundary())return state.summary;

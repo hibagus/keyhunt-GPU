@@ -13,6 +13,7 @@ namespace keyhunt::storage {
 struct CheckpointOptions {
     // Execution order only; omitted means forward and never changes job mapping.
     std::optional<scheduler::ScalarBatchOrder> scalar_batch_order;
+    std::optional<scheduler::ScalarRandomWindow> scalar_random_window;
     // Execution-only BSGS policy: receipts continue to name actual scalar ranges.
     // Optional distinguishes omitted from explicitly unsupported use on scalar jobs.
     std::optional<core::BsgsTileOrder> bsgs_tile_order;

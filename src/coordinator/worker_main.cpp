@@ -23,7 +23,7 @@ int main(int argc,char** argv){
     try{
         if(argc<2)throw std::invalid_argument("usage: keyhunt-worker configure|configuration|sync|scheduled-sync|file-export|file-relay|file-import|status|next|api|self-test|run-device --name VALUE ...; see docs/COORDINATOR.md");
         const std::string action=argv[1];std::set<std::string> allowed{"state-dir"};
-        if(action=="run-device")allowed.insert({"device","queue","backend","once","rebind","table","kernel","group-size","batch-order","tile-order","ordinal-order","ordinal-seed","ordinal-window","tile-seed","tile-window","batch-size","giant-batch","target-batch","host-memory"});
+        if(action=="run-device")allowed.insert({"device","queue","backend","once","rebind","table","kernel","group-size","batch-order","batch-seed","batch-window","tile-order","ordinal-order","ordinal-seed","ordinal-window","tile-seed","tile-window","batch-size","giant-batch","target-batch","host-memory"});
         else if(action=="configure")allowed.insert("config");
         else if(action=="file-export")allowed.insert({"output","refresh"});
         else if(action=="file-import")allowed.insert({"input","sha256"});
