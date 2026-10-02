@@ -64,3 +64,18 @@ add_test(NAME scalar_random_window_oracle COMMAND "${Python3_EXECUTABLE}"
     "${CMAKE_CURRENT_SOURCE_DIR}/tests/oracle/scalar_random_windows.py" --binary $<TARGET_FILE:scalar_batch_probe>
     --report "${CMAKE_CURRENT_BINARY_DIR}/scalar-random-window-oracle.json")
 set_tests_properties(scalar_random_window_oracle PROPERTIES TIMEOUT 240 LABELS "cpu;scalar-batches;oracle")
+
+foreach(mapping forward reverse)
+    foreach(family strides orbits)
+        add_test(NAME scalar_random_window_${family}_${mapping}_cli COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/${family}_cli.py"
+            --binary $<TARGET_FILE:keyhunt> --oracle $<TARGET_FILE:secp256k1_oracle>
+            --batch-order random-window --order ${mapping}
+            --report "${CMAKE_CURRENT_BINARY_DIR}/scalar-random-window-${family}-${mapping}.json" ${stride_cli_args})
+        set_tests_properties(scalar_random_window_${family}_${mapping}_cli PROPERTIES TIMEOUT 1200 LABELS "cpu;scalar-batches;oracle")
+        if(KEYHUNT_ENABLE_GPU)
+            set_tests_properties(scalar_random_window_${family}_${mapping}_cli PROPERTIES
+                LABELS "${KEYHUNT_GPU_BACKEND};hardware;scalar-batches;oracle" RESOURCE_LOCK gpu_device)
+        endif()
+    endforeach()
+endforeach()

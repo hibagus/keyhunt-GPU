@@ -10,7 +10,7 @@ from stride import targets,relations
 p=argparse.ArgumentParser()
 for name in ('binary','oracle','report'):p.add_argument('--'+name,type=Path,required=True)
 p.add_argument('--hardware',action='store_true');p.add_argument('--backend',choices=('hip','cuda'),default='hip')
-p.add_argument('--batch-order',choices=('forward','both-ends','dance'),default='forward')
+p.add_argument('--batch-order',choices=('forward','both-ends','dance','random-window'),default='forward')
 p.add_argument('--order',choices=('forward','reverse'),default='forward')
 p.add_argument('--kernel',choices=('direct','stepped','glv'))
 a=p.parse_args();binary=str(a.binary.resolve())
@@ -30,9 +30,9 @@ with tempfile.TemporaryDirectory(prefix='kh-strides-cli-') as directory:
         ('order',N-257,N,17,False),('large-step',1,N,N-1,False),
         ('byte-step',257,257+3*256,256,False),('overflow',1,1+257*2,2,True),
         ('no-hit',3,3+17*2,2,False),('max-batch',1<<128,(1<<128)+1048576*11,11,False)]
-    if a.order=='reverse' or a.batch_order=='dance':cases.append(('unit',101,138,1,False))
+    if a.order=='reverse' or a.batch_order in ('dance','random-window'):cases.append(('unit',101,138,1,False))
     if a.kernel=='glv':
-        if a.order=='forward' and a.batch_order!='dance':cases.append(('unit',101,138,1,False))
+        if a.order=='forward' and a.batch_order not in ('dance','random-window'):cases.append(('unit',101,138,1,False))
         cases.extend([('unit-wide',1<<192,(1<<192)+37,1,False),
                       ('unit-order',N-33,N,1,False),
                       ('unit-max',1<<128,(1<<128)+1048576,1,False)])
@@ -57,11 +57,16 @@ with tempfile.TemporaryDirectory(prefix='kh-strides-cli-') as directory:
         maximum=1048576 if a.batch_order=='forward' or count>=1048576 else 17
         words[words.index('--batch-size')+1]=maximum
         words+=['--batch-order',a.batch_order]
+        seed,window=[(0,64),(42,4),((1<<256)-1,1),(1<<200,256)][(len(name)+device+('direct','stepped','glv').index(kernel))%4]
+        if a.batch_order=='random-window' and (seed,window)!=(0,64):words+=['--batch-seed',f'{seed:x}','--batch-window',window]
         if not a.hardware:
             r=run(words,False);assert 'not built' in r.stderr
             return
         rows=run(words);start,summary=rows[0],rows[-1]
         assert start['batch_order']==summary['batch_order']==a.batch_order
+        if a.batch_order=='random-window':
+         for row in (start,summary):assert int(row['batch_seed'],16)==seed and row['batch_window']==window
+        else:assert 'batch_seed' not in start and 'batch_window' not in summary
         mapped=step!=1 or a.order=='reverse'
         assert start['kernel']==kernel
         if mapped:
@@ -70,7 +75,7 @@ with tempfile.TemporaryDirectory(prefix='kh-strides-cli-') as directory:
         else:assert 'coordinate_space' not in start and 'coordinate_space' not in summary
         first,last=(1,count+1) if mapped else (begin,end)
         assert int(start['begin'],16)==first and int(start['end_exclusive'],16)==last
-        model=Planner([(first,last)],a.batch_order);limit=maximum;found=[];overflows=0
+        model=Planner([(first,last)],a.batch_order,seed=seed,window=window);limit=maximum;found=[];overflows=0
         for row in rows[1:-1]:
             assert row['type']=='batch'
             low,high=int(row['begin'],16),int(row['end_exclusive'],16)
@@ -86,7 +91,7 @@ with tempfile.TemporaryDirectory(prefix='kh-strides-cli-') as directory:
         assert len(found)==len(wanted) and set(found)==wanted,(mode,kernel,name,len(found),len(wanted))
         assert not model.gaps and summary['complete'] and int(summary['verified_steps'],16)==count
         if overflow:assert overflows>0
-        report['cases'].append(dict(mode=mode,kernel=kernel,name=name,device=device,count=count,relations=len(wanted),summary=summary))
+        report['cases'].append(dict(mode=mode,kernel=kernel,name=name,device=device,batch_seed=f'{seed:x}',batch_window=window,count=count,relations=len(wanted),summary=summary))
     for mode in (('xpoint','hash160','address','ethereum','vanity') if a.batch_order!='forward' else ('xpoint','hash160','ethereum','vanity')):
         for kernel in ([a.kernel] if a.kernel else ('direct','stepped','glv') if a.batch_order!='forward' else ('direct','stepped')):
             for case in cases:exercise(mode,kernel,*case)
@@ -94,8 +99,15 @@ with tempfile.TemporaryDirectory(prefix='kh-strides-cli-') as directory:
         base=[mode,'--backend',a.backend,'--range','1:101','--targets',file]
         for step in ('0','-1',f'{N:x}',f'{1<<256:x}','junk',''):
             r=run(base+['--stride',step],False);assert not r.stdout;report['rejections']+=1
-        for bad in ('reverse','random-window',''):
+        for bad in ('reverse','random',''):
             assert not run(base+['--batch-order',bad],False).stdout;report['rejections']+=1
+        if a.batch_order=='random-window':
+            for key,values in [('batch-seed',('','-1','junk',f'{1<<256:x}')),('batch-window',('0','257','-1','+2','2x',''))]:
+                for value in values:
+                    assert not run(base+['--batch-order','random-window','--'+key,value],False).stdout;report['rejections']+=1
+            for order in ('forward','both-ends','dance'):
+                for key,value in [('batch-seed','0'),('batch-window','64')]:
+                    assert not run(base+['--batch-order',order,'--'+key,value],False).stdout;report['rejections']+=1
         for order in ('backward','random',''):
             r=run(base+['--order',order],False);assert not r.stdout;report['rejections']+=1
     if a.hardware:

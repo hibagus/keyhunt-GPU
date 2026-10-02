@@ -11,7 +11,7 @@ L=int('5363ad4cc05c30e0a5261c028812645a122e22ea20816678df02967c1b23bd72',16)
 p=argparse.ArgumentParser()
 for name in ('binary','oracle','report'):p.add_argument('--'+name,type=Path,required=True)
 p.add_argument('--hardware',action='store_true');p.add_argument('--backend',default='hip',choices=('hip','cuda'))
-p.add_argument('--batch-order',choices=('forward','both-ends','dance'),default='forward')
+p.add_argument('--batch-order',choices=('forward','both-ends','dance','random-window'),default='forward')
 p.add_argument('--order',choices=('forward','reverse'),default='forward');a=p.parse_args();binary=str(a.binary.resolve())
 report=dict(batch_order=a.batch_order,passed=False,order=a.order,hardware=a.hardware,cases=[],rejections=0,oracle_commit=check_source(),binary_sha256=hashlib.sha256(a.binary.read_bytes()).hexdigest())
 def run(words,ok=True):
@@ -42,14 +42,19 @@ with tempfile.TemporaryDirectory(prefix='kh-orbit-cli-') as temporary:
   maximum=1048576 if a.batch_order=='forward' or count>=1048576 else 17
   words[words.index('--batch-size')+1]=maximum
   words+=['--batch-order',a.batch_order]
+  seed,window=[(0,64),(42,4),((1<<256)-1,1),(1<<200,256)][(len(name)+device+('direct','stepped','glv').index(kernel))%4]
+  if a.batch_order=='random-window' and (seed,window)!=(0,64):words+=['--batch-seed',f'{seed:x}','--batch-window',window]
   if not a.hardware:
    assert 'not built' in run(words,False).stderr;return
   rows=run(words);start,summary=rows[0],rows[-1]
   assert start['batch_order']==summary['batch_order']==a.batch_order
+  if a.batch_order=='random-window':
+   for row in (start,summary):assert int(row['batch_seed'],16)==seed and row['batch_window']==window
+  else:assert 'batch_seed' not in start and 'batch_window' not in summary
   assert start['kernel']==kernel and start['endomorphism']=='orbit' and int(start['seed_count'],16)==count
   assert start['coordinate_space']==summary['coordinate_space']=='scalar-orbit-index-v1'
   assert int(start['begin'],16)==1 and int(start['end_exclusive'],16)==6*count+1
-  model=Planner([(1,6*count+1)],a.batch_order,count);limit=maximum;found=[];replayed=0;batches=0
+  model=Planner([(1,6*count+1)],a.batch_order,count,seed,window);limit=maximum;found=[];replayed=0;batches=0
   for row in rows[1:-1]:
    assert row['type']=='batch';batches+=1
    low,high=int(row['begin'],16),int(row['end_exclusive'],16)
@@ -67,7 +72,7 @@ with tempfile.TemporaryDirectory(prefix='kh-orbit-cli-') as temporary:
   assert len(found)==len(wanted) and set(found)==wanted,(mode,kernel,name,len(found),len(wanted))
   assert not model.gaps and summary['complete'] and int(summary['verified_steps'],16)==6*count
   if overflow:assert replayed>0
-  report['cases'].append(dict(mode=mode,kernel=kernel,name=name,device=device,seeds=count,relations=len(wanted),batches=batches,summary=summary))
+  report['cases'].append(dict(mode=mode,kernel=kernel,name=name,device=device,batch_seed=f'{seed:x}',batch_window=window,seeds=count,relations=len(wanted),batches=batches,summary=summary))
  for mode in (('xpoint','hash160','address','ethereum','vanity') if a.batch_order!='forward' else ('xpoint','hash160','ethereum','vanity')):
   for kernel in ('direct','glv','stepped'):
    for case in cases:exercise(mode,kernel,*case)
