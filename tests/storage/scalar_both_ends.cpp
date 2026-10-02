@@ -9,7 +9,7 @@ using scheduler::ScalarBatchOrder;
 
 template<class Targets,class Create,class Run>
 void exercise(const Targets& targets,Create create,Run run,const std::optional<core::ScalarStride>& mapping,
-              bool adaptive,unsigned transition,unsigned fault,unsigned bound,bool dance) {
+              bool adaptive,unsigned transition,unsigned fault,unsigned bound,bool dance,bool random) {
     Temporary temporary;Journal journal(temporary.path.string());core::XPointVerifier verifier;
     const core::ScalarInterval scalars=mapping?mapping->scalars():core::ScalarInterval(UInt256(101),UInt256(118));
     const auto root=mapping?mapping->indices():scalars;
@@ -37,9 +37,11 @@ void exercise(const Targets& targets,Create create,Run run,const std::optional<c
     }};reload();
     CheckpointOptions options;options.xpoint_steps=11;options.candidate_capacity=bound;options.checkpoint_seconds=0;
     options.work_unit_seconds=adaptive?60:0;
-    const auto policy=dance?ScalarBatchOrder::Dance:ScalarBatchOrder::BothEnds;
+    const auto policy=random?ScalarBatchOrder::RandomWindow:dance?ScalarBatchOrder::Dance:ScalarBatchOrder::BothEnds;
     options.scalar_batch_order=transition==1?ScalarBatchOrder::Forward:
-        transition==4?ScalarBatchOrder::BothEnds:policy;
+        transition==4?ScalarBatchOrder::BothEnds:transition==6?ScalarBatchOrder::Dance:policy;
+    if(options.scalar_batch_order==ScalarBatchOrder::RandomWindow)options.scalar_random_window=scheduler::ScalarRandomWindow{UInt256(42),4};
+    std::optional<core::ScalarInterval> retry;
     unsigned phase=0;
     auto pivot=missing.begin()->add(missing.rbegin()->add(UInt256(1)).subtract(*missing.begin()).divmod(UInt256(2)).first);
     unsigned accepted=0,overflows=0;bool faulted=false,cleaned=false;
@@ -50,21 +52,22 @@ void exercise(const Targets& targets,Create create,Run run,const std::optional<c
         const bool high=order!=ScalarBatchOrder::Forward && phase==1;
         auto next=missing.begin();
         if(order==ScalarBatchOrder::Dance && phase==2){next=missing.lower_bound(pivot);if(next==missing.end())next=missing.begin();}
-        require((high?batch.interval().end().subtract(UInt256(1)):batch.interval().begin())==
+        if(order!=ScalarBatchOrder::RandomWindow)require((high?batch.interval().end().subtract(UInt256(1)):batch.interval().begin())==
                 (high?*missing.rbegin():*next),"wrong recovery phase endpoint");
         if(order==ScalarBatchOrder::Dance)require(!(batch.interval().begin()<pivot && pivot<batch.interval().end()),"batch crossed fixed pivot");
+        if(retry)require(batch.interval().begin()==retry->begin() && batch.interval().end()<=retry->end(),"overflow moved a shuffled suffix");
         backend::XPointResult result{batch,{}};result.device_steps=batch.step_count();
         for(uint64_t j=0;j<batch.step_count();++j){const auto i=batch.coordinate_at(j);
             require(missing.count(i),"submitted previously saved coverage");
             for(auto t:expected[i])result.matches.push_back({i,t});
         }
         result.candidate_count=result.matches.size();result.overflow=result.candidate_count>options.candidate_capacity;
-        if(result.overflow){++overflows;result.matches.clear();}
+        if(result.overflow){++overflows;result.matches.clear();if(order==ScalarBatchOrder::RandomWindow)retry=batch.interval();}
         else{
             // Fault after execution but before any receipt. This suffix must be
             // rediscovered by the next invocation's saved complement.
             if(fault==0 && accepted==3 && !faulted){faulted=true;throw std::runtime_error("before receipt");}
-            result.verified_steps=result.device_steps;++accepted;
+            retry.reset();result.verified_steps=result.device_steps;++accepted;
             if(order!=ScalarBatchOrder::Forward)phase=(phase+1)%(order==ScalarBatchOrder::Dance?3:2);
             for(uint64_t j=0;j<batch.step_count();++j)missing.erase(batch.coordinate_at(j));
         }
@@ -77,7 +80,9 @@ void exercise(const Targets& targets,Create create,Run run,const std::optional<c
     const auto left=missing.size();require(left>0 && left<root.size().to_uint64(),"no partial durable progress");
     const auto retained=root.size().subtract(UInt256(left));
     options.scalar_batch_order=transition==0?ScalarBatchOrder::Forward:
-        transition==3?ScalarBatchOrder::BothEnds:policy;
+        transition==3?ScalarBatchOrder::BothEnds:transition==5?ScalarBatchOrder::Dance:policy;
+    options.scalar_random_window.reset();retry.reset();
+    if(options.scalar_batch_order==ScalarBatchOrder::RandomWindow)options.scalar_random_window=scheduler::ScalarRandomWindow{UInt256(0x1234),3};
     phase=0;
     pivot=missing.begin()->add(missing.rbegin()->add(UInt256(1)).subtract(*missing.begin()).divmod(UInt256(2)).first);
     options.xpoint_steps=1;options.candidate_capacity=1024;
@@ -94,6 +99,8 @@ void exercise(const Targets& targets,Create create,Run run,const std::optional<c
     const auto rows=journal.results(scope,0,1000);require(rows.size()==total,"lost or duplicated results");
     for(const auto& row:rows)input.verify(verifier,row.scalar,row.target);
     options.scalar_batch_order=policy;
+    options.scalar_random_window.reset();
+    if(random)options.scalar_random_window=scheduler::ScalarRandomWindow{UInt256(7),256};
     const auto done=run(journal,grant,targets,verifier,[](const auto&)->backend::XPointResult{throw std::runtime_error("finished job ran");},options,
         CheckpointObserver{},CheckpointCleanup{},CheckpointControl{});
     require(done.batches==0&&done.resumed_scalars==root.size(),"completed retry changed coverage");
@@ -101,6 +108,7 @@ void exercise(const Targets& targets,Create create,Run run,const std::optional<c
     require(backup.results(scope,0,1000).size()==total,"backup lost results");journal.check();
 }
 int main(int argc,char** argv){try{
+    const bool random=argc==2 && std::string(argv[1])=="--random-window";
     const bool dance=argc==2 && std::string(argv[1])=="--dance";
     unsigned cases=0;core::XPointVerifier verifier;
     for(unsigned kind=0;kind<5;++kind){
@@ -115,13 +123,13 @@ int main(int argc,char** argv){try{
             for(unsigned tag:{1,2}){hv.push_back(core::hash160_target(pub,tag));vv.push_back(core::vanity_target(core::bitcoin_address(pub,tag),tag));}
         }
         const core::XPointTargets xt(xv);const core::Hash160Targets ht(hv);const core::EthereumTargets et(ev);const core::VanityTargets vt(vv);
-        for(bool adaptive:{false,true})for(unsigned transition=0;transition<(dance?5u:3u);++transition)for(unsigned fault=0;fault<2;++fault){
-            exercise(xt,orbit?CheckpointRun::create_orbit_xpoint:CheckpointRun::create_xpoint,CheckpointRun::xpoint,mapping,adaptive,transition,fault,1,dance);
-            exercise(ht,orbit?CheckpointRun::create_orbit_hash160:CheckpointRun::create_hash160,CheckpointRun::hash160,mapping,adaptive,transition,fault,2,dance);
-            exercise(et,orbit?CheckpointRun::create_orbit_ethereum:CheckpointRun::create_ethereum,CheckpointRun::ethereum,mapping,adaptive,transition,fault,1,dance);
-            exercise(vt,orbit?CheckpointRun::create_orbit_vanity:CheckpointRun::create_vanity,CheckpointRun::vanity,mapping,adaptive,transition,fault,vt.max_matches_per_scalar(),dance);
+        for(bool adaptive:{false,true})for(unsigned transition=0;transition<(random?7u:dance?5u:3u);++transition)for(unsigned fault=0;fault<2;++fault){
+            exercise(xt,orbit?CheckpointRun::create_orbit_xpoint:CheckpointRun::create_xpoint,CheckpointRun::xpoint,mapping,adaptive,transition,fault,1,dance,random);
+            exercise(ht,orbit?CheckpointRun::create_orbit_hash160:CheckpointRun::create_hash160,CheckpointRun::hash160,mapping,adaptive,transition,fault,2,dance,random);
+            exercise(et,orbit?CheckpointRun::create_orbit_ethereum:CheckpointRun::create_ethereum,CheckpointRun::ethereum,mapping,adaptive,transition,fault,1,dance,random);
+            exercise(vt,orbit?CheckpointRun::create_orbit_vanity:CheckpointRun::create_vanity,CheckpointRun::vanity,mapping,adaptive,transition,fault,vt.max_matches_per_scalar(),dance,random);
             cases+=4;
         }
     }
-    std::cout<<"Passed "<<cases<<" scalar "<<(dance?"dance":"both-ends")<<" recovery combinations\n";
+    std::cout<<"Passed "<<cases<<" scalar "<<(random?"random-window":dance?"dance":"both-ends")<<" recovery combinations\n";
 }catch(const std::exception& e){std::cerr<<e.what()<<'\n';return 1;}}

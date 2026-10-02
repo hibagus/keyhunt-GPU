@@ -28,7 +28,7 @@ parser.add_argument("--backend",choices=("hip","cuda"),default="hip")
 parser.add_argument("--mode", choices=("xpoint","bsgs","hash160","ethereum","vanity","minikeys22","minikeys30"), action="append")
 parser.add_argument("--stride", type=lambda value:int(value,16), default=1)
 parser.add_argument("--order",choices=("forward","reverse"),default="forward")
-parser.add_argument("--batch-order",choices=("forward","both-ends","dance"))
+parser.add_argument("--batch-order",choices=("forward","both-ends","dance","random-window"))
 parser.add_argument("--ordinal-order",choices=("forward","reverse","both-ends","dance","random-window"))
 parser.add_argument("--tile-order",choices=("forward","reverse","both-ends","dance","random-window"))
 parser.add_argument("--orbit",action="store_true")
@@ -133,7 +133,7 @@ with tempfile.TemporaryDirectory(prefix="kh-c14-hip-") as temporary:
                 env["CUDA_VISIBLE_DEVICES" if args.backend=="cuda" else "HIP_VISIBLE_DEVICES"] = visibility
             log, err = root / f"{mode}-{stage}.out", root / f"{mode}-{stage}.err"
             with log.open("w") as out, err.open("w") as error:
-                process = subprocess.Popen([str(binary), *map(str, run + slow + (["--batch-order",args.batch_order if stage==0 else "forward"] if args.batch_order else []) + (["--ordinal-order",args.ordinal_order if stage==0 else ("forward" if args.ordinal_order=="reverse" else "reverse")] if args.ordinal_order else []) + (["--tile-order",args.tile_order if stage==0 else ("forward" if args.tile_order=="reverse" else "reverse")] if args.tile_order else []) + ["--device", device] + (["--kernel",args.kernel if stage==0 else "direct"] if args.kernel else []))],
+                process = subprocess.Popen([str(binary), *map(str, run + slow + (["--batch-order",args.batch_order if stage==0 else "forward"] + (["--batch-seed","2a","--batch-window","4"] if args.batch_order=="random-window" and stage==0 else []) if args.batch_order else []) + (["--ordinal-order",args.ordinal_order if stage==0 else ("forward" if args.ordinal_order=="reverse" else "reverse")] if args.ordinal_order else []) + (["--tile-order",args.tile_order if stage==0 else ("forward" if args.tile_order=="reverse" else "reverse")] if args.tile_order else []) + ["--device", device] + (["--kernel",args.kernel if stage==0 else "direct"] if args.kernel else []))],
                                            stdout=out, stderr=error, env=env)
             try:
                 live = activity("running")
@@ -193,9 +193,10 @@ with tempfile.TemporaryDirectory(prefix="kh-c14-hip-") as temporary:
         env = os.environ.copy()
         if visibility is not None:
             env["CUDA_VISIBLE_DEVICES" if args.backend=="cuda" else "HIP_VISIBLE_DEVICES"] = visibility
-        completed = invoke(run + fast + (["--batch-order",args.batch_order] if args.batch_order else []) + (["--ordinal-order",args.ordinal_order] if args.ordinal_order else []) + (["--tile-order",args.tile_order] if args.tile_order else []) + ["--device", device] + (["--kernel","stepped"] if args.kernel else []), env=env)[-1]
+        completed = invoke(run + fast + (["--batch-order",args.batch_order] + (["--batch-seed","1234","--batch-window","3"] if args.batch_order=="random-window" else []) if args.batch_order else []) + (["--ordinal-order",args.ordinal_order] if args.ordinal_order else []) + (["--tile-order",args.tile_order] if args.tile_order else []) + ["--device", device] + (["--kernel","stepped"] if args.kernel else []), env=env)[-1]
         assert completed["complete"]
         if args.batch_order:assert completed["batch_order"]==args.batch_order
+        if args.batch_order=="random-window":assert int(completed["batch_seed"],16)==0x1234 and completed["batch_window"]==3
         if args.ordinal_order:assert completed["ordinal_order"]==args.ordinal_order
         if args.tile_order:assert completed["tile_order"]==args.tile_order
         assert int(completed["resumed_candidates" if args.orbit or args.stride!=1 or args.order=="reverse" else "resumed_ordinals" if length else "resumed_scalars"], 16) + int(completed["computed_candidates" if args.orbit or args.stride!=1 or args.order=="reverse" else "computed_ordinals" if length else "computed_scalars"], 16) == candidate_count
