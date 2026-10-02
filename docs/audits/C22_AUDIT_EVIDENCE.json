@@ -1,0 +1,156 @@
+{
+  "source": "7b12569e9f1b53099e42ed2e48a552c088e62d31",
+  "passed": true,
+  "published": {
+    "source_sha256": 18,
+    "publication_sha256": 12,
+    "published_migrations_unchanged": 6,
+    "log_members": 41,
+    "gpu_and_dispatch_files_compared": 45,
+    "gpu_backend_changes": [],
+    "cpu": [
+      {
+        "mode": "xpoint",
+        "hardware": false
+      },
+      {
+        "mode": "bsgs",
+        "hardware": false
+      }
+    ],
+    "hip": [
+      {
+        "mode": "xpoint",
+        "hardware": true,
+        "blocks": 2,
+        "scalars": 1024,
+        "device_steps": 1024,
+        "uuid": "30646366333934386337333264313231",
+        "executor_setups": 1,
+        "matches": 1
+      },
+      {
+        "mode": "bsgs",
+        "hardware": true,
+        "blocks": 2,
+        "scalars": 65536,
+        "device_steps": 256,
+        "uuid": "30646366333934386337333264313231",
+        "executor_setups": 1,
+        "matches": 1
+      }
+    ],
+    "cuda": [
+      {
+        "mode": "xpoint",
+        "hardware": true,
+        "blocks": 2,
+        "scalars": 1024,
+        "device_steps": 1024,
+        "uuid": "9fdcd9f2c45469a881b044d5f5e92bb8",
+        "executor_setups": 1,
+        "matches": 1
+      },
+      {
+        "mode": "bsgs",
+        "hardware": true,
+        "blocks": 2,
+        "scalars": 65536,
+        "device_steps": 256,
+        "uuid": "9fdcd9f2c45469a881b044d5f5e92bb8",
+        "executor_setups": 1,
+        "matches": 1
+      }
+    ]
+  },
+  "fresh": {
+    "/tmp/keyhunt-c22-audit-u0d52ucm/cpu/coordinator-offline-cli.json": {
+      "sha256": "3d696308f46271a04eb29aac30d930cdbdb675d592b6e2a42f25f8840af530d1",
+      "cases": [
+        {
+          "mode": "xpoint",
+          "hardware": false
+        },
+        {
+          "mode": "bsgs",
+          "hardware": false
+        }
+      ]
+    },
+    "/tmp/keyhunt-c22-audit-u0d52ucm/hip/coordinator-offline-cli.json": {
+      "sha256": "3e42a8f8c40707926d7e479a0dc578e07d078c4da3bb339e6332d5be65090f55",
+      "cases": [
+        {
+          "mode": "xpoint",
+          "hardware": true,
+          "blocks": 2,
+          "scalars": 1024,
+          "device_steps": 1024,
+          "uuid": "30646366333934386337333264313231",
+          "executor_setups": 1,
+          "matches": 1
+        },
+        {
+          "mode": "bsgs",
+          "hardware": true,
+          "blocks": 2,
+          "scalars": 65536,
+          "device_steps": 256,
+          "uuid": "30646366333934386337333264313231",
+          "executor_setups": 1,
+          "matches": 1
+        }
+      ]
+    },
+    "/tmp/keyhunt-c22-audit-u0d52ucm/remote/cuda/coordinator-offline-cli.json": {
+      "sha256": "a2f3d28bfaae0cb70b2483aad3f77d0a8d0d09a8e69ebd7b58dac4004a6c190e",
+      "cases": [
+        {
+          "mode": "xpoint",
+          "hardware": true,
+          "blocks": 2,
+          "scalars": 1024,
+          "device_steps": 1024,
+          "uuid": "9fdcd9f2c45469a881b044d5f5e92bb8",
+          "executor_setups": 1,
+          "matches": 1
+        },
+        {
+          "mode": "bsgs",
+          "hardware": true,
+          "blocks": 2,
+          "scalars": 65536,
+          "device_steps": 256,
+          "uuid": "9fdcd9f2c45469a881b044d5f5e92bb8",
+          "executor_setups": 1,
+          "matches": 1
+        }
+      ]
+    },
+    "/tmp/keyhunt-c22-audit-u0d52ucm/cross-host.json": {
+      "sha256": "54b6b99ec7f571cc90d616d194c4420f9fbfcc1016aa9f7a862847c683904fe0",
+      "cases": [
+        {
+          "mode": "xpoint",
+          "hardware": true,
+          "blocks": 2,
+          "scalars": 1026,
+          "device_steps": 1026,
+          "uuid": "ab387e304af7aaf1ece8575af15045ba",
+          "executor_setups": 1,
+          "matches": 1
+        },
+        {
+          "mode": "bsgs",
+          "hardware": true,
+          "blocks": 2,
+          "scalars": 65538,
+          "device_steps": 256,
+          "uuid": "ab387e304af7aaf1ece8575af15045ba",
+          "executor_setups": 1,
+          "matches": 1
+        }
+      ]
+    }
+  }
+}

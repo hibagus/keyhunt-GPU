@@ -1,0 +1,1833 @@
+{
+  "passed": true,
+  "source": "2a254bdba3f0c4d22401ca35387d320df1ad54cb",
+  "manifests": [
+    {
+      "manifest": "C23_BSGS_BOTH_ENDS_VALIDATION.json",
+      "sha256": "06f7af80771bc77a85a7e918293c4cd6f65eb6eda3028e2bbdfb561b12c68330",
+      "artifacts": 5,
+      "raw_members_checked": 0,
+      "source_fingerprints_checked": 0,
+      "source_qualifications": [],
+      "archive_regular_files": 53
+    },
+    {
+      "manifest": "C23_BSGS_DANCE_VALIDATION.json",
+      "sha256": "6662bf5738511622ea05b8519e529b18a255a3730c9ccc0aaf6355dd998e44ef",
+      "artifacts": 5,
+      "raw_members_checked": 0,
+      "source_fingerprints_checked": 0,
+      "source_qualifications": [],
+      "archive_regular_files": 71
+    },
+    {
+      "manifest": "C23_BSGS_RANDOM_WINDOW_VALIDATION.json",
+      "sha256": "fa1ea87561be93ea91e1db9e8cf008d5b999e0bc01133c0030e7c7a2db73bf58",
+      "artifacts": 5,
+      "raw_members_checked": 0,
+      "source_fingerprints_checked": 0,
+      "source_qualifications": [],
+      "archive_regular_files": 89
+    },
+    {
+      "manifest": "C23_BSGS_REVERSE_VALIDATION.json",
+      "sha256": "1ff284104c3c4258a124a7eac0ca1c2bdfd55f351bdf84a3a75ee036bd1eb921",
+      "artifacts": 5,
+      "raw_members_checked": 0,
+      "source_fingerprints_checked": 0,
+      "source_qualifications": [],
+      "archive_regular_files": 45
+    },
+    {
+      "manifest": "C23_ETHEREUM_VALIDATION.json",
+      "sha256": "b3ba5edf712fa42f3934a29483258d9d1ef5333d1ea992f5eb602dc29733f414",
+      "artifacts": 5,
+      "raw_members_checked": 43,
+      "source_fingerprints_checked": 42,
+      "source_qualifications": [
+        {
+          "file": ".github/workflows/cpu.yml",
+          "named_revision": "00cece0",
+          "matching_later_revisions": [
+            "f77f2c2b8a7e1f5975ae8a643d1e3a25bada1175"
+          ]
+        },
+        {
+          "file": "tests/integration/gpu_examples.py",
+          "named_revision": "00cece0",
+          "matching_later_revisions": [
+            "c88c7f6e09cb8b4f4d08ac8322df6ded1b8cdd37"
+          ]
+        },
+        {
+          "file": "tests/oracle/requirements.txt",
+          "named_revision": "00cece0",
+          "matching_later_revisions": [
+            "f77f2c2b8a7e1f5975ae8a643d1e3a25bada1175"
+          ]
+        }
+      ],
+      "archive_regular_files": 43
+    },
+    {
+      "manifest": "C23_GLV_VALIDATION.json",
+      "sha256": "f8d13ea2eee8044ba52fa0ab964a147ad6b248cfd3b38e2b812ab1204ac2e993",
+      "artifacts": 6,
+      "raw_members_checked": 0,
+      "source_fingerprints_checked": 0,
+      "source_qualifications": [],
+      "archive_regular_files": 72
+    },
+    {
+      "manifest": "C23_MINIKEYS_BOTH_ENDS_VALIDATION.json",
+      "sha256": "b902f860261ce9888affb68619705dc7fc7fcc20d1d1816782d3895811c356ea",
+      "artifacts": 5,
+      "raw_members_checked": 0,
+      "source_fingerprints_checked": 0,
+      "source_qualifications": [],
+      "archive_regular_files": 67
+    },
+    {
+      "manifest": "C23_MINIKEYS_DANCE_VALIDATION.json",
+      "sha256": "a838cc90d8ca541cb1177caa808c43eb7501f33f689844f5538c9ea01929e443",
+      "artifacts": 5,
+      "raw_members_checked": 0,
+      "source_fingerprints_checked": 0,
+      "source_qualifications": [],
+      "archive_regular_files": 77
+    },
+    {
+      "manifest": "C23_MINIKEYS_RANDOM_WINDOW_VALIDATION.json",
+      "sha256": "0f43e01d20615e0455f4172a27afb649bffd43c117e31d60d292bdb1487be56d",
+      "artifacts": 5,
+      "raw_members_checked": 0,
+      "source_fingerprints_checked": 0,
+      "source_qualifications": [],
+      "archive_regular_files": 100
+    },
+    {
+      "manifest": "C23_MINIKEYS_REVERSE_VALIDATION.json",
+      "sha256": "3ba0a59c553a00613e7e6f1adc6b17f741fbd81f2f0bbe9121af2b610247b9d4",
+      "artifacts": 5,
+      "raw_members_checked": 0,
+      "source_fingerprints_checked": 0,
+      "source_qualifications": [],
+      "archive_regular_files": 66
+    },
+    {
+      "manifest": "C23_MINIKEYS_VALIDATION.json",
+      "sha256": "3c627a362f34b876a40798d782174aaef9413e0f1e0160a1c9c35abf0914c9cf",
+      "artifacts": 5,
+      "raw_members_checked": 46,
+      "source_fingerprints_checked": 46,
+      "source_qualifications": [],
+      "archive_regular_files": 46
+    },
+    {
+      "manifest": "C23_ORBITS_VALIDATION.json",
+      "sha256": "f5772f5b48f2f6ac314fc20064b2d449e01d2f97e8a4cabda970fbc1f31abbdb",
+      "artifacts": 5,
+      "raw_members_checked": 0,
+      "source_fingerprints_checked": 0,
+      "source_qualifications": [],
+      "archive_regular_files": 79
+    },
+    {
+      "manifest": "C23_REVERSE_VALIDATION.json",
+      "sha256": "02927f0baa4995230834d6c6d2b439baa3f77e07c5e292774c8eee9417dea4b9",
+      "artifacts": 5,
+      "raw_members_checked": 0,
+      "source_fingerprints_checked": 0,
+      "source_qualifications": [],
+      "archive_regular_files": 59
+    },
+    {
+      "manifest": "C23_SCALAR_BOTH_ENDS_VALIDATION.json",
+      "sha256": "6ad20a365d9b7109d137b3028f1e863ffe7c13032a922605aefb8e3623d058ce",
+      "artifacts": 5,
+      "raw_members_checked": 124,
+      "source_fingerprints_checked": 0,
+      "source_qualifications": [],
+      "archive_regular_files": 124
+    },
+    {
+      "manifest": "C23_SCALAR_DANCE_VALIDATION.json",
+      "sha256": "959ee30b34f213bd688919ebf7c71d3ad245f33b15b089ce3adfe5c5af935277",
+      "artifacts": 5,
+      "raw_members_checked": 105,
+      "source_fingerprints_checked": 0,
+      "source_qualifications": [],
+      "archive_regular_files": 105
+    },
+    {
+      "manifest": "C23_SCALAR_RANDOM_WINDOW_VALIDATION.json",
+      "sha256": "f94ead8d868fe97e0581b7db3103531971548f6b1b3aaf719d8215b6df7e1110",
+      "artifacts": 5,
+      "raw_members_checked": 122,
+      "source_fingerprints_checked": 0,
+      "source_qualifications": [],
+      "archive_regular_files": 122
+    },
+    {
+      "manifest": "C23_STRIDES_VALIDATION.json",
+      "sha256": "f59a507e814889536940fc086db586bc32fd1f7deb9786df422e336e811eea08",
+      "artifacts": 5,
+      "raw_members_checked": 66,
+      "source_fingerprints_checked": 57,
+      "source_qualifications": [],
+      "archive_regular_files": 66
+    },
+    {
+      "manifest": "C23_VALIDATION.json",
+      "sha256": "4fa348f82dea564164f6dd679eb05fe9cc2204eed81a62cf5b1a12aaefc52e3b",
+      "artifacts": 5,
+      "raw_members_checked": 96,
+      "source_fingerprints_checked": 48,
+      "source_qualifications": [
+        {
+          "file": "tests/integration/gpu_examples.py",
+          "named_revision": "22e73fb",
+          "matching_later_revisions": [
+            "ae9555d90fe2f58ec940e7ead60f9ba63fa1737e"
+          ]
+        }
+      ],
+      "archive_regular_files": 96
+    },
+    {
+      "manifest": "C23_VANITY_VALIDATION.json",
+      "sha256": "62dd75c4737e4359c2487ca8c0515ad406caf11d2f59cc15d8a2bb8a788c46f2",
+      "artifacts": 5,
+      "raw_members_checked": 33,
+      "source_fingerprints_checked": 42,
+      "source_qualifications": [
+        {
+          "file": "tests/coordinator/vanity.cpp",
+          "named_revision": "9620ee8",
+          "matching_later_revisions": [
+            "405066413b13a1feab4451b7f4b27f54c24dfa5a"
+          ]
+        },
+        {
+          "file": "tests/integration/gpu_examples.py",
+          "named_revision": "9620ee8",
+          "matching_later_revisions": [
+            "0db3fb76b7635f58c9f15ef2a6f7e98b01d84a05"
+          ]
+        }
+      ],
+      "archive_regular_files": 33
+    }
+  ],
+  "glv": {
+    "hip": [
+      {
+        "family": "xpoint",
+        "region": "low",
+        "medians": {
+          "direct": {
+            "kernel_ms": 0.628908992,
+            "wall_ms": 0.662176
+          },
+          "glv": {
+            "kernel_ms": 0.612631977,
+            "wall_ms": 0.647406
+          },
+          "stepped": {
+            "kernel_ms": 0.210960001,
+            "wall_ms": 0.243824
+          }
+        },
+        "direct_over_glv": 1.0265689934758333,
+        "stepped_over_glv": 0.3443502933572793
+      },
+      {
+        "family": "hash160",
+        "region": "low",
+        "medians": {
+          "direct": {
+            "kernel_ms": 0.834214985,
+            "wall_ms": 0.870567
+          },
+          "glv": {
+            "kernel_ms": 0.798012018,
+            "wall_ms": 0.835174
+          },
+          "stepped": {
+            "kernel_ms": 1.065781,
+            "wall_ms": 1.10346
+          }
+        },
+        "direct_over_glv": 1.0453664433409573,
+        "stepped_over_glv": 1.3355450493979906
+      },
+      {
+        "family": "ethereum",
+        "region": "low",
+        "medians": {
+          "direct": {
+            "kernel_ms": 0.668878973,
+            "wall_ms": 0.702058
+          },
+          "glv": {
+            "kernel_ms": 0.636445999,
+            "wall_ms": 0.671732
+          },
+          "stepped": {
+            "kernel_ms": 0.459122986,
+            "wall_ms": 0.494464
+          }
+        },
+        "direct_over_glv": 1.050959506463957,
+        "stepped_over_glv": 0.7213856112244961
+      },
+      {
+        "family": "vanity",
+        "region": "low",
+        "medians": {
+          "direct": {
+            "kernel_ms": 1.32577205,
+            "wall_ms": 1.366281
+          },
+          "glv": {
+            "kernel_ms": 1.29514205,
+            "wall_ms": 1.337274
+          },
+          "stepped": {
+            "kernel_ms": 2.42811608,
+            "wall_ms": 2.470798
+          }
+        },
+        "direct_over_glv": 1.0236499154668017,
+        "stepped_over_glv": 1.8747874644329556
+      },
+      {
+        "family": "xpoint",
+        "region": "bit128",
+        "medians": {
+          "direct": {
+            "kernel_ms": 1.66209602,
+            "wall_ms": 1.695404
+          },
+          "glv": {
+            "kernel_ms": 2.86976004,
+            "wall_ms": 2.904977
+          },
+          "stepped": {
+            "kernel_ms": 0.211440995,
+            "wall_ms": 0.248023
+          }
+        },
+        "direct_over_glv": 0.5791759578616196,
+        "stepped_over_glv": 0.07367898083910876
+      },
+      {
+        "family": "hash160",
+        "region": "bit128",
+        "medians": {
+          "direct": {
+            "kernel_ms": 1.85926402,
+            "wall_ms": 1.897475
+          },
+          "glv": {
+            "kernel_ms": 3.07005501,
+            "wall_ms": 3.108875
+          },
+          "stepped": {
+            "kernel_ms": 1.07063305,
+            "wall_ms": 1.108807
+          }
+        },
+        "direct_over_glv": 0.6056126075734388,
+        "stepped_over_glv": 0.34873415834982063
+      },
+      {
+        "family": "ethereum",
+        "region": "bit128",
+        "medians": {
+          "direct": {
+            "kernel_ms": 1.69541204,
+            "wall_ms": 1.729947
+          },
+          "glv": {
+            "kernel_ms": 2.90303493,
+            "wall_ms": 2.940552
+          },
+          "stepped": {
+            "kernel_ms": 0.459363014,
+            "wall_ms": 0.495575
+          }
+        },
+        "direct_over_glv": 0.5840136549786537,
+        "stepped_over_glv": 0.15823544155564123
+      },
+      {
+        "family": "vanity",
+        "region": "bit128",
+        "medians": {
+          "direct": {
+            "kernel_ms": 2.33634901,
+            "wall_ms": 2.37803
+          },
+          "glv": {
+            "kernel_ms": 3.57969308,
+            "wall_ms": 3.623681
+          },
+          "stepped": {
+            "kernel_ms": 2.43212605,
+            "wall_ms": 2.475763
+          }
+        },
+        "direct_over_glv": 0.6526674096875367,
+        "stepped_over_glv": 0.6794230666278238
+      },
+      {
+        "family": "xpoint",
+        "region": "bit192",
+        "medians": {
+          "direct": {
+            "kernel_ms": 2.24590206,
+            "wall_ms": 2.279236
+          },
+          "glv": {
+            "kernel_ms": 3.10950494,
+            "wall_ms": 3.144554
+          },
+          "stepped": {
+            "kernel_ms": 0.211079001,
+            "wall_ms": 0.246498
+          }
+        },
+        "direct_over_glv": 0.7222699765191563,
+        "stepped_over_glv": 0.06788186707302674
+      },
+      {
+        "family": "hash160",
+        "region": "bit192",
+        "medians": {
+          "direct": {
+            "kernel_ms": 2.44695997,
+            "wall_ms": 2.483155
+          },
+          "glv": {
+            "kernel_ms": 3.30911803,
+            "wall_ms": 3.347573
+          },
+          "stepped": {
+            "kernel_ms": 1.07203603,
+            "wall_ms": 1.11132
+          }
+        },
+        "direct_over_glv": 0.739459864476336,
+        "stepped_over_glv": 0.3239642769708036
+      },
+      {
+        "family": "ethereum",
+        "region": "bit192",
+        "medians": {
+          "direct": {
+            "kernel_ms": 2.28451109,
+            "wall_ms": 2.320009
+          },
+          "glv": {
+            "kernel_ms": 3.14478588,
+            "wall_ms": 3.180545
+          },
+          "stepped": {
+            "kernel_ms": 0.459805012,
+            "wall_ms": 0.496389
+          }
+        },
+        "direct_over_glv": 0.7264440814647769,
+        "stepped_over_glv": 0.14621186610008563
+      },
+      {
+        "family": "vanity",
+        "region": "bit192",
+        "medians": {
+          "direct": {
+            "kernel_ms": 2.93755507,
+            "wall_ms": 2.98029
+          },
+          "glv": {
+            "kernel_ms": 3.82645488,
+            "wall_ms": 3.870379
+          },
+          "stepped": {
+            "kernel_ms": 2.42835808,
+            "wall_ms": 2.472659
+          }
+        },
+        "direct_over_glv": 0.7676962520462283,
+        "stepped_over_glv": 0.6346234716349249
+      },
+      {
+        "family": "xpoint",
+        "region": "dense256",
+        "medians": {
+          "direct": {
+            "kernel_ms": 4.29652309,
+            "wall_ms": 4.345409
+          },
+          "glv": {
+            "kernel_ms": 2.93013811,
+            "wall_ms": 2.980389
+          },
+          "stepped": {
+            "kernel_ms": 0.212723002,
+            "wall_ms": 0.271576
+          }
+        },
+        "direct_over_glv": 1.4663210158377142,
+        "stepped_over_glv": 0.07259828513680537
+      },
+      {
+        "family": "hash160",
+        "region": "dense256",
+        "medians": {
+          "direct": {
+            "kernel_ms": 4.50724077,
+            "wall_ms": 4.560211
+          },
+          "glv": {
+            "kernel_ms": 3.11864591,
+            "wall_ms": 3.173513
+          },
+          "stepped": {
+            "kernel_ms": 1.06846797,
+            "wall_ms": 1.132991
+          }
+        },
+        "direct_over_glv": 1.445255697528034,
+        "stepped_over_glv": 0.3426063749571364
+      },
+      {
+        "family": "ethereum",
+        "region": "dense256",
+        "medians": {
+          "direct": {
+            "kernel_ms": 4.33264494,
+            "wall_ms": 4.382934
+          },
+          "glv": {
+            "kernel_ms": 2.95327091,
+            "wall_ms": 3.005319
+          },
+          "stepped": {
+            "kernel_ms": 0.460886985,
+            "wall_ms": 0.520704
+          }
+        },
+        "direct_over_glv": 1.4670665414843367,
+        "stepped_over_glv": 0.15605983976593601
+      },
+      {
+        "family": "vanity",
+        "region": "dense256",
+        "medians": {
+          "direct": {
+            "kernel_ms": 5.02104902,
+            "wall_ms": 5.078181
+          },
+          "glv": {
+            "kernel_ms": 3.62447596,
+            "wall_ms": 3.687396
+          },
+          "stepped": {
+            "kernel_ms": 2.4267149,
+            "wall_ms": 2.496057
+          }
+        },
+        "direct_over_glv": 1.3853172363157296,
+        "stepped_over_glv": 0.6695353829854068
+      },
+      {
+        "family": "xpoint",
+        "region": "order",
+        "medians": {
+          "direct": {
+            "kernel_ms": 4.91881704,
+            "wall_ms": 4.96824
+          },
+          "glv": {
+            "kernel_ms": 0.612591982,
+            "wall_ms": 0.665441
+          },
+          "stepped": {
+            "kernel_ms": 0.211040005,
+            "wall_ms": 0.271131
+          }
+        },
+        "direct_over_glv": 8.029515867871742,
+        "stepped_over_glv": 0.344503374515274
+      },
+      {
+        "family": "hash160",
+        "region": "order",
+        "medians": {
+          "direct": {
+            "kernel_ms": 5.13823509,
+            "wall_ms": 5.191051
+          },
+          "glv": {
+            "kernel_ms": 0.807273984,
+            "wall_ms": 0.862082
+          },
+          "stepped": {
+            "kernel_ms": 1.06646299,
+            "wall_ms": 1.129497
+          }
+        },
+        "direct_over_glv": 6.364920946096041,
+        "stepped_over_glv": 1.3210669625642242
+      },
+      {
+        "family": "ethereum",
+        "region": "order",
+        "medians": {
+          "direct": {
+            "kernel_ms": 4.94656086,
+            "wall_ms": 4.996911
+          },
+          "glv": {
+            "kernel_ms": 0.641978979,
+            "wall_ms": 0.693772
+          },
+          "stepped": {
+            "kernel_ms": 0.459764987,
+            "wall_ms": 0.520503
+          }
+        },
+        "direct_over_glv": 7.705175748441445,
+        "stepped_over_glv": 0.7161682890554584
+      },
+      {
+        "family": "vanity",
+        "region": "order",
+        "medians": {
+          "direct": {
+            "kernel_ms": 5.653687,
+            "wall_ms": 5.712774
+          },
+          "glv": {
+            "kernel_ms": 1.30147696,
+            "wall_ms": 1.363191
+          },
+          "stepped": {
+            "kernel_ms": 2.42583299,
+            "wall_ms": 2.495705
+          }
+        },
+        "direct_over_glv": 4.344054619299599,
+        "stepped_over_glv": 1.8639077483169582
+      }
+    ],
+    "cuda": [
+      {
+        "family": "xpoint",
+        "region": "low",
+        "medians": {
+          "direct": {
+            "kernel_ms": 1.257792,
+            "wall_ms": 1.289857
+          },
+          "glv": {
+            "kernel_ms": 1.25734401,
+            "wall_ms": 1.28313
+          },
+          "stepped": {
+            "kernel_ms": 0.146975994,
+            "wall_ms": 0.178026
+          }
+        },
+        "direct_over_glv": 1.0003562986711967,
+        "stepped_over_glv": 0.11689401852719687
+      },
+      {
+        "family": "hash160",
+        "region": "low",
+        "medians": {
+          "direct": {
+            "kernel_ms": 1.34908795,
+            "wall_ms": 1.380281
+          },
+          "glv": {
+            "kernel_ms": 1.350528,
+            "wall_ms": 1.383507
+          },
+          "stepped": {
+            "kernel_ms": 0.462559998,
+            "wall_ms": 0.495184
+          }
+        },
+        "direct_over_glv": 0.9989337133328594,
+        "stepped_over_glv": 0.3425030787958488
+      },
+      {
+        "family": "ethereum",
+        "region": "low",
+        "medians": {
+          "direct": {
+            "kernel_ms": 1.27196801,
+            "wall_ms": 1.299884
+          },
+          "glv": {
+            "kernel_ms": 1.26582396,
+            "wall_ms": 1.292425
+          },
+          "stepped": {
+            "kernel_ms": 0.286624014,
+            "wall_ms": 0.318674
+          }
+        },
+        "direct_over_glv": 1.0048537949937366,
+        "stepped_over_glv": 0.2264327608398248
+      },
+      {
+        "family": "vanity",
+        "region": "low",
+        "medians": {
+          "direct": {
+            "kernel_ms": 1.47276795,
+            "wall_ms": 1.510731
+          },
+          "glv": {
+            "kernel_ms": 1.45407999,
+            "wall_ms": 1.491894
+          },
+          "stepped": {
+            "kernel_ms": 0.722432017,
+            "wall_ms": 0.764099
+          }
+        },
+        "direct_over_glv": 1.0128520852556397,
+        "stepped_over_glv": 0.49683100102354066
+      },
+      {
+        "family": "xpoint",
+        "region": "bit128",
+        "medians": {
+          "direct": {
+            "kernel_ms": 2.73487997,
+            "wall_ms": 2.766674
+          },
+          "glv": {
+            "kernel_ms": 5.43641615,
+            "wall_ms": 5.470116
+          },
+          "stepped": {
+            "kernel_ms": 0.152447999,
+            "wall_ms": 0.186128
+          }
+        },
+        "direct_over_glv": 0.5030667069149958,
+        "stepped_over_glv": 0.028042003186235107
+      },
+      {
+        "family": "hash160",
+        "region": "bit128",
+        "medians": {
+          "direct": {
+            "kernel_ms": 2.91731191,
+            "wall_ms": 2.951054
+          },
+          "glv": {
+            "kernel_ms": 5.57235193,
+            "wall_ms": 5.607183
+          },
+          "stepped": {
+            "kernel_ms": 0.451519996,
+            "wall_ms": 0.487992
+          }
+        },
+        "direct_over_glv": 0.5235333206960602,
+        "stepped_over_glv": 0.08102862160753727
+      },
+      {
+        "family": "ethereum",
+        "region": "bit128",
+        "medians": {
+          "direct": {
+            "kernel_ms": 2.74892807,
+            "wall_ms": 2.77568
+          },
+          "glv": {
+            "kernel_ms": 5.52284813,
+            "wall_ms": 5.552331
+          },
+          "stepped": {
+            "kernel_ms": 0.286655992,
+            "wall_ms": 0.319627
+          }
+        },
+        "direct_over_glv": 0.4977374002134656,
+        "stepped_over_glv": 0.05190365283500925
+      },
+      {
+        "family": "vanity",
+        "region": "bit128",
+        "medians": {
+          "direct": {
+            "kernel_ms": 3.11427212,
+            "wall_ms": 3.150228
+          },
+          "glv": {
+            "kernel_ms": 5.74272013,
+            "wall_ms": 5.784172
+          },
+          "stepped": {
+            "kernel_ms": 0.721696019,
+            "wall_ms": 0.762492
+          }
+        },
+        "direct_over_glv": 0.5422991282007678,
+        "stepped_over_glv": 0.12567145928457427
+      },
+      {
+        "family": "xpoint",
+        "region": "bit192",
+        "medians": {
+          "direct": {
+            "kernel_ms": 3.51356792,
+            "wall_ms": 3.544142
+          },
+          "glv": {
+            "kernel_ms": 5.92307186,
+            "wall_ms": 5.95336
+          },
+          "stepped": {
+            "kernel_ms": 0.151135996,
+            "wall_ms": 0.179678
+          }
+        },
+        "direct_over_glv": 0.5932002857719845,
+        "stepped_over_glv": 0.025516488668769922
+      },
+      {
+        "family": "hash160",
+        "region": "bit192",
+        "medians": {
+          "direct": {
+            "kernel_ms": 3.77449608,
+            "wall_ms": 3.805164
+          },
+          "glv": {
+            "kernel_ms": 6.10556793,
+            "wall_ms": 6.139776
+          },
+          "stepped": {
+            "kernel_ms": 0.45331201,
+            "wall_ms": 0.488084
+          }
+        },
+        "direct_over_glv": 0.6182055663411479,
+        "stepped_over_glv": 0.07424567463620046
+      },
+      {
+        "family": "ethereum",
+        "region": "bit192",
+        "medians": {
+          "direct": {
+            "kernel_ms": 3.60643196,
+            "wall_ms": 3.636345
+          },
+          "glv": {
+            "kernel_ms": 5.95116806,
+            "wall_ms": 5.985305
+          },
+          "stepped": {
+            "kernel_ms": 0.287423998,
+            "wall_ms": 0.319928
+          }
+        },
+        "direct_over_glv": 0.6060040522532312,
+        "stepped_over_glv": 0.048297072961505316
+      },
+      {
+        "family": "vanity",
+        "region": "bit192",
+        "medians": {
+          "direct": {
+            "kernel_ms": 4.07862377,
+            "wall_ms": 4.1135
+          },
+          "glv": {
+            "kernel_ms": 6.26742411,
+            "wall_ms": 6.304112
+          },
+          "stepped": {
+            "kernel_ms": 0.719648004,
+            "wall_ms": 0.757432
+          }
+        },
+        "direct_over_glv": 0.6507655614835997,
+        "stepped_over_glv": 0.11482356888083642
+      },
+      {
+        "family": "xpoint",
+        "region": "dense256",
+        "medians": {
+          "direct": {
+            "kernel_ms": 7.27955198,
+            "wall_ms": 7.321056
+          },
+          "glv": {
+            "kernel_ms": 5.51571178,
+            "wall_ms": 5.558903
+          },
+          "stepped": {
+            "kernel_ms": 0.151743993,
+            "wall_ms": 0.204702
+          }
+        },
+        "direct_over_glv": 1.3197846933184025,
+        "stepped_over_glv": 0.027511225940090724
+      },
+      {
+        "family": "hash160",
+        "region": "dense256",
+        "medians": {
+          "direct": {
+            "kernel_ms": 7.58220816,
+            "wall_ms": 7.634002
+          },
+          "glv": {
+            "kernel_ms": 5.60092783,
+            "wall_ms": 5.647624
+          },
+          "stepped": {
+            "kernel_ms": 0.453184009,
+            "wall_ms": 0.512876
+          }
+        },
+        "direct_over_glv": 1.353741449655494,
+        "stepped_over_glv": 0.08091231002346266
+      },
+      {
+        "family": "ethereum",
+        "region": "dense256",
+        "medians": {
+          "direct": {
+            "kernel_ms": 7.50355196,
+            "wall_ms": 7.549928
+          },
+          "glv": {
+            "kernel_ms": 5.55382395,
+            "wall_ms": 5.599758
+          },
+          "stepped": {
+            "kernel_ms": 0.285248011,
+            "wall_ms": 0.343975
+          }
+        },
+        "direct_over_glv": 1.3510604634848031,
+        "stepped_over_glv": 0.05136065052980299
+      },
+      {
+        "family": "vanity",
+        "region": "dense256",
+        "medians": {
+          "direct": {
+            "kernel_ms": 7.96924782,
+            "wall_ms": 8.020057
+          },
+          "glv": {
+            "kernel_ms": 5.68505621,
+            "wall_ms": 5.735466
+          },
+          "stepped": {
+            "kernel_ms": 0.719200015,
+            "wall_ms": 0.780905
+          }
+        },
+        "direct_over_glv": 1.4017887467818018,
+        "stepped_over_glv": 0.1265071071302565
+      },
+      {
+        "family": "xpoint",
+        "region": "order",
+        "medians": {
+          "direct": {
+            "kernel_ms": 8.22310352,
+            "wall_ms": 8.270595
+          },
+          "glv": {
+            "kernel_ms": 1.20159996,
+            "wall_ms": 1.244672
+          },
+          "stepped": {
+            "kernel_ms": 0.151648,
+            "wall_ms": 0.204521
+          }
+        },
+        "direct_over_glv": 6.843461878943471,
+        "stepped_over_glv": 0.12620506412134036
+      },
+      {
+        "family": "hash160",
+        "region": "order",
+        "medians": {
+          "direct": {
+            "kernel_ms": 8.39743996,
+            "wall_ms": 8.448037
+          },
+          "glv": {
+            "kernel_ms": 1.30105603,
+            "wall_ms": 1.353578
+          },
+          "stepped": {
+            "kernel_ms": 0.453343987,
+            "wall_ms": 0.513273
+          }
+        },
+        "direct_over_glv": 6.454326152271858,
+        "stepped_over_glv": 0.34844309280054603
+      },
+      {
+        "family": "ethereum",
+        "region": "order",
+        "medians": {
+          "direct": {
+            "kernel_ms": 8.29062366,
+            "wall_ms": 8.336619
+          },
+          "glv": {
+            "kernel_ms": 1.21961606,
+            "wall_ms": 1.268439
+          },
+          "stepped": {
+            "kernel_ms": 0.28739199,
+            "wall_ms": 0.342889
+          }
+        },
+        "direct_over_glv": 6.797732443765951,
+        "stepped_over_glv": 0.23564136241367634
+      },
+      {
+        "family": "vanity",
+        "region": "order",
+        "medians": {
+          "direct": {
+            "kernel_ms": 8.88803196,
+            "wall_ms": 8.946053
+          },
+          "glv": {
+            "kernel_ms": 1.41462398,
+            "wall_ms": 1.46969
+          },
+          "stepped": {
+            "kernel_ms": 0.720192015,
+            "wall_ms": 0.781833
+          }
+        },
+        "direct_over_glv": 6.282964296985832,
+        "stepped_over_glv": 0.5091049106915323
+      }
+    ],
+    "fresh-hip": [
+      {
+        "family": "xpoint",
+        "region": "low",
+        "medians": {
+          "direct": {
+            "kernel_ms": 0.642215014,
+            "wall_ms": 0.67848
+          },
+          "glv": {
+            "kernel_ms": 0.626299024,
+            "wall_ms": 0.662757
+          },
+          "stepped": {
+            "kernel_ms": 0.223506004,
+            "wall_ms": 0.259641
+          }
+        },
+        "direct_over_glv": 1.025412765133097,
+        "stepped_over_glv": 0.35686787849760404
+      },
+      {
+        "family": "hash160",
+        "region": "low",
+        "medians": {
+          "direct": {
+            "kernel_ms": 0.836255014,
+            "wall_ms": 0.873955
+          },
+          "glv": {
+            "kernel_ms": 0.815928996,
+            "wall_ms": 0.855636
+          },
+          "stepped": {
+            "kernel_ms": 1.07980597,
+            "wall_ms": 1.119586
+          }
+        },
+        "direct_over_glv": 1.0249115034514595,
+        "stepped_over_glv": 1.3234067857541858
+      },
+      {
+        "family": "ethereum",
+        "region": "low",
+        "medians": {
+          "direct": {
+            "kernel_ms": 0.675409973,
+            "wall_ms": 0.710927
+          },
+          "glv": {
+            "kernel_ms": 0.656808019,
+            "wall_ms": 0.694482
+          },
+          "stepped": {
+            "kernel_ms": 0.470867008,
+            "wall_ms": 0.509573
+          }
+        },
+        "direct_over_glv": 1.0283217522653298,
+        "stepped_over_glv": 0.7169020389198385
+      },
+      {
+        "family": "vanity",
+        "region": "low",
+        "medians": {
+          "direct": {
+            "kernel_ms": 1.32560301,
+            "wall_ms": 1.369493
+          },
+          "glv": {
+            "kernel_ms": 1.32816899,
+            "wall_ms": 1.373833
+          },
+          "stepped": {
+            "kernel_ms": 2.44738507,
+            "wall_ms": 2.493564
+          }
+        },
+        "direct_over_glv": 0.9980680319904172,
+        "stepped_over_glv": 1.8426759609859586
+      },
+      {
+        "family": "xpoint",
+        "region": "bit128",
+        "medians": {
+          "direct": {
+            "kernel_ms": 1.72695303,
+            "wall_ms": 1.765019
+          },
+          "glv": {
+            "kernel_ms": 3.04534006,
+            "wall_ms": 3.083068
+          },
+          "stepped": {
+            "kernel_ms": 0.223066002,
+            "wall_ms": 0.260875
+          }
+        },
+        "direct_over_glv": 0.5670805217069912,
+        "stepped_over_glv": 0.07324830646335109
+      },
+      {
+        "family": "hash160",
+        "region": "bit128",
+        "medians": {
+          "direct": {
+            "kernel_ms": 1.91181195,
+            "wall_ms": 1.951394
+          },
+          "glv": {
+            "kernel_ms": 3.24924207,
+            "wall_ms": 3.290912
+          },
+          "stepped": {
+            "kernel_ms": 1.08545899,
+            "wall_ms": 1.127577
+          }
+        },
+        "direct_over_glv": 0.5883870480601033,
+        "stepped_over_glv": 0.3340652886474537
+      },
+      {
+        "family": "ethereum",
+        "region": "bit128",
+        "medians": {
+          "direct": {
+            "kernel_ms": 1.75301194,
+            "wall_ms": 1.789704
+          },
+          "glv": {
+            "kernel_ms": 3.07941794,
+            "wall_ms": 3.117943
+          },
+          "stepped": {
+            "kernel_ms": 0.471949995,
+            "wall_ms": 0.511152
+          }
+        },
+        "direct_over_glv": 0.5692673012095266,
+        "stepped_over_glv": 0.1532594809134612
+      },
+      {
+        "family": "vanity",
+        "region": "bit128",
+        "medians": {
+          "direct": {
+            "kernel_ms": 2.39791393,
+            "wall_ms": 2.442133
+          },
+          "glv": {
+            "kernel_ms": 3.76252604,
+            "wall_ms": 3.808661
+          },
+          "stepped": {
+            "kernel_ms": 2.44730592,
+            "wall_ms": 2.493621
+          }
+        },
+        "direct_over_glv": 0.6373149061315201,
+        "stepped_over_glv": 0.6504422544807158
+      },
+      {
+        "family": "xpoint",
+        "region": "bit192",
+        "medians": {
+          "direct": {
+            "kernel_ms": 2.34487391,
+            "wall_ms": 2.382141
+          },
+          "glv": {
+            "kernel_ms": 3.30116105,
+            "wall_ms": 3.338321
+          },
+          "stepped": {
+            "kernel_ms": 0.224829003,
+            "wall_ms": 0.263448
+          }
+        },
+        "direct_over_glv": 0.7103179379873029,
+        "stepped_over_glv": 0.06810603893439249
+      },
+      {
+        "family": "hash160",
+        "region": "bit192",
+        "medians": {
+          "direct": {
+            "kernel_ms": 2.54103899,
+            "wall_ms": 2.580738
+          },
+          "glv": {
+            "kernel_ms": 3.49796796,
+            "wall_ms": 3.53919
+          },
+          "stepped": {
+            "kernel_ms": 1.08317494,
+            "wall_ms": 1.127537
+          }
+        },
+        "direct_over_glv": 0.7264328944854029,
+        "stepped_over_glv": 0.30965833660751996
+      },
+      {
+        "family": "ethereum",
+        "region": "bit192",
+        "medians": {
+          "direct": {
+            "kernel_ms": 2.37349892,
+            "wall_ms": 2.409693
+          },
+          "glv": {
+            "kernel_ms": 3.34461999,
+            "wall_ms": 3.385924
+          },
+          "stepped": {
+            "kernel_ms": 0.471468985,
+            "wall_ms": 0.5099
+          }
+        },
+        "direct_over_glv": 0.70964681401668,
+        "stepped_over_glv": 0.14096339387124215
+      },
+      {
+        "family": "vanity",
+        "region": "bit192",
+        "medians": {
+          "direct": {
+            "kernel_ms": 3.03010702,
+            "wall_ms": 3.078061
+          },
+          "glv": {
+            "kernel_ms": 4.01145077,
+            "wall_ms": 4.058034
+          },
+          "stepped": {
+            "kernel_ms": 2.450032,
+            "wall_ms": 2.497095
+          }
+        },
+        "direct_over_glv": 0.7553643790573056,
+        "stepped_over_glv": 0.6107595831220933
+      },
+      {
+        "family": "xpoint",
+        "region": "dense256",
+        "medians": {
+          "direct": {
+            "kernel_ms": 4.55572414,
+            "wall_ms": 4.608147
+          },
+          "glv": {
+            "kernel_ms": 3.09689903,
+            "wall_ms": 3.153031
+          },
+          "stepped": {
+            "kernel_ms": 0.223466992,
+            "wall_ms": 0.287459
+          }
+        },
+        "direct_over_glv": 1.471059952509979,
+        "stepped_over_glv": 0.07215830733751756
+      },
+      {
+        "family": "hash160",
+        "region": "dense256",
+        "medians": {
+          "direct": {
+            "kernel_ms": 4.76856709,
+            "wall_ms": 4.824597
+          },
+          "glv": {
+            "kernel_ms": 3.29823494,
+            "wall_ms": 3.359839
+          },
+          "stepped": {
+            "kernel_ms": 1.08153105,
+            "wall_ms": 1.147853
+          }
+        },
+        "direct_over_glv": 1.4457936371264082,
+        "stepped_over_glv": 0.32791207105458653
+      },
+      {
+        "family": "ethereum",
+        "region": "dense256",
+        "medians": {
+          "direct": {
+            "kernel_ms": 4.59986401,
+            "wall_ms": 4.655117
+          },
+          "glv": {
+            "kernel_ms": 3.13065505,
+            "wall_ms": 3.189053
+          },
+          "stepped": {
+            "kernel_ms": 0.47110799,
+            "wall_ms": 0.536124
+          }
+        },
+        "direct_over_glv": 1.4692976187204017,
+        "stepped_over_glv": 0.15048224172765376
+      },
+      {
+        "family": "vanity",
+        "region": "dense256",
+        "medians": {
+          "direct": {
+            "kernel_ms": 5.28273296,
+            "wall_ms": 5.343254
+          },
+          "glv": {
+            "kernel_ms": 3.79580188,
+            "wall_ms": 3.858098
+          },
+          "stepped": {
+            "kernel_ms": 2.4438591,
+            "wall_ms": 2.520701
+          }
+        },
+        "direct_over_glv": 1.3917304240336168,
+        "stepped_over_glv": 0.6438321011632989
+      },
+      {
+        "family": "xpoint",
+        "region": "order",
+        "medians": {
+          "direct": {
+            "kernel_ms": 5.2092061,
+            "wall_ms": 5.262624
+          },
+          "glv": {
+            "kernel_ms": 0.631951988,
+            "wall_ms": 0.685665
+          },
+          "stepped": {
+            "kernel_ms": 0.222984999,
+            "wall_ms": 0.28592
+          }
+        },
+        "direct_over_glv": 8.243040925444483,
+        "stepped_over_glv": 0.35285117102915103
+      },
+      {
+        "family": "hash160",
+        "region": "order",
+        "medians": {
+          "direct": {
+            "kernel_ms": 5.42601776,
+            "wall_ms": 5.48226
+          },
+          "glv": {
+            "kernel_ms": 0.825150013,
+            "wall_ms": 0.883874
+          },
+          "stepped": {
+            "kernel_ms": 1.07852399,
+            "wall_ms": 1.146539
+          }
+        },
+        "direct_over_glv": 6.575795521438112,
+        "stepped_over_glv": 1.307064137439455
+      },
+      {
+        "family": "ethereum",
+        "region": "order",
+        "medians": {
+          "direct": {
+            "kernel_ms": 5.25118208,
+            "wall_ms": 5.305069
+          },
+          "glv": {
+            "kernel_ms": 0.659654975,
+            "wall_ms": 0.714971
+          },
+          "stepped": {
+            "kernel_ms": 0.470265985,
+            "wall_ms": 0.534721
+          }
+        },
+        "direct_over_glv": 7.960497955768468,
+        "stepped_over_glv": 0.7128968973515283
+      },
+      {
+        "family": "vanity",
+        "region": "order",
+        "medians": {
+          "direct": {
+            "kernel_ms": 5.90730906,
+            "wall_ms": 5.969854
+          },
+          "glv": {
+            "kernel_ms": 1.31213403,
+            "wall_ms": 1.375616
+          },
+          "stepped": {
+            "kernel_ms": 2.443578,
+            "wall_ms": 2.516984
+          }
+        },
+        "direct_over_glv": 4.5020622321638895,
+        "stepped_over_glv": 1.8622929854200947
+      }
+    ],
+    "fresh-cuda": [
+      {
+        "family": "xpoint",
+        "region": "low",
+        "medians": {
+          "direct": {
+            "kernel_ms": 1.25894403,
+            "wall_ms": 1.290981
+          },
+          "glv": {
+            "kernel_ms": 1.23795199,
+            "wall_ms": 1.266475
+          },
+          "stepped": {
+            "kernel_ms": 0.145472005,
+            "wall_ms": 0.178276
+          }
+        },
+        "direct_over_glv": 1.0169570711704257,
+        "stepped_over_glv": 0.11751021540019495
+      },
+      {
+        "family": "hash160",
+        "region": "low",
+        "medians": {
+          "direct": {
+            "kernel_ms": 1.33587205,
+            "wall_ms": 1.367284
+          },
+          "glv": {
+            "kernel_ms": 1.30294394,
+            "wall_ms": 1.33602
+          },
+          "stepped": {
+            "kernel_ms": 0.462655991,
+            "wall_ms": 0.494446
+          }
+        },
+        "direct_over_glv": 1.0252720849985304,
+        "stepped_over_glv": 0.35508510903393126
+      },
+      {
+        "family": "ethereum",
+        "region": "low",
+        "medians": {
+          "direct": {
+            "kernel_ms": 1.27574396,
+            "wall_ms": 1.308395
+          },
+          "glv": {
+            "kernel_ms": 1.22521603,
+            "wall_ms": 1.257351
+          },
+          "stepped": {
+            "kernel_ms": 0.286431998,
+            "wall_ms": 0.318259
+          }
+        },
+        "direct_over_glv": 1.0412400170768252,
+        "stepped_over_glv": 0.23378081169897855
+      },
+      {
+        "family": "vanity",
+        "region": "low",
+        "medians": {
+          "direct": {
+            "kernel_ms": 1.46457601,
+            "wall_ms": 1.501252
+          },
+          "glv": {
+            "kernel_ms": 1.416224,
+            "wall_ms": 1.457038
+          },
+          "stepped": {
+            "kernel_ms": 0.720095992,
+            "wall_ms": 0.756679
+          }
+        },
+        "direct_over_glv": 1.0341414988024493,
+        "stepped_over_glv": 0.5084619325756378
+      },
+      {
+        "family": "xpoint",
+        "region": "bit128",
+        "medians": {
+          "direct": {
+            "kernel_ms": 2.73305607,
+            "wall_ms": 2.765532
+          },
+          "glv": {
+            "kernel_ms": 5.38390398,
+            "wall_ms": 5.412593
+          },
+          "stepped": {
+            "kernel_ms": 0.149856001,
+            "wall_ms": 0.179895
+          }
+        },
+        "direct_over_glv": 0.5076346235283341,
+        "stepped_over_glv": 0.02783407756837446
+      },
+      {
+        "family": "hash160",
+        "region": "bit128",
+        "medians": {
+          "direct": {
+            "kernel_ms": 2.90003204,
+            "wall_ms": 2.934924
+          },
+          "glv": {
+            "kernel_ms": 5.62620783,
+            "wall_ms": 5.659751
+          },
+          "stepped": {
+            "kernel_ms": 0.451999992,
+            "wall_ms": 0.489122
+          }
+        },
+        "direct_over_glv": 0.515450571259825,
+        "stepped_over_glv": 0.08033830346434252
+      },
+      {
+        "family": "ethereum",
+        "region": "bit128",
+        "medians": {
+          "direct": {
+            "kernel_ms": 2.77769589,
+            "wall_ms": 2.808363
+          },
+          "glv": {
+            "kernel_ms": 5.43913603,
+            "wall_ms": 5.469018
+          },
+          "stepped": {
+            "kernel_ms": 0.288608015,
+            "wall_ms": 0.320207
+          }
+        },
+        "direct_over_glv": 0.510686968422814,
+        "stepped_over_glv": 0.05306137103542895
+      },
+      {
+        "family": "vanity",
+        "region": "bit128",
+        "medians": {
+          "direct": {
+            "kernel_ms": 3.13987207,
+            "wall_ms": 3.174635
+          },
+          "glv": {
+            "kernel_ms": 5.76486397,
+            "wall_ms": 5.801109
+          },
+          "stepped": {
+            "kernel_ms": 0.719583988,
+            "wall_ms": 0.758954
+          }
+        },
+        "direct_over_glv": 0.5446567492901311,
+        "stepped_over_glv": 0.12482237078700748
+      },
+      {
+        "family": "xpoint",
+        "region": "bit192",
+        "medians": {
+          "direct": {
+            "kernel_ms": 3.54064012,
+            "wall_ms": 3.569541
+          },
+          "glv": {
+            "kernel_ms": 5.95270395,
+            "wall_ms": 5.984852
+          },
+          "stepped": {
+            "kernel_ms": 0.154783994,
+            "wall_ms": 0.186839
+          }
+        },
+        "direct_over_glv": 0.5947952644276892,
+        "stepped_over_glv": 0.026002300013592983
+      },
+      {
+        "family": "hash160",
+        "region": "bit192",
+        "medians": {
+          "direct": {
+            "kernel_ms": 3.80918407,
+            "wall_ms": 3.845744
+          },
+          "glv": {
+            "kernel_ms": 6.02793598,
+            "wall_ms": 6.062271
+          },
+          "stepped": {
+            "kernel_ms": 0.452160001,
+            "wall_ms": 0.488157
+          }
+        },
+        "direct_over_glv": 0.6319217859377465,
+        "stepped_over_glv": 0.07501075036301232
+      },
+      {
+        "family": "ethereum",
+        "region": "bit192",
+        "medians": {
+          "direct": {
+            "kernel_ms": 3.65430403,
+            "wall_ms": 3.684794
+          },
+          "glv": {
+            "kernel_ms": 5.94092798,
+            "wall_ms": 5.968688
+          },
+          "stepped": {
+            "kernel_ms": 0.285567999,
+            "wall_ms": 0.320566
+          }
+        },
+        "direct_over_glv": 0.6151066032616676,
+        "stepped_over_glv": 0.04806791126930982
+      },
+      {
+        "family": "vanity",
+        "region": "bit192",
+        "medians": {
+          "direct": {
+            "kernel_ms": 4.06870413,
+            "wall_ms": 4.105429
+          },
+          "glv": {
+            "kernel_ms": 6.23276806,
+            "wall_ms": 6.273706
+          },
+          "stepped": {
+            "kernel_ms": 0.718752027,
+            "wall_ms": 0.75729
+          }
+        },
+        "direct_over_glv": 0.6527924817404485,
+        "stepped_over_glv": 0.11531826952020416
+      },
+      {
+        "family": "xpoint",
+        "region": "dense256",
+        "medians": {
+          "direct": {
+            "kernel_ms": 7.38646412,
+            "wall_ms": 7.437016
+          },
+          "glv": {
+            "kernel_ms": 5.51609612,
+            "wall_ms": 5.562476
+          },
+          "stepped": {
+            "kernel_ms": 0.150751993,
+            "wall_ms": 0.20527
+          }
+        },
+        "direct_over_glv": 1.3390745845088718,
+        "stepped_over_glv": 0.02732947173516621
+      },
+      {
+        "family": "hash160",
+        "region": "dense256",
+        "medians": {
+          "direct": {
+            "kernel_ms": 7.61683178,
+            "wall_ms": 7.669384
+          },
+          "glv": {
+            "kernel_ms": 5.57939196,
+            "wall_ms": 5.627039
+          },
+          "stepped": {
+            "kernel_ms": 0.453280002,
+            "wall_ms": 0.51332
+          }
+        },
+        "direct_over_glv": 1.3651723762386467,
+        "stepped_over_glv": 0.08124182800736589
+      },
+      {
+        "family": "ethereum",
+        "region": "dense256",
+        "medians": {
+          "direct": {
+            "kernel_ms": 7.41132784,
+            "wall_ms": 7.45954
+          },
+          "glv": {
+            "kernel_ms": 5.49836779,
+            "wall_ms": 5.543726
+          },
+          "stepped": {
+            "kernel_ms": 0.287999988,
+            "wall_ms": 0.343852
+          }
+        },
+        "direct_over_glv": 1.347914167087757,
+        "stepped_over_glv": 0.05237917851253817
+      },
+      {
+        "family": "vanity",
+        "region": "dense256",
+        "medians": {
+          "direct": {
+            "kernel_ms": 7.91644812,
+            "wall_ms": 7.972191
+          },
+          "glv": {
+            "kernel_ms": 5.65769577,
+            "wall_ms": 5.71514
+          },
+          "stepped": {
+            "kernel_ms": 0.719071984,
+            "wall_ms": 0.782254
+          }
+        },
+        "direct_over_glv": 1.3992353851857962,
+        "stepped_over_glv": 0.12709626201763763
+      },
+      {
+        "family": "xpoint",
+        "region": "order",
+        "medians": {
+          "direct": {
+            "kernel_ms": 8.20681572,
+            "wall_ms": 8.255186
+          },
+          "glv": {
+            "kernel_ms": 1.16735995,
+            "wall_ms": 1.212215
+          },
+          "stepped": {
+            "kernel_ms": 0.150879994,
+            "wall_ms": 0.205098
+          }
+        },
+        "direct_over_glv": 7.030235806873449,
+        "stepped_over_glv": 0.12924890390491808
+      },
+      {
+        "family": "hash160",
+        "region": "order",
+        "medians": {
+          "direct": {
+            "kernel_ms": 8.37068844,
+            "wall_ms": 8.423244
+          },
+          "glv": {
+            "kernel_ms": 1.27040005,
+            "wall_ms": 1.323886
+          },
+          "stepped": {
+            "kernel_ms": 0.45244801,
+            "wall_ms": 0.513707
+          }
+        },
+        "direct_over_glv": 6.589017719260953,
+        "stepped_over_glv": 0.35614608957233596
+      },
+      {
+        "family": "ethereum",
+        "region": "order",
+        "medians": {
+          "direct": {
+            "kernel_ms": 8.3768959,
+            "wall_ms": 8.420719
+          },
+          "glv": {
+            "kernel_ms": 1.17097604,
+            "wall_ms": 1.219349
+          },
+          "stepped": {
+            "kernel_ms": 0.285824001,
+            "wall_ms": 0.343917
+          }
+        },
+        "direct_over_glv": 7.153772249686679,
+        "stepped_over_glv": 0.2440903923192143
+      },
+      {
+        "family": "vanity",
+        "region": "order",
+        "medians": {
+          "direct": {
+            "kernel_ms": 8.86777592,
+            "wall_ms": 8.920545
+          },
+          "glv": {
+            "kernel_ms": 1.37212801,
+            "wall_ms": 1.42551
+          },
+          "stepped": {
+            "kernel_ms": 0.718208015,
+            "wall_ms": 0.782599
+          }
+        },
+        "direct_over_glv": 6.4627905380344215,
+        "stepped_over_glv": 0.5234263929937557
+      }
+    ]
+  },
+  "qualification": "Historical hashes establish consistency. Named production/source phase discrepancies are retained explicitly; they do not substitute for fresh builds."
+}

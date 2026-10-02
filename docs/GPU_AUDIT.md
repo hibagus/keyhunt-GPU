@@ -9,7 +9,47 @@ below separately verifies A20 against its frozen revisions.
 A14 and A19 with separate changes and retained paired evidence. The audits below
 remain scoped to their frozen revisions.
 
-Latest follow-up: [C17–C18 H200 audit](audits/C18_AUDIT.md) closes the earlier
+Latest follow-up: [C23 mode and traversal audit](audits/C23_AUDIT.md), frozen at
+`2a254bd`, reproduces no new P1 correctness defect. Fresh checks pass the complete
+195-test CPU suite, 49 selected HIP tests, 48 selected CUDA tests and nine host
+sanitizer gates. The report records three final GPU memory checks and qualifies
+the deliberate invalid-device API diagnostics from the initial production run.
+Two P2 findings have paired measurements: **A23**, minikey admission compaction,
+and **A24**, a CUDA-only minikey launch bound. At 1,048,576 ordinals, the packing
+experiments reach **2.15–2.17× on MI300X** with GLV and bounded prototype kernels,
+and **11.40–11.49× on H200** with direct multiplication. The standalone CUDA
+launch bound gives **1.20×**, while the same baseline change regresses HIP.
+These are warm kernel results on public fixtures, not durable throughput;
+production defaults are unchanged. All 19 C23 manifests and the retained GLV
+statistics are checked, and fresh GLV measurements support keeping it opt-in.
+
+The earlier [C22 offline assignment audit](audits/C22_AUDIT.md), frozen at
+`7b12569`, finds no new P1/P2 defect within the trusted-courier scope. Fresh checks
+pass 51 CPU tests, 28 focused HIP tests, 29 focused CUDA tests and five host
+sanitizer gates. Additional probes cover transaction rollback, pending-result
+denials, cached authorization, late delivery, concurrent file publication and
+populated v6 migration. Actual files cross between the MI300X and H200 hosts;
+H200 GPU 7 executes both search modes while the coordinator is stopped, then
+reconciles exact coverage and results. A separate follow-up verifies A21's
+terminal-exit fix at `85790f0`. No new throughput claim is made; A22 remains the
+measured BSGS tuning opportunity. Offline queue sizing must account for the
+courier interval, since a thirty-day lease does not supply thirty days of work.
+
+The earlier [C20–C21 audit](audits/C21_AUDIT.md), frozen at `f7242a0`,
+passes 64 HIP tests, 64 CUDA tests, 34 CPU tests and seven focused host sanitizer
+gates. Fresh 1/2/4/8-GPU matrices pass 96 runs and 720 block completions; both
+backends pass live pause/recovery and the C21 documented commands. A16–A18 and
+A20 are independently closed for this tested scope.
+
+This review records two P2 findings: **A21**, a worker that reports `stopped` but remains alive
+escapes the terminal-exit watchdog; and **A22**, the default BSGS geometry leaves
+much of the launch budget unused for two targets. Supported larger batches
+improve measured MI300X whole-process time **1.70×**, with warmed-grant gains of
+**7.20× on MI300X and 3.83× on H200**. H200 whole-process improvement is inconclusive
+because startup times vary. The report retains exact workload limits, oracle
+boundary checks, raw pairs and reproduction tools; automatic defaults are unchanged.
+
+The earlier [C17–C18 H200 audit](audits/C18_AUDIT.md) closes the earlier
 merged-revision CUDA validation gap at `b765880`: 55 CUDA-build tests and 12
 Compute Sanitizer runs pass. Fresh paired kernels confirm the accepted CUDA
 optimizations; periodic-checkpoint xpoint measures **1.015 billion scalars/s**

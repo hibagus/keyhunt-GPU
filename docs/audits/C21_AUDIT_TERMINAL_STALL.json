@@ -1,0 +1,36 @@
+{
+  "modeled_fault": "owner hangs after publishing stopped, before process exit",
+  "deterministic_stalled": false,
+  "observed_seconds": 65.07272975798696,
+  "status": {
+    "pid": 778754,
+    "paused": false,
+    "stopping": false,
+    "devices": {
+      "0": {
+        "pid": 778782,
+        "ordinal": "0",
+        "uuid": "audit-fake",
+        "state": "stopped",
+        "completed": 0,
+        "grant": null,
+        "error": null
+      }
+    },
+    "sync_pid": null,
+    "failures": {},
+    "host_memory_per_device": 1073741824,
+    "host_memory_total": 1073741824,
+    "last_network_error": null,
+    "worker": {
+      "sync_due_in": 7200,
+      "queues": []
+    }
+  },
+  "supervisor_alive": true,
+  "reproduced": true,
+  "manual_stop_exit_code": 0,
+  "output": "",
+  "source_commit": "f7242a0db5ff843768e3c9d4360332f35556748c",
+  "audit_tool_sha256": "56160501af5636a43e57cdf73cda82eeea0fc5540d3de392f8275efbf39b1b1b"
+}

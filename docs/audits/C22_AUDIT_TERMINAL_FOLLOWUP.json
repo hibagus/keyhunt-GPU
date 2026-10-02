@@ -1,0 +1,22 @@
+{
+  "source": "85790f0d2a3349245d8c8b4e5d5dfeb8ee84011e",
+  "cases": [
+    {
+      "source": "c22",
+      "stalled_before": false,
+      "stalled_at_deadline": false
+    },
+    {
+      "source": "terminal_fix",
+      "stalled_before": false,
+      "stalled_at_deadline": true
+    }
+  ],
+  "command": [
+    "/usr/bin/python3",
+    "/tmp/keyhunt-c22-audit-u0d52ucm/terminal-followup/tests/coordinator/supervisor.py"
+  ],
+  "exit_code": 0,
+  "seconds": 12.778484775917605,
+  "passed": true
+}

@@ -1,0 +1,1667 @@
+{
+  "passed": true,
+  "hardware": true,
+  "backend": "hip",
+  "device": 0,
+  "commands": [
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt",
+        "bsgs-table",
+        "build",
+        "--m",
+        "257",
+        "--output",
+        "/var/tmp/kh-offline-j__74pzn/babies.khb"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"backend\":\"cpu\",\"device\":null,\"uuid\":\"\",\"format_version\":1,\"curve\":\"secp256k1\",\"mapping\":\"jG:0<=j<m\",\"m\":257,\"buckets\":64,\"bloom_words\":128,\"bits_per_entry\":16,\"resident_bytes\":13880,\"host_peak_bytes\":1076729,\"file_bytes\":14040,\"device_queries\":0,\"device_allocation_bytes\":0,\"pinned_allocation_bytes\":0,\"prepare_upload_ms\":0,\"query_kernel_ms\":0,\"query_upload_ms\":0,\"query_download_ms\":0,\"checksum\":\"12af8158df481f3d0ae6d95f4192c71897fafd9cf7ba8e112aca8bd2d04c90d5\",\"search_coverage\":false,\"wall_ms\":31.9121}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "configure",
+        "--state-dir",
+        "/var/tmp/kh-offline-j__74pzn/xpoint",
+        "--config",
+        "/var/tmp/kh-offline-j__74pzn/xpoint-config.json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"configured\":true}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "sync",
+        "--state-dir",
+        "/var/tmp/kh-offline-j__74pzn/xpoint"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "{\"error\":\"file-only worker requires file-export/file-import, not HTTPS sync\"}\n"
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "scheduled-sync",
+        "--state-dir",
+        "/var/tmp/kh-offline-j__74pzn/xpoint"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "{\"error\":\"file-only worker requires file-export/file-import, not HTTPS sync\"}\n"
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "file-export",
+        "--state-dir",
+        "/var/tmp/kh-offline-j__74pzn/xpoint",
+        "--output",
+        "/var/tmp/kh-offline-j__74pzn/xpoint-request.json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"request\":\"5f64fcc5-e1cd-4f3c-82e6-c0659cd02163\",\"sha256\":\"12efb9f272e46c6c1441c31d9313614d49fb8a3e20ac3fdc282f9a95a38e57f2\",\"transfer\":\"3d9e86d2-b1c5-4759-a1dc-353f8c3c1346\"}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "file-export",
+        "--state-dir",
+        "/var/tmp/kh-offline-j__74pzn/xpoint",
+        "--output",
+        "/var/tmp/kh-offline-j__74pzn/xpoint-copy.json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"request\":\"5f64fcc5-e1cd-4f3c-82e6-c0659cd02163\",\"sha256\":\"12efb9f272e46c6c1441c31d9313614d49fb8a3e20ac3fdc282f9a95a38e57f2\",\"transfer\":\"3d9e86d2-b1c5-4759-a1dc-353f8c3c1346\"}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "file-export",
+        "--state-dir",
+        "/var/tmp/kh-offline-j__74pzn/xpoint",
+        "--output",
+        "/var/tmp/kh-offline-j__74pzn/xpoint-request.json"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "{\"error\":\"cannot publish offline file exclusively\"}\n"
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "file-relay",
+        "--config",
+        "/var/tmp/kh-offline-j__74pzn/courier.json",
+        "--input",
+        "/var/tmp/kh-offline-j__74pzn/xpoint-request.json",
+        "--sha256",
+        "0000000000000000000000000000000000000000000000000000000000000000",
+        "--output",
+        "/var/tmp/kh-offline-j__74pzn/xpoint-response.json"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "{\"error\":\"offline file checksum mismatch\"}\n"
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "file-relay",
+        "--config",
+        "/var/tmp/kh-offline-j__74pzn/xpoint-wrong-authority.json",
+        "--input",
+        "/var/tmp/kh-offline-j__74pzn/xpoint-request.json",
+        "--sha256",
+        "12efb9f272e46c6c1441c31d9313614d49fb8a3e20ac3fdc282f9a95a38e57f2",
+        "--output",
+        "/var/tmp/kh-offline-j__74pzn/xpoint-response.json"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "{\"error\":\"courier authority does not match the offline request\"}\n"
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "file-relay",
+        "--config",
+        "/var/tmp/kh-offline-j__74pzn/xpoint-wrong-ca.json",
+        "--input",
+        "/var/tmp/kh-offline-j__74pzn/xpoint-request.json",
+        "--sha256",
+        "12efb9f272e46c6c1441c31d9313614d49fb8a3e20ac3fdc282f9a95a38e57f2",
+        "--output",
+        "/var/tmp/kh-offline-j__74pzn/xpoint-response.json"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "{\"error\":\"HTTPS request failed: SSL certificate problem: unable to get local issuer certificate\"}\n"
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "file-relay",
+        "--config",
+        "/var/tmp/kh-offline-j__74pzn/courier.json",
+        "--input",
+        "/var/tmp/kh-offline-j__74pzn/xpoint-request.json",
+        "--sha256",
+        "12efb9f272e46c6c1441c31d9313614d49fb8a3e20ac3fdc282f9a95a38e57f2",
+        "--output",
+        "/var/tmp/kh-offline-j__74pzn/xpoint-response.json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"sha256\":\"e0baf26c3fc491626c4db918763a2eb0f7980c6dc452cc6c8e78a7356cc9e5f9\",\"status\":200,\"transfer\":\"3d9e86d2-b1c5-4759-a1dc-353f8c3c1346\"}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "status",
+        "--state-dir",
+        "/var/tmp/kh-offline-j__74pzn/xpoint"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"client\":\"\",\"dispatch\":[],\"instance\":\"3f93cdd9-fd75-4bc5-a1fe-bf386ca6eb9a\",\"last_ack_server_time\":0,\"outbox_bytes\":0,\"outbox_limit\":67108864,\"pending_file_transfer\":\"3d9e86d2-b1c5-4759-a1dc-353f8c3c1346\",\"pending_request\":true,\"queues\":[],\"sync_due_in\":null,\"transport\":\"file\"}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "file-import",
+        "--state-dir",
+        "/var/tmp/kh-offline-j__74pzn/xpoint",
+        "--input",
+        "/var/tmp/kh-offline-j__74pzn/xpoint-response.json",
+        "--sha256",
+        "0000000000000000000000000000000000000000000000000000000000000000"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "{\"error\":\"offline file checksum mismatch\"}\n"
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "file-import",
+        "--state-dir",
+        "/var/tmp/kh-offline-j__74pzn/xpoint",
+        "--input",
+        "/var/tmp/kh-offline-j__74pzn/xpoint-response.json",
+        "--sha256",
+        "e0baf26c3fc491626c4db918763a2eb0f7980c6dc452cc6c8e78a7356cc9e5f9"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"applied\":true,\"duplicate\":false,\"status\":200,\"worker\":{\"client\":\"089620b7-50a1-436f-9f01-b9eb0d515aae\",\"dispatch\":[],\"instance\":\"3f93cdd9-fd75-4bc5-a1fe-bf386ca6eb9a\",\"last_ack_server_time\":1790817103,\"outbox_bytes\":0,\"outbox_limit\":67108864,\"pending_file_transfer\":null,\"pending_request\":false,\"queues\":[{\"activity\":\"queued\",\"block\":\"0x0000000000000000000000000000000000000000000000000000000000000000\",\"device\":\"0\",\"job\":\"36a9ffb9a698715f74d69b383d9314270d358c6e47cb7488b4e23310215abcb5\",\"local_state\":\"in_progress\",\"project\":\"f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da\",\"server_expires\":1793409103},{\"activity\":\"queued\",\"block\":\"0x0000000000000000000000000000000000000000000000000000000000000001\",\"device\":\"0\",\"job\":\"36a9ffb9a698715f74d69b383d9314270d358c6e47cb7488b4e23310215abcb5\",\"local_state\":\"in_progress\",\"project\":\"f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da\",\"server_expires\":1793409103}],\"sync_due_in\":null,\"transport\":\"file\"}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "file-import",
+        "--state-dir",
+        "/var/tmp/kh-offline-j__74pzn/xpoint",
+        "--input",
+        "/var/tmp/kh-offline-j__74pzn/xpoint-response.json",
+        "--sha256",
+        "e0baf26c3fc491626c4db918763a2eb0f7980c6dc452cc6c8e78a7356cc9e5f9"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"applied\":false,\"duplicate\":true,\"status\":200,\"worker\":{\"client\":\"089620b7-50a1-436f-9f01-b9eb0d515aae\",\"dispatch\":[],\"instance\":\"3f93cdd9-fd75-4bc5-a1fe-bf386ca6eb9a\",\"last_ack_server_time\":1790817103,\"outbox_bytes\":0,\"outbox_limit\":67108864,\"pending_file_transfer\":null,\"pending_request\":false,\"queues\":[{\"activity\":\"queued\",\"block\":\"0x0000000000000000000000000000000000000000000000000000000000000000\",\"device\":\"0\",\"job\":\"36a9ffb9a698715f74d69b383d9314270d358c6e47cb7488b4e23310215abcb5\",\"local_state\":\"in_progress\",\"project\":\"f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da\",\"server_expires\":1793409103},{\"activity\":\"queued\",\"block\":\"0x0000000000000000000000000000000000000000000000000000000000000001\",\"device\":\"0\",\"job\":\"36a9ffb9a698715f74d69b383d9314270d358c6e47cb7488b4e23310215abcb5\",\"local_state\":\"in_progress\",\"project\":\"f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da\",\"server_expires\":1793409103}],\"sync_due_in\":null,\"transport\":\"file\"}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "file-relay",
+        "--config",
+        "/var/tmp/kh-offline-j__74pzn/courier.json",
+        "--input",
+        "/var/tmp/kh-offline-j__74pzn/xpoint-request.json",
+        "--sha256",
+        "12efb9f272e46c6c1441c31d9313614d49fb8a3e20ac3fdc282f9a95a38e57f2",
+        "--output",
+        "/var/tmp/kh-offline-j__74pzn/xpoint-response.json"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "{\"error\":\"cannot publish offline file exclusively\"}\n"
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "file-export",
+        "--state-dir",
+        "/var/tmp/kh-offline-j__74pzn/xpoint",
+        "--output",
+        "/var/tmp/kh-offline-j__74pzn/xpoint-deny-request.json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"request\":\"5e0da896-b4f1-405c-b311-4baaaacfc22e\",\"sha256\":\"0bc7493b4d6cc5c207d3afc7f1f2d531777bdee6f565138088454864ecc2cea4\",\"transfer\":\"ffa4af53-df00-40c3-96a7-3ccd0eca01f8\"}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "file-relay",
+        "--config",
+        "/var/tmp/kh-offline-j__74pzn/courier.json",
+        "--input",
+        "/var/tmp/kh-offline-j__74pzn/xpoint-deny-request.json",
+        "--sha256",
+        "0bc7493b4d6cc5c207d3afc7f1f2d531777bdee6f565138088454864ecc2cea4",
+        "--output",
+        "/var/tmp/kh-offline-j__74pzn/xpoint-deny-response.json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"sha256\":\"8047282bb12fae6e3e9b2e283c014bc4840a670a87d79d82e4f0844b2abf7c8e\",\"status\":401,\"transfer\":\"ffa4af53-df00-40c3-96a7-3ccd0eca01f8\"}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "file-import",
+        "--state-dir",
+        "/var/tmp/kh-offline-j__74pzn/xpoint",
+        "--input",
+        "/var/tmp/kh-offline-j__74pzn/xpoint-deny-response.json",
+        "--sha256",
+        "8047282bb12fae6e3e9b2e283c014bc4840a670a87d79d82e4f0844b2abf7c8e"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"applied\":true,\"duplicate\":false,\"status\":401,\"worker\":{\"client\":\"089620b7-50a1-436f-9f01-b9eb0d515aae\",\"dispatch\":[],\"instance\":\"3f93cdd9-fd75-4bc5-a1fe-bf386ca6eb9a\",\"last_ack_server_time\":1790817103,\"outbox_bytes\":0,\"outbox_limit\":67108864,\"pause_reason\":\"401: credential unavailable\",\"pending_file_transfer\":null,\"pending_request\":true,\"queues\":[{\"activity\":\"server-paused\",\"block\":\"0x0000000000000000000000000000000000000000000000000000000000000000\",\"device\":\"0\",\"job\":\"36a9ffb9a698715f74d69b383d9314270d358c6e47cb7488b4e23310215abcb5\",\"local_state\":\"in_progress\",\"project\":\"f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da\",\"server_expires\":1793409103},{\"activity\":\"server-paused\",\"block\":\"0x0000000000000000000000000000000000000000000000000000000000000001\",\"device\":\"0\",\"job\":\"36a9ffb9a698715f74d69b383d9314270d358c6e47cb7488b4e23310215abcb5\",\"local_state\":\"in_progress\",\"project\":\"f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da\",\"server_expires\":1793409103}],\"sync_due_in\":null,\"transport\":\"file\"}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "file-export",
+        "--state-dir",
+        "/var/tmp/kh-offline-j__74pzn/xpoint",
+        "--output",
+        "/var/tmp/kh-offline-j__74pzn/xpoint-review-request.json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"request\":\"5e0da896-b4f1-405c-b311-4baaaacfc22e\",\"sha256\":\"252256948182b03e684e41a9b62f74aa50b0b396acc055e5641a6124b0c45d00\",\"transfer\":\"a6c9dc91-aeaa-4f76-b2e9-893dec734fc8\"}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "file-relay",
+        "--config",
+        "/var/tmp/kh-offline-j__74pzn/courier.json",
+        "--input",
+        "/var/tmp/kh-offline-j__74pzn/xpoint-review-request.json",
+        "--sha256",
+        "252256948182b03e684e41a9b62f74aa50b0b396acc055e5641a6124b0c45d00",
+        "--output",
+        "/var/tmp/kh-offline-j__74pzn/xpoint-review-response.json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"sha256\":\"0bb6d386bbd849ab196dcc49c430b4f347572702cbad4b12e941b81b50713fb5\",\"status\":200,\"transfer\":\"a6c9dc91-aeaa-4f76-b2e9-893dec734fc8\"}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "file-import",
+        "--state-dir",
+        "/var/tmp/kh-offline-j__74pzn/xpoint",
+        "--input",
+        "/var/tmp/kh-offline-j__74pzn/xpoint-review-response.json",
+        "--sha256",
+        "0bb6d386bbd849ab196dcc49c430b4f347572702cbad4b12e941b81b50713fb5"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"applied\":true,\"duplicate\":false,\"status\":200,\"worker\":{\"client\":\"089620b7-50a1-436f-9f01-b9eb0d515aae\",\"dispatch\":[],\"instance\":\"3f93cdd9-fd75-4bc5-a1fe-bf386ca6eb9a\",\"last_ack_server_time\":1790817104,\"outbox_bytes\":0,\"outbox_limit\":67108864,\"pending_file_transfer\":null,\"pending_request\":false,\"queues\":[{\"activity\":\"queued\",\"block\":\"0x0000000000000000000000000000000000000000000000000000000000000000\",\"device\":\"0\",\"job\":\"36a9ffb9a698715f74d69b383d9314270d358c6e47cb7488b4e23310215abcb5\",\"local_state\":\"in_progress\",\"project\":\"f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da\",\"server_expires\":1793409104},{\"activity\":\"queued\",\"block\":\"0x0000000000000000000000000000000000000000000000000000000000000001\",\"device\":\"0\",\"job\":\"36a9ffb9a698715f74d69b383d9314270d358c6e47cb7488b4e23310215abcb5\",\"local_state\":\"in_progress\",\"project\":\"f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da\",\"server_expires\":1793409104}],\"sync_due_in\":null,\"transport\":\"file\"}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "status",
+        "--state-dir",
+        "/var/tmp/kh-offline-j__74pzn/xpoint"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"client\":\"089620b7-50a1-436f-9f01-b9eb0d515aae\",\"dispatch\":[],\"instance\":\"3f93cdd9-fd75-4bc5-a1fe-bf386ca6eb9a\",\"last_ack_server_time\":1790817104,\"outbox_bytes\":0,\"outbox_limit\":67108864,\"pending_file_transfer\":null,\"pending_request\":false,\"queues\":[{\"activity\":\"queued\",\"block\":\"0x0000000000000000000000000000000000000000000000000000000000000000\",\"device\":\"0\",\"job\":\"36a9ffb9a698715f74d69b383d9314270d358c6e47cb7488b4e23310215abcb5\",\"local_state\":\"in_progress\",\"project\":\"f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da\",\"server_expires\":1793409104},{\"activity\":\"queued\",\"block\":\"0x0000000000000000000000000000000000000000000000000000000000000001\",\"device\":\"0\",\"job\":\"36a9ffb9a698715f74d69b383d9314270d358c6e47cb7488b4e23310215abcb5\",\"local_state\":\"in_progress\",\"project\":\"f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da\",\"server_expires\":1793409104}],\"sync_due_in\":null,\"transport\":\"file\"}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/usr/bin/python3.10",
+        "/tmp/keyhunt-c22-audit-u0d52ucm/source/tools/coordinator_worker.py",
+        "--state-dir",
+        "/var/tmp/kh-offline-j__74pzn/xpoint",
+        "--worker",
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "--keyhunt",
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt",
+        "--backend",
+        "hip",
+        "--device-map",
+        "0=0",
+        "--once"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "status",
+        "--state-dir",
+        "/var/tmp/kh-offline-j__74pzn/xpoint"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"client\":\"089620b7-50a1-436f-9f01-b9eb0d515aae\",\"dispatch\":[{\"block\":\"\",\"device\":\"0\",\"job\":\"\",\"project\":\"\",\"uuid\":\"30646366333934386337333264313231\"}],\"instance\":\"3f93cdd9-fd75-4bc5-a1fe-bf386ca6eb9a\",\"last_ack_server_time\":1790817104,\"outbox_bytes\":338,\"outbox_limit\":67108864,\"pending_file_transfer\":null,\"pending_request\":false,\"queues\":[{\"activity\":\"local-complete-awaiting-sync\",\"block\":\"0x0000000000000000000000000000000000000000000000000000000000000000\",\"device\":\"0\",\"job\":\"36a9ffb9a698715f74d69b383d9314270d358c6e47cb7488b4e23310215abcb5\",\"local_state\":\"finished\",\"project\":\"f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da\",\"server_expires\":1793409104},{\"activity\":\"local-complete-awaiting-sync\",\"block\":\"0x0000000000000000000000000000000000000000000000000000000000000001\",\"device\":\"0\",\"job\":\"36a9ffb9a698715f74d69b383d9314270d358c6e47cb7488b4e23310215abcb5\",\"local_state\":\"finished\",\"project\":\"f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da\",\"server_expires\":1793409104}],\"sync_due_in\":null,\"transport\":\"file\"}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt",
+        "state",
+        "block",
+        "--state-dir",
+        "/var/tmp/kh-offline-j__74pzn/xpoint",
+        "--project",
+        "f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da",
+        "--job",
+        "36a9ffb9a698715f74d69b383d9314270d358c6e47cb7488b4e23310215abcb5",
+        "--block",
+        "0"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"state\":\"finished\",\"started\":false,\"expired\":false,\"assignment\":null,\"covered\":[{\"begin\":\"0x0000000000000000000000000000000000000000000000000000000000000001\",\"end_exclusive\":\"0x0000000000000000000000000000000000000000000000000000000000000201\"}],\"remaining\":[]}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt",
+        "state",
+        "block",
+        "--state-dir",
+        "/var/tmp/kh-offline-j__74pzn/xpoint",
+        "--project",
+        "f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da",
+        "--job",
+        "36a9ffb9a698715f74d69b383d9314270d358c6e47cb7488b4e23310215abcb5",
+        "--block",
+        "1"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"state\":\"finished\",\"started\":false,\"expired\":false,\"assignment\":null,\"covered\":[{\"begin\":\"0x0000000000000000000000000000000000000000000000000000000000000201\",\"end_exclusive\":\"0x0000000000000000000000000000000000000000000000000000000000000401\"}],\"remaining\":[]}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt",
+        "checkpoint",
+        "results",
+        "--state-dir",
+        "/var/tmp/kh-offline-j__74pzn/xpoint",
+        "--project",
+        "f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da",
+        "--job",
+        "36a9ffb9a698715f74d69b383d9314270d358c6e47cb7488b4e23310215abcb5"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"results\":[{\"id\":\"1\",\"block\":\"0x0000000000000000000000000000000000000000000000000000000000000000\",\"scalar\":\"0x0000000000000000000000000000000000000000000000000000000000000001\",\"target\":0,\"target_bytes\":\"79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798\"}],\"next_after\":\"1\"}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "file-export",
+        "--state-dir",
+        "/var/tmp/kh-offline-j__74pzn/xpoint",
+        "--output",
+        "/var/tmp/kh-offline-j__74pzn/xpoint-upload.json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"request\":\"a01b995c-64f7-4812-a263-6b39dd20724c\",\"sha256\":\"2f749620212521397133980e2b956fc86cf3a7ae0e875509392a7e1d50b19447\",\"transfer\":\"0c5339d8-45ed-4147-a785-8c7c8a1055ec\"}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "file-relay",
+        "--config",
+        "/var/tmp/kh-offline-j__74pzn/courier.json",
+        "--input",
+        "/var/tmp/kh-offline-j__74pzn/xpoint-upload.json",
+        "--sha256",
+        "2f749620212521397133980e2b956fc86cf3a7ae0e875509392a7e1d50b19447",
+        "--output",
+        "/var/tmp/kh-offline-j__74pzn/xpoint-ack.json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"sha256\":\"254810277315398fdcbf44150bd5c200c5fcb74065e5c1d55448bac14675c7fc\",\"status\":200,\"transfer\":\"0c5339d8-45ed-4147-a785-8c7c8a1055ec\"}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "file-import",
+        "--state-dir",
+        "/var/tmp/kh-offline-j__74pzn/xpoint",
+        "--input",
+        "/var/tmp/kh-offline-j__74pzn/xpoint-ack.json",
+        "--sha256",
+        "254810277315398fdcbf44150bd5c200c5fcb74065e5c1d55448bac14675c7fc"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"applied\":true,\"duplicate\":false,\"status\":200,\"worker\":{\"client\":\"089620b7-50a1-436f-9f01-b9eb0d515aae\",\"dispatch\":[{\"block\":\"\",\"device\":\"0\",\"job\":\"\",\"project\":\"\",\"uuid\":\"30646366333934386337333264313231\"}],\"instance\":\"3f93cdd9-fd75-4bc5-a1fe-bf386ca6eb9a\",\"last_ack_server_time\":1790817105,\"outbox_bytes\":0,\"outbox_limit\":67108864,\"pending_file_transfer\":null,\"pending_request\":false,\"queues\":[{\"activity\":\"server-acknowledged\",\"block\":\"0x0000000000000000000000000000000000000000000000000000000000000000\",\"device\":\"0\",\"job\":\"36a9ffb9a698715f74d69b383d9314270d358c6e47cb7488b4e23310215abcb5\",\"local_state\":\"finished\",\"project\":\"f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da\",\"server_expires\":1793409104},{\"activity\":\"server-acknowledged\",\"block\":\"0x0000000000000000000000000000000000000000000000000000000000000001\",\"device\":\"0\",\"job\":\"36a9ffb9a698715f74d69b383d9314270d358c6e47cb7488b4e23310215abcb5\",\"local_state\":\"finished\",\"project\":\"f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da\",\"server_expires\":1793409104}],\"sync_due_in\":null,\"transport\":\"file\"}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "file-import",
+        "--state-dir",
+        "/var/tmp/kh-offline-j__74pzn/xpoint",
+        "--input",
+        "/var/tmp/kh-offline-j__74pzn/xpoint-ack.json",
+        "--sha256",
+        "254810277315398fdcbf44150bd5c200c5fcb74065e5c1d55448bac14675c7fc"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"applied\":false,\"duplicate\":true,\"status\":200,\"worker\":{\"client\":\"089620b7-50a1-436f-9f01-b9eb0d515aae\",\"dispatch\":[{\"block\":\"\",\"device\":\"0\",\"job\":\"\",\"project\":\"\",\"uuid\":\"30646366333934386337333264313231\"}],\"instance\":\"3f93cdd9-fd75-4bc5-a1fe-bf386ca6eb9a\",\"last_ack_server_time\":1790817105,\"outbox_bytes\":0,\"outbox_limit\":67108864,\"pending_file_transfer\":null,\"pending_request\":false,\"queues\":[{\"activity\":\"server-acknowledged\",\"block\":\"0x0000000000000000000000000000000000000000000000000000000000000000\",\"device\":\"0\",\"job\":\"36a9ffb9a698715f74d69b383d9314270d358c6e47cb7488b4e23310215abcb5\",\"local_state\":\"finished\",\"project\":\"f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da\",\"server_expires\":1793409104},{\"activity\":\"server-acknowledged\",\"block\":\"0x0000000000000000000000000000000000000000000000000000000000000001\",\"device\":\"0\",\"job\":\"36a9ffb9a698715f74d69b383d9314270d358c6e47cb7488b4e23310215abcb5\",\"local_state\":\"finished\",\"project\":\"f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da\",\"server_expires\":1793409104}],\"sync_due_in\":null,\"transport\":\"file\"}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt",
+        "state",
+        "check",
+        "--state-dir",
+        "/var/tmp/kh-offline-j__74pzn/xpoint"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"integrity\":\"ok\"}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "configure",
+        "--state-dir",
+        "/var/tmp/kh-offline-j__74pzn/bsgs",
+        "--config",
+        "/var/tmp/kh-offline-j__74pzn/bsgs-config.json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"configured\":true}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "sync",
+        "--state-dir",
+        "/var/tmp/kh-offline-j__74pzn/bsgs"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "{\"error\":\"file-only worker requires file-export/file-import, not HTTPS sync\"}\n"
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "scheduled-sync",
+        "--state-dir",
+        "/var/tmp/kh-offline-j__74pzn/bsgs"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "{\"error\":\"file-only worker requires file-export/file-import, not HTTPS sync\"}\n"
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "file-export",
+        "--state-dir",
+        "/var/tmp/kh-offline-j__74pzn/bsgs",
+        "--output",
+        "/var/tmp/kh-offline-j__74pzn/bsgs-request.json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"request\":\"0cbb91fa-dae1-40a7-b2d5-4414c8a1072e\",\"sha256\":\"e77d2da4d44e1e4d49df325b37ac4b411c529602b380f519acc9da77c8a5cc91\",\"transfer\":\"f88da662-f3f4-4dd3-8b09-2cedcbb56e93\"}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "file-export",
+        "--state-dir",
+        "/var/tmp/kh-offline-j__74pzn/bsgs",
+        "--output",
+        "/var/tmp/kh-offline-j__74pzn/bsgs-copy.json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"request\":\"0cbb91fa-dae1-40a7-b2d5-4414c8a1072e\",\"sha256\":\"e77d2da4d44e1e4d49df325b37ac4b411c529602b380f519acc9da77c8a5cc91\",\"transfer\":\"f88da662-f3f4-4dd3-8b09-2cedcbb56e93\"}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "file-export",
+        "--state-dir",
+        "/var/tmp/kh-offline-j__74pzn/bsgs",
+        "--output",
+        "/var/tmp/kh-offline-j__74pzn/bsgs-request.json"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "{\"error\":\"cannot publish offline file exclusively\"}\n"
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "file-relay",
+        "--config",
+        "/var/tmp/kh-offline-j__74pzn/courier.json",
+        "--input",
+        "/var/tmp/kh-offline-j__74pzn/bsgs-request.json",
+        "--sha256",
+        "0000000000000000000000000000000000000000000000000000000000000000",
+        "--output",
+        "/var/tmp/kh-offline-j__74pzn/bsgs-response.json"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "{\"error\":\"offline file checksum mismatch\"}\n"
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "file-relay",
+        "--config",
+        "/var/tmp/kh-offline-j__74pzn/bsgs-wrong-authority.json",
+        "--input",
+        "/var/tmp/kh-offline-j__74pzn/bsgs-request.json",
+        "--sha256",
+        "e77d2da4d44e1e4d49df325b37ac4b411c529602b380f519acc9da77c8a5cc91",
+        "--output",
+        "/var/tmp/kh-offline-j__74pzn/bsgs-response.json"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "{\"error\":\"courier authority does not match the offline request\"}\n"
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "file-relay",
+        "--config",
+        "/var/tmp/kh-offline-j__74pzn/bsgs-wrong-ca.json",
+        "--input",
+        "/var/tmp/kh-offline-j__74pzn/bsgs-request.json",
+        "--sha256",
+        "e77d2da4d44e1e4d49df325b37ac4b411c529602b380f519acc9da77c8a5cc91",
+        "--output",
+        "/var/tmp/kh-offline-j__74pzn/bsgs-response.json"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "{\"error\":\"HTTPS request failed: SSL certificate problem: unable to get local issuer certificate\"}\n"
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "file-relay",
+        "--config",
+        "/var/tmp/kh-offline-j__74pzn/courier.json",
+        "--input",
+        "/var/tmp/kh-offline-j__74pzn/bsgs-request.json",
+        "--sha256",
+        "e77d2da4d44e1e4d49df325b37ac4b411c529602b380f519acc9da77c8a5cc91",
+        "--output",
+        "/var/tmp/kh-offline-j__74pzn/bsgs-response.json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"sha256\":\"91a681844f76664a99a0a4575438d9feb440dec13847b6a63c15784b7e56876a\",\"status\":200,\"transfer\":\"f88da662-f3f4-4dd3-8b09-2cedcbb56e93\"}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "status",
+        "--state-dir",
+        "/var/tmp/kh-offline-j__74pzn/bsgs"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"client\":\"\",\"dispatch\":[],\"instance\":\"d75f9005-753c-4599-adf1-b81893e33d43\",\"last_ack_server_time\":0,\"outbox_bytes\":0,\"outbox_limit\":67108864,\"pending_file_transfer\":\"f88da662-f3f4-4dd3-8b09-2cedcbb56e93\",\"pending_request\":true,\"queues\":[],\"sync_due_in\":null,\"transport\":\"file\"}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "file-import",
+        "--state-dir",
+        "/var/tmp/kh-offline-j__74pzn/bsgs",
+        "--input",
+        "/var/tmp/kh-offline-j__74pzn/bsgs-response.json",
+        "--sha256",
+        "0000000000000000000000000000000000000000000000000000000000000000"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "{\"error\":\"offline file checksum mismatch\"}\n"
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "file-import",
+        "--state-dir",
+        "/var/tmp/kh-offline-j__74pzn/bsgs",
+        "--input",
+        "/var/tmp/kh-offline-j__74pzn/bsgs-response.json",
+        "--sha256",
+        "91a681844f76664a99a0a4575438d9feb440dec13847b6a63c15784b7e56876a"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"applied\":true,\"duplicate\":false,\"status\":200,\"worker\":{\"client\":\"089620b7-50a1-436f-9f01-b9eb0d515aae\",\"dispatch\":[],\"instance\":\"d75f9005-753c-4599-adf1-b81893e33d43\",\"last_ack_server_time\":1790817106,\"outbox_bytes\":0,\"outbox_limit\":67108864,\"pending_file_transfer\":null,\"pending_request\":false,\"queues\":[{\"activity\":\"queued\",\"block\":\"0x0000000000000000000000000000000000000000000000000000000000000000\",\"device\":\"0\",\"job\":\"c8ae7a6675843327e3136f0ad5d0d3993c466532fb7a578341c00fd99d7c6d93\",\"local_state\":\"in_progress\",\"project\":\"f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da\",\"server_expires\":1793409106},{\"activity\":\"queued\",\"block\":\"0x0000000000000000000000000000000000000000000000000000000000000001\",\"device\":\"0\",\"job\":\"c8ae7a6675843327e3136f0ad5d0d3993c466532fb7a578341c00fd99d7c6d93\",\"local_state\":\"in_progress\",\"project\":\"f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da\",\"server_expires\":1793409106}],\"sync_due_in\":null,\"transport\":\"file\"}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "file-import",
+        "--state-dir",
+        "/var/tmp/kh-offline-j__74pzn/bsgs",
+        "--input",
+        "/var/tmp/kh-offline-j__74pzn/bsgs-response.json",
+        "--sha256",
+        "91a681844f76664a99a0a4575438d9feb440dec13847b6a63c15784b7e56876a"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"applied\":false,\"duplicate\":true,\"status\":200,\"worker\":{\"client\":\"089620b7-50a1-436f-9f01-b9eb0d515aae\",\"dispatch\":[],\"instance\":\"d75f9005-753c-4599-adf1-b81893e33d43\",\"last_ack_server_time\":1790817106,\"outbox_bytes\":0,\"outbox_limit\":67108864,\"pending_file_transfer\":null,\"pending_request\":false,\"queues\":[{\"activity\":\"queued\",\"block\":\"0x0000000000000000000000000000000000000000000000000000000000000000\",\"device\":\"0\",\"job\":\"c8ae7a6675843327e3136f0ad5d0d3993c466532fb7a578341c00fd99d7c6d93\",\"local_state\":\"in_progress\",\"project\":\"f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da\",\"server_expires\":1793409106},{\"activity\":\"queued\",\"block\":\"0x0000000000000000000000000000000000000000000000000000000000000001\",\"device\":\"0\",\"job\":\"c8ae7a6675843327e3136f0ad5d0d3993c466532fb7a578341c00fd99d7c6d93\",\"local_state\":\"in_progress\",\"project\":\"f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da\",\"server_expires\":1793409106}],\"sync_due_in\":null,\"transport\":\"file\"}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "file-relay",
+        "--config",
+        "/var/tmp/kh-offline-j__74pzn/courier.json",
+        "--input",
+        "/var/tmp/kh-offline-j__74pzn/bsgs-request.json",
+        "--sha256",
+        "e77d2da4d44e1e4d49df325b37ac4b411c529602b380f519acc9da77c8a5cc91",
+        "--output",
+        "/var/tmp/kh-offline-j__74pzn/bsgs-response.json"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "{\"error\":\"cannot publish offline file exclusively\"}\n"
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "file-export",
+        "--state-dir",
+        "/var/tmp/kh-offline-j__74pzn/bsgs",
+        "--output",
+        "/var/tmp/kh-offline-j__74pzn/bsgs-deny-request.json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"request\":\"3e02a29b-efa1-437f-afcd-a7499826936c\",\"sha256\":\"9f10c6cc9c510317dd675da7d46d998b94c7a16afae7fde9e1df318d7ae9d4d4\",\"transfer\":\"b8134d4e-8f75-4e1f-a2d2-35ae01b10c6f\"}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "file-relay",
+        "--config",
+        "/var/tmp/kh-offline-j__74pzn/courier.json",
+        "--input",
+        "/var/tmp/kh-offline-j__74pzn/bsgs-deny-request.json",
+        "--sha256",
+        "9f10c6cc9c510317dd675da7d46d998b94c7a16afae7fde9e1df318d7ae9d4d4",
+        "--output",
+        "/var/tmp/kh-offline-j__74pzn/bsgs-deny-response.json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"sha256\":\"ee3f22c4104bcc5580b6e83cfeb9cc59e02082da34c53dff9ec40c46c64fa480\",\"status\":401,\"transfer\":\"b8134d4e-8f75-4e1f-a2d2-35ae01b10c6f\"}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "file-import",
+        "--state-dir",
+        "/var/tmp/kh-offline-j__74pzn/bsgs",
+        "--input",
+        "/var/tmp/kh-offline-j__74pzn/bsgs-deny-response.json",
+        "--sha256",
+        "ee3f22c4104bcc5580b6e83cfeb9cc59e02082da34c53dff9ec40c46c64fa480"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"applied\":true,\"duplicate\":false,\"status\":401,\"worker\":{\"client\":\"089620b7-50a1-436f-9f01-b9eb0d515aae\",\"dispatch\":[],\"instance\":\"d75f9005-753c-4599-adf1-b81893e33d43\",\"last_ack_server_time\":1790817106,\"outbox_bytes\":0,\"outbox_limit\":67108864,\"pause_reason\":\"401: credential unavailable\",\"pending_file_transfer\":null,\"pending_request\":true,\"queues\":[{\"activity\":\"server-paused\",\"block\":\"0x0000000000000000000000000000000000000000000000000000000000000000\",\"device\":\"0\",\"job\":\"c8ae7a6675843327e3136f0ad5d0d3993c466532fb7a578341c00fd99d7c6d93\",\"local_state\":\"in_progress\",\"project\":\"f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da\",\"server_expires\":1793409106},{\"activity\":\"server-paused\",\"block\":\"0x0000000000000000000000000000000000000000000000000000000000000001\",\"device\":\"0\",\"job\":\"c8ae7a6675843327e3136f0ad5d0d3993c466532fb7a578341c00fd99d7c6d93\",\"local_state\":\"in_progress\",\"project\":\"f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da\",\"server_expires\":1793409106}],\"sync_due_in\":null,\"transport\":\"file\"}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "file-export",
+        "--state-dir",
+        "/var/tmp/kh-offline-j__74pzn/bsgs",
+        "--output",
+        "/var/tmp/kh-offline-j__74pzn/bsgs-review-request.json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"request\":\"3e02a29b-efa1-437f-afcd-a7499826936c\",\"sha256\":\"e97c7d1dcb9e5e96baeb2b811da6b5cf8d68154a39245109322e716cf155106d\",\"transfer\":\"07015cc9-3ff7-46fc-8f95-99dd2381b835\"}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "file-relay",
+        "--config",
+        "/var/tmp/kh-offline-j__74pzn/courier.json",
+        "--input",
+        "/var/tmp/kh-offline-j__74pzn/bsgs-review-request.json",
+        "--sha256",
+        "e97c7d1dcb9e5e96baeb2b811da6b5cf8d68154a39245109322e716cf155106d",
+        "--output",
+        "/var/tmp/kh-offline-j__74pzn/bsgs-review-response.json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"sha256\":\"cab181f1d1894f9084b1c2fca9806d84f9258c27c75600b282c0eb2b39acfc2c\",\"status\":200,\"transfer\":\"07015cc9-3ff7-46fc-8f95-99dd2381b835\"}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "file-import",
+        "--state-dir",
+        "/var/tmp/kh-offline-j__74pzn/bsgs",
+        "--input",
+        "/var/tmp/kh-offline-j__74pzn/bsgs-review-response.json",
+        "--sha256",
+        "cab181f1d1894f9084b1c2fca9806d84f9258c27c75600b282c0eb2b39acfc2c"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"applied\":true,\"duplicate\":false,\"status\":200,\"worker\":{\"client\":\"089620b7-50a1-436f-9f01-b9eb0d515aae\",\"dispatch\":[],\"instance\":\"d75f9005-753c-4599-adf1-b81893e33d43\",\"last_ack_server_time\":1790817106,\"outbox_bytes\":0,\"outbox_limit\":67108864,\"pending_file_transfer\":null,\"pending_request\":false,\"queues\":[{\"activity\":\"queued\",\"block\":\"0x0000000000000000000000000000000000000000000000000000000000000000\",\"device\":\"0\",\"job\":\"c8ae7a6675843327e3136f0ad5d0d3993c466532fb7a578341c00fd99d7c6d93\",\"local_state\":\"in_progress\",\"project\":\"f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da\",\"server_expires\":1793409106},{\"activity\":\"queued\",\"block\":\"0x0000000000000000000000000000000000000000000000000000000000000001\",\"device\":\"0\",\"job\":\"c8ae7a6675843327e3136f0ad5d0d3993c466532fb7a578341c00fd99d7c6d93\",\"local_state\":\"in_progress\",\"project\":\"f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da\",\"server_expires\":1793409106}],\"sync_due_in\":null,\"transport\":\"file\"}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "status",
+        "--state-dir",
+        "/var/tmp/kh-offline-j__74pzn/bsgs"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"client\":\"089620b7-50a1-436f-9f01-b9eb0d515aae\",\"dispatch\":[],\"instance\":\"d75f9005-753c-4599-adf1-b81893e33d43\",\"last_ack_server_time\":1790817106,\"outbox_bytes\":0,\"outbox_limit\":67108864,\"pending_file_transfer\":null,\"pending_request\":false,\"queues\":[{\"activity\":\"queued\",\"block\":\"0x0000000000000000000000000000000000000000000000000000000000000000\",\"device\":\"0\",\"job\":\"c8ae7a6675843327e3136f0ad5d0d3993c466532fb7a578341c00fd99d7c6d93\",\"local_state\":\"in_progress\",\"project\":\"f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da\",\"server_expires\":1793409106},{\"activity\":\"queued\",\"block\":\"0x0000000000000000000000000000000000000000000000000000000000000001\",\"device\":\"0\",\"job\":\"c8ae7a6675843327e3136f0ad5d0d3993c466532fb7a578341c00fd99d7c6d93\",\"local_state\":\"in_progress\",\"project\":\"f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da\",\"server_expires\":1793409106}],\"sync_due_in\":null,\"transport\":\"file\"}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/usr/bin/python3.10",
+        "/tmp/keyhunt-c22-audit-u0d52ucm/source/tools/coordinator_worker.py",
+        "--state-dir",
+        "/var/tmp/kh-offline-j__74pzn/bsgs",
+        "--worker",
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "--keyhunt",
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt",
+        "--backend",
+        "hip",
+        "--device-map",
+        "0=0",
+        "--once",
+        "--table",
+        "/var/tmp/kh-offline-j__74pzn/babies.khb"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "status",
+        "--state-dir",
+        "/var/tmp/kh-offline-j__74pzn/bsgs"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"client\":\"089620b7-50a1-436f-9f01-b9eb0d515aae\",\"dispatch\":[{\"block\":\"\",\"device\":\"0\",\"job\":\"\",\"project\":\"\",\"uuid\":\"30646366333934386337333264313231\"}],\"instance\":\"d75f9005-753c-4599-adf1-b81893e33d43\",\"last_ack_server_time\":1790817106,\"outbox_bytes\":338,\"outbox_limit\":67108864,\"pending_file_transfer\":null,\"pending_request\":false,\"queues\":[{\"activity\":\"local-complete-awaiting-sync\",\"block\":\"0x0000000000000000000000000000000000000000000000000000000000000000\",\"device\":\"0\",\"job\":\"c8ae7a6675843327e3136f0ad5d0d3993c466532fb7a578341c00fd99d7c6d93\",\"local_state\":\"finished\",\"project\":\"f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da\",\"server_expires\":1793409106},{\"activity\":\"local-complete-awaiting-sync\",\"block\":\"0x0000000000000000000000000000000000000000000000000000000000000001\",\"device\":\"0\",\"job\":\"c8ae7a6675843327e3136f0ad5d0d3993c466532fb7a578341c00fd99d7c6d93\",\"local_state\":\"finished\",\"project\":\"f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da\",\"server_expires\":1793409106}],\"sync_due_in\":null,\"transport\":\"file\"}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt",
+        "state",
+        "block",
+        "--state-dir",
+        "/var/tmp/kh-offline-j__74pzn/bsgs",
+        "--project",
+        "f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da",
+        "--job",
+        "c8ae7a6675843327e3136f0ad5d0d3993c466532fb7a578341c00fd99d7c6d93",
+        "--block",
+        "0"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"state\":\"finished\",\"started\":false,\"expired\":false,\"assignment\":null,\"covered\":[{\"begin\":\"0x0000000000000000000000000000000000000000000000000000000000000001\",\"end_exclusive\":\"0x0000000000000000000000000000000000000000000000000000000000008001\"}],\"remaining\":[]}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt",
+        "state",
+        "block",
+        "--state-dir",
+        "/var/tmp/kh-offline-j__74pzn/bsgs",
+        "--project",
+        "f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da",
+        "--job",
+        "c8ae7a6675843327e3136f0ad5d0d3993c466532fb7a578341c00fd99d7c6d93",
+        "--block",
+        "1"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"state\":\"finished\",\"started\":false,\"expired\":false,\"assignment\":null,\"covered\":[{\"begin\":\"0x0000000000000000000000000000000000000000000000000000000000008001\",\"end_exclusive\":\"0x0000000000000000000000000000000000000000000000000000000000010001\"}],\"remaining\":[]}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt",
+        "checkpoint",
+        "results",
+        "--state-dir",
+        "/var/tmp/kh-offline-j__74pzn/bsgs",
+        "--project",
+        "f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da",
+        "--job",
+        "c8ae7a6675843327e3136f0ad5d0d3993c466532fb7a578341c00fd99d7c6d93"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"results\":[{\"id\":\"1\",\"block\":\"0x0000000000000000000000000000000000000000000000000000000000000000\",\"scalar\":\"0x0000000000000000000000000000000000000000000000000000000000000001\",\"target\":0,\"target_bytes\":\"0479be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8\"}],\"next_after\":\"1\"}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "file-export",
+        "--state-dir",
+        "/var/tmp/kh-offline-j__74pzn/bsgs",
+        "--output",
+        "/var/tmp/kh-offline-j__74pzn/bsgs-upload.json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"request\":\"583d1498-761e-435f-9fc9-985f59aee04b\",\"sha256\":\"3ba54068cc76f812e6c946d4b4bcf1bd734357ac156ccac544ed20d4046a962d\",\"transfer\":\"6c93e6b5-761f-4a21-a1c3-ee5c3e61161f\"}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "file-relay",
+        "--config",
+        "/var/tmp/kh-offline-j__74pzn/courier.json",
+        "--input",
+        "/var/tmp/kh-offline-j__74pzn/bsgs-upload.json",
+        "--sha256",
+        "3ba54068cc76f812e6c946d4b4bcf1bd734357ac156ccac544ed20d4046a962d",
+        "--output",
+        "/var/tmp/kh-offline-j__74pzn/bsgs-ack.json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"sha256\":\"22b964830d8efdadb5e7a5202700356553bc3f308ba7ca8020b764687928ae22\",\"status\":200,\"transfer\":\"6c93e6b5-761f-4a21-a1c3-ee5c3e61161f\"}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "file-import",
+        "--state-dir",
+        "/var/tmp/kh-offline-j__74pzn/bsgs",
+        "--input",
+        "/var/tmp/kh-offline-j__74pzn/bsgs-ack.json",
+        "--sha256",
+        "22b964830d8efdadb5e7a5202700356553bc3f308ba7ca8020b764687928ae22"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"applied\":true,\"duplicate\":false,\"status\":200,\"worker\":{\"client\":\"089620b7-50a1-436f-9f01-b9eb0d515aae\",\"dispatch\":[{\"block\":\"\",\"device\":\"0\",\"job\":\"\",\"project\":\"\",\"uuid\":\"30646366333934386337333264313231\"}],\"instance\":\"d75f9005-753c-4599-adf1-b81893e33d43\",\"last_ack_server_time\":1790817107,\"outbox_bytes\":0,\"outbox_limit\":67108864,\"pending_file_transfer\":null,\"pending_request\":false,\"queues\":[{\"activity\":\"server-acknowledged\",\"block\":\"0x0000000000000000000000000000000000000000000000000000000000000000\",\"device\":\"0\",\"job\":\"c8ae7a6675843327e3136f0ad5d0d3993c466532fb7a578341c00fd99d7c6d93\",\"local_state\":\"finished\",\"project\":\"f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da\",\"server_expires\":1793409106},{\"activity\":\"server-acknowledged\",\"block\":\"0x0000000000000000000000000000000000000000000000000000000000000001\",\"device\":\"0\",\"job\":\"c8ae7a6675843327e3136f0ad5d0d3993c466532fb7a578341c00fd99d7c6d93\",\"local_state\":\"finished\",\"project\":\"f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da\",\"server_expires\":1793409106}],\"sync_due_in\":null,\"transport\":\"file\"}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker",
+        "file-import",
+        "--state-dir",
+        "/var/tmp/kh-offline-j__74pzn/bsgs",
+        "--input",
+        "/var/tmp/kh-offline-j__74pzn/bsgs-ack.json",
+        "--sha256",
+        "22b964830d8efdadb5e7a5202700356553bc3f308ba7ca8020b764687928ae22"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"applied\":false,\"duplicate\":true,\"status\":200,\"worker\":{\"client\":\"089620b7-50a1-436f-9f01-b9eb0d515aae\",\"dispatch\":[{\"block\":\"\",\"device\":\"0\",\"job\":\"\",\"project\":\"\",\"uuid\":\"30646366333934386337333264313231\"}],\"instance\":\"d75f9005-753c-4599-adf1-b81893e33d43\",\"last_ack_server_time\":1790817107,\"outbox_bytes\":0,\"outbox_limit\":67108864,\"pending_file_transfer\":null,\"pending_request\":false,\"queues\":[{\"activity\":\"server-acknowledged\",\"block\":\"0x0000000000000000000000000000000000000000000000000000000000000000\",\"device\":\"0\",\"job\":\"c8ae7a6675843327e3136f0ad5d0d3993c466532fb7a578341c00fd99d7c6d93\",\"local_state\":\"finished\",\"project\":\"f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da\",\"server_expires\":1793409106},{\"activity\":\"server-acknowledged\",\"block\":\"0x0000000000000000000000000000000000000000000000000000000000000001\",\"device\":\"0\",\"job\":\"c8ae7a6675843327e3136f0ad5d0d3993c466532fb7a578341c00fd99d7c6d93\",\"local_state\":\"finished\",\"project\":\"f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da\",\"server_expires\":1793409106}],\"sync_due_in\":null,\"transport\":\"file\"}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt",
+        "state",
+        "check",
+        "--state-dir",
+        "/var/tmp/kh-offline-j__74pzn/bsgs"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"integrity\":\"ok\"}\n",
+      "stderr": ""
+    }
+  ],
+  "cases": [
+    {
+      "mode": "xpoint",
+      "reserved_blocks": 2,
+      "response_sha256": "e0baf26c3fc491626c4db918763a2eb0f7980c6dc452cc6c8e78a7356cc9e5f9",
+      "local_status": {
+        "client": "089620b7-50a1-436f-9f01-b9eb0d515aae",
+        "dispatch": [
+          {
+            "block": "",
+            "device": "0",
+            "job": "",
+            "project": "",
+            "uuid": "30646366333934386337333264313231"
+          }
+        ],
+        "instance": "3f93cdd9-fd75-4bc5-a1fe-bf386ca6eb9a",
+        "last_ack_server_time": 1790817104,
+        "outbox_bytes": 338,
+        "outbox_limit": 67108864,
+        "pending_file_transfer": null,
+        "pending_request": false,
+        "queues": [
+          {
+            "activity": "local-complete-awaiting-sync",
+            "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "device": "0",
+            "job": "36a9ffb9a698715f74d69b383d9314270d358c6e47cb7488b4e23310215abcb5",
+            "local_state": "finished",
+            "project": "f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da",
+            "server_expires": 1793409104
+          },
+          {
+            "activity": "local-complete-awaiting-sync",
+            "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "device": "0",
+            "job": "36a9ffb9a698715f74d69b383d9314270d358c6e47cb7488b4e23310215abcb5",
+            "local_state": "finished",
+            "project": "f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da",
+            "server_expires": 1793409104
+          }
+        ],
+        "sync_due_in": null,
+        "transport": "file"
+      },
+      "final_status": {
+        "client": "089620b7-50a1-436f-9f01-b9eb0d515aae",
+        "dispatch": [
+          {
+            "block": "",
+            "device": "0",
+            "job": "",
+            "project": "",
+            "uuid": "30646366333934386337333264313231"
+          }
+        ],
+        "instance": "3f93cdd9-fd75-4bc5-a1fe-bf386ca6eb9a",
+        "last_ack_server_time": 1790817105,
+        "outbox_bytes": 0,
+        "outbox_limit": 67108864,
+        "pending_file_transfer": null,
+        "pending_request": false,
+        "queues": [
+          {
+            "activity": "server-acknowledged",
+            "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "device": "0",
+            "job": "36a9ffb9a698715f74d69b383d9314270d358c6e47cb7488b4e23310215abcb5",
+            "local_state": "finished",
+            "project": "f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da",
+            "server_expires": 1793409104
+          },
+          {
+            "activity": "server-acknowledged",
+            "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "device": "0",
+            "job": "36a9ffb9a698715f74d69b383d9314270d358c6e47cb7488b4e23310215abcb5",
+            "local_state": "finished",
+            "project": "f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da",
+            "server_expires": 1793409104
+          }
+        ],
+        "sync_due_in": null,
+        "transport": "file"
+      },
+      "blocks": [
+        {
+          "state": "finished",
+          "started": false,
+          "expired": false,
+          "assignment": null,
+          "covered": [
+            {
+              "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000000201"
+            }
+          ],
+          "remaining": []
+        },
+        {
+          "state": "finished",
+          "started": false,
+          "expired": false,
+          "assignment": null,
+          "covered": [
+            {
+              "begin": "0x0000000000000000000000000000000000000000000000000000000000000201",
+              "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000000401"
+            }
+          ],
+          "remaining": []
+        }
+      ],
+      "local_results": {
+        "results": [
+          {
+            "id": "1",
+            "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "scalar": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "target": 0,
+            "target_bytes": "79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798"
+          }
+        ],
+        "next_after": "1"
+      },
+      "server_results": [
+        {
+          "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "id": 1,
+          "scalar": "0x0000000000000000000000000000000000000000000000000000000000000001",
+          "target": 0,
+          "target_bytes": "79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798"
+        }
+      ],
+      "events": [
+        {
+          "type": "control",
+          "accepted": true,
+          "state": "running",
+          "requested": "run",
+          "durably_paused": false,
+          "durability": "local",
+          "pause_ms": 0.0,
+          "pid": 808732,
+          "device": 0,
+          "visible_devices": 8
+        },
+        {
+          "queue": "0",
+          "type": "self-test-start"
+        },
+        {
+          "queue": "0",
+          "self_test": {
+            "compute_partition": "SPX",
+            "compute_units": 304,
+            "driver": 71526333,
+            "memory_partition": "NPS1",
+            "ordinal": 0,
+            "passed": true,
+            "pci_bus_id": "0000:1b:00.0",
+            "runtime": 71526333,
+            "uuid": "30646366333934386337333264313231"
+          },
+          "type": "ready",
+          "uuid": "30646366333934386337333264313231"
+        },
+        {
+          "type": "control",
+          "accepted": true,
+          "state": "running",
+          "requested": "run",
+          "durably_paused": false,
+          "durability": "local",
+          "pause_ms": 0.0,
+          "pid": 808732,
+          "device": 0,
+          "visible_devices": 8,
+          "project": "f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da",
+          "job": "36a9ffb9a698715f74d69b383d9314270d358c6e47cb7488b4e23310215abcb5",
+          "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "assignment_generation": "1"
+        },
+        {
+          "grant": {
+            "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000000201",
+            "epoch": "e5e097e329acfe721cd2f7169f4d5424",
+            "expires": 1793409044,
+            "generation": 1,
+            "job": "36a9ffb9a698715f74d69b383d9314270d358c6e47cb7488b4e23310215abcb5",
+            "owner": "089620b7-50a1-436f-9f01-b9eb0d515aae.3f93cdd9-fd75-4bc5-a1fe-bf386ca6eb9a",
+            "project": "f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da"
+          },
+          "queue": "0",
+          "type": "grant-start"
+        },
+        {
+          "interval": {
+            "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000000201"
+          },
+          "target_seconds": 180,
+          "type": "work-unit"
+        },
+        {
+          "device_steps": 512,
+          "kernel_ms": 0.16136600077152252,
+          "sequence": 1,
+          "type": "progress"
+        },
+        {
+          "matches": 1,
+          "sequence": 2,
+          "transaction_ms": 0.484716,
+          "type": "checkpoint"
+        },
+        {
+          "cold": true,
+          "complete": true,
+          "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000200",
+          "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000200",
+          "executor_setups": 1,
+          "grant": {
+            "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000000201",
+            "epoch": "e5e097e329acfe721cd2f7169f4d5424",
+            "expires": 1793409044,
+            "generation": 1,
+            "job": "36a9ffb9a698715f74d69b383d9314270d358c6e47cb7488b4e23310215abcb5",
+            "owner": "089620b7-50a1-436f-9f01-b9eb0d515aae.3f93cdd9-fd75-4bc5-a1fe-bf386ca6eb9a",
+            "project": "f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da"
+          },
+          "kernel_ms": 0.16136600077152252,
+          "m": 1,
+          "mode": "xpoint",
+          "table_upload_ms": 0.0,
+          "target_count": 1,
+          "type": "grant-finish",
+          "wall_ns": 35546598,
+          "work_units": 1
+        },
+        {
+          "type": "control",
+          "accepted": true,
+          "state": "running",
+          "requested": "run",
+          "durably_paused": false,
+          "durability": "local",
+          "pause_ms": 0.0,
+          "pid": 808732,
+          "device": 0,
+          "visible_devices": 8,
+          "project": "f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da",
+          "job": "36a9ffb9a698715f74d69b383d9314270d358c6e47cb7488b4e23310215abcb5",
+          "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+          "assignment_generation": "2"
+        },
+        {
+          "grant": {
+            "begin": "0x0000000000000000000000000000000000000000000000000000000000000201",
+            "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000000401",
+            "epoch": "e5e097e329acfe721cd2f7169f4d5424",
+            "expires": 1793409044,
+            "generation": 2,
+            "job": "36a9ffb9a698715f74d69b383d9314270d358c6e47cb7488b4e23310215abcb5",
+            "owner": "089620b7-50a1-436f-9f01-b9eb0d515aae.3f93cdd9-fd75-4bc5-a1fe-bf386ca6eb9a",
+            "project": "f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da"
+          },
+          "queue": "0",
+          "type": "grant-start"
+        },
+        {
+          "interval": {
+            "begin": "0x0000000000000000000000000000000000000000000000000000000000000201",
+            "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000000401"
+          },
+          "target_seconds": 180,
+          "type": "work-unit"
+        },
+        {
+          "matches": 0,
+          "sequence": 4,
+          "transaction_ms": 0.372756,
+          "type": "checkpoint"
+        },
+        {
+          "cold": false,
+          "complete": true,
+          "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000200",
+          "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000200",
+          "executor_setups": 1,
+          "grant": {
+            "begin": "0x0000000000000000000000000000000000000000000000000000000000000201",
+            "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000000401",
+            "epoch": "e5e097e329acfe721cd2f7169f4d5424",
+            "expires": 1793409044,
+            "generation": 2,
+            "job": "36a9ffb9a698715f74d69b383d9314270d358c6e47cb7488b4e23310215abcb5",
+            "owner": "089620b7-50a1-436f-9f01-b9eb0d515aae.3f93cdd9-fd75-4bc5-a1fe-bf386ca6eb9a",
+            "project": "f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da"
+          },
+          "kernel_ms": 0.14773599803447723,
+          "m": 1,
+          "mode": "xpoint",
+          "table_upload_ms": 0.0,
+          "target_count": 1,
+          "type": "grant-finish",
+          "wall_ns": 32306698,
+          "work_units": 1
+        },
+        {
+          "type": "control",
+          "accepted": true,
+          "state": "idle",
+          "requested": "run",
+          "durably_paused": false,
+          "durability": "local",
+          "pause_ms": 0.0,
+          "pid": 808732,
+          "device": 0,
+          "visible_devices": 8
+        },
+        {
+          "type": "control",
+          "accepted": true,
+          "state": "stopped",
+          "requested": "run",
+          "durably_paused": false,
+          "durability": "local",
+          "pause_ms": 0.0,
+          "pid": 808732,
+          "device": 0,
+          "visible_devices": 8
+        },
+        {
+          "completed": 2,
+          "executor_setups": 1,
+          "reason": "drained",
+          "type": "exit",
+          "wall_ms": 69.171778
+        }
+      ]
+    },
+    {
+      "mode": "bsgs",
+      "reserved_blocks": 2,
+      "response_sha256": "91a681844f76664a99a0a4575438d9feb440dec13847b6a63c15784b7e56876a",
+      "local_status": {
+        "client": "089620b7-50a1-436f-9f01-b9eb0d515aae",
+        "dispatch": [
+          {
+            "block": "",
+            "device": "0",
+            "job": "",
+            "project": "",
+            "uuid": "30646366333934386337333264313231"
+          }
+        ],
+        "instance": "d75f9005-753c-4599-adf1-b81893e33d43",
+        "last_ack_server_time": 1790817106,
+        "outbox_bytes": 338,
+        "outbox_limit": 67108864,
+        "pending_file_transfer": null,
+        "pending_request": false,
+        "queues": [
+          {
+            "activity": "local-complete-awaiting-sync",
+            "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "device": "0",
+            "job": "c8ae7a6675843327e3136f0ad5d0d3993c466532fb7a578341c00fd99d7c6d93",
+            "local_state": "finished",
+            "project": "f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da",
+            "server_expires": 1793409106
+          },
+          {
+            "activity": "local-complete-awaiting-sync",
+            "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "device": "0",
+            "job": "c8ae7a6675843327e3136f0ad5d0d3993c466532fb7a578341c00fd99d7c6d93",
+            "local_state": "finished",
+            "project": "f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da",
+            "server_expires": 1793409106
+          }
+        ],
+        "sync_due_in": null,
+        "transport": "file"
+      },
+      "final_status": {
+        "client": "089620b7-50a1-436f-9f01-b9eb0d515aae",
+        "dispatch": [
+          {
+            "block": "",
+            "device": "0",
+            "job": "",
+            "project": "",
+            "uuid": "30646366333934386337333264313231"
+          }
+        ],
+        "instance": "d75f9005-753c-4599-adf1-b81893e33d43",
+        "last_ack_server_time": 1790817107,
+        "outbox_bytes": 0,
+        "outbox_limit": 67108864,
+        "pending_file_transfer": null,
+        "pending_request": false,
+        "queues": [
+          {
+            "activity": "server-acknowledged",
+            "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "device": "0",
+            "job": "c8ae7a6675843327e3136f0ad5d0d3993c466532fb7a578341c00fd99d7c6d93",
+            "local_state": "finished",
+            "project": "f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da",
+            "server_expires": 1793409106
+          },
+          {
+            "activity": "server-acknowledged",
+            "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "device": "0",
+            "job": "c8ae7a6675843327e3136f0ad5d0d3993c466532fb7a578341c00fd99d7c6d93",
+            "local_state": "finished",
+            "project": "f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da",
+            "server_expires": 1793409106
+          }
+        ],
+        "sync_due_in": null,
+        "transport": "file"
+      },
+      "blocks": [
+        {
+          "state": "finished",
+          "started": false,
+          "expired": false,
+          "assignment": null,
+          "covered": [
+            {
+              "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000008001"
+            }
+          ],
+          "remaining": []
+        },
+        {
+          "state": "finished",
+          "started": false,
+          "expired": false,
+          "assignment": null,
+          "covered": [
+            {
+              "begin": "0x0000000000000000000000000000000000000000000000000000000000008001",
+              "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000010001"
+            }
+          ],
+          "remaining": []
+        }
+      ],
+      "local_results": {
+        "results": [
+          {
+            "id": "1",
+            "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "scalar": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "target": 0,
+            "target_bytes": "0479be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8"
+          }
+        ],
+        "next_after": "1"
+      },
+      "server_results": [
+        {
+          "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "id": 2,
+          "scalar": "0x0000000000000000000000000000000000000000000000000000000000000001",
+          "target": 0,
+          "target_bytes": "0479be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8"
+        }
+      ],
+      "events": [
+        {
+          "type": "control",
+          "accepted": true,
+          "state": "running",
+          "requested": "run",
+          "durably_paused": false,
+          "durability": "local",
+          "pause_ms": 0.0,
+          "pid": 808858,
+          "device": 0,
+          "visible_devices": 8
+        },
+        {
+          "queue": "0",
+          "type": "self-test-start"
+        },
+        {
+          "queue": "0",
+          "self_test": {
+            "compute_partition": "SPX",
+            "compute_units": 304,
+            "driver": 71526333,
+            "memory_partition": "NPS1",
+            "ordinal": 0,
+            "passed": true,
+            "pci_bus_id": "0000:1b:00.0",
+            "runtime": 71526333,
+            "uuid": "30646366333934386337333264313231"
+          },
+          "type": "ready",
+          "uuid": "30646366333934386337333264313231"
+        },
+        {
+          "type": "control",
+          "accepted": true,
+          "state": "running",
+          "requested": "run",
+          "durably_paused": false,
+          "durability": "local",
+          "pause_ms": 0.0,
+          "pid": 808858,
+          "device": 0,
+          "visible_devices": 8,
+          "project": "f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da",
+          "job": "c8ae7a6675843327e3136f0ad5d0d3993c466532fb7a578341c00fd99d7c6d93",
+          "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "assignment_generation": "1"
+        },
+        {
+          "grant": {
+            "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000008001",
+            "epoch": "253fe0a92a5d9856fc4f10f91f0b1b5b",
+            "expires": 1793409046,
+            "generation": 1,
+            "job": "c8ae7a6675843327e3136f0ad5d0d3993c466532fb7a578341c00fd99d7c6d93",
+            "owner": "089620b7-50a1-436f-9f01-b9eb0d515aae.d75f9005-753c-4599-adf1-b81893e33d43",
+            "project": "f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da"
+          },
+          "queue": "0",
+          "type": "grant-start"
+        },
+        {
+          "interval": {
+            "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000008001"
+          },
+          "target_seconds": 180,
+          "type": "work-unit"
+        },
+        {
+          "device_steps": 128,
+          "kernel_ms": 0.27726998925209045,
+          "sequence": 1,
+          "type": "progress"
+        },
+        {
+          "matches": 1,
+          "sequence": 2,
+          "transaction_ms": 0.5337839999999999,
+          "type": "checkpoint"
+        },
+        {
+          "cold": true,
+          "complete": true,
+          "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000008000",
+          "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000080",
+          "executor_setups": 1,
+          "grant": {
+            "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000008001",
+            "epoch": "253fe0a92a5d9856fc4f10f91f0b1b5b",
+            "expires": 1793409046,
+            "generation": 1,
+            "job": "c8ae7a6675843327e3136f0ad5d0d3993c466532fb7a578341c00fd99d7c6d93",
+            "owner": "089620b7-50a1-436f-9f01-b9eb0d515aae.d75f9005-753c-4599-adf1-b81893e33d43",
+            "project": "f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da"
+          },
+          "kernel_ms": 0.27726998925209045,
+          "m": 257,
+          "mode": "bsgs",
+          "table_upload_ms": 0.015956999734044075,
+          "target_count": 1,
+          "type": "grant-finish",
+          "wall_ns": 69912209,
+          "work_units": 1
+        },
+        {
+          "type": "control",
+          "accepted": true,
+          "state": "running",
+          "requested": "run",
+          "durably_paused": false,
+          "durability": "local",
+          "pause_ms": 0.0,
+          "pid": 808858,
+          "device": 0,
+          "visible_devices": 8,
+          "project": "f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da",
+          "job": "c8ae7a6675843327e3136f0ad5d0d3993c466532fb7a578341c00fd99d7c6d93",
+          "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+          "assignment_generation": "2"
+        },
+        {
+          "grant": {
+            "begin": "0x0000000000000000000000000000000000000000000000000000000000008001",
+            "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000010001",
+            "epoch": "253fe0a92a5d9856fc4f10f91f0b1b5b",
+            "expires": 1793409046,
+            "generation": 2,
+            "job": "c8ae7a6675843327e3136f0ad5d0d3993c466532fb7a578341c00fd99d7c6d93",
+            "owner": "089620b7-50a1-436f-9f01-b9eb0d515aae.d75f9005-753c-4599-adf1-b81893e33d43",
+            "project": "f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da"
+          },
+          "queue": "0",
+          "type": "grant-start"
+        },
+        {
+          "interval": {
+            "begin": "0x0000000000000000000000000000000000000000000000000000000000008001",
+            "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000010001"
+          },
+          "target_seconds": 180,
+          "type": "work-unit"
+        },
+        {
+          "matches": 0,
+          "sequence": 4,
+          "transaction_ms": 0.368197,
+          "type": "checkpoint"
+        },
+        {
+          "cold": false,
+          "complete": true,
+          "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000008000",
+          "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000080",
+          "executor_setups": 1,
+          "grant": {
+            "begin": "0x0000000000000000000000000000000000000000000000000000000000008001",
+            "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000010001",
+            "epoch": "253fe0a92a5d9856fc4f10f91f0b1b5b",
+            "expires": 1793409046,
+            "generation": 2,
+            "job": "c8ae7a6675843327e3136f0ad5d0d3993c466532fb7a578341c00fd99d7c6d93",
+            "owner": "089620b7-50a1-436f-9f01-b9eb0d515aae.d75f9005-753c-4599-adf1-b81893e33d43",
+            "project": "f9d16d1d-30fb-443d-b2aa-ab24e9fcb0da"
+          },
+          "kernel_ms": 0.2896580100059509,
+          "m": 257,
+          "mode": "bsgs",
+          "table_upload_ms": 0.015956999734044075,
+          "target_count": 1,
+          "type": "grant-finish",
+          "wall_ns": 32254434,
+          "work_units": 1
+        },
+        {
+          "type": "control",
+          "accepted": true,
+          "state": "idle",
+          "requested": "run",
+          "durably_paused": false,
+          "durability": "local",
+          "pause_ms": 0.0,
+          "pid": 808858,
+          "device": 0,
+          "visible_devices": 8
+        },
+        {
+          "type": "control",
+          "accepted": true,
+          "state": "stopped",
+          "requested": "run",
+          "durably_paused": false,
+          "durability": "local",
+          "pause_ms": 0.0,
+          "pid": 808858,
+          "device": 0,
+          "visible_devices": 8
+        },
+        {
+          "completed": 2,
+          "executor_setups": 1,
+          "reason": "drained",
+          "type": "exit",
+          "wall_ms": 103.49667199999999
+        }
+      ]
+    }
+  ],
+  "binaries": {
+    "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-coordinator": "5239818974053da2d3c4b693056c8f55c5114e14ab90f55449d1a6295e84f293",
+    "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt-worker": "23a277c1241383d5e05087fd98238d5916dbded17f53c6f0218530d1d937ec94",
+    "/tmp/keyhunt-c22-audit-u0d52ucm/hip/keyhunt": "36211eb70d1694dd89cd99f6bfd417b32ac8ca6083e1ca7273afeea21ecc0dbc"
+  }
+}

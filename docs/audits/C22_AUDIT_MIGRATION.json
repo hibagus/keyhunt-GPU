@@ -1,0 +1,875 @@
+{
+  "old_source": "f7242a0db5ff843768e3c9d4360332f35556748c",
+  "compile": [
+    "c++",
+    "-O2",
+    "-std=c++17",
+    "/tmp/keyhunt-c22-audit-u0d52ucm/migration_v6.cpp",
+    "-o",
+    "/tmp/keyhunt-c22-audit-u0d52ucm/migration_v6",
+    "-I/tmp/keyhunt-c21-audit-i_1xummg/source/tests/coordinator",
+    "-I/tmp/keyhunt-c21-audit-i_1xummg/source/src/storage",
+    "-I/tmp/keyhunt-c21-audit-i_1xummg/source/src/coordinator",
+    "-I/tmp/keyhunt-c21-audit-i_1xummg/source/include",
+    "-I/tmp/keyhunt-c21-audit-i_1xummg/source/third_party",
+    "-isystem",
+    "/opt/rocm/core-10.0/lib/rocm_sysdeps/include",
+    "-isystem",
+    "/tmp/keyhunt-c15-deps/root/usr/include",
+    "-Wl,-rpath,/opt/rocm/core-10.0/lib/rocm_sysdeps/lib",
+    "/tmp/keyhunt-c21-audit-i_1xummg/hip/libkeyhunt_coordination.a",
+    "/tmp/keyhunt-c21-audit-i_1xummg/hip/libkeyhunt_storage.a",
+    "/tmp/keyhunt-c21-audit-i_1xummg/hip/libkeyhunt_core.a",
+    "/tmp/keyhunt-c21-audit-i_1xummg/hip/libkeyhunt_cpu_crypto.a",
+    "/tmp/keyhunt-c21-audit-i_1xummg/hip/libkeyhunt_common.a",
+    "-lm",
+    "/tmp/keyhunt-c21-audit-i_1xummg/hip/libkeyhunt_ranges.a",
+    "/opt/rocm/core-10.0/lib/rocm_sysdeps/lib/librocm_sysdeps_sqlite3.so",
+    "/usr/lib/x86_64-linux-gnu/libcrypto.so"
+  ],
+  "commands": [
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/migration_v6",
+        "/var/tmp/keyhunt-c22-v6-f34kzixo"
+      ],
+      "stdout": "{\n  \"client\": \"00b7eac9-2d47-4c6c-add4-dccc90a2ee89\",\n  \"dispatch\": [],\n  \"instance\": \"59af317c-90e4-4ec2-9ea7-88be07e46aaf\",\n  \"last_ack_server_time\": 1800000000,\n  \"outbox_bytes\": 1570,\n  \"outbox_limit\": 67108864,\n  \"pending_request\": true,\n  \"queues\": [\n    {\n      \"activity\": \"local-complete-awaiting-sync\",\n      \"block\": \"0x0000000000000000000000000000000000000000000000000000000000000000\",\n      \"device\": \"0\",\n      \"job\": \"b38612efb342d74614f7be1426f23305f55f6e3b812c64901233af58f28ffd56\",\n      \"local_state\": \"finished\",\n      \"project\": \"2d7b87c0-6c00-4dae-923a-cfaea635c34b\",\n      \"server_expires\": 1802592000\n    },\n    {\n      \"activity\": \"queued\",\n      \"block\": \"0x0000000000000000000000000000000000000000000000000000000000000001\",\n      \"device\": \"0\",\n      \"job\": \"b38612efb342d74614f7be1426f23305f55f6e3b812c64901233af58f28ffd56\",\n      \"local_state\": \"in_progress\",\n      \"project\": \"2d7b87c0-6c00-4dae-923a-cfaea635c34b\",\n      \"server_expires\": 1802592000\n    }\n  ],\n  \"sync_due_in\": 7200\n}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/cpu/keyhunt",
+        "state",
+        "check",
+        "--state-dir",
+        "/var/tmp/keyhunt-c22-v6-f34kzixo/worker"
+      ],
+      "stdout": "{\"integrity\":\"ok\"}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/cpu/keyhunt",
+        "state",
+        "check",
+        "--state-dir",
+        "/var/tmp/keyhunt-c22-v6-f34kzixo/server"
+      ],
+      "stdout": "{\"integrity\":\"ok\"}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/cpu/keyhunt-worker",
+        "status",
+        "--state-dir",
+        "/var/tmp/keyhunt-c22-v6-f34kzixo/worker"
+      ],
+      "stdout": "{\"client\":\"00b7eac9-2d47-4c6c-add4-dccc90a2ee89\",\"dispatch\":[],\"instance\":\"59af317c-90e4-4ec2-9ea7-88be07e46aaf\",\"last_ack_server_time\":1800000000,\"outbox_bytes\":1570,\"outbox_limit\":67108864,\"pending_file_transfer\":null,\"pending_request\":true,\"queues\":[{\"activity\":\"local-complete-awaiting-sync\",\"block\":\"0x0000000000000000000000000000000000000000000000000000000000000000\",\"device\":\"0\",\"job\":\"b38612efb342d74614f7be1426f23305f55f6e3b812c64901233af58f28ffd56\",\"local_state\":\"finished\",\"project\":\"2d7b87c0-6c00-4dae-923a-cfaea635c34b\",\"server_expires\":1802592000},{\"activity\":\"queued\",\"block\":\"0x0000000000000000000000000000000000000000000000000000000000000001\",\"device\":\"0\",\"job\":\"b38612efb342d74614f7be1426f23305f55f6e3b812c64901233af58f28ffd56\",\"local_state\":\"in_progress\",\"project\":\"2d7b87c0-6c00-4dae-923a-cfaea635c34b\",\"server_expires\":1802592000}],\"sync_due_in\":7200,\"transport\":\"https\"}\n",
+      "stderr": ""
+    }
+  ],
+  "before_status": {
+    "client": "00b7eac9-2d47-4c6c-add4-dccc90a2ee89",
+    "dispatch": [],
+    "instance": "59af317c-90e4-4ec2-9ea7-88be07e46aaf",
+    "last_ack_server_time": 1800000000,
+    "outbox_bytes": 1570,
+    "outbox_limit": 67108864,
+    "pending_request": true,
+    "queues": [
+      {
+        "activity": "local-complete-awaiting-sync",
+        "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "device": "0",
+        "job": "b38612efb342d74614f7be1426f23305f55f6e3b812c64901233af58f28ffd56",
+        "local_state": "finished",
+        "project": "2d7b87c0-6c00-4dae-923a-cfaea635c34b",
+        "server_expires": 1802592000
+      },
+      {
+        "activity": "queued",
+        "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+        "device": "0",
+        "job": "b38612efb342d74614f7be1426f23305f55f6e3b812c64901233af58f28ffd56",
+        "local_state": "in_progress",
+        "project": "2d7b87c0-6c00-4dae-923a-cfaea635c34b",
+        "server_expires": 1802592000
+      }
+    ],
+    "sync_due_in": 7200
+  },
+  "before": {
+    "worker": {
+      "version": 6,
+      "tables": {
+        "assignments": {
+          "rows": 1,
+          "sha256": "1d1b9da2e33803ab456bb3404fc469ac614bae9ac7a255a996256952f4f0650f"
+        },
+        "checkpoints": {
+          "rows": 10,
+          "sha256": "945c6d43c57b9e0c67719c7d160c93f3466ac4ad3b53fa9ef788d107760270f1"
+        },
+        "coordinator_clients": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "coordinator_controls": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "coordinator_credentials": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "coordinator_devices": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "coordinator_events": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "coordinator_memberships": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "coordinator_settings": {
+          "rows": 1,
+          "sha256": "ee103fbf466ed3479eef8fb50e025fc049cd4a3a2106a3d8fd7e4fd5416f2fce"
+        },
+        "coordinator_syncs": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "coverage": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "events": {
+          "rows": 11,
+          "sha256": "285ade94896144b668c5bd58a92a1aa3bcf64de4b35a77d6bf56344b58605d5e"
+        },
+        "executors": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "finished": {
+          "rows": 1,
+          "sha256": "d2b8c30a41391040b671a41c02bcf3c207fb10c0179c313c891ae6ce4f316b96"
+        },
+        "free_nodes": {
+          "rows": 3,
+          "sha256": "0ecc292652c30d77ccb4f12b17568ce8110f73acde67bc8032543ebf0c9b20e2"
+        },
+        "jobs": {
+          "rows": 1,
+          "sha256": "8ec6f5b00ee90ccb1d9fd8375760a8ccf34df46f4537a9c2df5c2b61cdd869f0"
+        },
+        "metadata": {
+          "rows": 2,
+          "sha256": "9271b06cafcf9981ec3a29ec01eb6c7717be3a4342b1e341fbb30b0c14d06f21"
+        },
+        "migrations": {
+          "rows": 6,
+          "sha256": "0f5f5956f9f95d514aabd8b42289b58c80f3e537fa0e4a27dbf573894ed545ec"
+        },
+        "projects": {
+          "rows": 1,
+          "sha256": "da2be5dfcfc345e36276b64c6ad3ddd1f5beed2aa9daa44b3ea6271ff8d8b5ca"
+        },
+        "requests": {
+          "rows": 11,
+          "sha256": "cd0dabb0c54b07285d7f2b703dafd6887b3daa16543eb04938a2a5bfcce4dac3"
+        },
+        "results": {
+          "rows": 2,
+          "sha256": "c7901522b3425f5221629b63a2ddb3304f8b38f20217be8e7b979fac5b0bfbdb"
+        },
+        "search_bindings": {
+          "rows": 1,
+          "sha256": "cbe49e4fcf25968a8acbed21bbea31928bbfd7c7a7af634f71f610a5b9068677"
+        },
+        "worker_dispatch": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "worker_grants": {
+          "rows": 2,
+          "sha256": "62dac503ea507c6e069bf945979bc7688dc9e94a4e830e17c1a5b841863ca4a1"
+        },
+        "worker_jobs": {
+          "rows": 1,
+          "sha256": "50b78f95ad131f4b7b556380a6a7e7cf6e8aca79f9ea5b68af0e9adebb5f8dc5"
+        },
+        "worker_outbox": {
+          "rows": 10,
+          "sha256": "80cf8489d4735f0691abcd1d9336768e18d740e6b345c3e226fe96d0f1d1454c"
+        },
+        "worker_requests": {
+          "rows": 2,
+          "sha256": "cb5351c63378f72bc281f2a32334c358f304febd045bd09f506e658302dcde19"
+        },
+        "worker_settings": {
+          "rows": 1,
+          "sha256": "93e097798abb5baafb2383cab8d94d3257d86d3719e8d9c6cd3a0fb277dde38d"
+        }
+      },
+      "metadata": {
+        "epoch": "18d781b54239852a67722b505e375f70",
+        "quarantine": "00"
+      }
+    },
+    "server": {
+      "version": 6,
+      "tables": {
+        "assignments": {
+          "rows": 2,
+          "sha256": "015e0c80ce52420613677ce50dbe4e7db23c8b42be13c79725fc35cdde7764ab"
+        },
+        "checkpoints": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "coordinator_clients": {
+          "rows": 1,
+          "sha256": "0e4d603fb49e9b41f97f951a3b2fda7300bfba3b0dac06cd1152376aacb5ed94"
+        },
+        "coordinator_controls": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "coordinator_credentials": {
+          "rows": 1,
+          "sha256": "99fbab92d44fcff156ebde7e2ad88b7e502e29205e68e37249d6d3a1d0907563"
+        },
+        "coordinator_devices": {
+          "rows": 2,
+          "sha256": "5e8d3959ee4b74f7f6d6c64271fad13bb9f65fb0ed4348dc6bcbc4c3d5a095ea"
+        },
+        "coordinator_events": {
+          "rows": 4,
+          "sha256": "e3ba1f949a87b93038d417a2c34a3eda11fd45489671b2c4d9fc4d05928e52c7"
+        },
+        "coordinator_memberships": {
+          "rows": 1,
+          "sha256": "e20c840652ff32d854414c42075be1d1fdd537c25c500cabf2c7e824b90b457b"
+        },
+        "coordinator_settings": {
+          "rows": 1,
+          "sha256": "1fddc2fc42231160d3b42522db2172e045f0d50f83fc9aa16dced10ed37b19ca"
+        },
+        "coordinator_syncs": {
+          "rows": 1,
+          "sha256": "db5d879c85d4bee613c0f1c9bb9a18395496301b3723d36f761a2304098c2183"
+        },
+        "coverage": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "events": {
+          "rows": 1,
+          "sha256": "821d25cdf82ae1f378bbe0f78375abd02824cb52bc62bed66506ebde5fa01c94"
+        },
+        "executors": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "finished": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "free_nodes": {
+          "rows": 3,
+          "sha256": "0ecc292652c30d77ccb4f12b17568ce8110f73acde67bc8032543ebf0c9b20e2"
+        },
+        "jobs": {
+          "rows": 1,
+          "sha256": "af68ec320631e44ad63980fec35f5ad06bf921b873c96df73cdbac50db81e411"
+        },
+        "metadata": {
+          "rows": 2,
+          "sha256": "12226f841e30130a2a23b408e7245ed138139734dad58d368572c935bcb48b52"
+        },
+        "migrations": {
+          "rows": 6,
+          "sha256": "0f5f5956f9f95d514aabd8b42289b58c80f3e537fa0e4a27dbf573894ed545ec"
+        },
+        "projects": {
+          "rows": 1,
+          "sha256": "1041e6a1a352fc4fe21a36925f50c9f118b8babd8bf269853902e075ee416f6b"
+        },
+        "requests": {
+          "rows": 1,
+          "sha256": "b945db864b3120604224e6b8f9c6c68518d8873939460c4c078217cabe42f571"
+        },
+        "results": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "search_bindings": {
+          "rows": 1,
+          "sha256": "db97d870820a3b35893b7a7a35064c6cf3c072674262aa5c96b7f6d809bd57f6"
+        },
+        "worker_dispatch": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "worker_grants": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "worker_jobs": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "worker_outbox": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "worker_requests": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "worker_settings": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        }
+      },
+      "metadata": {
+        "epoch": "cb9f9a12e693d61b4921e9caa3b552b0",
+        "quarantine": "00"
+      }
+    }
+  },
+  "after": {
+    "worker": {
+      "version": 7,
+      "tables": {
+        "assignments": {
+          "rows": 1,
+          "sha256": "1d1b9da2e33803ab456bb3404fc469ac614bae9ac7a255a996256952f4f0650f"
+        },
+        "checkpoints": {
+          "rows": 10,
+          "sha256": "945c6d43c57b9e0c67719c7d160c93f3466ac4ad3b53fa9ef788d107760270f1"
+        },
+        "coordinator_clients": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "coordinator_controls": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "coordinator_credentials": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "coordinator_devices": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "coordinator_events": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "coordinator_memberships": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "coordinator_settings": {
+          "rows": 1,
+          "sha256": "ee103fbf466ed3479eef8fb50e025fc049cd4a3a2106a3d8fd7e4fd5416f2fce"
+        },
+        "coordinator_syncs": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "coverage": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "events": {
+          "rows": 11,
+          "sha256": "285ade94896144b668c5bd58a92a1aa3bcf64de4b35a77d6bf56344b58605d5e"
+        },
+        "executors": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "finished": {
+          "rows": 1,
+          "sha256": "d2b8c30a41391040b671a41c02bcf3c207fb10c0179c313c891ae6ce4f316b96"
+        },
+        "free_nodes": {
+          "rows": 3,
+          "sha256": "0ecc292652c30d77ccb4f12b17568ce8110f73acde67bc8032543ebf0c9b20e2"
+        },
+        "jobs": {
+          "rows": 1,
+          "sha256": "8ec6f5b00ee90ccb1d9fd8375760a8ccf34df46f4537a9c2df5c2b61cdd869f0"
+        },
+        "metadata": {
+          "rows": 2,
+          "sha256": "9271b06cafcf9981ec3a29ec01eb6c7717be3a4342b1e341fbb30b0c14d06f21"
+        },
+        "migrations": {
+          "rows": 7,
+          "sha256": "2a3fc2c2d90c9316f5eb5fe73f0dc77727969a01b39301d4384ccda1fd3e5362"
+        },
+        "projects": {
+          "rows": 1,
+          "sha256": "da2be5dfcfc345e36276b64c6ad3ddd1f5beed2aa9daa44b3ea6271ff8d8b5ca"
+        },
+        "requests": {
+          "rows": 11,
+          "sha256": "cd0dabb0c54b07285d7f2b703dafd6887b3daa16543eb04938a2a5bfcce4dac3"
+        },
+        "results": {
+          "rows": 2,
+          "sha256": "c7901522b3425f5221629b63a2ddb3304f8b38f20217be8e7b979fac5b0bfbdb"
+        },
+        "search_bindings": {
+          "rows": 1,
+          "sha256": "cbe49e4fcf25968a8acbed21bbea31928bbfd7c7a7af634f71f610a5b9068677"
+        },
+        "worker_dispatch": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "worker_file_transfers": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "worker_grants": {
+          "rows": 2,
+          "sha256": "62dac503ea507c6e069bf945979bc7688dc9e94a4e830e17c1a5b841863ca4a1"
+        },
+        "worker_jobs": {
+          "rows": 1,
+          "sha256": "50b78f95ad131f4b7b556380a6a7e7cf6e8aca79f9ea5b68af0e9adebb5f8dc5"
+        },
+        "worker_outbox": {
+          "rows": 10,
+          "sha256": "80cf8489d4735f0691abcd1d9336768e18d740e6b345c3e226fe96d0f1d1454c"
+        },
+        "worker_requests": {
+          "rows": 2,
+          "sha256": "cb5351c63378f72bc281f2a32334c358f304febd045bd09f506e658302dcde19"
+        },
+        "worker_settings": {
+          "rows": 1,
+          "sha256": "93e097798abb5baafb2383cab8d94d3257d86d3719e8d9c6cd3a0fb277dde38d"
+        }
+      },
+      "metadata": {
+        "epoch": "18d781b54239852a67722b505e375f70",
+        "quarantine": "00"
+      }
+    },
+    "server": {
+      "version": 7,
+      "tables": {
+        "assignments": {
+          "rows": 2,
+          "sha256": "015e0c80ce52420613677ce50dbe4e7db23c8b42be13c79725fc35cdde7764ab"
+        },
+        "checkpoints": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "coordinator_clients": {
+          "rows": 1,
+          "sha256": "0e4d603fb49e9b41f97f951a3b2fda7300bfba3b0dac06cd1152376aacb5ed94"
+        },
+        "coordinator_controls": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "coordinator_credentials": {
+          "rows": 1,
+          "sha256": "99fbab92d44fcff156ebde7e2ad88b7e502e29205e68e37249d6d3a1d0907563"
+        },
+        "coordinator_devices": {
+          "rows": 2,
+          "sha256": "5e8d3959ee4b74f7f6d6c64271fad13bb9f65fb0ed4348dc6bcbc4c3d5a095ea"
+        },
+        "coordinator_events": {
+          "rows": 4,
+          "sha256": "e3ba1f949a87b93038d417a2c34a3eda11fd45489671b2c4d9fc4d05928e52c7"
+        },
+        "coordinator_memberships": {
+          "rows": 1,
+          "sha256": "e20c840652ff32d854414c42075be1d1fdd537c25c500cabf2c7e824b90b457b"
+        },
+        "coordinator_settings": {
+          "rows": 1,
+          "sha256": "1fddc2fc42231160d3b42522db2172e045f0d50f83fc9aa16dced10ed37b19ca"
+        },
+        "coordinator_syncs": {
+          "rows": 1,
+          "sha256": "db5d879c85d4bee613c0f1c9bb9a18395496301b3723d36f761a2304098c2183"
+        },
+        "coverage": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "events": {
+          "rows": 1,
+          "sha256": "821d25cdf82ae1f378bbe0f78375abd02824cb52bc62bed66506ebde5fa01c94"
+        },
+        "executors": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "finished": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "free_nodes": {
+          "rows": 3,
+          "sha256": "0ecc292652c30d77ccb4f12b17568ce8110f73acde67bc8032543ebf0c9b20e2"
+        },
+        "jobs": {
+          "rows": 1,
+          "sha256": "af68ec320631e44ad63980fec35f5ad06bf921b873c96df73cdbac50db81e411"
+        },
+        "metadata": {
+          "rows": 2,
+          "sha256": "12226f841e30130a2a23b408e7245ed138139734dad58d368572c935bcb48b52"
+        },
+        "migrations": {
+          "rows": 7,
+          "sha256": "2a3fc2c2d90c9316f5eb5fe73f0dc77727969a01b39301d4384ccda1fd3e5362"
+        },
+        "projects": {
+          "rows": 1,
+          "sha256": "1041e6a1a352fc4fe21a36925f50c9f118b8babd8bf269853902e075ee416f6b"
+        },
+        "requests": {
+          "rows": 1,
+          "sha256": "b945db864b3120604224e6b8f9c6c68518d8873939460c4c078217cabe42f571"
+        },
+        "results": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "search_bindings": {
+          "rows": 1,
+          "sha256": "db97d870820a3b35893b7a7a35064c6cf3c072674262aa5c96b7f6d809bd57f6"
+        },
+        "worker_dispatch": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "worker_file_transfers": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "worker_grants": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "worker_jobs": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "worker_outbox": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "worker_requests": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "worker_settings": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        }
+      },
+      "metadata": {
+        "epoch": "cb9f9a12e693d61b4921e9caa3b552b0",
+        "quarantine": "00"
+      }
+    }
+  },
+  "sealed_backups": {
+    "worker": {
+      "version": 6,
+      "tables": {
+        "assignments": {
+          "rows": 1,
+          "sha256": "1d1b9da2e33803ab456bb3404fc469ac614bae9ac7a255a996256952f4f0650f"
+        },
+        "checkpoints": {
+          "rows": 10,
+          "sha256": "945c6d43c57b9e0c67719c7d160c93f3466ac4ad3b53fa9ef788d107760270f1"
+        },
+        "coordinator_clients": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "coordinator_controls": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "coordinator_credentials": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "coordinator_devices": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "coordinator_events": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "coordinator_memberships": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "coordinator_settings": {
+          "rows": 1,
+          "sha256": "ee103fbf466ed3479eef8fb50e025fc049cd4a3a2106a3d8fd7e4fd5416f2fce"
+        },
+        "coordinator_syncs": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "coverage": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "events": {
+          "rows": 11,
+          "sha256": "285ade94896144b668c5bd58a92a1aa3bcf64de4b35a77d6bf56344b58605d5e"
+        },
+        "executors": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "finished": {
+          "rows": 1,
+          "sha256": "d2b8c30a41391040b671a41c02bcf3c207fb10c0179c313c891ae6ce4f316b96"
+        },
+        "free_nodes": {
+          "rows": 3,
+          "sha256": "0ecc292652c30d77ccb4f12b17568ce8110f73acde67bc8032543ebf0c9b20e2"
+        },
+        "jobs": {
+          "rows": 1,
+          "sha256": "8ec6f5b00ee90ccb1d9fd8375760a8ccf34df46f4537a9c2df5c2b61cdd869f0"
+        },
+        "metadata": {
+          "rows": 2,
+          "sha256": "265577fc4ab4dc6b0d46662a26fbea251e91989935d96f63ea5bcea0422e1d3f"
+        },
+        "migrations": {
+          "rows": 6,
+          "sha256": "0f5f5956f9f95d514aabd8b42289b58c80f3e537fa0e4a27dbf573894ed545ec"
+        },
+        "projects": {
+          "rows": 1,
+          "sha256": "da2be5dfcfc345e36276b64c6ad3ddd1f5beed2aa9daa44b3ea6271ff8d8b5ca"
+        },
+        "requests": {
+          "rows": 11,
+          "sha256": "cd0dabb0c54b07285d7f2b703dafd6887b3daa16543eb04938a2a5bfcce4dac3"
+        },
+        "results": {
+          "rows": 2,
+          "sha256": "c7901522b3425f5221629b63a2ddb3304f8b38f20217be8e7b979fac5b0bfbdb"
+        },
+        "search_bindings": {
+          "rows": 1,
+          "sha256": "cbe49e4fcf25968a8acbed21bbea31928bbfd7c7a7af634f71f610a5b9068677"
+        },
+        "worker_dispatch": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "worker_grants": {
+          "rows": 2,
+          "sha256": "62dac503ea507c6e069bf945979bc7688dc9e94a4e830e17c1a5b841863ca4a1"
+        },
+        "worker_jobs": {
+          "rows": 1,
+          "sha256": "50b78f95ad131f4b7b556380a6a7e7cf6e8aca79f9ea5b68af0e9adebb5f8dc5"
+        },
+        "worker_outbox": {
+          "rows": 10,
+          "sha256": "80cf8489d4735f0691abcd1d9336768e18d740e6b345c3e226fe96d0f1d1454c"
+        },
+        "worker_requests": {
+          "rows": 2,
+          "sha256": "cb5351c63378f72bc281f2a32334c358f304febd045bd09f506e658302dcde19"
+        },
+        "worker_settings": {
+          "rows": 1,
+          "sha256": "93e097798abb5baafb2383cab8d94d3257d86d3719e8d9c6cd3a0fb277dde38d"
+        }
+      },
+      "metadata": {
+        "epoch": "8c462f28ac1747f360231445b73892d9",
+        "quarantine": "01"
+      }
+    },
+    "server": {
+      "version": 6,
+      "tables": {
+        "assignments": {
+          "rows": 2,
+          "sha256": "015e0c80ce52420613677ce50dbe4e7db23c8b42be13c79725fc35cdde7764ab"
+        },
+        "checkpoints": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "coordinator_clients": {
+          "rows": 1,
+          "sha256": "0e4d603fb49e9b41f97f951a3b2fda7300bfba3b0dac06cd1152376aacb5ed94"
+        },
+        "coordinator_controls": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "coordinator_credentials": {
+          "rows": 1,
+          "sha256": "99fbab92d44fcff156ebde7e2ad88b7e502e29205e68e37249d6d3a1d0907563"
+        },
+        "coordinator_devices": {
+          "rows": 2,
+          "sha256": "5e8d3959ee4b74f7f6d6c64271fad13bb9f65fb0ed4348dc6bcbc4c3d5a095ea"
+        },
+        "coordinator_events": {
+          "rows": 4,
+          "sha256": "e3ba1f949a87b93038d417a2c34a3eda11fd45489671b2c4d9fc4d05928e52c7"
+        },
+        "coordinator_memberships": {
+          "rows": 1,
+          "sha256": "e20c840652ff32d854414c42075be1d1fdd537c25c500cabf2c7e824b90b457b"
+        },
+        "coordinator_settings": {
+          "rows": 1,
+          "sha256": "1fddc2fc42231160d3b42522db2172e045f0d50f83fc9aa16dced10ed37b19ca"
+        },
+        "coordinator_syncs": {
+          "rows": 1,
+          "sha256": "db5d879c85d4bee613c0f1c9bb9a18395496301b3723d36f761a2304098c2183"
+        },
+        "coverage": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "events": {
+          "rows": 1,
+          "sha256": "821d25cdf82ae1f378bbe0f78375abd02824cb52bc62bed66506ebde5fa01c94"
+        },
+        "executors": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "finished": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "free_nodes": {
+          "rows": 3,
+          "sha256": "0ecc292652c30d77ccb4f12b17568ce8110f73acde67bc8032543ebf0c9b20e2"
+        },
+        "jobs": {
+          "rows": 1,
+          "sha256": "af68ec320631e44ad63980fec35f5ad06bf921b873c96df73cdbac50db81e411"
+        },
+        "metadata": {
+          "rows": 2,
+          "sha256": "ebc62ee8d8749e2610481028a01f7d152073374c4508c6497c43a5406a2bae93"
+        },
+        "migrations": {
+          "rows": 6,
+          "sha256": "0f5f5956f9f95d514aabd8b42289b58c80f3e537fa0e4a27dbf573894ed545ec"
+        },
+        "projects": {
+          "rows": 1,
+          "sha256": "1041e6a1a352fc4fe21a36925f50c9f118b8babd8bf269853902e075ee416f6b"
+        },
+        "requests": {
+          "rows": 1,
+          "sha256": "b945db864b3120604224e6b8f9c6c68518d8873939460c4c078217cabe42f571"
+        },
+        "results": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "search_bindings": {
+          "rows": 1,
+          "sha256": "db97d870820a3b35893b7a7a35064c6cf3c072674262aa5c96b7f6d809bd57f6"
+        },
+        "worker_dispatch": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "worker_grants": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "worker_jobs": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "worker_outbox": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "worker_requests": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "worker_settings": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        }
+      },
+      "metadata": {
+        "epoch": "80241b768c102517c40e36804173266a",
+        "quarantine": "01"
+      }
+    }
+  },
+  "after_status": {
+    "client": "00b7eac9-2d47-4c6c-add4-dccc90a2ee89",
+    "dispatch": [],
+    "instance": "59af317c-90e4-4ec2-9ea7-88be07e46aaf",
+    "last_ack_server_time": 1800000000,
+    "outbox_bytes": 1570,
+    "outbox_limit": 67108864,
+    "pending_file_transfer": null,
+    "pending_request": true,
+    "queues": [
+      {
+        "activity": "local-complete-awaiting-sync",
+        "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "device": "0",
+        "job": "b38612efb342d74614f7be1426f23305f55f6e3b812c64901233af58f28ffd56",
+        "local_state": "finished",
+        "project": "2d7b87c0-6c00-4dae-923a-cfaea635c34b",
+        "server_expires": 1802592000
+      },
+      {
+        "activity": "queued",
+        "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+        "device": "0",
+        "job": "b38612efb342d74614f7be1426f23305f55f6e3b812c64901233af58f28ffd56",
+        "local_state": "in_progress",
+        "project": "2d7b87c0-6c00-4dae-923a-cfaea635c34b",
+        "server_expires": 1802592000
+      }
+    ],
+    "sync_due_in": 7200,
+    "transport": "https"
+  },
+  "passed": true
+}

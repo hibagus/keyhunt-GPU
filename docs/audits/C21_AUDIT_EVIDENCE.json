@@ -1,0 +1,811 @@
+{
+  "manifests": {
+    "C20_VALIDATION": {
+      "source_files": 256,
+      "log_members": 10,
+      "recorded_worktree_differences": [
+        "tools/validate_fleet.py"
+      ]
+    },
+    "C20_CUDA_VALIDATION": {
+      "source_files": 257,
+      "log_members": 35,
+      "recorded_worktree_differences": []
+    },
+    "C21_VALIDATION": {
+      "source_files": 0,
+      "log_members": 5,
+      "recorded_worktree_differences": []
+    }
+  },
+  "fleets": {
+    "C20": {
+      "runs": 48,
+      "blocks": 360,
+      "metrics": [
+        {
+          "mode": "bsgs",
+          "devices": 1,
+          "rates": {
+            "count": 5,
+            "median": 4428354032.145259,
+            "min": 4417020319.368632,
+            "max": 4444425435.484625
+          },
+          "seconds": {
+            "count": 5,
+            "median": 1.93975787,
+            "min": 1.932743548,
+            "max": 1.94473513
+          },
+          "relative_to_one": 1.0,
+          "outside_slowest_owner_grants_seconds": {
+            "count": 5,
+            "median": 0.98526461,
+            "min": 0.977751576,
+            "max": 0.988940945
+          }
+        },
+        {
+          "mode": "bsgs",
+          "devices": 2,
+          "rates": {
+            "count": 5,
+            "median": 8017216277.533972,
+            "min": 7973176278.775839,
+            "max": 8076905605.373473
+          },
+          "seconds": {
+            "count": 5,
+            "median": 2.142872112,
+            "min": 2.127036023,
+            "max": 2.154708309
+          },
+          "relative_to_one": 1.8104280324782738,
+          "outside_slowest_owner_grants_seconds": {
+            "count": 5,
+            "median": 1.183971405,
+            "min": 1.16504536,
+            "max": 1.195343637
+          }
+        },
+        {
+          "mode": "bsgs",
+          "devices": 4,
+          "rates": {
+            "count": 5,
+            "median": 13557311457.20157,
+            "min": 13507383740.373941,
+            "max": 13589986244.191072
+          },
+          "seconds": {
+            "count": 5,
+            "median": 2.534406506,
+            "min": 2.528312961,
+            "max": 2.543774503
+          },
+          "relative_to_one": 3.0614786800670286,
+          "outside_slowest_owner_grants_seconds": {
+            "count": 5,
+            "median": 1.568047752,
+            "min": 1.561065513,
+            "max": 1.578226189
+          }
+        },
+        {
+          "mode": "bsgs",
+          "devices": 8,
+          "rates": {
+            "count": 5,
+            "median": 21047708824.163647,
+            "min": 20669767768.139126,
+            "max": 21400768718.227028
+          },
+          "seconds": {
+            "count": 5,
+            "median": 3.264938588,
+            "min": 3.211075155,
+            "max": 3.324637098
+          },
+          "relative_to_one": 4.75294176377478,
+          "outside_slowest_owner_grants_seconds": {
+            "count": 5,
+            "median": 2.290039823,
+            "min": 2.238762973,
+            "max": 2.346205826
+          }
+        },
+        {
+          "mode": "xpoint",
+          "devices": 1,
+          "rates": {
+            "count": 5,
+            "median": 1977689074.6084611,
+            "min": 1874237098.68876,
+            "max": 2000611920.5790005
+          },
+          "seconds": {
+            "count": 5,
+            "median": 4.343420154,
+            "min": 4.293653605,
+            "max": 4.583163246
+          },
+          "relative_to_one": 1.0,
+          "outside_slowest_owner_grants_seconds": {
+            "count": 5,
+            "median": 0.979770416,
+            "min": 0.935608391,
+            "max": 1.220716258
+          }
+        },
+        {
+          "mode": "xpoint",
+          "devices": 2,
+          "rates": {
+            "count": 5,
+            "median": 3748967100.581104,
+            "min": 3569482310.595628,
+            "max": 3766573754.1070395
+          },
+          "seconds": {
+            "count": 5,
+            "median": 4.582560667,
+            "min": 4.561139725,
+            "max": 4.812986221
+          },
+          "relative_to_one": 1.8956301820716266,
+          "outside_slowest_owner_grants_seconds": {
+            "count": 5,
+            "median": 1.186082589,
+            "min": 1.171956825,
+            "max": 1.406985176
+          }
+        },
+        {
+          "mode": "xpoint",
+          "devices": 4,
+          "rates": {
+            "count": 5,
+            "median": 6868981937.044418,
+            "min": 6641002543.884581,
+            "max": 6956495126.143906
+          },
+          "seconds": {
+            "count": 5,
+            "median": 5.002158788,
+            "min": 4.939231285,
+            "max": 5.173878211
+          },
+          "relative_to_one": 3.4732365290556735,
+          "outside_slowest_owner_grants_seconds": {
+            "count": 5,
+            "median": 1.382181248,
+            "min": 1.320144566,
+            "max": 1.567835819
+          }
+        },
+        {
+          "mode": "xpoint",
+          "devices": 8,
+          "rates": {
+            "count": 5,
+            "median": 11943968284.648912,
+            "min": 11704461606.664732,
+            "max": 12110913948.873156
+          },
+          "seconds": {
+            "count": 5,
+            "median": 5.753487877,
+            "min": 5.674177607,
+            "max": 5.871220654
+          },
+          "relative_to_one": 6.039355952357453,
+          "outside_slowest_owner_grants_seconds": {
+            "count": 5,
+            "median": 2.144235405,
+            "min": 2.069388254,
+            "max": 2.254157638
+          }
+        }
+      ]
+    },
+    "C20_CUDA": {
+      "runs": 48,
+      "blocks": 360,
+      "metrics": [
+        {
+          "mode": "bsgs",
+          "devices": 1,
+          "rates": {
+            "count": 5,
+            "median": 1917765029.9286702,
+            "min": 1893479624.0012653,
+            "max": 1921178071.4015632
+          },
+          "seconds": {
+            "count": 5,
+            "median": 4.47913819,
+            "min": 4.471180841,
+            "max": 4.536586756
+          },
+          "relative_to_one": 1.0,
+          "outside_slowest_owner_grants_seconds": {
+            "count": 5,
+            "median": 3.6025753,
+            "min": 3.595523331,
+            "max": 3.660366976
+          }
+        },
+        {
+          "mode": "bsgs",
+          "devices": 2,
+          "rates": {
+            "count": 5,
+            "median": 3455235429.5240617,
+            "min": 3437470607.0389757,
+            "max": 3500307548.2666984
+          },
+          "seconds": {
+            "count": 5,
+            "median": 4.972126944,
+            "min": 4.908102771,
+            "max": 4.997822859
+          },
+          "relative_to_one": 1.8016990484243924,
+          "outside_slowest_owner_grants_seconds": {
+            "count": 5,
+            "median": 4.095673106,
+            "min": 4.031215856,
+            "max": 4.119384506
+          }
+        },
+        {
+          "mode": "bsgs",
+          "devices": 4,
+          "rates": {
+            "count": 5,
+            "median": 5776690471.212439,
+            "min": 5731032377.978334,
+            "max": 5817202474.60673
+          },
+          "seconds": {
+            "count": 5,
+            "median": 5.947997133,
+            "min": 5.906574253,
+            "max": 5.995383745
+          },
+          "relative_to_one": 3.0121992950446583,
+          "outside_slowest_owner_grants_seconds": {
+            "count": 5,
+            "median": 5.062507882,
+            "min": 5.024594954,
+            "max": 5.111285271
+          }
+        },
+        {
+          "mode": "bsgs",
+          "devices": 8,
+          "rates": {
+            "count": 5,
+            "median": 8817613830.81736,
+            "min": 8782311272.133749,
+            "max": 8860564109.881456
+          },
+          "seconds": {
+            "count": 5,
+            "median": 7.793432333,
+            "min": 7.755654818,
+            "max": 7.824759861
+          },
+          "relative_to_one": 4.597859327503393,
+          "outside_slowest_owner_grants_seconds": {
+            "count": 5,
+            "median": 6.898683646,
+            "min": 6.864057831,
+            "max": 6.929158136
+          }
+        },
+        {
+          "mode": "xpoint",
+          "devices": 1,
+          "rates": {
+            "count": 5,
+            "median": 713551593.2760006,
+            "min": 711504330.8531996,
+            "max": 715012414.1787776
+          },
+          "seconds": {
+            "count": 5,
+            "median": 12.038280996,
+            "min": 12.013685937,
+            "max": 12.072919605
+          },
+          "relative_to_one": 1.0,
+          "outside_slowest_owner_grants_seconds": {
+            "count": 5,
+            "median": 3.631026496,
+            "min": 3.607733622,
+            "max": 3.671679999
+          }
+        },
+        {
+          "mode": "xpoint",
+          "devices": 2,
+          "rates": {
+            "count": 5,
+            "median": 1369116443.5142217,
+            "min": 1361832255.1023219,
+            "max": 1373180518.0320253
+          },
+          "seconds": {
+            "count": 5,
+            "median": 12.54814319,
+            "min": 12.511005619,
+            "max": 12.615260883
+          },
+          "relative_to_one": 1.9187350381048756,
+          "outside_slowest_owner_grants_seconds": {
+            "count": 5,
+            "median": 3.95057612,
+            "min": 3.91448617,
+            "max": 4.017804294
+          }
+        },
+        {
+          "mode": "xpoint",
+          "devices": 4,
+          "rates": {
+            "count": 5,
+            "median": 2551213336.1082044,
+            "min": 2535113199.7765145,
+            "max": 2565171850.7405972
+          },
+          "seconds": {
+            "count": 5,
+            "median": 13.467998883,
+            "min": 13.394712074,
+            "max": 13.553532191
+          },
+          "relative_to_one": 3.5753733299021575,
+          "outside_slowest_owner_grants_seconds": {
+            "count": 5,
+            "median": 4.848796188,
+            "min": 4.786874773,
+            "max": 4.943810066
+          }
+        },
+        {
+          "mode": "xpoint",
+          "devices": 8,
+          "rates": {
+            "count": 5,
+            "median": 4507391134.192515,
+            "min": 4500924840.796072,
+            "max": 4518702497.765025
+          },
+          "seconds": {
+            "count": 5,
+            "median": 15.245953742,
+            "min": 15.207789573,
+            "max": 15.267856976
+          },
+          "relative_to_one": 6.316839842650402,
+          "outside_slowest_owner_grants_seconds": {
+            "count": 5,
+            "median": 6.631746004,
+            "min": 6.592277674,
+            "max": 6.651080912
+          }
+        }
+      ]
+    },
+    "/tmp/keyhunt-c21-audit-i_1xummg/HIP_FLEET.json": {
+      "runs": 48,
+      "blocks": 360,
+      "metrics": [
+        {
+          "mode": "bsgs",
+          "devices": 1,
+          "rates": {
+            "count": 5,
+            "median": 4325948757.675075,
+            "min": 4314810467.24692,
+            "max": 4347021941.290211
+          },
+          "seconds": {
+            "count": 5,
+            "median": 1.985676453,
+            "min": 1.976050432,
+            "max": 1.990802296
+          },
+          "relative_to_one": 1.0,
+          "outside_slowest_owner_grants_seconds": {
+            "count": 5,
+            "median": 1.012760731,
+            "min": 1.004319462,
+            "max": 1.017906995
+          }
+        },
+        {
+          "mode": "bsgs",
+          "devices": 2,
+          "rates": {
+            "count": 5,
+            "median": 7732258318.694751,
+            "min": 6651985147.529609,
+            "max": 8030674970.5163765
+          },
+          "seconds": {
+            "count": 5,
+            "median": 2.221843667,
+            "min": 2.13928085,
+            "max": 2.582668
+          },
+          "relative_to_one": 1.7874132940146876,
+          "outside_slowest_owner_grants_seconds": {
+            "count": 5,
+            "median": 1.243977995,
+            "min": 1.163722973,
+            "max": 1.607124562
+          }
+        },
+        {
+          "mode": "bsgs",
+          "devices": 4,
+          "rates": {
+            "count": 5,
+            "median": 13583470735.343622,
+            "min": 12456152996.507683,
+            "max": 13694618862.845736
+          },
+          "seconds": {
+            "count": 5,
+            "median": 2.529525703,
+            "min": 2.508995592,
+            "max": 2.758455068
+          },
+          "relative_to_one": 3.1399980666076783,
+          "outside_slowest_owner_grants_seconds": {
+            "count": 5,
+            "median": 1.542837303,
+            "min": 1.528244978,
+            "max": 1.774984168
+          }
+        },
+        {
+          "mode": "bsgs",
+          "devices": 8,
+          "rates": {
+            "count": 5,
+            "median": 21205907780.87409,
+            "min": 17048854722.120724,
+            "max": 22662676584.83043
+          },
+          "seconds": {
+            "count": 5,
+            "median": 3.240581702,
+            "min": 3.032275401,
+            "max": 4.030738595
+          },
+          "relative_to_one": 4.9020247276971745,
+          "outside_slowest_owner_grants_seconds": {
+            "count": 5,
+            "median": 1.775511493,
+            "min": 1.579264617,
+            "max": 2.091792967
+          }
+        },
+        {
+          "mode": "xpoint",
+          "devices": 1,
+          "rates": {
+            "count": 5,
+            "median": 1917245063.3412206,
+            "min": 1793676236.5206704,
+            "max": 1919863693.8159897
+          },
+          "seconds": {
+            "count": 5,
+            "median": 4.480352955,
+            "min": 4.474241902,
+            "max": 4.789010642
+          },
+          "relative_to_one": 1.0,
+          "outside_slowest_owner_grants_seconds": {
+            "count": 5,
+            "median": 0.968239592,
+            "min": 0.962524311,
+            "max": 1.275842101
+          }
+        },
+        {
+          "mode": "xpoint",
+          "devices": 2,
+          "rates": {
+            "count": 5,
+            "median": 3604873842.453631,
+            "min": 3584475084.5023327,
+            "max": 3614939692.991616
+          },
+          "seconds": {
+            "count": 5,
+            "median": 4.765733817,
+            "min": 4.752463564,
+            "max": 4.792854957
+          },
+          "relative_to_one": 1.880236340873058,
+          "outside_slowest_owner_grants_seconds": {
+            "count": 5,
+            "median": 1.228467067,
+            "min": 1.214881078,
+            "max": 1.254810772
+          }
+        },
+        {
+          "mode": "xpoint",
+          "devices": 4,
+          "rates": {
+            "count": 5,
+            "median": 6498419273.196465,
+            "min": 6198178302.2366,
+            "max": 6553984003.664045
+          },
+          "seconds": {
+            "count": 5,
+            "median": 5.28739943,
+            "min": 5.242572814,
+            "max": 5.543522094
+          },
+          "relative_to_one": 3.3894567770442143,
+          "outside_slowest_owner_grants_seconds": {
+            "count": 5,
+            "median": 1.514153601,
+            "min": 1.467986901,
+            "max": 1.758507396
+          }
+        },
+        {
+          "mode": "xpoint",
+          "devices": 8,
+          "rates": {
+            "count": 5,
+            "median": 10872308278.520351,
+            "min": 10523024940.391441,
+            "max": 11304694678.405207
+          },
+          "seconds": {
+            "count": 5,
+            "median": 6.320596783,
+            "min": 6.078844116,
+            "max": 6.53039189
+          },
+          "relative_to_one": 5.670797378178127,
+          "outside_slowest_owner_grants_seconds": {
+            "count": 5,
+            "median": 2.527038025,
+            "min": 2.253279621,
+            "max": 2.742031025
+          }
+        }
+      ]
+    },
+    "/tmp/keyhunt-c21-audit-i_1xummg/CUDA_FLEET.json": {
+      "runs": 48,
+      "blocks": 360,
+      "metrics": [
+        {
+          "mode": "bsgs",
+          "devices": 1,
+          "rates": {
+            "count": 5,
+            "median": 1913509905.6586275,
+            "min": 1904360276.9349518,
+            "max": 1939241818.5509262
+          },
+          "seconds": {
+            "count": 5,
+            "median": 4.489098572,
+            "min": 4.429532461,
+            "max": 4.510666752
+          },
+          "relative_to_one": 1.0,
+          "outside_slowest_owner_grants_seconds": {
+            "count": 5,
+            "median": 3.613230709,
+            "min": 3.553924947,
+            "max": 3.635561696
+          }
+        },
+        {
+          "mode": "bsgs",
+          "devices": 2,
+          "rates": {
+            "count": 5,
+            "median": 3482180007.3582144,
+            "min": 3460561337.5660977,
+            "max": 3488381196.821201
+          },
+          "seconds": {
+            "count": 5,
+            "median": 4.933653384,
+            "min": 4.924882978,
+            "max": 4.964474691
+          },
+          "relative_to_one": 1.8197867683155018,
+          "outside_slowest_owner_grants_seconds": {
+            "count": 5,
+            "median": 4.055122862,
+            "min": 4.046247778,
+            "max": 4.087795161
+          }
+        },
+        {
+          "mode": "bsgs",
+          "devices": 4,
+          "rates": {
+            "count": 5,
+            "median": 5812124201.200099,
+            "min": 5800071214.106978,
+            "max": 5882721150.206397
+          },
+          "seconds": {
+            "count": 5,
+            "median": 5.911735051,
+            "min": 5.840789914,
+            "max": 5.924020084
+          },
+          "relative_to_one": 3.037415267102876,
+          "outside_slowest_owner_grants_seconds": {
+            "count": 5,
+            "median": 5.027208798,
+            "min": 4.956766516,
+            "max": 5.043906862
+          }
+        },
+        {
+          "mode": "bsgs",
+          "devices": 8,
+          "rates": {
+            "count": 5,
+            "median": 8993148387.38614,
+            "min": 8912656332.124924,
+            "max": 9034162821.427248
+          },
+          "seconds": {
+            "count": 5,
+            "median": 7.641314673,
+            "min": 7.606623667,
+            "max": 7.710324977
+          },
+          "relative_to_one": 4.699818046821509,
+          "outside_slowest_owner_grants_seconds": {
+            "count": 5,
+            "median": 6.753533962,
+            "min": 6.716406034,
+            "max": 6.821918303
+          }
+        },
+        {
+          "mode": "xpoint",
+          "devices": 1,
+          "rates": {
+            "count": 5,
+            "median": 719414618.1452161,
+            "min": 715531454.2168404,
+            "max": 719962095.2844085
+          },
+          "seconds": {
+            "count": 5,
+            "median": 11.940172424,
+            "min": 11.931092819,
+            "max": 12.004971318
+          },
+          "relative_to_one": 1.0,
+          "outside_slowest_owner_grants_seconds": {
+            "count": 5,
+            "median": 3.535226038,
+            "min": 3.52662148,
+            "max": 3.604456015
+          }
+        },
+        {
+          "mode": "xpoint",
+          "devices": 2,
+          "rates": {
+            "count": 5,
+            "median": 1375812390.418907,
+            "min": 1373317497.9112809,
+            "max": 1378549732.460734
+          },
+          "seconds": {
+            "count": 5,
+            "median": 12.487072581,
+            "min": 12.462277401,
+            "max": 12.509757724
+          },
+          "relative_to_one": 1.912405385876097,
+          "outside_slowest_owner_grants_seconds": {
+            "count": 5,
+            "median": 3.889322352,
+            "min": 3.865901276,
+            "max": 3.911741915
+          }
+        },
+        {
+          "mode": "xpoint",
+          "devices": 4,
+          "rates": {
+            "count": 5,
+            "median": 2557815633.3072996,
+            "min": 2556067745.672755,
+            "max": 2559696320.7543354
+          },
+          "seconds": {
+            "count": 5,
+            "median": 13.43323495,
+            "min": 13.42336514,
+            "max": 13.442420851
+          },
+          "relative_to_one": 3.555412371105026,
+          "outside_slowest_owner_grants_seconds": {
+            "count": 5,
+            "median": 4.825441075,
+            "min": 4.79952341,
+            "max": 4.833895853
+          }
+        },
+        {
+          "mode": "xpoint",
+          "devices": 8,
+          "rates": {
+            "count": 5,
+            "median": 4503458005.085812,
+            "min": 4489556657.8478,
+            "max": 4524577168.899314
+          },
+          "seconds": {
+            "count": 5,
+            "median": 15.259268911,
+            "min": 15.188043913,
+            "max": 15.306517317
+          },
+          "relative_to_one": 6.259892267266627,
+          "outside_slowest_owner_grants_seconds": {
+            "count": 5,
+            "median": 6.642751084,
+            "min": 6.574382364,
+            "max": 6.693897342
+          }
+        }
+      ]
+    }
+  },
+  "publication_files": 18,
+  "quickstarts": {
+    "cpu": {
+      "artifacts": 8,
+      "hardware": false
+    },
+    "hip": {
+      "artifacts": 22,
+      "hardware": true
+    },
+    "cuda": {
+      "artifacts": 22,
+      "hardware": true
+    }
+  },
+  "operations": {
+    "hip": {
+      "commands": 5,
+      "passed": true
+    },
+    "cuda": {
+      "commands": 5,
+      "passed": true
+    }
+  },
+  "passed": true,
+  "source_commit": "f7242a0db5ff843768e3c9d4360332f35556748c",
+  "audit_tool_sha256": "56160501af5636a43e57cdf73cda82eeea0fc5540d3de392f8275efbf39b1b1b"
+}

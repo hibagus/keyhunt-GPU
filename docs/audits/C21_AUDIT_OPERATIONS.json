@@ -1,0 +1,423 @@
+{
+  "passed": true,
+  "runs": {
+    "hip": {
+      "backend": "hip",
+      "passed": true,
+      "commands": [
+        {
+          "command": [
+            "/tmp/keyhunt-c21-audit-i_1xummg/hip/keyhunt-worker",
+            "sync",
+            "--state-dir",
+            "/var/tmp/kh21-lep0wsfj/demo/alice-worker"
+          ],
+          "exit_code": 0,
+          "stdout": "{\"client\":\"5d6bc7c9-7e20-4ceb-952d-2c13f334d703\",\"dispatch\":[],\"instance\":\"c7cce96d-2e4e-48e3-9ef7-489ea15c0335\",\"last_ack_server_time\":1790810239,\"outbox_bytes\":0,\"outbox_limit\":67108864,\"pending_request\":false,\"queues\":[{\"activity\":\"queued\",\"block\":\"0x0000000000000000000000000000000000000000000000000000000000000000\",\"device\":\"0\",\"job\":\"88ed6ae82ed5d0ab95d92934906610de0b1ecf71e0fbd4da88ca0d759932474a\",\"local_state\":\"in_progress\",\"project\":\"8a23893b-c65e-434b-9bfa-0eb5049cc761\",\"server_expires\":1793402239}],\"sent\":true,\"sync_due_in\":7200}\n",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "python3",
+            "/tmp/keyhunt-c21-audit-i_1xummg/source/tools/coordinator_worker.py",
+            "--state-dir",
+            "/var/tmp/kh21-lep0wsfj/demo/alice-worker",
+            "--backend",
+            "hip",
+            "--worker",
+            "/tmp/keyhunt-c21-audit-i_1xummg/hip/keyhunt-worker",
+            "--keyhunt",
+            "/tmp/keyhunt-c21-audit-i_1xummg/hip/keyhunt",
+            "--device-map",
+            "0=0",
+            "--once"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "/tmp/keyhunt-c21-audit-i_1xummg/hip/keyhunt-worker",
+            "status",
+            "--state-dir",
+            "/var/tmp/kh21-lep0wsfj/demo/alice-worker"
+          ],
+          "exit_code": 0,
+          "stdout": "{\"client\":\"5d6bc7c9-7e20-4ceb-952d-2c13f334d703\",\"dispatch\":[{\"block\":\"\",\"device\":\"0\",\"job\":\"\",\"project\":\"\",\"uuid\":\"30646366333934386337333264313231\"}],\"instance\":\"c7cce96d-2e4e-48e3-9ef7-489ea15c0335\",\"last_ack_server_time\":1790810239,\"outbox_bytes\":189,\"outbox_limit\":67108864,\"pending_request\":false,\"queues\":[{\"activity\":\"local-complete-awaiting-sync\",\"block\":\"0x0000000000000000000000000000000000000000000000000000000000000000\",\"device\":\"0\",\"job\":\"88ed6ae82ed5d0ab95d92934906610de0b1ecf71e0fbd4da88ca0d759932474a\",\"local_state\":\"finished\",\"project\":\"8a23893b-c65e-434b-9bfa-0eb5049cc761\",\"server_expires\":1793402239}],\"sync_due_in\":7199}\n",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "/tmp/keyhunt-c21-audit-i_1xummg/hip/keyhunt-worker",
+            "sync",
+            "--state-dir",
+            "/var/tmp/kh21-lep0wsfj/demo/alice-worker"
+          ],
+          "exit_code": 0,
+          "stdout": "{\"client\":\"5d6bc7c9-7e20-4ceb-952d-2c13f334d703\",\"dispatch\":[{\"block\":\"\",\"device\":\"0\",\"job\":\"\",\"project\":\"\",\"uuid\":\"30646366333934386337333264313231\"}],\"instance\":\"c7cce96d-2e4e-48e3-9ef7-489ea15c0335\",\"last_ack_server_time\":1790810241,\"outbox_bytes\":0,\"outbox_limit\":67108864,\"pending_request\":false,\"queues\":[{\"activity\":\"server-acknowledged\",\"block\":\"0x0000000000000000000000000000000000000000000000000000000000000000\",\"device\":\"0\",\"job\":\"88ed6ae82ed5d0ab95d92934906610de0b1ecf71e0fbd4da88ca0d759932474a\",\"local_state\":\"finished\",\"project\":\"8a23893b-c65e-434b-9bfa-0eb5049cc761\",\"server_expires\":1793402239},{\"activity\":\"queued\",\"block\":\"0x0000000000000000000000000000000000000000000000000000000000000001\",\"device\":\"0\",\"job\":\"88ed6ae82ed5d0ab95d92934906610de0b1ecf71e0fbd4da88ca0d759932474a\",\"local_state\":\"in_progress\",\"project\":\"8a23893b-c65e-434b-9bfa-0eb5049cc761\",\"server_expires\":1793402241}],\"sent\":true,\"sync_due_in\":7200}\n",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "/tmp/keyhunt-c21-audit-i_1xummg/hip/keyhunt",
+            "state",
+            "check",
+            "--state-dir",
+            "/var/tmp/kh21-lep0wsfj/demo/alice-worker"
+          ],
+          "exit_code": 0,
+          "stdout": "{\"integrity\":\"ok\"}\n",
+          "stderr": ""
+        }
+      ],
+      "script_sha256": "9e05d3bcc5b76ae3db5e88e913649a2312a1c2adc068b5677b8187c0b0645f9b",
+      "binary_sha256": {
+        "keyhunt": "fa2a5d51172d0d65e00256c4289fbdd458094fd92f8b5f49aae9d20a4f294d19",
+        "keyhunt-worker": "e83ffd66a848125050e39382cd8c6241b0868a20e3f3ca2af36d4ff5455d4497",
+        "keyhunt-coordinator": "75e000a34f197845a8f1ea599434982c93f75d0c34c1af1ac8c808b69e071b9b"
+      },
+      "launcher_command": [
+        "python3",
+        "/tmp/keyhunt-c21-audit-i_1xummg/source/tools/coordinator_local.py",
+        "--directory",
+        "/var/tmp/kh21-lep0wsfj/demo",
+        "--coordinator",
+        "/tmp/keyhunt-c21-audit-i_1xummg/hip/keyhunt-coordinator",
+        "--worker",
+        "/tmp/keyhunt-c21-audit-i_1xummg/hip/keyhunt-worker",
+        "--apache-root",
+        "/tmp/keyhunt-c15-deps/root",
+        "--port",
+        "56789"
+      ],
+      "ready": true,
+      "local_status": {
+        "client": "5d6bc7c9-7e20-4ceb-952d-2c13f334d703",
+        "dispatch": [
+          {
+            "block": "",
+            "device": "0",
+            "job": "",
+            "project": "",
+            "uuid": "30646366333934386337333264313231"
+          }
+        ],
+        "instance": "c7cce96d-2e4e-48e3-9ef7-489ea15c0335",
+        "last_ack_server_time": 1790810239,
+        "outbox_bytes": 189,
+        "outbox_limit": 67108864,
+        "pending_request": false,
+        "queues": [
+          {
+            "activity": "local-complete-awaiting-sync",
+            "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "device": "0",
+            "job": "88ed6ae82ed5d0ab95d92934906610de0b1ecf71e0fbd4da88ca0d759932474a",
+            "local_state": "finished",
+            "project": "8a23893b-c65e-434b-9bfa-0eb5049cc761",
+            "server_expires": 1793402239
+          }
+        ],
+        "sync_due_in": 7199
+      },
+      "acknowledged_status": {
+        "client": "5d6bc7c9-7e20-4ceb-952d-2c13f334d703",
+        "dispatch": [
+          {
+            "block": "",
+            "device": "0",
+            "job": "",
+            "project": "",
+            "uuid": "30646366333934386337333264313231"
+          }
+        ],
+        "instance": "c7cce96d-2e4e-48e3-9ef7-489ea15c0335",
+        "last_ack_server_time": 1790810241,
+        "outbox_bytes": 0,
+        "outbox_limit": 67108864,
+        "pending_request": false,
+        "queues": [
+          {
+            "activity": "server-acknowledged",
+            "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "device": "0",
+            "job": "88ed6ae82ed5d0ab95d92934906610de0b1ecf71e0fbd4da88ca0d759932474a",
+            "local_state": "finished",
+            "project": "8a23893b-c65e-434b-9bfa-0eb5049cc761",
+            "server_expires": 1793402239
+          },
+          {
+            "activity": "queued",
+            "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "device": "0",
+            "job": "88ed6ae82ed5d0ab95d92934906610de0b1ecf71e0fbd4da88ca0d759932474a",
+            "local_state": "in_progress",
+            "project": "8a23893b-c65e-434b-9bfa-0eb5049cc761",
+            "server_expires": 1793402241
+          }
+        ],
+        "sent": true,
+        "sync_due_in": 7200
+      },
+      "supervisor": {
+        "pid": null,
+        "paused": false,
+        "stopped": true,
+        "failures": {},
+        "devices": {
+          "0": {
+            "pid": null,
+            "ordinal": "0",
+            "uuid": "30646366333934386337333264313231",
+            "state": "stopped",
+            "completed": 1,
+            "grant": null,
+            "error": null
+          }
+        },
+        "last_network_error": null,
+        "worker": {
+          "client": "5d6bc7c9-7e20-4ceb-952d-2c13f334d703",
+          "dispatch": [
+            {
+              "block": "",
+              "device": "0",
+              "job": "",
+              "project": "",
+              "uuid": "30646366333934386337333264313231"
+            }
+          ],
+          "instance": "c7cce96d-2e4e-48e3-9ef7-489ea15c0335",
+          "last_ack_server_time": 1790810239,
+          "outbox_bytes": 189,
+          "outbox_limit": 67108864,
+          "pending_request": false,
+          "queues": [
+            {
+              "activity": "local-complete-awaiting-sync",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "device": "0",
+              "job": "88ed6ae82ed5d0ab95d92934906610de0b1ecf71e0fbd4da88ca0d759932474a",
+              "local_state": "finished",
+              "project": "8a23893b-c65e-434b-9bfa-0eb5049cc761",
+              "server_expires": 1793402239
+            }
+          ],
+          "sync_due_in": 7199
+        }
+      },
+      "launcher_stderr": "",
+      "launcher_exit_code": 0
+    },
+    "cuda": {
+      "backend": "cuda",
+      "passed": true,
+      "commands": [
+        {
+          "command": [
+            "/var/tmp/keyhunt-c21-audit-gv7rtq35/cuda/keyhunt-worker",
+            "sync",
+            "--state-dir",
+            "/var/tmp/kh21-b1o1y0i5/demo/alice-worker"
+          ],
+          "exit_code": 0,
+          "stdout": "{\"client\":\"280090f5-1f71-426a-a247-7fbdf23adc93\",\"dispatch\":[],\"instance\":\"413bb474-1247-4e97-8def-c995ebdf0fc0\",\"last_ack_server_time\":1790811828,\"outbox_bytes\":0,\"outbox_limit\":67108864,\"pending_request\":false,\"queues\":[{\"activity\":\"queued\",\"block\":\"0x0000000000000000000000000000000000000000000000000000000000000000\",\"device\":\"0\",\"job\":\"88ed6ae82ed5d0ab95d92934906610de0b1ecf71e0fbd4da88ca0d759932474a\",\"local_state\":\"in_progress\",\"project\":\"ad4bd9a5-dae5-4603-8f6d-e52f3a0b5a1d\",\"server_expires\":1793403828}],\"sent\":true,\"sync_due_in\":7200}\n",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "python3",
+            "/var/tmp/keyhunt-c21-audit-gv7rtq35/source/tools/coordinator_worker.py",
+            "--state-dir",
+            "/var/tmp/kh21-b1o1y0i5/demo/alice-worker",
+            "--backend",
+            "cuda",
+            "--worker",
+            "/var/tmp/keyhunt-c21-audit-gv7rtq35/cuda/keyhunt-worker",
+            "--keyhunt",
+            "/var/tmp/keyhunt-c21-audit-gv7rtq35/cuda/keyhunt",
+            "--device-map",
+            "0=7",
+            "--once"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "/var/tmp/keyhunt-c21-audit-gv7rtq35/cuda/keyhunt-worker",
+            "status",
+            "--state-dir",
+            "/var/tmp/kh21-b1o1y0i5/demo/alice-worker"
+          ],
+          "exit_code": 0,
+          "stdout": "{\"client\":\"280090f5-1f71-426a-a247-7fbdf23adc93\",\"dispatch\":[{\"block\":\"\",\"device\":\"0\",\"job\":\"\",\"project\":\"\",\"uuid\":\"ab387e304af7aaf1ece8575af15045ba\"}],\"instance\":\"413bb474-1247-4e97-8def-c995ebdf0fc0\",\"last_ack_server_time\":1790811828,\"outbox_bytes\":189,\"outbox_limit\":67108864,\"pending_request\":false,\"queues\":[{\"activity\":\"local-complete-awaiting-sync\",\"block\":\"0x0000000000000000000000000000000000000000000000000000000000000000\",\"device\":\"0\",\"job\":\"88ed6ae82ed5d0ab95d92934906610de0b1ecf71e0fbd4da88ca0d759932474a\",\"local_state\":\"finished\",\"project\":\"ad4bd9a5-dae5-4603-8f6d-e52f3a0b5a1d\",\"server_expires\":1793403828}],\"sync_due_in\":7196}\n",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "/var/tmp/keyhunt-c21-audit-gv7rtq35/cuda/keyhunt-worker",
+            "sync",
+            "--state-dir",
+            "/var/tmp/kh21-b1o1y0i5/demo/alice-worker"
+          ],
+          "exit_code": 0,
+          "stdout": "{\"client\":\"280090f5-1f71-426a-a247-7fbdf23adc93\",\"dispatch\":[{\"block\":\"\",\"device\":\"0\",\"job\":\"\",\"project\":\"\",\"uuid\":\"ab387e304af7aaf1ece8575af15045ba\"}],\"instance\":\"413bb474-1247-4e97-8def-c995ebdf0fc0\",\"last_ack_server_time\":1790811831,\"outbox_bytes\":0,\"outbox_limit\":67108864,\"pending_request\":false,\"queues\":[{\"activity\":\"server-acknowledged\",\"block\":\"0x0000000000000000000000000000000000000000000000000000000000000000\",\"device\":\"0\",\"job\":\"88ed6ae82ed5d0ab95d92934906610de0b1ecf71e0fbd4da88ca0d759932474a\",\"local_state\":\"finished\",\"project\":\"ad4bd9a5-dae5-4603-8f6d-e52f3a0b5a1d\",\"server_expires\":1793403828},{\"activity\":\"queued\",\"block\":\"0x0000000000000000000000000000000000000000000000000000000000000001\",\"device\":\"0\",\"job\":\"88ed6ae82ed5d0ab95d92934906610de0b1ecf71e0fbd4da88ca0d759932474a\",\"local_state\":\"in_progress\",\"project\":\"ad4bd9a5-dae5-4603-8f6d-e52f3a0b5a1d\",\"server_expires\":1793403831}],\"sent\":true,\"sync_due_in\":7200}\n",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "/var/tmp/keyhunt-c21-audit-gv7rtq35/cuda/keyhunt",
+            "state",
+            "check",
+            "--state-dir",
+            "/var/tmp/kh21-b1o1y0i5/demo/alice-worker"
+          ],
+          "exit_code": 0,
+          "stdout": "{\"integrity\":\"ok\"}\n",
+          "stderr": ""
+        }
+      ],
+      "script_sha256": "9e05d3bcc5b76ae3db5e88e913649a2312a1c2adc068b5677b8187c0b0645f9b",
+      "binary_sha256": {
+        "keyhunt": "130619288f1e2264b1e817fc8a7f766c6254235f917b798accfce54061529b3f",
+        "keyhunt-worker": "6fe5da252b0ae7c0d589254dd2fdc081106ac68503fcc4c070f423e48431c1db",
+        "keyhunt-coordinator": "ed17e8fc425f6995f1efa16a9a0423c46c7880d0dbb3aaeeb0c7510c3c1814f6"
+      },
+      "launcher_command": [
+        "python3",
+        "/var/tmp/keyhunt-c21-audit-gv7rtq35/source/tools/coordinator_local.py",
+        "--directory",
+        "/var/tmp/kh21-b1o1y0i5/demo",
+        "--coordinator",
+        "/var/tmp/keyhunt-c21-audit-gv7rtq35/cuda/keyhunt-coordinator",
+        "--worker",
+        "/var/tmp/keyhunt-c21-audit-gv7rtq35/cuda/keyhunt-worker",
+        "--apache-root",
+        "/tmp/keyhunt-c20-deps/root",
+        "--port",
+        "44749"
+      ],
+      "ready": true,
+      "local_status": {
+        "client": "280090f5-1f71-426a-a247-7fbdf23adc93",
+        "dispatch": [
+          {
+            "block": "",
+            "device": "0",
+            "job": "",
+            "project": "",
+            "uuid": "ab387e304af7aaf1ece8575af15045ba"
+          }
+        ],
+        "instance": "413bb474-1247-4e97-8def-c995ebdf0fc0",
+        "last_ack_server_time": 1790811828,
+        "outbox_bytes": 189,
+        "outbox_limit": 67108864,
+        "pending_request": false,
+        "queues": [
+          {
+            "activity": "local-complete-awaiting-sync",
+            "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "device": "0",
+            "job": "88ed6ae82ed5d0ab95d92934906610de0b1ecf71e0fbd4da88ca0d759932474a",
+            "local_state": "finished",
+            "project": "ad4bd9a5-dae5-4603-8f6d-e52f3a0b5a1d",
+            "server_expires": 1793403828
+          }
+        ],
+        "sync_due_in": 7196
+      },
+      "acknowledged_status": {
+        "client": "280090f5-1f71-426a-a247-7fbdf23adc93",
+        "dispatch": [
+          {
+            "block": "",
+            "device": "0",
+            "job": "",
+            "project": "",
+            "uuid": "ab387e304af7aaf1ece8575af15045ba"
+          }
+        ],
+        "instance": "413bb474-1247-4e97-8def-c995ebdf0fc0",
+        "last_ack_server_time": 1790811831,
+        "outbox_bytes": 0,
+        "outbox_limit": 67108864,
+        "pending_request": false,
+        "queues": [
+          {
+            "activity": "server-acknowledged",
+            "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "device": "0",
+            "job": "88ed6ae82ed5d0ab95d92934906610de0b1ecf71e0fbd4da88ca0d759932474a",
+            "local_state": "finished",
+            "project": "ad4bd9a5-dae5-4603-8f6d-e52f3a0b5a1d",
+            "server_expires": 1793403828
+          },
+          {
+            "activity": "queued",
+            "block": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "device": "0",
+            "job": "88ed6ae82ed5d0ab95d92934906610de0b1ecf71e0fbd4da88ca0d759932474a",
+            "local_state": "in_progress",
+            "project": "ad4bd9a5-dae5-4603-8f6d-e52f3a0b5a1d",
+            "server_expires": 1793403831
+          }
+        ],
+        "sent": true,
+        "sync_due_in": 7200
+      },
+      "supervisor": {
+        "pid": null,
+        "paused": false,
+        "stopped": true,
+        "failures": {},
+        "devices": {
+          "0": {
+            "pid": null,
+            "ordinal": "7",
+            "uuid": "ab387e304af7aaf1ece8575af15045ba",
+            "state": "stopped",
+            "completed": 1,
+            "grant": null,
+            "error": null
+          }
+        },
+        "last_network_error": null,
+        "worker": {
+          "client": "280090f5-1f71-426a-a247-7fbdf23adc93",
+          "dispatch": [
+            {
+              "block": "",
+              "device": "0",
+              "job": "",
+              "project": "",
+              "uuid": "ab387e304af7aaf1ece8575af15045ba"
+            }
+          ],
+          "instance": "413bb474-1247-4e97-8def-c995ebdf0fc0",
+          "last_ack_server_time": 1790811828,
+          "outbox_bytes": 189,
+          "outbox_limit": 67108864,
+          "pending_request": false,
+          "queues": [
+            {
+              "activity": "local-complete-awaiting-sync",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "device": "0",
+              "job": "88ed6ae82ed5d0ab95d92934906610de0b1ecf71e0fbd4da88ca0d759932474a",
+              "local_state": "finished",
+              "project": "ad4bd9a5-dae5-4603-8f6d-e52f3a0b5a1d",
+              "server_expires": 1793403828
+            }
+          ],
+          "sync_due_in": 7196
+        }
+      },
+      "launcher_stderr": "",
+      "launcher_exit_code": 0
+    }
+  }
+}

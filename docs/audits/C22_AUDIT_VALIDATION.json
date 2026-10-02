@@ -1,0 +1,327 @@
+{
+  "milestone": "C22",
+  "recorded_utc": "2026-10-01T01:28:43.970584+00:00",
+  "source_commit": "7b12569e9f1b53099e42ed2e48a552c088e62d31",
+  "passed": true,
+  "scope": "Trusted courier; focused CPU/HIP/CUDA regressions, actual cross-host file exchange, populated v6 upgrade, additional adversarial cases",
+  "new_findings": [],
+  "checks": {
+    "cpu": {
+      "passed": 51,
+      "failed": 0,
+      "skipped": 0,
+      "seconds": 32.395348731195554,
+      "tests": [
+        "gpu_benchmark_metrics",
+        "gpu_benchmark_pairs",
+        "oracle_selftest",
+        "cpu_field_oracle",
+        "cpu_point_oracle",
+        "bounded_search_oracle",
+        "portable_field_oracle",
+        "portable_point_oracle",
+        "xpoint_search_contract",
+        "xpoint_cli",
+        "bsgs_table_contract",
+        "bsgs_table_oracle",
+        "bsgs_table_devices",
+        "bsgs_search_contract",
+        "bsgs_cli",
+        "storage_database",
+        "storage_journal",
+        "storage_concurrency",
+        "state_cli",
+        "storage_checkpoint",
+        "storage_checkpoint_failures",
+        "checkpoint_cli",
+        "storage_checkpoint_control",
+        "checkpoint_controls",
+        "storage_checkpoint_concurrent",
+        "coordinator_registry",
+        "coordinator_tls",
+        "coordinator_sync",
+        "coordinator_sync_failures",
+        "coordinator_worker",
+        "coordinator_worker_failures",
+        "coordinator_https_worker",
+        "coordinator_recovery",
+        "coordinator_local_launcher",
+        "coordinator_budget",
+        "coordinator_dispatch",
+        "coordinator_supervisor",
+        "coordinator_calibration",
+        "coordinator_offline_files",
+        "coordinator_offline",
+        "coordinator_offline_failures",
+        "coordinator_offline_cli",
+        "hip_discovery_contract",
+        "backend_cli",
+        "exact_range",
+        "block_grid",
+        "work_unit",
+        "range_oracle",
+        "result_verifier",
+        "cpu_baseline",
+        "target_loading"
+      ]
+    },
+    "hip": {
+      "passed": 28,
+      "failed": 0,
+      "skipped": 0,
+      "seconds": 59.94002740387805,
+      "tests": [
+        "storage_database",
+        "storage_journal",
+        "storage_concurrency",
+        "storage_checkpoint",
+        "storage_checkpoint_failures",
+        "checkpoint_cli",
+        "storage_checkpoint_control",
+        "checkpoint_controls",
+        "checkpoint_pause_hip",
+        "storage_checkpoint_concurrent",
+        "coordinator_registry",
+        "coordinator_tls",
+        "coordinator_sync",
+        "coordinator_sync_failures",
+        "coordinator_worker",
+        "coordinator_worker_failures",
+        "coordinator_https_worker",
+        "coordinator_recovery",
+        "coordinator_local_launcher",
+        "coordinator_budget",
+        "coordinator_dispatch",
+        "coordinator_supervisor",
+        "coordinator_calibration",
+        "coordinator_fleet",
+        "coordinator_offline_files",
+        "coordinator_offline",
+        "coordinator_offline_failures",
+        "coordinator_offline_cli"
+      ]
+    },
+    "cuda": {
+      "passed": 29,
+      "failed": 0,
+      "skipped": 0,
+      "seconds": 155.05301280203275,
+      "tests": [
+        "storage_database",
+        "storage_journal",
+        "storage_concurrency",
+        "storage_checkpoint",
+        "storage_checkpoint_failures",
+        "checkpoint_cli",
+        "storage_checkpoint_control",
+        "checkpoint_controls",
+        "checkpoint_pause_cuda",
+        "storage_checkpoint_concurrent",
+        "coordinator_registry",
+        "coordinator_tls",
+        "coordinator_sync",
+        "coordinator_sync_failures",
+        "coordinator_worker",
+        "coordinator_worker_failures",
+        "coordinator_https_worker",
+        "coordinator_recovery",
+        "coordinator_local_launcher",
+        "coordinator_budget",
+        "coordinator_dispatch",
+        "coordinator_supervisor",
+        "coordinator_calibration",
+        "coordinator_fleet",
+        "coordinator_cuda_contexts",
+        "coordinator_offline_files",
+        "coordinator_offline",
+        "coordinator_offline_failures",
+        "coordinator_offline_cli"
+      ]
+    },
+    "sanitizers": {
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0,
+      "seconds": 9.449519147863612,
+      "tests": [
+        "coordinator_worker_failures",
+        "coordinator_recovery",
+        "coordinator_offline_files",
+        "coordinator_offline",
+        "coordinator_offline_failures"
+      ]
+    }
+  },
+  "additional_checks": {
+    "native_scenarios": 5,
+    "publication_writers": 8,
+    "publication_successes": 1,
+    "identical_replicas": 8,
+    "migration": "Populated C21 v6 coordinator and HTTPS worker; unchanged live rows; sealed old-schema backups",
+    "cross_host": {
+      "passed": true,
+      "modes": [
+        "xpoint",
+        "bsgs"
+      ],
+      "blocks": 4,
+      "matches": 2,
+      "files_transferred": 10,
+      "cuda_device": 7
+    }
+  },
+  "terminal_followup": {
+    "source_commit": "85790f0d2a3349245d8c8b4e5d5dfeb8ee84011e",
+    "passed": true,
+    "disposition": "A21 closed for tested supervisor path; simulated deadline acceleration and real subprocesses"
+  },
+  "binary_sha256": {
+    "local": {
+      "cpu": {
+        "keyhunt": "6749f99167961aa6e598e58c7a714266d15640cfe0b5fbdb5b0ad479dbe54ee4",
+        "keyhunt-worker": "d082901cd039ad467cbdfc9a75448865ab143d06c6c90cd02cd2c91995f0257a",
+        "keyhunt-coordinator": "5239818974053da2d3c4b693056c8f55c5114e14ab90f55449d1a6295e84f293"
+      },
+      "hip": {
+        "keyhunt": "36211eb70d1694dd89cd99f6bfd417b32ac8ca6083e1ca7273afeea21ecc0dbc",
+        "keyhunt-worker": "23a277c1241383d5e05087fd98238d5916dbded17f53c6f0218530d1d937ec94",
+        "keyhunt-coordinator": "5239818974053da2d3c4b693056c8f55c5114e14ab90f55449d1a6295e84f293"
+      }
+    },
+    "cuda": {
+      "keyhunt": "f8d49d126feb9009104dcc7f0649f933ed584dea4191c5ecce0fd9cc33684a29",
+      "keyhunt-worker": "bdb7c97b747968115a4fca5fdfd119a69e5938fbd151ee567f7e0b93f4a45f2b",
+      "keyhunt-coordinator": "46ab048f741237dd930d7209d9d5082f27b906600cb68bd03b89c3331a07c8cb"
+    }
+  },
+  "sanitizer_environment": {
+    "ASAN_OPTIONS": "detect_leaks=1:halt_on_error=1",
+    "UBSAN_OPTIONS": "halt_on_error=1"
+  },
+  "artifacts": {
+    "C22_AUDIT_EVIDENCE.json": {
+      "bytes": 3991,
+      "sha256": "7187373bf78400748f42642660da43da93bf05a4e4905de1165ab310f950c3b8"
+    },
+    "C22_AUDIT_HIP_OFFLINE.json": {
+      "bytes": 76467,
+      "sha256": "3e42a8f8c40707926d7e479a0dc578e07d078c4da3bb339e6332d5be65090f55"
+    },
+    "C22_AUDIT_CUDA_OFFLINE.json": {
+      "bytes": 76812,
+      "sha256": "a2f3d28bfaae0cb70b2483aad3f77d0a8d0d09a8e69ebd7b58dac4004a6c190e"
+    },
+    "C22_AUDIT_CROSS_HOST.json": {
+      "bytes": 87751,
+      "sha256": "54b6b99ec7f571cc90d616d194c4420f9fbfcc1016aa9f7a862847c683904fe0"
+    },
+    "C22_AUDIT_TERMINAL_FOLLOWUP.json": {
+      "bytes": 489,
+      "sha256": "76049ad3c9464c0c5d36bb0f3a1d667fcadbdcb68e9f68eddad467e5fb97a87d"
+    },
+    "C22_AUDIT_ADVERSARIAL.json": {
+      "bytes": 390,
+      "sha256": "d8262467da73706a588e0424f50ad4b1d08044b6c4663adce8df76f81b40ed4f"
+    },
+    "C22_AUDIT_MIGRATION.json": {
+      "bytes": 32549,
+      "sha256": "6c30d82bd86c5d5c58695e4bc0c8e04c961882c200c17c5607cb511a56032f33"
+    },
+    "C22_AUDIT_PUBLICATION.json": {
+      "bytes": 8264,
+      "sha256": "922dcf69d279ffadb53ae8ade66dbee4b2795d9f632e8bc74c5a40a68dcc3844"
+    },
+    "C22_AUDIT_RAW_LOGS.tar.gz": {
+      "bytes": 135123,
+      "sha256": "9f55aad8136c986d29c2e9d9d001917f6408663fe2efe167aca590ba410db323"
+    },
+    "C22_AUDIT.md": {
+      "bytes": 12121,
+      "sha256": "09182e6195062de8738d24653e877e8359b3ad209cf3aab941c9ed5b4d20b57b"
+    }
+  },
+  "tools_sha256": {
+    "tools/audit_c22.py": "4be6b40b980b8f3e3fd6da50f3f945d0d436592f613d3a599c248c3a5efc7ea6",
+    "tools/audit_c22_cross_host.py": "6429d92b503ca3681cc471b52a42ca4d2c45506e44f1163fe488395a32e7ed45"
+  },
+  "log_members": {
+    "audit-tools/audit_c22.py": "4be6b40b980b8f3e3fd6da50f3f945d0d436592f613d3a599c248c3a5efc7ea6",
+    "audit-tools/audit_c22_cross_host.py": "6429d92b503ca3681cc471b52a42ca4d2c45506e44f1163fe488395a32e7ed45",
+    "local/adversarial-compile.txt": "73b0c6c6eafab83c93385e4c4c26abb5dbc51674f182855c8ebb2a25c458542b",
+    "local/adversarial.cpp": "82be6d4da613e272b7bc9903ddae9f1cd59b06aa2a5973b1a39b4d4152a02a80",
+    "local/adversarial.json": "d8262467da73706a588e0424f50ad4b1d08044b6c4663adce8df76f81b40ed4f",
+    "local/binary-hashes.json": "f24c479174c07b615741042ddf6e07efdf4ce07977c21b01387082ddc6aa8f6e",
+    "local/build_local.py": "eebfc59bcaa3e79ba453181c54b8367e821df22b9ef9314f254367949a8b7d57",
+    "local/builds.json": "52028c41e72e638c3ce8cebb35fec8d81f09b92b495e954528d2078b04576e16",
+    "local/cpu-tests.json": "945b47034b8c2708a52307a522c8cf6591c8ebc8add65c9422dc7c93c74c74c4",
+    "local/cpu-tests.xml": "1e50acf2dd95725d87591d3d1af8396a5e414bc80594a9cf7047398bd0c03bd1",
+    "local/cpu/CMakeCache.txt": "5359546535b25a1812d195e57a093fc1cc9d63bbcaf436b05eb670eac806a633",
+    "local/cpu/checkpoint-cli-results.json": "465a685e8e919304034594477dcc4b61abd0b18c55ef26120d2a121b16dac17a",
+    "local/cpu/checkpoint-controls-results.json": "7da2bf7ad31f97f7fb8ef69ce9dac30af32c4827da6b2943c8b54d84a1dde4e4",
+    "local/cpu/coordinator-offline-cli.json": "3d696308f46271a04eb29aac30d930cdbdb675d592b6e2a42f25f8840af530d1",
+    "local/cross-host-executed.py": "a8915020b855ee8122373a663f9e63115c01f955c0fc6dccd9cad9ca112d03f3",
+    "local/cross-host.json": "54b6b99ec7f571cc90d616d194c4420f9fbfcc1016aa9f7a862847c683904fe0",
+    "local/evidence.json": "7187373bf78400748f42642660da43da93bf05a4e4905de1165ab310f950c3b8",
+    "local/harness-notes.json": "6ac709bcc19482d1d95c58f606932d82c9fd47c3f63add895d7910d71bd34125",
+    "local/hip-tests.json": "072c052533018c88e124be780743984f2a692be169854402a075ed6c4af65f5a",
+    "local/hip-tests.xml": "8edfa959e75e98b0cdf8fe37f57bace007333a8949d24b49099e8c7df1a21d09",
+    "local/hip/CMakeCache.txt": "5aea53d836d117d93a5d09783e99989e733d8b476a46f9f5ca85c2c1fd6bd082",
+    "local/hip/checkpoint-cli-results.json": "abe2e9f041d9118c18452ef12c13f87a507e6b42c3f5f79e29cfd6857fc5f510",
+    "local/hip/checkpoint-controls-results.json": "26acc318bf86f73209e0ed66ef38b0b30e07a113e0344dafa7fee64cf1e39ea1",
+    "local/hip/checkpoint-pause-hip-results.json": "11b765f2af9c00fbc130d0f8579d236b328d19ebf05c42d65a189895233f307f",
+    "local/hip/coordinator-fleet-results.json": "f8f6f971d53aa0b0a2ca6c09f3b37afa3bd8e7ff8ed82aa6a83d91f4c7695ec6",
+    "local/hip/coordinator-offline-cli.json": "3e42a8f8c40707926d7e479a0dc578e07d078c4da3bb339e6332d5be65090f55",
+    "local/identity.json": "cbb92db926255ed941445b8989316704555c9a4bf917b00990797817b03027aa",
+    "local/logs/adversarial-build.log": "0d7e4aee9f95b8431c03b0ac0d2833c9de83d724e5525ca7fd0750b11f5c5ccb",
+    "local/logs/cpu-build.log": "b4a4fa614c15a84d81fcc076c78dec5b2441244bd3db17dd1360272d4026d16f",
+    "local/logs/cpu-configure.log": "c7052e06f85698cb9b329865495137ee302de77f8cf3f6f27af70b955751241b",
+    "local/logs/cpu-tests.log": "f6d379858ad16e7b84bfe1f67422e5c7573401981856d5cb6c5cd75fb5162bc9",
+    "local/logs/cross-host.log": "7f8568ad474d8f23daf0d983e5a867159bbf3d6baa22e1fcd6dd0b28c1cae408",
+    "local/logs/documentation.log": "adba8d0b017b31a9bf66cd488f6708f8e4a0e3d0eccc5b04c027ab446198a6c4",
+    "local/logs/hardware.json": "a4b1643a788ce456ff27dcd9f3e96ce753911c278f744a4decb8b800671e9579",
+    "local/logs/hip-build.log": "eeefed9e3329c62e62636be28f8217c814d0591dc5eefde0e0617deee65c7f1c",
+    "local/logs/hip-configure.log": "9c7a2deacea6f4410d79da975af56ab16111f86c28023b54935b94f4e3292fac",
+    "local/logs/hip-tests.log": "ff28cd310e310c3501f92b3caa57e8f0a01d634283d69c5e8b6f29e11ac7e6a4",
+    "local/logs/migration-build.log": "37561d85492696b6b8b5530c1278bdd50d869cb0509a0c3b347b1c4bfdd22af3",
+    "local/logs/sanitizers-build.log": "f0288222ad4e63c423c44f2db86200de4a504200aa84bc03700a997483d89eb7",
+    "local/logs/sanitizers-configure.log": "2c46eb5de9560dbb25c1560ed7fe1678803b27c5eb1c284a0dc053067b1aafa0",
+    "local/logs/sanitizers-tests.log": "3f014dbbe32111bea7769640c5f473e4ac29868f5a4e605c0aec7f8fad1eab0b",
+    "local/logs/terminal-followup.log": "a601fbb0f2d94c31e9b328499d572a08d676404fd0cc0314cf9a439a86858901",
+    "local/migration-v6.json": "6c30d82bd86c5d5c58695e4bc0c8e04c961882c200c17c5607cb511a56032f33",
+    "local/migration_v6.cpp": "2f64220e94d029d6e72e0588d0f5dbb055ed452c18da2ef0899bcaef34728cde",
+    "local/migration_v6.py": "b169efe78f446729e1ffd6df919ae5cb39cf0dddd1871a5dc8cd5f933eddcc80",
+    "local/publication-race.json": "922dcf69d279ffadb53ae8ade66dbee4b2795d9f632e8bc74c5a40a68dcc3844",
+    "local/publication_race.py": "78580f15d93a0d4883e2c1622ca197ec572c7509ab8c5e6a85fb58677bda6a91",
+    "local/runtime.json": "b6887d2f8fc29b91c7558e865bfe6821257e2816984b3c96577a0bfb40c37bf4",
+    "local/sanitizers-tests.xml": "387c52b3e9658736aeeafc4b0de164ae47bdb126396671a4ced56362fd557fcb",
+    "local/sanitizers.json": "cdbf4ee0a540470815e9a5f28c88b65abdffce6747c9e2b5db83694ad923ad6b",
+    "local/sanitizers/CMakeCache.txt": "b7040a3ab4033a2c9723049d7ed6775c5f63bf389bce1bd7c32b239f8f50cc2d",
+    "local/terminal-followup.json": "76049ad3c9464c0c5d36bb0f3a1d667fcadbdcb68e9f68eddad467e5fb97a87d",
+    "local/test_local.py": "58b1966971c1c92c6c34130cf4b53ca4d63a8fcfc632fb93234632b0a2299e02",
+    "remote/binary-hashes.json": "be974139c27ffae2ede35003e1e03974ff2a0ce8f471ee183ae3977c1929a802",
+    "remote/cuda/CMakeCache.txt": "567b23c7dcf772d8e1e4366d2048cdd69874353896e0c3f48214893e46f6529e",
+    "remote/cuda/checkpoint-cli-results.json": "8ce940502a7d866a5a0dd696bd32a9cc17bbb1a593b4c597eea11bdac073fb65",
+    "remote/cuda/checkpoint-controls-results.json": "18dfbddb2dd7d9b4cd47a181b84cf8c9fdb9ba24bb4c169522029545da2b32c7",
+    "remote/cuda/checkpoint-pause-cuda-results.json": "392d43230f01ba5f558d73cf3b55d525a21d45e42df7491a080f750270365dc8",
+    "remote/cuda/coordinator-fleet-results.json": "4e0456aaa16c53601ea304d15766a1eed967d02c4da069cdd2c359c33dc88903",
+    "remote/cuda/coordinator-offline-cli.json": "a2f3d28bfaae0cb70b2483aad3f77d0a8d0d09a8e69ebd7b58dac4004a6c190e",
+    "remote/identity.json": "3f3015639a75fa68aed4b67ca8ba5965beaa15b9b64c7a951c0f03c393699d52",
+    "remote/logs/build.log": "dac4c3623158da9d0f82d21a11e25f01aa21070c905bb8e6514be768258e3f27",
+    "remote/logs/configure.log": "94936e5fc244f5a012ff3c1934f194a8d43389107ebc9f4b8f78935837f0ccf9",
+    "remote/logs/hardware.txt": "0e6ffd075c9bd7a35bc05b476722838fe077f3edc16a54ca7bc05c22cf250f27",
+    "remote/logs/tests.log": "ab3158bcd0d4dad78bbf92f89121818b15b1e76ec99d9f85d902e7000be7a1dc",
+    "remote/runs.json": "e6184d32a1f0aa49659fdb2eb2986616bcacb77e41bbfc78a41b3452a92e9692",
+    "remote/tests.xml": "11c388e1b28c9e08bd8dd7084d1b231d7c7a0bba4e247f0515bece3a29664d62",
+    "terminal-followup/docs/TERMINAL_EXIT_RECOVERY.md": "6253d2bf3f54ab13cc142a4e0cab6afdb72910147a04f6ca73e68587e73215e4",
+    "terminal-followup/tests/coordinator/supervisor.py": "c6c6e9daf78489eaaf891fd5a3636844a2fbfb80a0f71d8e0683f314f665a69e",
+    "terminal-followup/tools/coordinator_worker.py": "e49e7f632cb02208f1c458f362fb9ef84bf3492e7fea5afc059376aec63b8fa4"
+  },
+  "limits": [
+    "No fresh GPU throughput or full arithmetic/search benchmark matrix",
+    "Cross-host SSH courier; localhost HTTPS; no physical air-gap or public ingress test",
+    "No thirty-day endurance, power-loss or actual driver-hang test",
+    "Trusted digest channel; no signature/encryption authority",
+    "Transfer history remains outside bounded outbox",
+    "C23 changes excluded; A21 fix separately scoped"
+  ]
+}

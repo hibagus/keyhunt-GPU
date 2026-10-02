@@ -1,0 +1,1533 @@
+{
+  "passed": true,
+  "runs": {
+    "cpu": {
+      "backend": "cpu",
+      "hardware_executed": false,
+      "device": 0,
+      "binary_sha256": "2dac1f3f0bfd2231c36a1b1f7b81967c696cef81fe55b3bfb5f2ade77896d4e2",
+      "document_sha256": "0052ad8f41f43e0cd4e0a7605e224b94320817b881cce821ae89111f2ea3258d",
+      "harness_sha256": "5ae6fd98aae67c8d24ff7522c386bbdff8418b631a81b0f27c7d894c01354bfd",
+      "script_sha256": "2cf1e5a7924a75cc959232cbfb4fe58ef2f59968f7bc57b77968c1ef5804dc38",
+      "blocks": [
+        "prepare",
+        "create"
+      ],
+      "passed": true,
+      "artifacts": {
+        "bsgs-grant.json": {
+          "assignments": [
+            {
+              "project": "7fcacf96-afa4-4f73-9b8e-8e891ea3632e",
+              "job": "43705cd9d31557b820a0bdabcca0a302748e44d1d42cf1155ab1710e739599e8",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000010001",
+              "owner": "quickstart",
+              "generation": "1",
+              "expires_unix": 1793401534,
+              "grant": "v1:7fcacf96-afa4-4f73-9b8e-8e891ea3632e:43705cd9d31557b820a0bdabcca0a302748e44d1d42cf1155ab1710e739599e8:quickstart:d23fd34d359f71e394a25e3a6d64e084:1:1793401534:0x0000000000000000000000000000000000000000000000000000000000000000"
+            }
+          ]
+        },
+        "bsgs-job.json": {
+          "project": "7fcacf96-afa4-4f73-9b8e-8e891ea3632e",
+          "job": "43705cd9d31557b820a0bdabcca0a302748e44d1d42cf1155ab1710e739599e8",
+          "target_digest": "7650ddf7eb9a7ae8f28817786d5e23679c2e2da6139d2deaefaf3e9222aa6381",
+          "algorithm_digest": "03af4767d3b91350d4b0c0f1ed907af4dbd0405448346913579952c990dcef89"
+        },
+        "preflight.json": {
+          "integrity": "ok"
+        },
+        "project.json": {
+          "project": "7fcacf96-afa4-4f73-9b8e-8e891ea3632e"
+        },
+        "table-inspect.json": {
+          "backend": "cpu",
+          "device": null,
+          "uuid": "",
+          "format_version": 1,
+          "curve": "secp256k1",
+          "mapping": "jG:0<=j<m",
+          "m": 257,
+          "buckets": 64,
+          "bloom_words": 128,
+          "bits_per_entry": 16,
+          "resident_bytes": 13880,
+          "host_peak_bytes": 1076729,
+          "file_bytes": 14040,
+          "device_queries": 0,
+          "device_allocation_bytes": 0,
+          "pinned_allocation_bytes": 0,
+          "prepare_upload_ms": 0,
+          "query_kernel_ms": 0,
+          "query_upload_ms": 0,
+          "query_download_ms": 0,
+          "checksum": "12af8158df481f3d0ae6d95f4192c71897fafd9cf7ba8e112aca8bd2d04c90d5",
+          "search_coverage": false,
+          "wall_ms": 31.1386
+        },
+        "table.json": {
+          "backend": "cpu",
+          "device": null,
+          "uuid": "",
+          "format_version": 1,
+          "curve": "secp256k1",
+          "mapping": "jG:0<=j<m",
+          "m": 257,
+          "buckets": 64,
+          "bloom_words": 128,
+          "bits_per_entry": 16,
+          "resident_bytes": 13880,
+          "host_peak_bytes": 1076729,
+          "file_bytes": 14040,
+          "device_queries": 0,
+          "device_allocation_bytes": 0,
+          "pinned_allocation_bytes": 0,
+          "prepare_upload_ms": 0,
+          "query_kernel_ms": 0,
+          "query_upload_ms": 0,
+          "query_download_ms": 0,
+          "checksum": "12af8158df481f3d0ae6d95f4192c71897fafd9cf7ba8e112aca8bd2d04c90d5",
+          "search_coverage": false,
+          "wall_ms": 32.174
+        },
+        "xpoint-grant.json": {
+          "assignments": [
+            {
+              "project": "7fcacf96-afa4-4f73-9b8e-8e891ea3632e",
+              "job": "b2d2ed91380e2852e1561911f611c5f08c1dceb64487a56aa9bb6f35ae7d0f3e",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000000101",
+              "owner": "quickstart",
+              "generation": "1",
+              "expires_unix": 1793401534,
+              "grant": "v1:7fcacf96-afa4-4f73-9b8e-8e891ea3632e:b2d2ed91380e2852e1561911f611c5f08c1dceb64487a56aa9bb6f35ae7d0f3e:quickstart:d23fd34d359f71e394a25e3a6d64e084:1:1793401534:0x0000000000000000000000000000000000000000000000000000000000000000"
+            }
+          ]
+        },
+        "xpoint-job.json": {
+          "project": "7fcacf96-afa4-4f73-9b8e-8e891ea3632e",
+          "job": "b2d2ed91380e2852e1561911f611c5f08c1dceb64487a56aa9bb6f35ae7d0f3e",
+          "target_digest": "6397551d436e168d9149d63428e68363a3bc5e63a1d0371f06d1810e8074d80a",
+          "algorithm_digest": "7b0099fbbb87b5e967d5308270b324ac8a7d9ed4984e4d88e603b53280cfee9e"
+        }
+      },
+      "exit_code": 0,
+      "stdout": "/var/tmp/keyhunt-docs-923zhrz5/keyhunt-example.8k3UOM\n",
+      "stderr": "",
+      "wall_seconds": 0.23920975904911757
+    },
+    "hip": {
+      "backend": "hip",
+      "hardware_executed": true,
+      "device": 0,
+      "binary_sha256": "fa2a5d51172d0d65e00256c4289fbdd458094fd92f8b5f49aae9d20a4f294d19",
+      "document_sha256": "0052ad8f41f43e0cd4e0a7605e224b94320817b881cce821ae89111f2ea3258d",
+      "harness_sha256": "5ae6fd98aae67c8d24ff7522c386bbdff8418b631a81b0f27c7d894c01354bfd",
+      "script_sha256": "af37e3be490d06bd768036abe1004e5d48a9472056b3828466e22733dced8cb7",
+      "blocks": [
+        "prepare",
+        "volatile",
+        "create",
+        "durable"
+      ],
+      "passed": true,
+      "artifacts": {
+        "bsgs-block.json": {
+          "state": "finished",
+          "started": false,
+          "expired": false,
+          "assignment": null,
+          "covered": [
+            {
+              "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000010001"
+            }
+          ],
+          "remaining": []
+        },
+        "bsgs-durable.ndjson": [
+          {
+            "type": "checkpoint",
+            "durability": "local",
+            "durable_results": true,
+            "durable_coverage": true,
+            "intervals": [
+              {
+                "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000010001"
+              }
+            ],
+            "match_observations": 1,
+            "transaction_ms": 0.549429
+          },
+          {
+            "type": "summary",
+            "complete": true,
+            "durability": "local",
+            "durable_coverage": true,
+            "resumed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000010000",
+            "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000100",
+            "match_observations": 1,
+            "batches": 1,
+            "overflow_replays": 0,
+            "checkpoints": 1,
+            "checkpoint_ms": 0.549429,
+            "metrics_version": 2,
+            "device": 0,
+            "uuid": "30646366333934386337333264313231",
+            "mode": "bsgs",
+            "checkpoint_seconds": 10,
+            "bsgs_group_size": 1,
+            "verified_device_steps": "0x0000000000000000000000000000000000000000000000000000000000000100",
+            "kernel_ms": 3.73584103584,
+            "download_ms": 0.00853899959475,
+            "seed_ms": 0.00232,
+            "verification_ms": 0.006339,
+            "revalidation_ms": 0.002836,
+            "executor_wall_ms": 3.806631,
+            "replay_kernel_ms": 0,
+            "download_bytes": "0x0000000000000000000000000000000000000000000000000000000000000050",
+            "peak_device_allocation_bytes": 16081,
+            "peak_pinned_allocation_bytes": 185,
+            "preparation_ms": 582.66378,
+            "executor_setup_ms": 346.271773,
+            "table_upload_ms": 0.0315920002759,
+            "wall_ms": 590.649681,
+            "bsgs_groups": [
+              {
+                "group_size": 1,
+                "batches": 1,
+                "overflow_replays": 0,
+                "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000100",
+                "verified_device_steps": "0x0000000000000000000000000000000000000000000000000000000000000100",
+                "kernel_ms": 3.73584103584
+              }
+            ]
+          }
+        ],
+        "bsgs-grant.json": {
+          "assignments": [
+            {
+              "project": "126f1323-6e4f-4f1a-89bf-ef9a66456ea1",
+              "job": "43705cd9d31557b820a0bdabcca0a302748e44d1d42cf1155ab1710e739599e8",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000010001",
+              "owner": "quickstart",
+              "generation": "1",
+              "expires_unix": 1793401719,
+              "grant": "v1:126f1323-6e4f-4f1a-89bf-ef9a66456ea1:43705cd9d31557b820a0bdabcca0a302748e44d1d42cf1155ab1710e739599e8:quickstart:56a5a9418c12cb97197c20581e684072:1:1793401719:0x0000000000000000000000000000000000000000000000000000000000000000"
+            }
+          ]
+        },
+        "bsgs-job.json": {
+          "project": "126f1323-6e4f-4f1a-89bf-ef9a66456ea1",
+          "job": "43705cd9d31557b820a0bdabcca0a302748e44d1d42cf1155ab1710e739599e8",
+          "target_digest": "7650ddf7eb9a7ae8f28817786d5e23679c2e2da6139d2deaefaf3e9222aa6381",
+          "algorithm_digest": "03af4767d3b91350d4b0c0f1ed907af4dbd0405448346913579952c990dcef89"
+        },
+        "bsgs-results.json": {
+          "results": [
+            {
+              "id": "2",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "scalar": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "target": 0,
+              "target_bytes": "0479be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8"
+            }
+          ],
+          "next_after": "2"
+        },
+        "bsgs-retry.ndjson": [
+          {
+            "type": "summary",
+            "complete": true,
+            "durability": "local",
+            "durable_coverage": true,
+            "resumed_scalars": "0x0000000000000000000000000000000000000000000000000000000000010000",
+            "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "match_observations": 0,
+            "batches": 0,
+            "overflow_replays": 0,
+            "checkpoints": 0,
+            "checkpoint_ms": 0,
+            "metrics_version": 2,
+            "device": 0,
+            "uuid": "30646366333934386337333264313231",
+            "mode": "bsgs",
+            "checkpoint_seconds": 10,
+            "bsgs_group_size": 0,
+            "verified_device_steps": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "kernel_ms": 0,
+            "download_ms": 0,
+            "seed_ms": 0,
+            "verification_ms": 0,
+            "revalidation_ms": 0,
+            "executor_wall_ms": 0,
+            "replay_kernel_ms": 0,
+            "download_bytes": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "peak_device_allocation_bytes": 0,
+            "peak_pinned_allocation_bytes": 0,
+            "preparation_ms": 0,
+            "executor_setup_ms": 0,
+            "table_upload_ms": 0,
+            "wall_ms": 246.927967,
+            "bsgs_groups": []
+          }
+        ],
+        "bsgs.ndjson": [
+          {
+            "type": "start",
+            "backend": "hip",
+            "mode": "bsgs",
+            "device": 0,
+            "uuid": "30646366333934386337333264313231",
+            "m": 257,
+            "table_checksum": "12af8158df481f3d0ae6d95f4192c71897fafd9cf7ba8e112aca8bd2d04c90d5",
+            "target_digest": "7650ddf7eb9a7ae8f28817786d5e23679c2e2da6139d2deaefaf3e9222aa6381",
+            "target_count": 1,
+            "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000010001",
+            "group_size": 0,
+            "durable_coverage": false,
+            "preparation_ms": 512.383134,
+            "table_upload_ms": 0.0236939993
+          },
+          {
+            "type": "batch",
+            "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000010001",
+            "first_target": 0,
+            "target_count": 1,
+            "giants_per_target": 256,
+            "group_size": 1,
+            "overflow": false,
+            "device_steps": 256,
+            "verified_steps": 256,
+            "candidate_count": 1,
+            "tail_rejections": 0,
+            "kernel_ms": 3.75027108,
+            "download_ms": 0.00849999953,
+            "verification_ms": 0.006145,
+            "seed_ms": 0.002281,
+            "wall_ms": 3.822303,
+            "device_allocation_bytes": 16081,
+            "pinned_allocation_bytes": 185,
+            "download_bytes": 80,
+            "matches": [
+              {
+                "scalar": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "target": 0,
+                "public_key": "0479be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8"
+              }
+            ]
+          },
+          {
+            "type": "tile",
+            "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000010001",
+            "targets_completed": 1,
+            "verified_target_steps": 256,
+            "durable_coverage": false
+          },
+          {
+            "type": "summary",
+            "complete": true,
+            "durable_coverage": false,
+            "verified_scalars": "0x0000000000000000000000000000000000000000000000000000000000010000",
+            "verified_target_steps": "0x0000000000000000000000000000000000000000000000000000000000000100",
+            "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000100",
+            "matches": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "launch_count": 1,
+            "overflow_replays": 0,
+            "tiles": 1,
+            "kernel_ms": 3.75027108,
+            "download_ms": 0.00849999953,
+            "verification_ms": 0.006145,
+            "seed_ms": 0.002281,
+            "wall_ms": 516.264147
+          }
+        ],
+        "check.json": {
+          "integrity": "ok"
+        },
+        "devices.json": {
+          "backend": "hip",
+          "runtime_version": 71526333,
+          "driver_version": 71526333,
+          "devices": [
+            {
+              "ordinal": 0,
+              "name": "AMD Instinct MI300X",
+              "architecture": "gfx942:sramecc+:xnack-",
+              "uuid": "30646366333934386337333264313231",
+              "pci_bus_id": "0000:1b:00.0",
+              "physical_id": "0dcf3948c732d121",
+              "physical_id_source": "sysfs.unique_id",
+              "compute_partition": "SPX",
+              "memory_partition": "NPS1",
+              "memory_allocation_mode": "CAPPING",
+              "numa_node": 0,
+              "compute_units": 304,
+              "warp_size": 64,
+              "property_memory_bytes": 206141652992,
+              "total_memory_bytes": 206141652992,
+              "free_memory_bytes": 205533478912,
+              "warnings": []
+            },
+            {
+              "ordinal": 1,
+              "name": "AMD Instinct MI300X",
+              "architecture": "gfx942:sramecc+:xnack-",
+              "uuid": "30393337633864376335303031303365",
+              "pci_bus_id": "0000:3d:00.0",
+              "physical_id": "0937c8d7c500103e",
+              "physical_id_source": "sysfs.unique_id",
+              "compute_partition": "SPX",
+              "memory_partition": "NPS1",
+              "memory_allocation_mode": "CAPPING",
+              "numa_node": 0,
+              "compute_units": 304,
+              "warp_size": 64,
+              "property_memory_bytes": 206141652992,
+              "total_memory_bytes": 206141652992,
+              "free_memory_bytes": 205533478912,
+              "warnings": []
+            },
+            {
+              "ordinal": 2,
+              "name": "AMD Instinct MI300X",
+              "architecture": "gfx942:sramecc+:xnack-",
+              "uuid": "34616433376163376162633937306666",
+              "pci_bus_id": "0000:4e:00.0",
+              "physical_id": "4ad37ac7abc970ff",
+              "physical_id_source": "sysfs.unique_id",
+              "compute_partition": "SPX",
+              "memory_partition": "NPS1",
+              "memory_allocation_mode": "CAPPING",
+              "numa_node": 0,
+              "compute_units": 304,
+              "warp_size": 64,
+              "property_memory_bytes": 206141652992,
+              "total_memory_bytes": 206141652992,
+              "free_memory_bytes": 205533478912,
+              "warnings": []
+            },
+            {
+              "ordinal": 3,
+              "name": "AMD Instinct MI300X",
+              "architecture": "gfx942:sramecc+:xnack-",
+              "uuid": "64636438643565303832323137646663",
+              "pci_bus_id": "0000:5f:00.0",
+              "physical_id": "dcd8d5e082217dfc",
+              "physical_id_source": "sysfs.unique_id",
+              "compute_partition": "SPX",
+              "memory_partition": "NPS1",
+              "memory_allocation_mode": "CAPPING",
+              "numa_node": 0,
+              "compute_units": 304,
+              "warp_size": 64,
+              "property_memory_bytes": 206141652992,
+              "total_memory_bytes": 206141652992,
+              "free_memory_bytes": 205533478912,
+              "warnings": []
+            },
+            {
+              "ordinal": 4,
+              "name": "AMD Instinct MI300X",
+              "architecture": "gfx942:sramecc+:xnack-",
+              "uuid": "63613033303464653334643962636639",
+              "pci_bus_id": "0000:9d:00.0",
+              "physical_id": "ca0304de34d9bcf9",
+              "physical_id_source": "sysfs.unique_id",
+              "compute_partition": "SPX",
+              "memory_partition": "NPS1",
+              "memory_allocation_mode": "CAPPING",
+              "numa_node": 1,
+              "compute_units": 304,
+              "warp_size": 64,
+              "property_memory_bytes": 206141652992,
+              "total_memory_bytes": 206141652992,
+              "free_memory_bytes": 205533478912,
+              "warnings": []
+            },
+            {
+              "ordinal": 5,
+              "name": "AMD Instinct MI300X",
+              "architecture": "gfx942:sramecc+:xnack-",
+              "uuid": "66366665356431386461333065623431",
+              "pci_bus_id": "0000:bd:00.0",
+              "physical_id": "f6fe5d18da30eb41",
+              "physical_id_source": "sysfs.unique_id",
+              "compute_partition": "SPX",
+              "memory_partition": "NPS1",
+              "memory_allocation_mode": "CAPPING",
+              "numa_node": 1,
+              "compute_units": 304,
+              "warp_size": 64,
+              "property_memory_bytes": 206141652992,
+              "total_memory_bytes": 206141652992,
+              "free_memory_bytes": 205533478912,
+              "warnings": []
+            },
+            {
+              "ordinal": 6,
+              "name": "AMD Instinct MI300X",
+              "architecture": "gfx942:sramecc+:xnack-",
+              "uuid": "32333266393737383136343134663766",
+              "pci_bus_id": "0000:cd:00.0",
+              "physical_id": "232f977816414f7f",
+              "physical_id_source": "sysfs.unique_id",
+              "compute_partition": "SPX",
+              "memory_partition": "NPS1",
+              "memory_allocation_mode": "CAPPING",
+              "numa_node": 1,
+              "compute_units": 304,
+              "warp_size": 64,
+              "property_memory_bytes": 206141652992,
+              "total_memory_bytes": 206141652992,
+              "free_memory_bytes": 205533478912,
+              "warnings": []
+            },
+            {
+              "ordinal": 7,
+              "name": "AMD Instinct MI300X",
+              "architecture": "gfx942:sramecc+:xnack-",
+              "uuid": "37386338613437353837623036353233",
+              "pci_bus_id": "0000:dd:00.0",
+              "physical_id": "78c8a47587b06523",
+              "physical_id_source": "sysfs.unique_id",
+              "compute_partition": "SPX",
+              "memory_partition": "NPS1",
+              "memory_allocation_mode": "CAPPING",
+              "numa_node": 1,
+              "compute_units": 304,
+              "warp_size": 64,
+              "property_memory_bytes": 206141652992,
+              "total_memory_bytes": 206141652992,
+              "free_memory_bytes": 205533478912,
+              "warnings": []
+            }
+          ]
+        },
+        "preflight.json": {
+          "integrity": "ok"
+        },
+        "project.json": {
+          "project": "126f1323-6e4f-4f1a-89bf-ef9a66456ea1"
+        },
+        "smoke.json": {
+          "backend": "hip",
+          "diagnostic_only": true,
+          "search_coverage": false,
+          "device": 0,
+          "uuid": "30646366333934386337333264313231",
+          "architecture": "gfx942:sramecc+:xnack-",
+          "begin": "0x000000000000000000000000000000000000000100000000ffffffffffffffff",
+          "end_exclusive": "0x0000000000000000000000000000000000000001000000010000000000000100",
+          "device_steps": 257,
+          "launch_count": 1,
+          "device_allocation_bytes": 8264,
+          "pinned_allocation_bytes": 8264,
+          "download_bytes": 8264,
+          "kernel_ms": 0.478005,
+          "download_ms": 0.011787,
+          "verification_ms": 0.012613,
+          "wall_ms": 1.62293
+        },
+        "table-inspect.json": {
+          "backend": "cpu",
+          "device": null,
+          "uuid": "",
+          "format_version": 1,
+          "curve": "secp256k1",
+          "mapping": "jG:0<=j<m",
+          "m": 257,
+          "buckets": 64,
+          "bloom_words": 128,
+          "bits_per_entry": 16,
+          "resident_bytes": 13880,
+          "host_peak_bytes": 1076729,
+          "file_bytes": 14040,
+          "device_queries": 0,
+          "device_allocation_bytes": 0,
+          "pinned_allocation_bytes": 0,
+          "prepare_upload_ms": 0,
+          "query_kernel_ms": 0,
+          "query_upload_ms": 0,
+          "query_download_ms": 0,
+          "checksum": "12af8158df481f3d0ae6d95f4192c71897fafd9cf7ba8e112aca8bd2d04c90d5",
+          "search_coverage": false,
+          "wall_ms": 31.5963
+        },
+        "table-validate.json": {
+          "backend": "hip",
+          "device": 0,
+          "uuid": "30646366333934386337333264313231",
+          "format_version": 1,
+          "curve": "secp256k1",
+          "mapping": "jG:0<=j<m",
+          "m": 257,
+          "buckets": 64,
+          "bloom_words": 128,
+          "bits_per_entry": 16,
+          "resident_bytes": 13880,
+          "host_peak_bytes": 1076729,
+          "file_bytes": 14040,
+          "device_queries": 514,
+          "device_allocation_bytes": 280160,
+          "pinned_allocation_bytes": 266280,
+          "prepare_upload_ms": 0.027422,
+          "query_kernel_ms": 0.552895,
+          "query_upload_ms": 0.017279,
+          "query_download_ms": 0.023694,
+          "checksum": "12af8158df481f3d0ae6d95f4192c71897fafd9cf7ba8e112aca8bd2d04c90d5",
+          "search_coverage": false,
+          "wall_ms": 467.458
+        },
+        "table.json": {
+          "backend": "cpu",
+          "device": null,
+          "uuid": "",
+          "format_version": 1,
+          "curve": "secp256k1",
+          "mapping": "jG:0<=j<m",
+          "m": 257,
+          "buckets": 64,
+          "bloom_words": 128,
+          "bits_per_entry": 16,
+          "resident_bytes": 13880,
+          "host_peak_bytes": 1076729,
+          "file_bytes": 14040,
+          "device_queries": 0,
+          "device_allocation_bytes": 0,
+          "pinned_allocation_bytes": 0,
+          "prepare_upload_ms": 0,
+          "query_kernel_ms": 0,
+          "query_upload_ms": 0,
+          "query_download_ms": 0,
+          "checksum": "12af8158df481f3d0ae6d95f4192c71897fafd9cf7ba8e112aca8bd2d04c90d5",
+          "search_coverage": false,
+          "wall_ms": 32.6036
+        },
+        "xpoint-block.json": {
+          "state": "finished",
+          "started": false,
+          "expired": false,
+          "assignment": null,
+          "covered": [
+            {
+              "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000000101"
+            }
+          ],
+          "remaining": []
+        },
+        "xpoint-durable.ndjson": [
+          {
+            "type": "checkpoint",
+            "durability": "local",
+            "durable_results": true,
+            "durable_coverage": true,
+            "intervals": [
+              {
+                "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000000101"
+              }
+            ],
+            "match_observations": 1,
+            "transaction_ms": 0.509512
+          },
+          {
+            "type": "summary",
+            "complete": true,
+            "durability": "local",
+            "durable_coverage": true,
+            "resumed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000100",
+            "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000100",
+            "match_observations": 1,
+            "batches": 1,
+            "overflow_replays": 0,
+            "checkpoints": 1,
+            "checkpoint_ms": 0.509512,
+            "metrics_version": 2,
+            "device": 0,
+            "uuid": "30646366333934386337333264313231",
+            "mode": "xpoint",
+            "checkpoint_seconds": 10,
+            "bsgs_group_size": 0,
+            "verified_device_steps": "0x0000000000000000000000000000000000000000000000000000000000000100",
+            "kernel_ms": 2.92026996613,
+            "download_ms": 0.0123479999602,
+            "seed_ms": 0.00152,
+            "verification_ms": 0.005961,
+            "revalidation_ms": 0.002456,
+            "executor_wall_ms": 3.016549,
+            "replay_kernel_ms": 0,
+            "download_bytes": "0x0000000000000000000000000000000000000000000000000000000000000048",
+            "peak_device_allocation_bytes": 1464,
+            "peak_pinned_allocation_bytes": 72,
+            "preparation_ms": 535.745115,
+            "executor_setup_ms": 329.286263,
+            "table_upload_ms": 0,
+            "wall_ms": 541.093534,
+            "bsgs_groups": []
+          }
+        ],
+        "xpoint-grant.json": {
+          "assignments": [
+            {
+              "project": "126f1323-6e4f-4f1a-89bf-ef9a66456ea1",
+              "job": "b2d2ed91380e2852e1561911f611c5f08c1dceb64487a56aa9bb6f35ae7d0f3e",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000000101",
+              "owner": "quickstart",
+              "generation": "1",
+              "expires_unix": 1793401719,
+              "grant": "v1:126f1323-6e4f-4f1a-89bf-ef9a66456ea1:b2d2ed91380e2852e1561911f611c5f08c1dceb64487a56aa9bb6f35ae7d0f3e:quickstart:56a5a9418c12cb97197c20581e684072:1:1793401719:0x0000000000000000000000000000000000000000000000000000000000000000"
+            }
+          ]
+        },
+        "xpoint-job.json": {
+          "project": "126f1323-6e4f-4f1a-89bf-ef9a66456ea1",
+          "job": "b2d2ed91380e2852e1561911f611c5f08c1dceb64487a56aa9bb6f35ae7d0f3e",
+          "target_digest": "6397551d436e168d9149d63428e68363a3bc5e63a1d0371f06d1810e8074d80a",
+          "algorithm_digest": "7b0099fbbb87b5e967d5308270b324ac8a7d9ed4984e4d88e603b53280cfee9e"
+        },
+        "xpoint-results.json": {
+          "results": [
+            {
+              "id": "1",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "scalar": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "target": 0,
+              "target_bytes": "79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798"
+            }
+          ],
+          "next_after": "1"
+        },
+        "xpoint-retry.ndjson": [
+          {
+            "type": "summary",
+            "complete": true,
+            "durability": "local",
+            "durable_coverage": true,
+            "resumed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000100",
+            "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "match_observations": 0,
+            "batches": 0,
+            "overflow_replays": 0,
+            "checkpoints": 0,
+            "checkpoint_ms": 0,
+            "metrics_version": 2,
+            "device": 0,
+            "uuid": "30646366333934386337333264313231",
+            "mode": "xpoint",
+            "checkpoint_seconds": 10,
+            "bsgs_group_size": 0,
+            "verified_device_steps": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "kernel_ms": 0,
+            "download_ms": 0,
+            "seed_ms": 0,
+            "verification_ms": 0,
+            "revalidation_ms": 0,
+            "executor_wall_ms": 0,
+            "replay_kernel_ms": 0,
+            "download_bytes": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "peak_device_allocation_bytes": 0,
+            "peak_pinned_allocation_bytes": 0,
+            "preparation_ms": 0,
+            "executor_setup_ms": 0,
+            "table_upload_ms": 0,
+            "wall_ms": 221.705113,
+            "bsgs_groups": []
+          }
+        ],
+        "xpoint.ndjson": [
+          {
+            "type": "start",
+            "backend": "hip",
+            "mode": "xpoint",
+            "device": 0,
+            "uuid": "30646366333934386337333264313231",
+            "target_count": 1,
+            "target_digest": "6397551d436e168d9149d63428e68363a3bc5e63a1d0371f06d1810e8074d80a",
+            "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000000101",
+            "kernel": "stepped",
+            "durable_coverage": false,
+            "preparation_ms": 504.373828
+          },
+          {
+            "type": "batch",
+            "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000000101",
+            "overflow": false,
+            "verified_steps": 256,
+            "device_steps": 256,
+            "candidate_count": 1,
+            "kernel_ms": 5.04461002,
+            "download_ms": 0.0130690001,
+            "verification_ms": 0.004753,
+            "seed_ms": 0.001824,
+            "wall_ms": 5.128412,
+            "device_allocation_bytes": 1464,
+            "pinned_allocation_bytes": 72,
+            "download_bytes": 72,
+            "matches": [
+              {
+                "scalar": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "x": "79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+                "target": 0
+              }
+            ]
+          },
+          {
+            "type": "summary",
+            "complete": true,
+            "durable_coverage": false,
+            "verified_steps": "0x0000000000000000000000000000000000000000000000000000000000000100",
+            "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000100",
+            "matches": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "launch_count": 1,
+            "overflow_replays": 0,
+            "kernel_ms": 5.04461002,
+            "download_ms": 0.0130690001,
+            "verification_ms": 0.004753,
+            "seed_ms": 0.001824,
+            "wall_ms": 509.568934
+          }
+        ]
+      },
+      "exit_code": 0,
+      "stdout": "/var/tmp/keyhunt-docs-65nmos4t/keyhunt-example.9bUDOA\n",
+      "stderr": "",
+      "wall_seconds": 5.076204058015719
+    },
+    "cuda": {
+      "backend": "cuda",
+      "hardware_executed": true,
+      "device": 7,
+      "binary_sha256": "130619288f1e2264b1e817fc8a7f766c6254235f917b798accfce54061529b3f",
+      "document_sha256": "0052ad8f41f43e0cd4e0a7605e224b94320817b881cce821ae89111f2ea3258d",
+      "harness_sha256": "5ae6fd98aae67c8d24ff7522c386bbdff8418b631a81b0f27c7d894c01354bfd",
+      "script_sha256": "af37e3be490d06bd768036abe1004e5d48a9472056b3828466e22733dced8cb7",
+      "blocks": [
+        "prepare",
+        "volatile",
+        "create",
+        "durable"
+      ],
+      "passed": true,
+      "artifacts": {
+        "bsgs-block.json": {
+          "state": "finished",
+          "started": false,
+          "expired": false,
+          "assignment": null,
+          "covered": [
+            {
+              "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000010001"
+            }
+          ],
+          "remaining": []
+        },
+        "bsgs-durable.ndjson": [
+          {
+            "type": "checkpoint",
+            "durability": "local",
+            "durable_results": true,
+            "durable_coverage": true,
+            "intervals": [
+              {
+                "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000010001"
+              }
+            ],
+            "match_observations": 1,
+            "transaction_ms": 0.696709
+          },
+          {
+            "type": "summary",
+            "complete": true,
+            "durability": "local",
+            "durable_coverage": true,
+            "resumed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000010000",
+            "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000100",
+            "match_observations": 1,
+            "batches": 1,
+            "overflow_replays": 0,
+            "checkpoints": 1,
+            "checkpoint_ms": 0.696709,
+            "metrics_version": 2,
+            "device": 7,
+            "uuid": "ab387e304af7aaf1ece8575af15045ba",
+            "mode": "bsgs",
+            "checkpoint_seconds": 10,
+            "bsgs_group_size": 1,
+            "verified_device_steps": "0x0000000000000000000000000000000000000000000000000000000000000100",
+            "kernel_ms": 5.21740818024,
+            "download_ms": 0.00927999988198,
+            "seed_ms": 0.002871,
+            "verification_ms": 0.005058,
+            "revalidation_ms": 0.00236,
+            "executor_wall_ms": 5.254825,
+            "replay_kernel_ms": 0,
+            "download_bytes": "0x0000000000000000000000000000000000000000000000000000000000000050",
+            "peak_device_allocation_bytes": 16081,
+            "peak_pinned_allocation_bytes": 185,
+            "preparation_ms": 2932.15434,
+            "executor_setup_ms": 1.18122,
+            "table_upload_ms": 0.0250560007989,
+            "wall_ms": 2938.71652,
+            "bsgs_groups": [
+              {
+                "group_size": 1,
+                "batches": 1,
+                "overflow_replays": 0,
+                "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000100",
+                "verified_device_steps": "0x0000000000000000000000000000000000000000000000000000000000000100",
+                "kernel_ms": 5.21740818024
+              }
+            ]
+          }
+        ],
+        "bsgs-grant.json": {
+          "assignments": [
+            {
+              "project": "062680b7-0804-4ca6-89f9-749a1bbc5257",
+              "job": "43705cd9d31557b820a0bdabcca0a302748e44d1d42cf1155ab1710e739599e8",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000010001",
+              "owner": "quickstart",
+              "generation": "1",
+              "expires_unix": 1793403012,
+              "grant": "v1:062680b7-0804-4ca6-89f9-749a1bbc5257:43705cd9d31557b820a0bdabcca0a302748e44d1d42cf1155ab1710e739599e8:quickstart:818cf58c78cb3fbd79d9820ff2b14db7:1:1793403012:0x0000000000000000000000000000000000000000000000000000000000000000"
+            }
+          ]
+        },
+        "bsgs-job.json": {
+          "project": "062680b7-0804-4ca6-89f9-749a1bbc5257",
+          "job": "43705cd9d31557b820a0bdabcca0a302748e44d1d42cf1155ab1710e739599e8",
+          "target_digest": "7650ddf7eb9a7ae8f28817786d5e23679c2e2da6139d2deaefaf3e9222aa6381",
+          "algorithm_digest": "03af4767d3b91350d4b0c0f1ed907af4dbd0405448346913579952c990dcef89"
+        },
+        "bsgs-results.json": {
+          "results": [
+            {
+              "id": "2",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "scalar": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "target": 0,
+              "target_bytes": "0479be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8"
+            }
+          ],
+          "next_after": "2"
+        },
+        "bsgs-retry.ndjson": [
+          {
+            "type": "summary",
+            "complete": true,
+            "durability": "local",
+            "durable_coverage": true,
+            "resumed_scalars": "0x0000000000000000000000000000000000000000000000000000000000010000",
+            "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "match_observations": 0,
+            "batches": 0,
+            "overflow_replays": 0,
+            "checkpoints": 0,
+            "checkpoint_ms": 0,
+            "metrics_version": 2,
+            "device": 7,
+            "uuid": "ab387e304af7aaf1ece8575af15045ba",
+            "mode": "bsgs",
+            "checkpoint_seconds": 10,
+            "bsgs_group_size": 0,
+            "verified_device_steps": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "kernel_ms": 0,
+            "download_ms": 0,
+            "seed_ms": 0,
+            "verification_ms": 0,
+            "revalidation_ms": 0,
+            "executor_wall_ms": 0,
+            "replay_kernel_ms": 0,
+            "download_bytes": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "peak_device_allocation_bytes": 0,
+            "peak_pinned_allocation_bytes": 0,
+            "preparation_ms": 0,
+            "executor_setup_ms": 0,
+            "table_upload_ms": 0,
+            "wall_ms": 2969.706379,
+            "bsgs_groups": []
+          }
+        ],
+        "bsgs.ndjson": [
+          {
+            "type": "start",
+            "backend": "cuda",
+            "mode": "bsgs",
+            "device": 7,
+            "uuid": "ab387e304af7aaf1ece8575af15045ba",
+            "m": 257,
+            "table_checksum": "12af8158df481f3d0ae6d95f4192c71897fafd9cf7ba8e112aca8bd2d04c90d5",
+            "target_digest": "7650ddf7eb9a7ae8f28817786d5e23679c2e2da6139d2deaefaf3e9222aa6381",
+            "target_count": 1,
+            "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000010001",
+            "group_size": 0,
+            "durable_coverage": false,
+            "preparation_ms": 2932.04243,
+            "table_upload_ms": 0.0266559999
+          },
+          {
+            "type": "batch",
+            "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000010001",
+            "first_target": 0,
+            "target_count": 1,
+            "giants_per_target": 256,
+            "group_size": 1,
+            "overflow": false,
+            "device_steps": 256,
+            "verified_steps": 256,
+            "candidate_count": 1,
+            "tail_rejections": 0,
+            "kernel_ms": 5.12703991,
+            "download_ms": 0.0088320002,
+            "verification_ms": 0.005183,
+            "seed_ms": 0.00289,
+            "wall_ms": 5.163515,
+            "device_allocation_bytes": 16081,
+            "pinned_allocation_bytes": 185,
+            "download_bytes": 80,
+            "matches": [
+              {
+                "scalar": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "target": 0,
+                "public_key": "0479be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8"
+              }
+            ]
+          },
+          {
+            "type": "tile",
+            "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000010001",
+            "targets_completed": 1,
+            "verified_target_steps": 256,
+            "durable_coverage": false
+          },
+          {
+            "type": "summary",
+            "complete": true,
+            "durable_coverage": false,
+            "verified_scalars": "0x0000000000000000000000000000000000000000000000000000000000010000",
+            "verified_target_steps": "0x0000000000000000000000000000000000000000000000000000000000000100",
+            "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000100",
+            "matches": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "launch_count": 1,
+            "overflow_replays": 0,
+            "tiles": 1,
+            "kernel_ms": 5.12703991,
+            "download_ms": 0.0088320002,
+            "verification_ms": 0.005183,
+            "seed_ms": 0.00289,
+            "wall_ms": 2937.26326
+          }
+        ],
+        "check.json": {
+          "integrity": "ok"
+        },
+        "devices.json": {
+          "backend": "cuda",
+          "runtime_version": 13030,
+          "driver_version": 13030,
+          "devices": [
+            {
+              "ordinal": 0,
+              "name": "NVIDIA H200",
+              "architecture": "sm_90",
+              "uuid": "9fdcd9f2c45469a881b044d5f5e92bb8",
+              "pci_bus_id": "0000:1b:00.0",
+              "physical_id": "",
+              "physical_id_source": "",
+              "compute_partition": "",
+              "memory_partition": "",
+              "memory_allocation_mode": "",
+              "numa_node": 0,
+              "compute_units": 132,
+              "warp_size": 32,
+              "property_memory_bytes": 150101688320,
+              "total_memory_bytes": 150101688320,
+              "free_memory_bytes": 149545025536,
+              "warnings": [
+                "physical package identity unavailable",
+                "partition metadata unavailable"
+              ]
+            },
+            {
+              "ordinal": 1,
+              "name": "NVIDIA H200",
+              "architecture": "sm_90",
+              "uuid": "35e9b3332fcc91c7740d9dada8981391",
+              "pci_bus_id": "0000:3c:00.0",
+              "physical_id": "",
+              "physical_id_source": "",
+              "compute_partition": "",
+              "memory_partition": "",
+              "memory_allocation_mode": "",
+              "numa_node": 0,
+              "compute_units": 132,
+              "warp_size": 32,
+              "property_memory_bytes": 150101688320,
+              "total_memory_bytes": 150101688320,
+              "free_memory_bytes": 149545025536,
+              "warnings": [
+                "physical package identity unavailable",
+                "partition metadata unavailable"
+              ]
+            },
+            {
+              "ordinal": 2,
+              "name": "NVIDIA H200",
+              "architecture": "sm_90",
+              "uuid": "b9015ed612d65c7141653ab970cc5d89",
+              "pci_bus_id": "0000:4b:00.0",
+              "physical_id": "",
+              "physical_id_source": "",
+              "compute_partition": "",
+              "memory_partition": "",
+              "memory_allocation_mode": "",
+              "numa_node": 0,
+              "compute_units": 132,
+              "warp_size": 32,
+              "property_memory_bytes": 150101688320,
+              "total_memory_bytes": 150101688320,
+              "free_memory_bytes": 149545025536,
+              "warnings": [
+                "physical package identity unavailable",
+                "partition metadata unavailable"
+              ]
+            },
+            {
+              "ordinal": 3,
+              "name": "NVIDIA H200",
+              "architecture": "sm_90",
+              "uuid": "139f1dc5c1d8dd058d4c9b2ef33c966c",
+              "pci_bus_id": "0000:5c:00.0",
+              "physical_id": "",
+              "physical_id_source": "",
+              "compute_partition": "",
+              "memory_partition": "",
+              "memory_allocation_mode": "",
+              "numa_node": 0,
+              "compute_units": 132,
+              "warp_size": 32,
+              "property_memory_bytes": 150101688320,
+              "total_memory_bytes": 150101688320,
+              "free_memory_bytes": 149545025536,
+              "warnings": [
+                "physical package identity unavailable",
+                "partition metadata unavailable"
+              ]
+            },
+            {
+              "ordinal": 4,
+              "name": "NVIDIA H200",
+              "architecture": "sm_90",
+              "uuid": "8793d79f350ec5010a954ce29deee8a0",
+              "pci_bus_id": "0000:9a:00.0",
+              "physical_id": "",
+              "physical_id_source": "",
+              "compute_partition": "",
+              "memory_partition": "",
+              "memory_allocation_mode": "",
+              "numa_node": 1,
+              "compute_units": 132,
+              "warp_size": 32,
+              "property_memory_bytes": 150101688320,
+              "total_memory_bytes": 150101688320,
+              "free_memory_bytes": 149545025536,
+              "warnings": [
+                "physical package identity unavailable",
+                "partition metadata unavailable"
+              ]
+            },
+            {
+              "ordinal": 5,
+              "name": "NVIDIA H200",
+              "architecture": "sm_90",
+              "uuid": "0be674d0f3a86c060cebfb936d2e1cc0",
+              "pci_bus_id": "0000:bb:00.0",
+              "physical_id": "",
+              "physical_id_source": "",
+              "compute_partition": "",
+              "memory_partition": "",
+              "memory_allocation_mode": "",
+              "numa_node": 1,
+              "compute_units": 132,
+              "warp_size": 32,
+              "property_memory_bytes": 150101688320,
+              "total_memory_bytes": 150101688320,
+              "free_memory_bytes": 149545025536,
+              "warnings": [
+                "physical package identity unavailable",
+                "partition metadata unavailable"
+              ]
+            },
+            {
+              "ordinal": 6,
+              "name": "NVIDIA H200",
+              "architecture": "sm_90",
+              "uuid": "77df1e71e8323ccdd09eaa03ab3a2d7d",
+              "pci_bus_id": "0000:cd:00.0",
+              "physical_id": "",
+              "physical_id_source": "",
+              "compute_partition": "",
+              "memory_partition": "",
+              "memory_allocation_mode": "",
+              "numa_node": 1,
+              "compute_units": 132,
+              "warp_size": 32,
+              "property_memory_bytes": 150101688320,
+              "total_memory_bytes": 150101688320,
+              "free_memory_bytes": 149545025536,
+              "warnings": [
+                "physical package identity unavailable",
+                "partition metadata unavailable"
+              ]
+            },
+            {
+              "ordinal": 7,
+              "name": "NVIDIA H200",
+              "architecture": "sm_90",
+              "uuid": "ab387e304af7aaf1ece8575af15045ba",
+              "pci_bus_id": "0000:dc:00.0",
+              "physical_id": "",
+              "physical_id_source": "",
+              "compute_partition": "",
+              "memory_partition": "",
+              "memory_allocation_mode": "",
+              "numa_node": 1,
+              "compute_units": 132,
+              "warp_size": 32,
+              "property_memory_bytes": 150101688320,
+              "total_memory_bytes": 150101688320,
+              "free_memory_bytes": 149545025536,
+              "warnings": [
+                "physical package identity unavailable",
+                "partition metadata unavailable"
+              ]
+            }
+          ]
+        },
+        "preflight.json": {
+          "integrity": "ok"
+        },
+        "project.json": {
+          "project": "062680b7-0804-4ca6-89f9-749a1bbc5257"
+        },
+        "smoke.json": {
+          "backend": "cuda",
+          "diagnostic_only": true,
+          "search_coverage": false,
+          "device": 7,
+          "uuid": "ab387e304af7aaf1ece8575af15045ba",
+          "architecture": "sm_90",
+          "begin": "0x000000000000000000000000000000000000000100000000ffffffffffffffff",
+          "end_exclusive": "0x0000000000000000000000000000000000000001000000010000000000000100",
+          "device_steps": 257,
+          "launch_count": 1,
+          "device_allocation_bytes": 8264,
+          "pinned_allocation_bytes": 8264,
+          "download_bytes": 8264,
+          "kernel_ms": 0.138432,
+          "download_ms": 0.018016,
+          "verification_ms": 0.015263,
+          "wall_ms": 1.27434
+        },
+        "table-inspect.json": {
+          "backend": "cpu",
+          "device": null,
+          "uuid": "",
+          "format_version": 1,
+          "curve": "secp256k1",
+          "mapping": "jG:0<=j<m",
+          "m": 257,
+          "buckets": 64,
+          "bloom_words": 128,
+          "bits_per_entry": 16,
+          "resident_bytes": 13880,
+          "host_peak_bytes": 1076729,
+          "file_bytes": 14040,
+          "device_queries": 0,
+          "device_allocation_bytes": 0,
+          "pinned_allocation_bytes": 0,
+          "prepare_upload_ms": 0,
+          "query_kernel_ms": 0,
+          "query_upload_ms": 0,
+          "query_download_ms": 0,
+          "checksum": "12af8158df481f3d0ae6d95f4192c71897fafd9cf7ba8e112aca8bd2d04c90d5",
+          "search_coverage": false,
+          "wall_ms": 33.0205
+        },
+        "table-validate.json": {
+          "backend": "cuda",
+          "device": 7,
+          "uuid": "ab387e304af7aaf1ece8575af15045ba",
+          "format_version": 1,
+          "curve": "secp256k1",
+          "mapping": "jG:0<=j<m",
+          "m": 257,
+          "buckets": 64,
+          "bloom_words": 128,
+          "bits_per_entry": 16,
+          "resident_bytes": 13880,
+          "host_peak_bytes": 1076729,
+          "file_bytes": 14040,
+          "device_queries": 514,
+          "device_allocation_bytes": 280160,
+          "pinned_allocation_bytes": 266280,
+          "prepare_upload_ms": 0.029408,
+          "query_kernel_ms": 0.237504,
+          "query_upload_ms": 0.024448,
+          "query_download_ms": 0.023584,
+          "checksum": "12af8158df481f3d0ae6d95f4192c71897fafd9cf7ba8e112aca8bd2d04c90d5",
+          "search_coverage": false,
+          "wall_ms": 2836.6
+        },
+        "table.json": {
+          "backend": "cpu",
+          "device": null,
+          "uuid": "",
+          "format_version": 1,
+          "curve": "secp256k1",
+          "mapping": "jG:0<=j<m",
+          "m": 257,
+          "buckets": 64,
+          "bloom_words": 128,
+          "bits_per_entry": 16,
+          "resident_bytes": 13880,
+          "host_peak_bytes": 1076729,
+          "file_bytes": 14040,
+          "device_queries": 0,
+          "device_allocation_bytes": 0,
+          "pinned_allocation_bytes": 0,
+          "prepare_upload_ms": 0,
+          "query_kernel_ms": 0,
+          "query_upload_ms": 0,
+          "query_download_ms": 0,
+          "checksum": "12af8158df481f3d0ae6d95f4192c71897fafd9cf7ba8e112aca8bd2d04c90d5",
+          "search_coverage": false,
+          "wall_ms": 33.7052
+        },
+        "xpoint-block.json": {
+          "state": "finished",
+          "started": false,
+          "expired": false,
+          "assignment": null,
+          "covered": [
+            {
+              "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000000101"
+            }
+          ],
+          "remaining": []
+        },
+        "xpoint-durable.ndjson": [
+          {
+            "type": "checkpoint",
+            "durability": "local",
+            "durable_results": true,
+            "durable_coverage": true,
+            "intervals": [
+              {
+                "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000000101"
+              }
+            ],
+            "match_observations": 1,
+            "transaction_ms": 0.683584
+          },
+          {
+            "type": "summary",
+            "complete": true,
+            "durability": "local",
+            "durable_coverage": true,
+            "resumed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000100",
+            "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000100",
+            "match_observations": 1,
+            "batches": 1,
+            "overflow_replays": 0,
+            "checkpoints": 1,
+            "checkpoint_ms": 0.683584,
+            "metrics_version": 2,
+            "device": 7,
+            "uuid": "ab387e304af7aaf1ece8575af15045ba",
+            "mode": "xpoint",
+            "checkpoint_seconds": 10,
+            "bsgs_group_size": 0,
+            "verified_device_steps": "0x0000000000000000000000000000000000000000000000000000000000000100",
+            "kernel_ms": 4.361536026,
+            "download_ms": 0.00998399965465,
+            "seed_ms": 0.002041,
+            "verification_ms": 0.004342,
+            "revalidation_ms": 0.002713,
+            "executor_wall_ms": 4.411588,
+            "replay_kernel_ms": 0,
+            "download_bytes": "0x0000000000000000000000000000000000000000000000000000000000000048",
+            "peak_device_allocation_bytes": 2024,
+            "peak_pinned_allocation_bytes": 72,
+            "preparation_ms": 2894.11307,
+            "executor_setup_ms": 1.048147,
+            "table_upload_ms": 0,
+            "wall_ms": 2899.778219,
+            "bsgs_groups": []
+          }
+        ],
+        "xpoint-grant.json": {
+          "assignments": [
+            {
+              "project": "062680b7-0804-4ca6-89f9-749a1bbc5257",
+              "job": "b2d2ed91380e2852e1561911f611c5f08c1dceb64487a56aa9bb6f35ae7d0f3e",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000000101",
+              "owner": "quickstart",
+              "generation": "1",
+              "expires_unix": 1793403012,
+              "grant": "v1:062680b7-0804-4ca6-89f9-749a1bbc5257:b2d2ed91380e2852e1561911f611c5f08c1dceb64487a56aa9bb6f35ae7d0f3e:quickstart:818cf58c78cb3fbd79d9820ff2b14db7:1:1793403012:0x0000000000000000000000000000000000000000000000000000000000000000"
+            }
+          ]
+        },
+        "xpoint-job.json": {
+          "project": "062680b7-0804-4ca6-89f9-749a1bbc5257",
+          "job": "b2d2ed91380e2852e1561911f611c5f08c1dceb64487a56aa9bb6f35ae7d0f3e",
+          "target_digest": "6397551d436e168d9149d63428e68363a3bc5e63a1d0371f06d1810e8074d80a",
+          "algorithm_digest": "7b0099fbbb87b5e967d5308270b324ac8a7d9ed4984e4d88e603b53280cfee9e"
+        },
+        "xpoint-results.json": {
+          "results": [
+            {
+              "id": "1",
+              "block": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "scalar": "0x0000000000000000000000000000000000000000000000000000000000000001",
+              "target": 0,
+              "target_bytes": "79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798"
+            }
+          ],
+          "next_after": "1"
+        },
+        "xpoint-retry.ndjson": [
+          {
+            "type": "summary",
+            "complete": true,
+            "durability": "local",
+            "durable_coverage": true,
+            "resumed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000100",
+            "computed_scalars": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "match_observations": 0,
+            "batches": 0,
+            "overflow_replays": 0,
+            "checkpoints": 0,
+            "checkpoint_ms": 0,
+            "metrics_version": 2,
+            "device": 7,
+            "uuid": "ab387e304af7aaf1ece8575af15045ba",
+            "mode": "xpoint",
+            "checkpoint_seconds": 10,
+            "bsgs_group_size": 0,
+            "verified_device_steps": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "kernel_ms": 0,
+            "download_ms": 0,
+            "seed_ms": 0,
+            "verification_ms": 0,
+            "revalidation_ms": 0,
+            "executor_wall_ms": 0,
+            "replay_kernel_ms": 0,
+            "download_bytes": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "peak_device_allocation_bytes": 0,
+            "peak_pinned_allocation_bytes": 0,
+            "preparation_ms": 0,
+            "executor_setup_ms": 0,
+            "table_upload_ms": 0,
+            "wall_ms": 2974.070479,
+            "bsgs_groups": []
+          }
+        ],
+        "xpoint.ndjson": [
+          {
+            "type": "start",
+            "backend": "cuda",
+            "mode": "xpoint",
+            "device": 7,
+            "uuid": "ab387e304af7aaf1ece8575af15045ba",
+            "target_count": 1,
+            "target_digest": "6397551d436e168d9149d63428e68363a3bc5e63a1d0371f06d1810e8074d80a",
+            "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000000101",
+            "kernel": "stepped",
+            "durable_coverage": false,
+            "preparation_ms": 2841.3633
+          },
+          {
+            "type": "batch",
+            "begin": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "end_exclusive": "0x0000000000000000000000000000000000000000000000000000000000000101",
+            "overflow": false,
+            "verified_steps": 256,
+            "device_steps": 256,
+            "candidate_count": 1,
+            "kernel_ms": 4.55456018,
+            "download_ms": 0.0121919997,
+            "verification_ms": 0.004592,
+            "seed_ms": 0.002622,
+            "wall_ms": 4.606059,
+            "device_allocation_bytes": 2024,
+            "pinned_allocation_bytes": 72,
+            "download_bytes": 72,
+            "matches": [
+              {
+                "scalar": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "x": "79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+                "target": 0
+              }
+            ]
+          },
+          {
+            "type": "summary",
+            "complete": true,
+            "durable_coverage": false,
+            "verified_steps": "0x0000000000000000000000000000000000000000000000000000000000000100",
+            "device_steps": "0x0000000000000000000000000000000000000000000000000000000000000100",
+            "matches": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "launch_count": 1,
+            "overflow_replays": 0,
+            "kernel_ms": 4.55456018,
+            "download_ms": 0.0121919997,
+            "verification_ms": 0.004592,
+            "seed_ms": 0.002622,
+            "wall_ms": 2846.53921
+          }
+        ]
+      },
+      "exit_code": 0,
+      "stdout": "/var/tmp/keyhunt-docs-0qxde25u/keyhunt-example.CDPDfy\n",
+      "stderr": "",
+      "wall_seconds": 30.656576315988787
+    }
+  }
+}

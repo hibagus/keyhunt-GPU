@@ -1,0 +1,10 @@
+{
+  "cases": [
+    "fourth-grant rejection rolls back all previous imports",
+    "cached receipt refreshes pause controls and later exchange resumes",
+    "denial preserves pending results and immutable retry reconciles them",
+    "cached receipt cannot bypass current membership downgrade",
+    "delivery after entire lease imports receipt without runnable grants"
+  ],
+  "passed": true
+}

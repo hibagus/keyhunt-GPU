@@ -1,0 +1,229 @@
+{
+  "same_destination": [
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/cpu/keyhunt-worker",
+        "file-export",
+        "--state-dir",
+        "/var/tmp/keyhunt-c22-publication-1a47biyx/state",
+        "--output",
+        "/var/tmp/keyhunt-c22-publication-1a47biyx/same.json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"request\":\"9a8fa160-3c27-4c80-9717-43d953c2bbe8\",\"sha256\":\"2b553053153034762678265a42cce338f1c28f12282cca8e1c2b478d55adfeb6\",\"transfer\":\"8a1dfe83-fa76-4cb1-8efe-7cc66f56c3c2\"}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/cpu/keyhunt-worker",
+        "file-export",
+        "--state-dir",
+        "/var/tmp/keyhunt-c22-publication-1a47biyx/state",
+        "--output",
+        "/var/tmp/keyhunt-c22-publication-1a47biyx/same.json"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "{\"error\":\"cannot publish offline file exclusively\"}\n"
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/cpu/keyhunt-worker",
+        "file-export",
+        "--state-dir",
+        "/var/tmp/keyhunt-c22-publication-1a47biyx/state",
+        "--output",
+        "/var/tmp/keyhunt-c22-publication-1a47biyx/same.json"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "{\"error\":\"cannot publish offline file exclusively\"}\n"
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/cpu/keyhunt-worker",
+        "file-export",
+        "--state-dir",
+        "/var/tmp/keyhunt-c22-publication-1a47biyx/state",
+        "--output",
+        "/var/tmp/keyhunt-c22-publication-1a47biyx/same.json"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "{\"error\":\"cannot publish offline file exclusively\"}\n"
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/cpu/keyhunt-worker",
+        "file-export",
+        "--state-dir",
+        "/var/tmp/keyhunt-c22-publication-1a47biyx/state",
+        "--output",
+        "/var/tmp/keyhunt-c22-publication-1a47biyx/same.json"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "{\"error\":\"cannot publish offline file exclusively\"}\n"
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/cpu/keyhunt-worker",
+        "file-export",
+        "--state-dir",
+        "/var/tmp/keyhunt-c22-publication-1a47biyx/state",
+        "--output",
+        "/var/tmp/keyhunt-c22-publication-1a47biyx/same.json"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "{\"error\":\"cannot publish offline file exclusively\"}\n"
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/cpu/keyhunt-worker",
+        "file-export",
+        "--state-dir",
+        "/var/tmp/keyhunt-c22-publication-1a47biyx/state",
+        "--output",
+        "/var/tmp/keyhunt-c22-publication-1a47biyx/same.json"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "{\"error\":\"cannot publish offline file exclusively\"}\n"
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/cpu/keyhunt-worker",
+        "file-export",
+        "--state-dir",
+        "/var/tmp/keyhunt-c22-publication-1a47biyx/state",
+        "--output",
+        "/var/tmp/keyhunt-c22-publication-1a47biyx/same.json"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "{\"error\":\"cannot publish offline file exclusively\"}\n"
+    }
+  ],
+  "separate_destinations": [
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/cpu/keyhunt-worker",
+        "file-export",
+        "--state-dir",
+        "/var/tmp/keyhunt-c22-publication-1a47biyx/state",
+        "--output",
+        "/var/tmp/keyhunt-c22-publication-1a47biyx/copy-0.json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"request\":\"9a8fa160-3c27-4c80-9717-43d953c2bbe8\",\"sha256\":\"2b553053153034762678265a42cce338f1c28f12282cca8e1c2b478d55adfeb6\",\"transfer\":\"8a1dfe83-fa76-4cb1-8efe-7cc66f56c3c2\"}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/cpu/keyhunt-worker",
+        "file-export",
+        "--state-dir",
+        "/var/tmp/keyhunt-c22-publication-1a47biyx/state",
+        "--output",
+        "/var/tmp/keyhunt-c22-publication-1a47biyx/copy-1.json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"request\":\"9a8fa160-3c27-4c80-9717-43d953c2bbe8\",\"sha256\":\"2b553053153034762678265a42cce338f1c28f12282cca8e1c2b478d55adfeb6\",\"transfer\":\"8a1dfe83-fa76-4cb1-8efe-7cc66f56c3c2\"}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/cpu/keyhunt-worker",
+        "file-export",
+        "--state-dir",
+        "/var/tmp/keyhunt-c22-publication-1a47biyx/state",
+        "--output",
+        "/var/tmp/keyhunt-c22-publication-1a47biyx/copy-2.json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"request\":\"9a8fa160-3c27-4c80-9717-43d953c2bbe8\",\"sha256\":\"2b553053153034762678265a42cce338f1c28f12282cca8e1c2b478d55adfeb6\",\"transfer\":\"8a1dfe83-fa76-4cb1-8efe-7cc66f56c3c2\"}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/cpu/keyhunt-worker",
+        "file-export",
+        "--state-dir",
+        "/var/tmp/keyhunt-c22-publication-1a47biyx/state",
+        "--output",
+        "/var/tmp/keyhunt-c22-publication-1a47biyx/copy-3.json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"request\":\"9a8fa160-3c27-4c80-9717-43d953c2bbe8\",\"sha256\":\"2b553053153034762678265a42cce338f1c28f12282cca8e1c2b478d55adfeb6\",\"transfer\":\"8a1dfe83-fa76-4cb1-8efe-7cc66f56c3c2\"}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/cpu/keyhunt-worker",
+        "file-export",
+        "--state-dir",
+        "/var/tmp/keyhunt-c22-publication-1a47biyx/state",
+        "--output",
+        "/var/tmp/keyhunt-c22-publication-1a47biyx/copy-4.json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"request\":\"9a8fa160-3c27-4c80-9717-43d953c2bbe8\",\"sha256\":\"2b553053153034762678265a42cce338f1c28f12282cca8e1c2b478d55adfeb6\",\"transfer\":\"8a1dfe83-fa76-4cb1-8efe-7cc66f56c3c2\"}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/cpu/keyhunt-worker",
+        "file-export",
+        "--state-dir",
+        "/var/tmp/keyhunt-c22-publication-1a47biyx/state",
+        "--output",
+        "/var/tmp/keyhunt-c22-publication-1a47biyx/copy-5.json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"request\":\"9a8fa160-3c27-4c80-9717-43d953c2bbe8\",\"sha256\":\"2b553053153034762678265a42cce338f1c28f12282cca8e1c2b478d55adfeb6\",\"transfer\":\"8a1dfe83-fa76-4cb1-8efe-7cc66f56c3c2\"}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/cpu/keyhunt-worker",
+        "file-export",
+        "--state-dir",
+        "/var/tmp/keyhunt-c22-publication-1a47biyx/state",
+        "--output",
+        "/var/tmp/keyhunt-c22-publication-1a47biyx/copy-6.json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"request\":\"9a8fa160-3c27-4c80-9717-43d953c2bbe8\",\"sha256\":\"2b553053153034762678265a42cce338f1c28f12282cca8e1c2b478d55adfeb6\",\"transfer\":\"8a1dfe83-fa76-4cb1-8efe-7cc66f56c3c2\"}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/tmp/keyhunt-c22-audit-u0d52ucm/cpu/keyhunt-worker",
+        "file-export",
+        "--state-dir",
+        "/var/tmp/keyhunt-c22-publication-1a47biyx/state",
+        "--output",
+        "/var/tmp/keyhunt-c22-publication-1a47biyx/copy-7.json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"request\":\"9a8fa160-3c27-4c80-9717-43d953c2bbe8\",\"sha256\":\"2b553053153034762678265a42cce338f1c28f12282cca8e1c2b478d55adfeb6\",\"transfer\":\"8a1dfe83-fa76-4cb1-8efe-7cc66f56c3c2\"}\n",
+      "stderr": ""
+    }
+  ],
+  "sha256": "2b553053153034762678265a42cce338f1c28f12282cca8e1c2b478d55adfeb6",
+  "state": {
+    "client": "",
+    "dispatch": [],
+    "instance": "02e39dff-4e95-4a1a-81b7-d0d9b585e2fd",
+    "last_ack_server_time": 0,
+    "outbox_bytes": 0,
+    "outbox_limit": 67108864,
+    "pending_file_transfer": "8a1dfe83-fa76-4cb1-8efe-7cc66f56c3c2",
+    "pending_request": true,
+    "queues": [],
+    "sync_due_in": null,
+    "transport": "file"
+  },
+  "passed": true
+}
