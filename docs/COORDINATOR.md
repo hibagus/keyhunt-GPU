@@ -578,7 +578,7 @@ non-minikey jobs reject an explicit ordinal-order override. See
 
 ## Scalar batch order
 
-Scalar searches accept `--batch-order forward|both-ends|dance` (default forward).
+Scalar searches accept `--batch-order forward|both-ends|dance|random-window` (default forward).
 This applies to xpoint, Bitcoin address/HASH160, Ethereum and vanity in native
 searches, checkpoint runs, `keyhunt-worker run-device` and the Python supervisor.
 Both-ends alternates low/high missing batches after acceptance, starting low.
@@ -599,5 +599,14 @@ See [contracts and an executable public example](C23_SCALAR_BOTH_ENDS.md) and
 [both-ends HIP/H200 validation](C23_SCALAR_BOTH_ENDS_VALIDATION.md).
 The [dance contract and public example](C23_SCALAR_DANCE.md) define the fixed
 midpoint and recovery behavior; [HIP/H200 acceptance](C23_SCALAR_DANCE_VALIDATION.md)
-records the checks and evidence. Scalar random windows remain pending.
-Neither policy makes a performance claim.
+records the checks and evidence.
+
+Random-window shuffles up to `--batch-window 1..256` ascending canonical tiles
+(default 64), using `--batch-seed HEX` (default zero). Both settings require
+random-window. Tile boundaries stay fixed while overflow retries or orbit clipping
+consume sub-batches; no new draw occurs until the selected tile is exhausted.
+There are at most W tile records and W owners beyond the missing intervals.
+Restart can change seed/window and resets the stream over the saved complement.
+Execution records report `batch_seed` and `batch_window`. See the
+[contract and executable example](C23_SCALAR_RANDOM_WINDOW.md); hardware acceptance
+is in progress. None of these execution policies makes a performance claim.
