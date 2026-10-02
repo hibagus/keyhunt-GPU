@@ -4,6 +4,7 @@
 using namespace cfixture;
 using namespace keyhunt::storage::detail;
 int main(int argc,char** argv){try{
+    const bool random=argc==2 && std::string(argv[1])=="--random-window";
     const bool dance=argc==2 && std::string(argv[1])=="--dance";
     const bool both=argc==2 && std::string(argv[1])=="--both-ends";
     for(const auto mode:{Mode::XPoint,Mode::Hash160,Mode::Ethereum,Mode::Vanity}){
@@ -54,12 +55,24 @@ int main(int argc,char** argv){try{
             require(worker.journal().stride_mapping(grant->scope)==input.stride_mapping,"worker lost mapping");
             CheckpointOptions options;options.xpoint_steps=5;options.checkpoint_seconds=0;
             if(both || dance)options.scalar_batch_order=dance?scheduler::ScalarBatchOrder::Dance:scheduler::ScalarBatchOrder::BothEnds;
+            if(random){options.scalar_batch_order=scheduler::ScalarBatchOrder::RandomWindow;
+                options.scalar_random_window=scheduler::ScalarRandomWindow{UInt256(completed?0x1234:42),completed?3u:4u};}
+            // Frozen hashlib-derived permutations for these two grant-local
+            // streams. This expectation does not call the production planner.
+            const unsigned expected[2][4][2]={{{0,5},{10,15},{5,10},{15,17}},{{5,10},{10,15},{0,5},{15,17}}};
+            unsigned submitted=0;
             std::set<UInt256> missing;const auto bounds=worker.journal().manifest(grant->scope);
             const auto interval=scheduler::BlockGrid(bounds.root,bounds.block_width).block(grant->block);
             for(auto i=interval.begin();i<interval.end();i=i.add(UInt256(1)))missing.insert(i);
             unsigned phase=0;
             const auto pivot=interval.begin().add(interval.size().divmod(UInt256(2)).first);
             const auto runner=[&](const auto& batch){
+                if(random){
+                    require(submitted<4,"too many shuffled batches");
+                    require(batch.interval().begin()==interval.begin().add(UInt256(expected[completed][submitted][0])) &&
+                        batch.interval().end()==interval.begin().add(UInt256(expected[completed][submitted][1])),"wrong seeded worker sequence");
+                    ++submitted;
+                }
                 if(both || dance){
                     // Expected endpoints come from the uncovered set, not the
                     // production planner. The grant midpoint is fixed once.

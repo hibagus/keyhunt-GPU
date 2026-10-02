@@ -13,7 +13,7 @@ p=argparse.ArgumentParser()
 for name in ('coordinator','worker','keyhunt','oracle','report'):p.add_argument('--'+name,type=Path,required=True)
 p.add_argument('--apache-root',default='/');p.add_argument('--hardware',action='store_true')
 p.add_argument('--backend',choices=('hip','cuda'),default='hip')
-p.add_argument('--batch-order',choices=('forward','both-ends','dance'),default='forward')
+p.add_argument('--batch-order',choices=('forward','both-ends','dance','random-window'),default='forward')
 p.add_argument('--order',choices=('forward','reverse'),default='forward')
 p.add_argument('--orbit',action='store_true')
 p.add_argument('--kernel',choices=('direct','stepped','glv'));a=p.parse_args()
@@ -27,6 +27,12 @@ def command(words,ok=True):
 with tempfile.TemporaryDirectory(prefix='kh-stride-worker-',dir='/var/tmp') as temporary:
     root=Path(temporary);env=Environment(root/'server',str(a.coordinator.resolve()),a.apache_root)
     try:
+        if a.batch_order=='random-window':
+            for flags in (['--batch-seed','0'],['--batch-window','64'],['--batch-order','dance','--batch-seed','0'],
+                          ['--batch-order','random-window','--batch-window','0'],['--batch-order','random-window','--batch-window','257'],
+                          ['--batch-order','random-window','--batch-seed','-1'],['--batch-order','random-window','--batch-seed',f'{1<<256:x}']):
+                failed=command([sys.executable,REPO/'tools/coordinator_worker.py','--state-dir',root/'invalid',*flags],False)
+                assert not (root/'invalid').exists() and not failed.stdout and b'batch-' in failed.stderr.encode()
         env.initialize();env.start();port=env.port
         alice=env.admin('bootstrap',name='stride owner',certificate=(env.directory/'alice.pem').read_text())
         project=env.admin('project-create',name='stride fixtures',owner=alice['client'])['project']
@@ -83,10 +89,11 @@ with tempfile.TemporaryDirectory(prefix='kh-stride-worker-',dir='/var/tmp') as t
                 if a.hardware:
                     if transport=='file':env.stop()
                     command([sys.executable,REPO/'tools/coordinator_worker.py','--state-dir',state,'--worker',worker,'--keyhunt',keyhunt,
-                             '--backend',a.backend,'--kernel',a.kernel or ('direct' if transport=='https' else 'stepped'),'--batch-size','8','--batch-order',a.batch_order,'--once'])
+                             '--backend',a.backend,'--kernel',a.kernel or ('direct' if transport=='https' else 'stepped'),'--batch-size','8','--batch-order',a.batch_order,*(['--batch-seed','2a' if transport=='https' else 'f'*64,'--batch-window','4' if transport=='https' else '256'] if a.batch_order=='random-window' else []),'--once'])
                     events=[json.loads(v) for v in (state/'execution-0.log').read_text().splitlines()]
                     finished=[v for v in events if v.get('type')=='grant-finish']
                     assert all(v['batch_order']==a.batch_order for v in finished)
+                    if a.batch_order=='random-window':assert all(int(v['batch_seed'],16)==(42 if transport=='https' else (1<<256)-1) and v['batch_window']==(4 if transport=='https' else 256) for v in finished)
                     assert len(finished)==2 and [int(v['computed_candidates'],16) for v in finished]==[width,count-width] and all(v['executor_setups']==1 and v['coordinate_space']==('scalar-orbit-index-v1' if a.orbit else 'scalar-reverse-index-v1' if a.order=='reverse' else 'scalar-stride-index-v1') for v in finished)
                     assert finished[0]['cold'] and not finished[1]['cold']
                     if transport=='file':assert not (state/'sync.log').exists()
