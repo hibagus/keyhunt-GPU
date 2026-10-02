@@ -108,6 +108,12 @@ target_link_libraries(keyhunt_common PUBLIC Threads::Threads m)
 keyhunt_configure_target(keyhunt_common)
 set_source_files_properties(third_party/base58/base58.c PROPERTIES COMPILE_OPTIONS "-Wno-unused-parameter")
 
+# Scheduling shuffles use the portable SHA-256 primitive without depending on
+# the legacy curve engine. Both libraries resolve the same implementation.
+add_library(keyhunt_sha256 STATIC src/crypto/hash/sha256.cpp)
+target_include_directories(keyhunt_sha256 PUBLIC include)
+keyhunt_configure_target(keyhunt_sha256)
+
 add_library(keyhunt_cpu_crypto STATIC
     src/crypto/secp256k1/Int.cpp
     src/crypto/secp256k1/IntMod.cpp
@@ -115,11 +121,10 @@ add_library(keyhunt_cpu_crypto STATIC
     src/crypto/secp256k1/Point.cpp
     src/crypto/secp256k1/Random.cpp
     src/crypto/secp256k1/SECP256K1.cpp
-    src/crypto/hash/sha256.cpp
     src/crypto/hash/sha256_sse.cpp
     src/crypto/hash/ripemd160.cpp
     src/crypto/hash/ripemd160_sse.cpp)
-target_link_libraries(keyhunt_cpu_crypto PUBLIC keyhunt_common)
+target_link_libraries(keyhunt_cpu_crypto PUBLIC keyhunt_common keyhunt_sha256)
 keyhunt_configure_target(keyhunt_cpu_crypto)
 
 # Exact scheduling arithmetic is independent of the legacy curve engine.
@@ -130,6 +135,7 @@ add_library(keyhunt_ranges STATIC
     src/scheduler/work_unit.cpp
     src/scheduler/scalar_batch_planner.cpp)
 target_include_directories(keyhunt_ranges PUBLIC include)
+target_link_libraries(keyhunt_ranges PUBLIC keyhunt_sha256)
 keyhunt_configure_target(keyhunt_ranges)
 
 add_library(keyhunt_core STATIC
