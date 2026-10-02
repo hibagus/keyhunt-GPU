@@ -5,9 +5,9 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[2]
 p=argparse.ArgumentParser()
 for name in ('binary','report'):p.add_argument('--'+name,type=Path,required=True)
-p.add_argument('--backend',choices=('cpu','hip','cuda'),required=True);p.add_argument('--dance',action='store_true');a=p.parse_args()
-policy='dance' if a.dance else 'both-ends'
-document=ROOT/('docs/C23_SCALAR_DANCE.md' if a.dance else 'docs/C23_SCALAR_BOTH_ENDS.md');binary=a.binary.resolve()
+p.add_argument('--backend',choices=('cpu','hip','cuda'),required=True);p.add_argument('--dance',action='store_true');p.add_argument('--random-window',action='store_true');a=p.parse_args()
+policy='random-window' if a.random_window else 'dance' if a.dance else 'both-ends'
+document=ROOT/('docs/C23_SCALAR_'+policy.replace('-','_').upper()+'.md');binary=a.binary.resolve()
 blocks=re.findall(rf'<!-- scalar-{policy}-example: (\w+) -->\n```bash\n(.*?)\n```',document.read_text(),re.S)
 assert [name for name,_ in blocks]==['prepare','execute']
 report=dict(passed=False,backend=a.backend,binary_sha256=hashlib.sha256(binary.read_bytes()).hexdigest(),document_sha256=hashlib.sha256(document.read_bytes()).hexdigest(),artifacts={})
@@ -25,12 +25,15 @@ with tempfile.TemporaryDirectory(prefix='kh-scalar-doc-',dir='/var/tmp') as temp
   assert int(grant['begin'],16)==1 and int(grant['end_exclusive'],16)==102
   if a.backend!='cpu':
    batches=data['volatile.ndjson'][1:-1]
-   assert [(int(b['begin'],16),int(b['end_exclusive'],16)) for b in batches]==([(1,18),(85,102),(51,68),(18,35),(68,85),(35,51)] if a.dance else [(1,18),(85,102),(18,35),(68,85),(35,52),(52,68)])
+   assert [(int(b['begin'],16),int(b['end_exclusive'],16)) for b in batches]==([(1,18),(35,52),(18,35),(52,69),(86,102),(69,86)] if a.random_window else [(1,18),(85,102),(51,68),(18,35),(68,85),(35,51)] if a.dance else [(1,18),(85,102),(18,35),(68,85),(35,52),(52,68)])
    assert all(not b['overflow'] for b in batches)
    matches=[m for b in batches for m in b['matches']];assert len(matches)==1 and int(matches[0]['scalar'],16)==1
    rows=data['results.json']['results'];assert len(rows)==1 and int(rows[0]['scalar'],16)==1
    for name,order in [('volatile',policy),('durable',policy),('retry','forward')]:
     assert data[name+'.ndjson'][-1]['complete'] and data[name+'.ndjson'][-1]['batch_order']==order
+   if a.random_window:
+    for name in ('volatile','durable'):assert int(data[name+'.ndjson'][-1]['batch_seed'],16)==42 and data[name+'.ndjson'][-1]['batch_window']==4
+    assert 'batch_seed' not in data['retry.ndjson'][-1]
    assert int(data['durable.ndjson'][-1]['computed_scalars'],16)==101
    assert data['retry.ndjson'][-1]['batches']==0 and int(data['retry.ndjson'][-1]['resumed_scalars'],16)==101
    assert data['check.json']['integrity']=='ok'

@@ -79,3 +79,13 @@ foreach(mapping forward reverse)
         endif()
     endforeach()
 endforeach()
+
+add_test(NAME scalar_random_window_documented_example COMMAND "${Python3_EXECUTABLE}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/scalar_both_ends_examples.py"
+    --binary $<TARGET_FILE:keyhunt> --backend ${scalar_batch_example_backend} --random-window
+    --report "${CMAKE_CURRENT_BINARY_DIR}/scalar-random-window-example.json")
+set_tests_properties(scalar_random_window_documented_example PROPERTIES TIMEOUT 150 LABELS "cpu;scalar-batches;examples")
+if(KEYHUNT_ENABLE_GPU)
+    set_tests_properties(scalar_random_window_documented_example PROPERTIES
+        LABELS "${KEYHUNT_GPU_BACKEND};hardware;scalar-batches;examples" RESOURCE_LOCK gpu_device)
+endif()
