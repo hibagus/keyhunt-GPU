@@ -603,5 +603,5 @@ consume sub-batches; no new draw occurs until the selected tile is exhausted.
 There are at most W tile records and W owners beyond the missing intervals.
 Restart can change seed/window and resets the stream over the saved complement.
 Execution records report `batch_seed` and `batch_window`. See the
-[contract and executable example](C23_SCALAR_RANDOM_WINDOW.md); hardware acceptance
-is in progress. None of these execution policies makes a performance claim.
+[contract and executable example](C23_SCALAR_RANDOM_WINDOW.md) and
+[HIP/H200 acceptance](C23_SCALAR_RANDOM_WINDOW_VALIDATION.md). None of these execution policies makes a performance claim.
