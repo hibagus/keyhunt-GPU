@@ -59,3 +59,8 @@ if(KEYHUNT_ENABLE_GPU)
     set_tests_properties(scalar_dance_documented_example PROPERTIES
         LABELS "${KEYHUNT_GPU_BACKEND};hardware;scalar-batches;examples" RESOURCE_LOCK gpu_device)
 endif()
+
+add_test(NAME scalar_random_window_oracle COMMAND "${Python3_EXECUTABLE}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests/oracle/scalar_random_windows.py" --binary $<TARGET_FILE:scalar_batch_probe>
+    --report "${CMAKE_CURRENT_BINARY_DIR}/scalar-random-window-oracle.json")
+set_tests_properties(scalar_random_window_oracle PROPERTIES TIMEOUT 240 LABELS "cpu;scalar-batches;oracle")

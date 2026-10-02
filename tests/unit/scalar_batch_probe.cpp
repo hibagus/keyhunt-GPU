@@ -16,7 +16,10 @@ int main(){std::string row;while(std::getline(std::cin,row)){try{
     const auto root=id.stride_mapping?id.stride_mapping->indices():scalars;
     std::vector<ScalarInterval> missing;
     if(gaps!="-")for(const auto& gap:split(gaps,',')){const auto parts=split(gap,':');missing.emplace_back(UInt256::from_hex(parts.at(0)),UInt256::from_hex(parts.at(1)));}
-    scheduler::ScalarBatchPlanner planner({root,root.size()},UInt256(),missing,id,scheduler::parse_scalar_batch_order(order));
+    std::optional<scheduler::ScalarRandomWindow> random;std::string seed,window,extra;
+    if(in>>seed){if(!(in>>window))throw std::invalid_argument("missing window");random=scheduler::parse_scalar_random_window(seed,window);}
+    if(in>>extra)throw std::invalid_argument("trailing input");
+    scheduler::ScalarBatchPlanner planner({root,root.size()},UInt256(),missing,id,scheduler::parse_scalar_batch_order(order),random);
     const auto ws=split(works,','),bs=split(batches,','),ok=split(accepts,',');std::ostringstream out;out<<"ok";
     for(unsigned i=0;i<limit;++i){const auto plan=planner.plan(UInt256::from_hex(ws.at(i%ws.size())),std::stoull(bs.at(i%bs.size())));if(!plan)break;
         const auto& b=plan->batch;const auto& w=b.work().interval();

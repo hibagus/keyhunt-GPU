@@ -1,7 +1,9 @@
 """Integer model: immutable reservations separate from the uncovered intervals."""
+from scalar_random_window import RandomWindow
 U64=(1<<64)-1
 class Planner:
-    def __init__(self,gaps,order='both-ends',seeds=None):
+    def __init__(self,gaps,order='both-ends',seeds=None,seed=0,window=64):
+        self.random=RandomWindow(gaps,seed,window,seeds) if order=='random-window' else None
         self.gaps=list(gaps);self.owners=[];self.high=False;self.phase=0;self.order=order;self.seeds=seeds
         self.pivot=(gaps[0][0]+gaps[-1][1])//2 if gaps and order=='dance' else None
         if self.pivot is not None:
@@ -9,6 +11,7 @@ class Planner:
                        ([(lo,self.pivot),(self.pivot,hi)] if lo<self.pivot<hi else [(lo,hi)])]
     def plan(self,work,batch):
         assert work>0 and batch>0
+        if self.random:return self.random.plan(work,batch)
         if not self.gaps:return None
         self.high=self.phase==1
         low,high=self.gaps[-1 if self.high else 0]
@@ -33,6 +36,11 @@ class Planner:
         self.pending=(left,right,owner,finishes)
         return left,right,*owner,int(starts),int(finishes)
     def accept(self):
+        if self.random:
+            left,right,*_=self.random.planned
+            self.gaps=[part for lo,hi in self.gaps for part in
+                       ([(lo,hi)] if right<=lo or left>=hi else [(lo,left),(right,hi)]) if part[0]<part[1]]
+            self.random.accept();return
         left,right,owner,finishes=self.pending
         self.gaps=[part for lo,hi in self.gaps for part in
                    ([(lo,hi)] if right<=lo or left>=hi else [(lo,left),(right,hi)]) if part[0]<part[1]]
